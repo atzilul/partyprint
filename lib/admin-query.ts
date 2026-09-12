@@ -10,6 +10,7 @@ export function orderQuery(params:URLSearchParams, today=israelDay()) {
  if(focus==='overdue'){clauses.push(`status!='shipped' AND ${due}!='' AND ${due}<?`);args.push(today)}
  if(focus==='today'){clauses.push(`status!='shipped' AND ${due}=?`);args.push(today)}
  if(focus==='no_mail')clauses.push("coalesce(json_extract(data,'$.emailStatus'),'')!='accepted'");
+ if(focus==='followup')clauses.push("status='review' AND max(updated_at,coalesce(json_extract(data,'$.followUpAt'),''))<=strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days')");
  if(focus==='open')clauses.push("status!='shipped'");
  if(focus==='lead')clauses.push("json_extract(data,'$.mode')='lead'");
  // Calendar filters refer to the agreed target date, not the request creation date.

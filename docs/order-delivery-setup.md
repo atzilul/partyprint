@@ -33,3 +33,6 @@ Extra integration checks: settings conflicts, price bounds, dynamic totals, atom
 
 ## Daily operations
 The order list supports target-date ranges, overdue/today/open/consultation/missing-mail filters, and sorting by creation, update, target date, or value. Counts use the Israel calendar. CSV export uses the same filters across all pages (maximum 5,000 rows), is owner-only and private/no-store, and neutralizes spreadsheet formula prefixes. Notes and images are not embedded in CSV; per-order ZIP remains available. Admin links retain the selected order through login. Mobile order cards use a readable single column. Missing customer fields or shirt choices direct the editor to the matching tab before saving.
+
+## Stage board and follow-up
+The stage board loads and paginates each stage independently with the current search and filters. Quick actions advance one stage with confirmation, download the saved ZIP, or open a drafted WhatsApp message. The follow-up list selects review orders with no update or recorded follow-up for 72 hours. Marking follow-up is a manual management action, never proof of message delivery. Actions are owner-only, same-origin, bounded, version-checked, and append order history. No automatic WhatsApp messages are sent.
