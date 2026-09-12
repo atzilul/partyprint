@@ -30,3 +30,6 @@ Coupons support fixed or percentage reductions, package scope, minimum subtotal/
 Analytics use actual stored orders: daily count, request value (not revenue), shirt quantity, package distribution, stages, discount usage. An anonymous aggregate event counter measures page loads and start buttons from this release forward, with per-IP hourly throttling; no cookies or unique-user tracking. Page events use Israel dates; order daily groups use UTC. There is no historic visitor data or attribution.
 
 Extra integration checks: settings conflicts, price bounds, dynamic totals, atomic coupon redemption and exhausted-code race, date/minimum constraints, forged expected price rejection, and owner-only analytics queried from SQLite.
+
+## Daily operations
+The order list supports target-date ranges, overdue/today/open/consultation/missing-mail filters, and sorting by creation, update, target date, or value. Counts use the Israel calendar. CSV export uses the same filters across all pages (maximum 5,000 rows), is owner-only and private/no-store, and neutralizes spreadsheet formula prefixes. Notes and images are not embedded in CSV; per-order ZIP remains available. Admin links retain the selected order through login. Mobile order cards use a readable single column. Missing customer fields or shirt choices direct the editor to the matching tab before saving.
