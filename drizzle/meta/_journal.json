@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1788957055751,
+      "tag": "0000_fine_sasquatch",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1789033545734,
+      "tag": "0001_first_kree",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1789050513997,
+      "tag": "0002_marvelous_randall",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+import {guard,PRIVATE_HEADERS,adminError} from '@/lib/admin-auth';
+import {getOrder,bindings} from '@/lib/order-store';
+export async function GET(request:Request,{params}:{params:Promise<{id:string}>}){const denied=await guard();if(denied)return denied;try{const o=await getOrder((await params).id),key=new URL(request.url).searchParams.get('key');if(!o||!o.images.some(i=>i.key===key))return new Response('Not found',{status:404,headers:PRIVATE_HEADERS});const image=await bindings().BUCKET.get(key!);if(!image)return new Response('Not found',{status:404});return new Response(image.body,{headers:{...PRIVATE_HEADERS,'Content-Type':image.httpMetadata?.contentType||'application/octet-stream'}})}catch(e){return adminError(e)}}

@@ -1,0 +1,5 @@
+import {getChatGPTUser} from '@/app/chatgpt-auth';
+export const PRIVATE_HEADERS={'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Robots-Tag':'noindex, nofollow'};
+export async function isAdmin(){const u=await getChatGPTUser();return u&&u.email.toLowerCase()==='atzilul@gmail.com'?u:null}
+export async function guard(request?:Request){if(!await isAdmin())return Response.json({error:'הגישה מוגבלת לבעל האתר.'},{status:403,headers:PRIVATE_HEADERS});if(request&&request.method!=='GET'&&request.headers.get('origin')!==new URL(request.url).origin)return Response.json({error:'בקשה אינה מורשית.'},{status:403,headers:PRIVATE_HEADERS});return null}
+export function adminError(e:unknown){const message=e instanceof Error?e.message:'';return Response.json({error:message==='conflict'?'ההזמנה עודכנה במכשיר אחר. רעננו לפני שמירה.':message==='too_large'?'הקבצים גדולים מדי. עד 15MB בכל העלאה.':'לא ניתן להשלים את הפעולה. נסו שוב.'},{status:message==='conflict'?409:503,headers:PRIVATE_HEADERS})}
