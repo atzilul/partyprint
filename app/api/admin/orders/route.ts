@@ -10,10 +10,10 @@ export async function GET(request:Request){
   const {where,args,sort}=orderQuery(u.searchParams);
   const rows=await DB.prepare(`SELECT data,version FROM orders WHERE ${where} ORDER BY ${sort} LIMIT 40 OFFSET ?`).bind(...args,page*40).all<{data:string;version:number}>();
   const count=await DB.prepare(`SELECT count(*) AS n FROM orders WHERE ${where}`).bind(...args).first<{n:number}>();
-  const counts=await DB.prepare('SELECT status,count(*) AS n FROM orders GROUP BY status').all();
-  const pending=await DB.prepare("SELECT count(*) AS n FROM orders WHERE coalesce(json_extract(data,'$.emailStatus'),'') != 'accepted'").first<{n:number}>();
+  const counts=await DB.prepare("SELECT status,count(*) AS n FROM orders WHERE json_extract(data,'$.archivedAt') IS NULL AND json_extract(data,'$.cancelledAt') IS NULL GROUP BY status").all();
+  const pending=await DB.prepare("SELECT count(*) AS n FROM orders WHERE json_extract(data,'$.archivedAt') IS NULL AND json_extract(data,'$.cancelledAt') IS NULL AND coalesce(json_extract(data,'$.emailStatus'),'') != 'accepted'").first<{n:number}>();
   const today=israelDay();
-  const attention=await DB.prepare("SELECT sum(CASE WHEN status!='shipped' AND json_extract(data,'$.dueDate')!='' AND json_extract(data,'$.dueDate')<? THEN 1 ELSE 0 END) AS overdue,sum(CASE WHEN status!='shipped' AND json_extract(data,'$.dueDate')=? THEN 1 ELSE 0 END) AS today FROM orders").bind(today,today).first<{overdue:number;today:number}>();
+  const attention=await DB.prepare("SELECT sum(CASE WHEN status!='shipped' AND json_extract(data,'$.dueDate')!='' AND json_extract(data,'$.dueDate')<? THEN 1 ELSE 0 END) AS overdue,sum(CASE WHEN status!='shipped' AND json_extract(data,'$.dueDate')=? THEN 1 ELSE 0 END) AS today FROM orders WHERE json_extract(data,'$.archivedAt') IS NULL AND json_extract(data,'$.cancelledAt') IS NULL").bind(today,today).first<{overdue:number;today:number}>();
   return Response.json({orders:rows.results.map(r=>({...normalizeOrder(JSON.parse(r.data)),version:r.version})),total:count?.n||0,counts:counts.results,mailReady:!!(RESEND_API_KEY&&MAIL_FROM),pendingMail:pending?.n||0,attention:{overdue:attention?.overdue||0,today:attention?.today||0},today},{headers:PRIVATE_HEADERS});
  }catch(e){return adminError(e)}
 }

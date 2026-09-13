@@ -1,0 +1,1 @@
+import Tracking from './tracking';import '../../design/[id]/review.css';export const metadata={title:'ההזמנה שלכם | PARTYPRINT',robots:{index:false,follow:false},referrer:'no-referrer'};export default async function Page({params}:{params:Promise<{id:string}>}){return <Tracking id={(await params).id}/>}

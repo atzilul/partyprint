@@ -6,7 +6,7 @@ export function orderQuery(params:URLSearchParams, today=israelDay()) {
  if(status){clauses.push('status=?');args.push(status)}
  if(q){const search='%'+q.replace(/[\\%_]/g,'\\$&')+'%';clauses.push("(json_extract(data,'$.name') LIKE ? ESCAPE '\\' OR json_extract(data,'$.phone') LIKE ? ESCAPE '\\' OR id LIKE ? ESCAPE '\\' OR json_extract(data,'$.email') LIKE ? ESCAPE '\\')");args.push(search,search,search,search)}
  const due="coalesce(json_extract(data,'$.dueDate'),'')";
- const focus=params.get('focus')||'';
+ const focus=params.get('focus')||'';if(focus==='archive')clauses.push("(json_extract(data,'$.archivedAt') IS NOT NULL OR json_extract(data,'$.cancelledAt') IS NOT NULL)");else clauses.push("json_extract(data,'$.archivedAt') IS NULL AND json_extract(data,'$.cancelledAt') IS NULL");if(focus==='task')clauses.push("json_extract(data,'$.taskDue')<=strftime('%Y-%m-%dT%H:%M','now') AND coalesce(json_extract(data,'$.taskDone'),0)=0");if(focus==='balance')clauses.push("json_extract(data,'$.mode')!='lead' AND json_extract(data,'$.price')>coalesce((SELECT sum(CASE WHEN json_extract(j.value,'$.kind')='refund' THEN -json_extract(j.value,'$.amount') ELSE json_extract(j.value,'$.amount') END) FROM json_each(data,'$.payments') j),0)");
  if(focus==='overdue'){clauses.push(`status!='shipped' AND ${due}!='' AND ${due}<?`);args.push(today)}
  if(focus==='today'){clauses.push(`status!='shipped' AND ${due}=?`);args.push(today)}
  if(focus==='no_mail')clauses.push("coalesce(json_extract(data,'$.emailStatus'),'')!='accepted'");

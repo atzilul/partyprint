@@ -8,7 +8,7 @@ export async function POST(request:Request,{params}:{params:Promise<{id:string}>
   const raw=await request.text();if(raw.length>1000)return new Response(null,{status:413,headers:PRIVATE_HEADERS});
   let v;try{v=JSON.parse(raw)}catch{return Response.json({error:'בקשה לא תקינה'},{status:400,headers:PRIVATE_HEADERS})}
   const o=await getOrder((await params).id);if(!o)return Response.json({error:'ההזמנה לא נמצאה'},{status:404,headers:PRIVATE_HEADERS});
-  if(v?.version!==o.version)throw Error('conflict');
+  if(o.cancelledAt||o.archivedAt)return Response.json({error:'יש לפתוח מחדש את ההזמנה לפני המשך טיפול.'},{status:409,headers:PRIVATE_HEADERS});if(v?.version!==o.version)throw Error('conflict');
   if(v.action==='next'){
    const index=STAGES.findIndex(s=>s[0]===o.status),next=STAGES[index+1];
    if(!next)return Response.json({error:'ההזמנה כבר בשלב האחרון'},{status:400,headers:PRIVATE_HEADERS});
