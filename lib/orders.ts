@@ -1,9 +1,10 @@
+import type {DesignApproval,PaymentEntry} from './production';
 import {DEFAULT_PRICING,Pricing,priceFor} from './pricing';
 import {calculatePrice,packs,validateShirts} from './catalog';
 export const STAGES=[['received','הזמנה התקבלה'],['designing','נשלח לעיצוב'],['review','עיצוב נשלח ללקוח'],['approved','עיצוב אושר'],['printing','ההזמנה נשלחה להדפסה'],['printed','הדפסה מוכנה'],['shipped','נשלח ללקוח']] as const;
 export type Stage=typeof STAGES[number][0];
 export type OrderImage={name:string;key:string;size?:number;role?:string};
-export type Order={followUpAt?:string;subtotal?:number;discount?:number;couponCode?:string;id:string;name:string;phone:string;email:string;brief:string;package:number;packageName:string;quantity:number;price:number;mode:string;createdAt:string;updatedAt?:string;status:string;priceStatus:string;shirts:{size:string;color:string}[];images:OrderImage[];version?:number;notes?:string;address?:string;dueDate?:string;tracking?:string;revisions?:number;priceNote?:string;emailStatus?:string;history?:{at:string;action:string;actor:string}[]};
+export type Order={approval?:DesignApproval;payments?:PaymentEntry[];followUpAt?:string;subtotal?:number;discount?:number;couponCode?:string;id:string;name:string;phone:string;email:string;brief:string;package:number;packageName:string;quantity:number;price:number;mode:string;createdAt:string;updatedAt?:string;status:string;priceStatus:string;shirts:{size:string;color:string}[];images:OrderImage[];version?:number;notes?:string;address?:string;dueDate?:string;tracking?:string;revisions?:number;priceNote?:string;emailStatus?:string;history?:{at:string;action:string;actor:string}[]};
 export function whatsappLink(phone:string,message:string){let n=phone.replace(/\D/g,'');if(n.startsWith('00'))n=n.slice(2);if(n.startsWith('0'))n='972'+n.slice(1);if(!/^\d{9,15}$/.test(n))return '';return 'https://wa.me/'+n+'?text='+encodeURIComponent(message)}
 export function stageLabel(s:string){return STAGES.find(x=>x[0]===s)?.[1]||STAGES[0][1]}
 export function normalizeOrder(o:Order):Order{return {...o,status:STAGES.some(s=>s[0]===o.status)?o.status:'received',version:o.version||1,history:o.history||[],revisions:o.revisions||0}}
