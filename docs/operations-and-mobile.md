@@ -39,3 +39,13 @@ The site now keeps package pricing derived from the single shirt price and prese
 `node scripts/verify-orders.mjs` uses in-memory SQLite plus mock object storage. It covers existing order/coupon/auth flows, staff scoping, print instructions, token redaction, backup and restoration after image deletion, conflicts, cancellation and analytics SQL. All emails in tests are mocked; no messages or charges are performed. Temporary ZIPs go outside the repository.
 
 TypeScript and the production build were checked. Browser checks used the internal preview, including 360, 390 and 430 CSS-pixel iframe viewports: first-screen CTAs, direct form navigation, missing-choice blocking and final-step validation. This is responsive layout coverage, not physical iOS/Android keyboard testing. The temporary QA page is not part of the published site.
+
+## Submission and daily workflow refinements
+
+- Owner and customer notifications run independently in parallel after the order is stored. A failure in one does not prevent the other; statuses remain separate and do not imply delivery or reading.
+- The public wizard becomes inert while submitting, with a live progress message; package entry points and quantity changes also stop until completion. Fields remain available after failure.
+- Shared browser/server validation rejects punctuation-only phone numbers and nonexistent calendar dates.
+- Workflow saves refresh without the stale unsaved-change warning; manual reload still warns before discarding edits.
+- Managers can copy the private tracking link and inspect the customer notification status in activity. Missing mail configuration is distinguished from a failed provider request.
+- Designers have the same 30MB total image limit, including original object sizes for legacy records. Invalid file signatures return actionable validation errors without changing the order.
+- Verified with TypeScript, production build and the order regression suite, including malformed contact/date inputs, legacy image sizes and rejected designer uploads. No real customer messages were sent.

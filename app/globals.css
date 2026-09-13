@@ -68,3 +68,6 @@ html[data-motion=off] .confidence-ticket{opacity:1;transform:rotate(-4deg)}html[
 }
 
 @media(max-width:680px){.entry-modes.is-progress{display:none}.entry-modes label{min-height:68px}.mobile-step-summary{margin-top:12px}.final-summary .summary-shirts{max-height:130px}.final-summary .summary-shirts span{font-size:15px;padding:9px 11px}.order .form-card .order-steps{margin-top:0}}
+
+/* Preserve the existing wizard layout while freezing a pending submission. */
+.submission-fields{display:contents}.submission-progress{padding:16px;border:1px solid #b5d67b;border-radius:16px;background:#effbdc;line-height:1.65;font-weight:700}.submission-progress small{display:block;font-weight:400}.submission-spinner{display:inline-block;width:16px;height:16px;margin-inline-end:8px;border:2px solid currentColor;border-inline-end-color:transparent;border-radius:50%;animation:spin 1s linear infinite}.tracking-copy{display:flex;gap:8px;align-items:center}.tracking-copy input{min-width:0;flex:1}.tracking-copy button{min-height:44px;white-space:nowrap}@media(max-width:600px){.tracking-copy{flex-wrap:wrap}.tracking-copy input{flex-basis:100%}.tracking-copy button{width:100%}}@media(prefers-reduced-motion:reduce){.submission-spinner{animation:none}}

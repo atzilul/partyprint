@@ -1,3 +1,4 @@
+import {validPhone,validCalendarDate} from '@/lib/contact-validation';
 import {env} from 'cloudflare:workers';
 import {packs,calculatePrice,EXTRA_SHIRT_PRICE,validateShirts} from '@/lib/catalog';
 import {readLimitedForm,validImage} from '@/lib/order-security';
@@ -23,10 +24,10 @@ export async function POST(request:Request){
  await bindings.DB.prepare('DELETE FROM form_rate_limits WHERE expires_at < ?').bind(now).run();
  const data=await readLimitedForm(request);if(String(data.get('website')||''))return fail('לא ניתן לשלוח את הפנייה.',400);
  const name=String(data.get('name')||'').trim(),phone=String(data.get('phone')||'').trim(),email=String(data.get('email')||'').trim(),brief=String(data.get('brief')||'');const pack=Number(data.get('package')),quantity=Number(data.get('quantity')),mode=String(data.get('mode'));
- const eventDate=String(data.get('eventDate')||'');if(eventDate&&(!/^\d{4}-\d{2}-\d{2}$/.test(eventDate)||Number.isNaN(Date.parse(eventDate))||eventDate<new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jerusalem'})))return fail('בחרו תאריך אירוע מהיום והלאה.');const source=String(data.get('source')||'direct').replace(/[^a-zA-Z0-9_ .-]/g,'').slice(0,100)||'direct';const pricing=await getPricing();let subtotal:number;try{subtotal=priceFor(pricing,pack,quantity)}catch{return fail('בחרו חבילה וכמות חולצות תקינה.')}
+ const eventDate=String(data.get('eventDate')||'');if(eventDate&&(!validCalendarDate(eventDate)||eventDate<new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jerusalem'})))return fail('בחרו תאריך אירוע מהיום והלאה.');const source=String(data.get('source')||'direct').replace(/[^a-zA-Z0-9_ .-]/g,'').slice(0,100)||'direct';const pricing=await getPricing();let subtotal:number;try{subtotal=priceFor(pricing,pack,quantity)}catch{return fail('בחרו חבילה וכמות חולצות תקינה.')}
  const code=String(data.get('coupon')||'').trim().toUpperCase();let coupon=null,discount=0;if(code){coupon=await getCoupon(code);if(!coupon)return fail('קוד המבצע לא נמצא.');try{discount=couponDiscount(coupon,subtotal,quantity,pack)}catch{return fail('קוד המבצע אינו פעיל או לא מתאים להזמנה.')}}const total=Math.round((subtotal-discount)*100)/100;
  if(data.has('expectedPrice')&&Number(data.get('expectedPrice'))!==total)return fail('המחיר עודכן. בדקו את הסכום החדש ולחצו שוב על שליחה.',409);
- if(!name||name.length>100||!/^\+?[0-9() \-]{9,20}$/.test(phone)||brief.length>3000||email.length>150||!['lead','order','custom'].includes(mode))return fail('בדקו שהשם והטלפון מלאים ותקינים.');
+ if(!name||name.length>100||!validPhone(phone)||brief.length>3000||email.length>150||!['lead','order','custom'].includes(mode))return fail('בדקו שהשם והטלפון מלאים ותקינים.');
  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return fail('כתובת המייל אינה תקינה.');
  let shirts:unknown;try{shirts=JSON.parse(String(data.get('shirts')||'[]'))}catch{return fail('בחרו מידות וצבעים תקינים.')}
  if(mode==='lead'){if(!Array.isArray(shirts)||shirts.length!==0)return fail('פניית התייעצות אינה דורשת בחירת מידות.');shirts=[];}
@@ -40,8 +41,12 @@ export async function POST(request:Request){
  const summary=orderSummary(order);
  await bindings.BUCKET.put(`orders/${id}/order.txt`,summary,{httpMetadata:{contentType:'text/plain; charset=utf-8'}});
  let stored;try{stored=await insertOrder(order,coupon)}catch(e){await Promise.allSettled([...saved,`orders/${id}/order.txt`].map(k=>bindings.BUCKET.delete(k)));throw e}
- let trackingUrl='',customerEmailSent=false;try{trackingUrl=await createCustomerAccess(id)}catch{console.error('Customer access unavailable')}let emailSent=false;try{const bundleUrl=await createOrderAccess(bindings.BUCKET,id);emailSent=await notifyOrder(bindings,stored,bundleUrl)}catch{console.error("Order mail link unavailable")}
- if(trackingUrl)customerEmailSent=await notifyCustomer(bindings,stored,trackingUrl);try{await saveOrder({...stored,customerEmailStatus:customerEmailSent?'accepted':bindings.RESEND_API_KEY&&bindings.MAIL_FROM?'failed':'not_configured',emailStatus:emailSent?'accepted':bindings.RESEND_API_KEY&&bindings.MAIL_FROM?'failed':'not_configured'},1,'הזמנה התקבלה מהאתר','אתר');}catch{console.error('Order delivery status update failed')}
+ let trackingUrl='';
+ const [emailSent,customerEmailSent]=await Promise.all([
+  (async()=>{try{const bundleUrl=await createOrderAccess(bindings.BUCKET,id);return await notifyOrder(bindings,stored,bundleUrl)}catch{console.error('Order mail link unavailable');return false}})(),
+  (async()=>{try{trackingUrl=await createCustomerAccess(id);return await notifyCustomer(bindings,stored,trackingUrl)}catch{console.error('Customer notification unavailable');return false}})()
+ ]);
+ try{await saveOrder({...stored,customerEmailStatus:customerEmailSent?'accepted':bindings.RESEND_API_KEY&&bindings.MAIL_FROM?'failed':'not_configured',emailStatus:emailSent?'accepted':bindings.RESEND_API_KEY&&bindings.MAIL_FROM?'failed':'not_configured'},1,'הזמנה התקבלה מהאתר','אתר');}catch{console.error('Order delivery status update failed')}
  return Response.json({id,summary,emailSent,trackingUrl,customerEmailSent},{status:201,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
  }catch(e){if(e instanceof Error&&e.message==='coupon_unavailable')return fail('המבצע הסתיים בזמן השליחה. הסירו את הקוד ונסו שוב.',409);if(e instanceof Error&&e.message==='too_large')return fail('הקבצים גדולים מדי. עד 10 תמונות, 5MB לתמונה ו־15MB בסך הכול.',413);console.error('Order save failed');return fail('לא הצלחנו לשמור את הפנייה. הפרטים נשארו בטופס, נסו שוב או פנו ב־WhatsApp.',503)}
 }
