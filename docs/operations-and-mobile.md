@@ -57,3 +57,11 @@ TypeScript and the production build were checked. Browser checks used the intern
 - Workflow validates print files, placement, dimensions and selected shirts before submitting, scrolls to the first missing field, and shows animated inline hints respecting reduced-motion preferences.
 - Task dates are checked for real calendar dates and valid hours/minutes on both client and server. Invalid legacy dates do not crash the editor. Staff-list loading failures are surfaced instead of silently presenting an empty list.
 - Regression checks cover impossible dates and out-of-range times without saving the attempted edits.
+
+## Staff workspace editing reliability
+
+- Staff saves return an explicit role-specific projection with the new version; no contact, financial or internal-note fields are included. Only the saved card updates.
+- Controlled brief and file selection remain intact on failed saves. Successful saves clear the upload queue, preventing accidental re-upload, while drafts on other cards remain unchanged.
+- Page navigation, refresh, sign-out and leaving the site warn when drafts exist. Pending saves disable navigation and other edit forms. Drafts are in memory only, not persisted in browser storage.
+- Staff can add files in batches, inspect names and sizes, remove individual pending files, and see per-order validation and success feedback. Uploads are checked before submission and again on the server.
+- Regression coverage verifies fresh versions, redacted save responses and rejection of stale repeat submissions without adding images.
