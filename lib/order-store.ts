@@ -1,6 +1,6 @@
 import {getChatGPTUser} from '@/app/chatgpt-auth';
 import {approvalCurrent} from './production';
-import {env} from 'cloudflare:workers';
+import {env} from '#partyprint-runtime';
 import type {Coupon} from './pricing';
 import {normalizeOrder,Order} from './orders';
 export function bindings(){return env as unknown as {DB:D1Database;BUCKET:R2Bucket;RESEND_API_KEY?:string;MAIL_FROM?:string}}

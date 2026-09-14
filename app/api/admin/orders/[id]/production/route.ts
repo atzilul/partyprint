@@ -1,3 +1,4 @@
+import {publicOrigin} from '#partyprint-runtime';
 import {guard,PRIVATE_HEADERS,adminError} from '@/lib/admin-auth';
 import {getOrder,saveOrder,bindings} from '@/lib/order-store';
 import {tokenHash} from '@/lib/order-access';
@@ -17,7 +18,7 @@ export async function POST(request:Request,{params}:{params:Promise<{id:string}>
    for(const key of keys){const source=await bindings().BUCKET.get(key);if(!source)throw Error('missing');const copy:string=`orders/${o.id}/approval-${id}/${images.length}`;await bindings().BUCKET.put(copy,await source.arrayBuffer(),{httpMetadata:source.httpMetadata});copies.push(copy);images.push({key:copy,name:o.images.find(i=>i.key===key)!.name})}
    const approval={printSignature:JSON.stringify({specs:o.printSpecs||[],note:o.printNote||''}),id,hash:await tokenHash(token),expiresAt:Date.now()+30*86400000,state:'pending' as const,createdAt:new Date().toISOString(),sourceKeys:keys,images,shirtsSignature:shirtSignature(o),quantity:o.quantity,shirts:o.shirts};
    const saved=await saveOrder({...o,approvalHistory:[...(o.approvalHistory||[]),...(o.approval?[o.approval]:[])],approval,status:'review'},o.version!,'נוצרה גרסת עיצוב לאישור לקוח. יש לשתף את הקישור.','מנהל');committed=true;
-   return Response.json({order:saved,url:`https://partyprint-ai.atzilul.chatgpt.site/design/${o.id}#${token}`},{headers:PRIVATE_HEADERS});
+   return Response.json({order:saved,url:`${publicOrigin()}/design/${o.id}#${token}`},{headers:PRIVATE_HEADERS});
   }
   if(v.action==='payment'){
    const amount=v.amount;if(typeof amount!=='number'||!Number.isFinite(amount)||amount<=0||amount>100000||Math.abs(amount*100-Math.round(amount*100))>1e-8||!['deposit','balance','refund'].includes(v.kind)||typeof v.method!=='string'||v.method.length>80||typeof v.reference!=='string'||v.reference.length>200)return Response.json({error:'בדקו סוג תנועה, סכום, אמצעי תשלום ואסמכתא.'},{status:400,headers:PRIVATE_HEADERS});

@@ -44,3 +44,9 @@ next-env.d.ts
 /.codex/
 /outputs/
 /work/
+
+# Node runtime data must not enter Git or deployment archives.
+/partyprint-data/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm

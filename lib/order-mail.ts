@@ -1,3 +1,4 @@
+import {publicOrigin} from '#partyprint-runtime';
 import {Order,whatsappLink,stageLabel} from './orders';
 import {orderSummary} from './order-summary';
 type MailEnv={RESEND_API_KEY?:string;MAIL_FROM?:string};
@@ -5,7 +6,7 @@ const escape=(s:string)=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 export async function notifyOrder(env:MailEnv,order:Order,bundleUrl:string,attempt='initial'){
  if(!env.RESEND_API_KEY||!env.MAIL_FROM)return false;
  const wa=whatsappLink(order.phone,`היי ${order.name}, כאן PARTYPRINT. אנחנו מטפלים בהזמנה ${order.id.slice(0,8).toUpperCase()} ונשמח להמשיך איתך כאן.`);
- const admin=`https://partyprint-ai.atzilul.chatgpt.site/admin?order=${order.id}`;
+ const admin=`${publicOrigin()}/admin?order=${order.id}`;
  const summary=orderSummary(order);
  const text=summary+'\n\nהמשך טיפול בוואטסאפ: '+wa+'\nהורדת פרטי ההזמנה והתמונות (קישור ל־30 יום): '+bundleUrl+'\nניהול ההזמנה: '+admin;
  const button=(url:string,label:string,color:string)=>`<a href="${escape(url)}" style="display:inline-block;background:${color};color:white;padding:14px 20px;border-radius:12px;text-decoration:none;font-weight:bold;margin:6px 0">${label}</a>`;

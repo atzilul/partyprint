@@ -1,5 +1,6 @@
+import {clientKey} from '#partyprint-runtime';
 import {validPhone,validCalendarDate} from '@/lib/contact-validation';
-import {env} from 'cloudflare:workers';
+import {env} from '#partyprint-runtime';
 import {packs,calculatePrice,EXTRA_SHIRT_PRICE,validateShirts} from '@/lib/catalog';
 import {readLimitedForm,validImage} from '@/lib/order-security';
 import {orderSummary} from '@/lib/order-summary';
@@ -17,7 +18,7 @@ export async function POST(request:Request){
  try{
  const bindings=env as unknown as {DB:D1Database;BUCKET:R2Bucket;RESEND_API_KEY?:string;MAIL_FROM?:string};
  if(!bindings.DB||!bindings.BUCKET)return fail('שמירת פניות אינה זמינה כרגע. אפשר לפנות אלינו ב־WhatsApp.',503);
- const now=Date.now();const ip=request.headers.get('CF-Connecting-IP')||request.headers.get('oai-authenticated-user-id')||'anonymous';const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(ip)))).map(n=>n.toString(16).padStart(2,'0')).join('');
+ const now=Date.now();const ip=clientKey(request);const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(ip)))).map(n=>n.toString(16).padStart(2,'0')).join('');
  const key=`${Math.floor(now/3600000)}:${hash}`;
  const count=await bindings.DB.prepare('INSERT INTO form_rate_limits (key,count,expires_at) VALUES (?,1,?) ON CONFLICT(key) DO UPDATE SET count=count+1 WHERE count<8 RETURNING count').bind(key,now+7200000).first<{count:number}>();
  if(!count)return fail('נשלחו יותר מדי פניות. נסו שוב בעוד שעה או פנו ב־WhatsApp.',429);

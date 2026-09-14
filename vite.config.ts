@@ -48,9 +48,10 @@ export default defineConfig(async () => {
   process.env.MINIFLARE_REGISTRY_PATH ??= ".wrangler/registry";
 
   // Wrangler snapshots its log path while the Cloudflare plugin is imported.
-  const { cloudflare } = await import("@cloudflare/vite-plugin");
+  const cloudflarePlugin = managedLinux ? (await import("@cloudflare/vite-plugin")).cloudflare : null;
 
   return {
+    resolve: { alias: { "#partyprint-runtime": new URL(managedLinux ? "./runtime/cloudflare.ts" : "./runtime/node.ts", import.meta.url).pathname } },
     server: {
       ...(managedLinux ? { host: "0.0.0.0", allowedHosts: ["terminal.local"] } : {}),
       ...(isCodexSeatbeltSandbox ? { watch: { useFsEvents: false, usePolling: true } } : {}),
@@ -58,11 +59,11 @@ export default defineConfig(async () => {
     plugins: [
       vinext(),
       sites({ mockAuth: !managedLinux }),
-      cloudflare({
+      ...(cloudflarePlugin ? [cloudflarePlugin({
         viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
         inspectorPort: false,
         config: localBindingConfig,
-      }),
+      })] : []),
     ],
   };
 });
