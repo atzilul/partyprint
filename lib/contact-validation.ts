@@ -12,3 +12,7 @@ export function validCalendarDate(value:string){
  const date=new Date(value+'T00:00:00.000Z');
  return Number.isFinite(date.getTime())&&date.toISOString().slice(0,10)===value;
 }
+
+export function validDateTime(value:string){
+ return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)&&validCalendarDate(value.slice(0,10))&&Number(value.slice(11,13))<24&&Number(value.slice(14,16))<60;
+}

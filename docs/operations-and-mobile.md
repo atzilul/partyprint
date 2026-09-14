@@ -49,3 +49,11 @@ TypeScript and the production build were checked. Browser checks used the intern
 - Managers can copy the private tracking link and inspect the customer notification status in activity. Missing mail configuration is distinguished from a failed provider request.
 - Designers have the same 30MB total image limit, including original object sizes for legacy records. Invalid file signatures return actionable validation errors without changing the order.
 - Verified with TypeScript, production build and the order regression suite, including malformed contact/date inputs, legacy image sizes and rejected designer uploads. No real customer messages were sent.
+
+## Field guidance and handoff refinements
+
+- The public event-date field now exposes its validation error, invalid state and accessible description at the field. Editing clears the old error.
+- The confirmation screen offers copy actions for the short order reference and private tracking URL, with selectable text as a fallback when clipboard access fails.
+- Workflow validates print files, placement, dimensions and selected shirts before submitting, scrolls to the first missing field, and shows animated inline hints respecting reduced-motion preferences.
+- Task dates are checked for real calendar dates and valid hours/minutes on both client and server. Invalid legacy dates do not crash the editor. Staff-list loading failures are surfaced instead of silently presenting an empty list.
+- Regression checks cover impossible dates and out-of-range times without saving the attempted edits.
