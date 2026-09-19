@@ -15,6 +15,21 @@ function secret() { const value = process.env.PARTYPRINT_SESSION_SECRET || ''; i
 function signature(data: string) { return createHmac('sha256', secret()).update(data).digest('base64url'); }
 function equal(a: string, b: string) { const x = Buffer.from(a), y = Buffer.from(b); return x.length === y.length && timingSafeEqual(x, y); }
 function stamp(hash: string) { return createHash('sha256').update(hash).digest('hex'); }
+type Credential = { stamp: string; hash?: string; password?: string };
+function simpleAdmin(): (Credential & { email: string }) | null {
+    const email = (process.env.PARTYPRINT_ADMIN_EMAIL || '').trim().toLowerCase();
+    const password = process.env.PARTYPRINT_ADMIN_PASSWORD || '';
+    if (!email || !password)
+        return null;
+    return { email, password, stamp: stamp('plain:' + email + ':' + password) };
+}
+function credential(email: string): Credential | null {
+    const simple = simpleAdmin();
+    if (simple?.email === email)
+        return simple;
+    const hash = users()[email];
+    return typeof hash === 'string' ? { hash, stamp: stamp(hash) } : null;
+}
 export async function authenticatedUser(h: Headers): Promise<RuntimeUser | null> {
     // Never trust Sites headers on a public Node server.
     try {
@@ -25,8 +40,8 @@ export async function authenticatedUser(h: Headers): Promise<RuntimeUser | null>
         if (parts.length !== 2 || !equal(signature(parts[0]), parts[1]))
             return null;
         const p = JSON.parse(Buffer.from(parts[0], 'base64url').toString());
-        const hash = users()[p.email];
-        if (typeof p.exp !== 'number' || p.exp < Date.now() || typeof hash !== 'string' || p.stamp !== stamp(hash))
+        const current = typeof p.email === 'string' ? credential(p.email) : null;
+        if (typeof p.email !== 'string' || typeof p.exp !== 'number' || p.exp < Date.now() || !current || p.stamp !== current.stamp)
             return null;
         return { userId: p.email, email: p.email, displayName: p.email, fullName: null };
     }
@@ -51,12 +66,20 @@ export async function login(r: Request) {
         if (!limit)
             return Response.json({ error: 'יותר מדי ניסיונות. נסו שוב בעוד 15 דקות.' }, { status: 429, headers: privateHeaders });
         await DB.prepare('DELETE FROM form_rate_limits WHERE expires_at < ?').bind(now).run();
-        const stored = users()[email], parts = (typeof stored === 'string' ? stored : 'scrypt$' + '0'.repeat(32) + '$' + '0'.repeat(128)).split('$');
-        const valid = parts.length === 3 && parts[0] === 'scrypt' && /^[a-f0-9]{32}$/.test(parts[1]) && /^[a-f0-9]{128}$/.test(parts[2]);
-        const derived = scryptSync(password, valid ? parts[1] : '0'.repeat(32), 64).toString('hex');
-        if (!valid || !stored || !equal(derived, parts[2]))
+        const current = credential(email);
+        let valid = false;
+        if (current?.password !== undefined) {
+            valid = equal(password, current.password);
+        }
+        else if (current?.hash) {
+            const parts = current.hash.split('$');
+            const hashValid = parts.length === 3 && parts[0] === 'scrypt' && /^[a-f0-9]{32}$/.test(parts[1]) && /^[a-f0-9]{128}$/.test(parts[2]);
+            if (hashValid)
+                valid = equal(scryptSync(password, parts[1], 64).toString('hex'), parts[2]);
+        }
+        if (!current || !valid)
             return Response.json({ error: 'המייל או הסיסמה אינם נכונים.' }, { status: 401, headers: privateHeaders });
-        const p = Buffer.from(JSON.stringify({ email, exp: now + 8 * 3600000, stamp: stamp(stored), nonce: randomBytes(16).toString('hex') })).toString('base64url');
+        const p = Buffer.from(JSON.stringify({ email, exp: now + 8 * 3600000, stamp: current.stamp, nonce: randomBytes(16).toString('hex') })).toString('base64url');
         return new Response(null, { status: 303, headers: { ...privateHeaders, Location: '/admin', 'Set-Cookie': cookieValue(p + '.' + signature(p), 8 * 3600) } });
     }
     catch {

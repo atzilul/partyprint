@@ -58,7 +58,9 @@ Configure these in the hosting environment, never GitHub source or client code:
 | `PARTYPRINT_DATA_DIR` | Absolute private **persistent** directory outside the deployment; writable by the app user |
 | `PARTYPRINT_PUBLIC_URL` | Actual HTTPS site origin, including a temporary Hostinger domain if needed |
 | `PARTYPRINT_SESSION_SECRET` | Random secret, at least 32 characters; keep stable across deployments |
-| `PARTYPRINT_STAFF_PASSWORD_HASHES` | JSON object mapping staff emails to password hashes (below) |
+| `PARTYPRINT_ADMIN_EMAIL` | Simple owner login email; configure together with `PARTYPRINT_ADMIN_PASSWORD` |
+| `PARTYPRINT_ADMIN_PASSWORD` | Simple owner login password; no hash or JSON is needed |
+| `PARTYPRINT_STAFF_PASSWORD_HASHES` | Optional JSON object mapping additional staff emails to password hashes (below) |
 | `VINEXT_TRUSTED_HOSTS` | Actual public hostname; enables trusted forwarded HTTPS/host handling |
 | `PARTYPRINT_TRUSTED_IP_HEADER` | A single-IP header that Hostinger confirms its edge **overwrites** (for example `x-real-ip`, only after confirmation) |
 | `RESEND_API_KEY`, `MAIL_FROM` | Existing mail provider credentials and verified sender |
@@ -76,6 +78,17 @@ do not open orders on it: an external database/object store adapter or an approp
 persistent server is required. Back up the directory consistently with the process
 stopped, or use SQLite's backup facilities; copying only a live `.sqlite` file can
 omit WAL transactions. Test restore and a real redeployment before switching traffic.
+
+## Admin credentials
+
+For the simplest setup, add these two variables in Hostinger and redeploy:
+
+```text
+PARTYPRINT_ADMIN_EMAIL=your@email.com
+PARTYPRINT_ADMIN_PASSWORD=choose-a-password-with-12-or-more-characters
+```
+
+The email becomes the owner login and the password is read only by the server. Do not put either value in GitHub or in client-side code. When these two variables are present, you can ignore `PARTYPRINT_STAFF_PASSWORD_HASHES`. The older hash-based setting remains supported for additional staff members.
 
 ## Staff credentials
 
