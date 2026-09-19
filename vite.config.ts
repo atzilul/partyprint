@@ -1,3 +1,5 @@
+import { writeFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import vinext from "vinext";
 import { defineConfig } from "vite";
 import hostingConfig from "./.openai/hosting.json";
@@ -12,6 +14,39 @@ const { d1, r2 } = hostingConfig;
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
 const managedLinux = readExecutionProfile() === "managed-linux";
+const generatedCloudflareRuntime = new URL("./runtime/.generated-cloudflare.ts", import.meta.url);
+
+function prepareCloudflareRuntime() {
+  if (!managedLinux) return;
+
+  // Keep the Worker-only module out of the repository source tree. Hostinger
+  // builds the portable Node target and rejects that module even though the
+  // Node bundle never imports it.
+  const workerModule = ["cloudflare:", "workers"].join("");
+  writeFileSync(generatedCloudflareRuntime, `import { env as workerEnv } from ${JSON.stringify(workerModule)};
+import type { RuntimeEnv, RuntimeUser } from './types';
+export const env = workerEnv as unknown as RuntimeEnv;
+export const runtimeKind = 'cloudflare';
+export function publicOrigin() { return 'https://partyprint-ai.atzilul.chatgpt.site'; }
+export async function authenticatedUser(h: Headers): Promise<RuntimeUser | null> {
+  const userId = h.get('oai-authenticated-user-id');
+  const email = h.get('oai-authenticated-user-email');
+  if (!userId || !email) return null;
+  let fullName: string | null = null;
+  try {
+    if (h.get('oai-authenticated-user-full-name-encoding') === 'percent-encoded-utf-8') {
+      fullName = decodeURIComponent(h.get('oai-authenticated-user-full-name') || '') || null;
+    }
+  } catch {}
+  return { userId, email, fullName, displayName: fullName || email };
+}
+export async function login(_r: Request): Promise<Response> { void _r; return new Response(null, { status: 404 }); }
+export async function logout(_r: Request): Promise<Response> { void _r; return new Response(null, { status: 404 }); }
+export function clientKey(r: Request) {
+  return r.headers.get('CF-Connecting-IP') || r.headers.get('oai-authenticated-user-id') || 'anonymous';
+}
+`);
+}
 
 const localBindingConfig = {
   main: "vinext/server/fetch-handler",
@@ -47,11 +82,19 @@ export default defineConfig(async () => {
   process.env.WRANGLER_REGISTRY_PATH ??= ".wrangler/dev-registry";
   process.env.MINIFLARE_REGISTRY_PATH ??= ".wrangler/registry";
 
+  prepareCloudflareRuntime();
+
   // Wrangler snapshots its log path while the Cloudflare plugin is imported.
   const cloudflarePlugin = managedLinux ? (await import("@cloudflare/vite-plugin")).cloudflare : null;
 
   return {
-    resolve: { alias: { "#partyprint-runtime": new URL(managedLinux ? "./runtime/cloudflare.ts" : "./runtime/node.ts", import.meta.url).pathname } },
+    resolve: {
+      alias: {
+        "#partyprint-runtime": managedLinux
+          ? fileURLToPath(generatedCloudflareRuntime)
+          : fileURLToPath(new URL("./runtime/node.ts", import.meta.url)),
+      },
+    },
     server: {
       ...(managedLinux ? { host: "0.0.0.0", allowedHosts: ["terminal.local"] } : {}),
       ...(isCodexSeatbeltSandbox ? { watch: { useFsEvents: false, usePolling: true } } : {}),

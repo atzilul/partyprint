@@ -3,7 +3,10 @@
 The portable build now has a Node adapter for SQLite, private filesystem objects
 and password-based staff sessions. The managed Sites build retains D1, R2 and
 Sites authentication. The public design, prices calculation, order workflow and
-role permissions are shared. No `.next` compatibility directory is generated.
+role permissions are shared. The Cloudflare-only runtime adapter is generated
+only during the managed build, so the portable source and `dist/standalone`
+bundle contain no Worker runtime import. No `.next` compatibility directory is
+generated.
 
 ## Hostinger settings (manual)
 

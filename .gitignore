@@ -36,8 +36,11 @@ yarn-error.log*
 
 # typescript
 next-env.d.ts
+*.tsbuildinfo
 /dist/
 /.wrangler/
+# Generated only for the managed Cloudflare build; never ship it to Node hosts.
+/runtime/.generated-cloudflare.ts
 # Checkout-local execution profile and tool state; never publish them.
 /.sites-runtime/
 /.agents/
