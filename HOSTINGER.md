@@ -60,6 +60,7 @@ Configure these in the hosting environment, never GitHub source or client code:
 | `PARTYPRINT_SESSION_SECRET` | Random secret, at least 32 characters; keep stable across deployments |
 | `PARTYPRINT_ADMIN_EMAIL` | Simple owner login email; configure together with `PARTYPRINT_ADMIN_PASSWORD` |
 | `PARTYPRINT_ADMIN_PASSWORD` | Simple owner login password; no hash or JSON is needed |
+| `PARTYPRINT_STAFF_1_EMAIL`, `PARTYPRINT_STAFF_1_PASSWORD` | Optional simple login for the first staff member; repeat with `_2`, `_3`, etc. |
 | `PARTYPRINT_STAFF_PASSWORD_HASHES` | Optional JSON object mapping additional staff emails to password hashes (below) |
 | `VINEXT_TRUSTED_HOSTS` | Actual public hostname; enables trusted forwarded HTTPS/host handling |
 | `PARTYPRINT_TRUSTED_IP_HEADER` | A single-IP header that Hostinger confirms its edge **overwrites** (for example `x-real-ip`, only after confirmation) |
@@ -89,6 +90,17 @@ PARTYPRINT_ADMIN_PASSWORD=choose-a-password-with-12-or-more-characters
 ```
 
 The email becomes the owner login and the password is read only by the server. Do not put either value in GitHub or in client-side code. When these two variables are present, you can ignore `PARTYPRINT_STAFF_PASSWORD_HASHES`. The older hash-based setting remains supported for additional staff members.
+
+To add simple staff logins, add matching pairs such as:
+
+```text
+PARTYPRINT_STAFF_1_EMAIL=designer@example.com
+PARTYPRINT_STAFF_1_PASSWORD=another-password
+PARTYPRINT_STAFF_2_EMAIL=printer@example.com
+PARTYPRINT_STAFF_2_PASSWORD=another-password
+```
+
+After redeploying, the owner must add each staff email in the Team section of `/admin` and choose a role. The numbered accounts are limited to 20; unused numbers can be skipped.
 
 ## Staff credentials
 

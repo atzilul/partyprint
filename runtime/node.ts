@@ -16,16 +16,23 @@ function signature(data: string) { return createHmac('sha256', secret()).update(
 function equal(a: string, b: string) { const x = Buffer.from(a), y = Buffer.from(b); return x.length === y.length && timingSafeEqual(x, y); }
 function stamp(hash: string) { return createHash('sha256').update(hash).digest('hex'); }
 type Credential = { stamp: string; hash?: string; password?: string };
-function simpleAdmin(): (Credential & { email: string }) | null {
-    const email = (process.env.PARTYPRINT_ADMIN_EMAIL || '').trim().toLowerCase();
-    const password = process.env.PARTYPRINT_ADMIN_PASSWORD || '';
-    if (!email || !password)
-        return null;
-    return { email, password, stamp: stamp('plain:' + email + ':' + password) };
+type SimpleCredential = Credential & { email: string };
+function simpleCredentials(): SimpleCredential[] {
+    const accounts: SimpleCredential[] = [];
+    const add = (email: string | undefined, password: string | undefined) => {
+        const normalized = (email || '').trim().toLowerCase();
+        if (!normalized || !password || accounts.some(account => account.email === normalized))
+            return;
+        accounts.push({ email: normalized, password, stamp: stamp('plain:' + normalized + ':' + password) });
+    };
+    add(process.env.PARTYPRINT_ADMIN_EMAIL, process.env.PARTYPRINT_ADMIN_PASSWORD);
+    for (let i = 1; i <= 20; i++)
+        add(process.env[`PARTYPRINT_STAFF_${i}_EMAIL`], process.env[`PARTYPRINT_STAFF_${i}_PASSWORD`]);
+    return accounts;
 }
 function credential(email: string): Credential | null {
-    const simple = simpleAdmin();
-    if (simple?.email === email)
+    const simple = simpleCredentials().find(account => account.email === email);
+    if (simple)
         return simple;
     const hash = users()[email];
     return typeof hash === 'string' ? { hash, stamp: stamp(hash) } : null;
