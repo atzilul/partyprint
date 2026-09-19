@@ -2,6 +2,7 @@
   "name": "site-creator-vinext-starter",
   "version": "0.1.0",
   "private": true,
+  "main": "server.js",
   "engines": {
     "node": ">=22.13.0"
   },
@@ -9,7 +10,7 @@
     "install:ci": "node scripts/install-ci.mjs",
     "dev": "node scripts/run-framework.mjs dev",
     "build": "node scripts/run-framework.mjs build",
-    "start": "node dist/standalone/server.js",
+    "start": "node server.js",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate"
   },

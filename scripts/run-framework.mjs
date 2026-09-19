@@ -14,17 +14,21 @@ if (managedLinux && command === "build") {
   process.exit(result.status ?? 1);
 }
 
+if (!managedLinux && command === "build") {
+  const cli = fileURLToPath(new URL("../node_modules/vinext/dist/cli.js", import.meta.url));
+  const result = spawnSync(process.execPath, [cli, command, ...args], { stdio: "inherit" });
+  if (result.error) throw result.error;
+  if (result.status !== 0) process.exit(result.status ?? 1);
+  // Run after the CLI exits, so packaging or boot failures fail the build too.
+  await import("./prepare-node-output.mjs");
+  await import("./verify-node-entry.mjs");
+  process.exit(0);
+}
+
 // Import in this process so the preview owner retains its PID and signals.
 const cli = new URL(managedLinux
   ? "../node_modules/vite/bin/vite.js"
   : "../node_modules/vinext/dist/cli.js", import.meta.url);
 process.argv = [process.execPath, fileURLToPath(cli), command,
   ...(!managedLinux && command === "dev" ? ["--port", "5173"] : []), ...args];
-// The vinext CLI exits after building standalone output. Copy migrations on exit.
-if (!managedLinux && command === "build") {
-  const { cpSync, existsSync } = await import("node:fs");
-  process.on("exit", code => {
-    if (code === 0 && existsSync("dist/standalone/server.js")) cpSync("drizzle", "dist/standalone/drizzle", { recursive: true });
-  });
-}
 await import(cli.href);

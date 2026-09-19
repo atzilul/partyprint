@@ -21,13 +21,30 @@ setting. See [Hostinger's deployment guide](https://www.hostinger.com/support/ho
 | Build | `npm run build` |
 | Output directory | `dist/standalone` |
 | Start from repository root | `npm start` |
-| Start command expansion | `node dist/standalone/server.js` |
+| Start command expansion | `node server.js` |
 | Entry relative to output directory | `server.js` |
 
 Keep the entire standalone directory, including its nested `dist`, `node_modules`
 and `drizzle` directories. If the platform starts in the output directory itself,
 the equivalent entry command is `node server.js`. The generated server reads
 `PORT` from the environment (defaults to 3000) and binds to `0.0.0.0`.
+
+The repository now also contains `server.js`, which forwards to the standalone
+entry. Thus the same entry filename works whether the host starts from the
+repository or the output directory. The standalone package explicitly declares
+its `main` and `start` entries. The portable build ends with two HTTP boot checks:
+the repository entry and a standalone copy outside the source checkout. It fails
+if either cannot serve the homepage. Look for both `[partyprint] PASS` lines in
+the deployment build log. These checks verify boot, not Hostinger's routing or
+the production environment variables.
+
+If a deployment still fails after both checks, obtain the post-build deployment
+or startup error from Hostinger; the transform log alone cannot identify it.
+Node 24 satisfies `>=22.13.0`, and npm deprecation warnings are not build errors.
+With only `PARTYPRINT_PUBLIC_URL` and `VINEXT_TRUSTED_HOSTS` configured, the server
+can serve the homepage, but pricing and orders cannot work until
+`PARTYPRINT_DATA_DIR` is configured. Staff login also needs the two credential
+variables below. Do not use a temporary directory to make this requirement pass.
 
 Do not select Vite static hosting: this application has private server APIs.
 Do not change `execution-profile.mjs`, `build-verified.sh` or the local profile.
