@@ -8,10 +8,31 @@ export function publicOrigin() { const raw = process.env.PARTYPRINT_PUBLIC_URL; 
     throw Error('PARTYPRINT_PUBLIC_URL is required'); const u = new URL(raw); if (u.protocol !== 'https:' && !(u.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(u.hostname)))
     throw Error('Public URL must use HTTPS'); return u.origin; }
 const cookie = '__Host-partyprint_staff', privateHeaders = { 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer' };
-function users(): Record<string, string> { const value = JSON.parse(process.env.PARTYPRINT_STAFF_PASSWORD_HASHES || '{}'); if (!value || Array.isArray(value) || typeof value !== 'object')
-    throw Error('Invalid staff credentials configuration'); return value; }
-function secret() { const value = process.env.PARTYPRINT_SESSION_SECRET || ''; if (value.length < 32)
-    throw Error('PARTYPRINT_SESSION_SECRET must have at least 32 characters'); return value; }
+function envValue(name: string) {
+    const raw = process.env[name] || '';
+    const value = raw.trim();
+    return value.length >= 2 && ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) ? value.slice(1, -1).trim() : value;
+}
+function users(): Record<string, string> {
+    try {
+        const value = JSON.parse(envValue('PARTYPRINT_STAFF_PASSWORD_HASHES') || '{}');
+        return value && !Array.isArray(value) && typeof value === 'object' ? value : {};
+    }
+    catch {
+        // A malformed optional legacy setting must not disable the simple owner login.
+        return {};
+    }
+}
+function secret() {
+    const value = envValue('PARTYPRINT_SESSION_SECRET');
+    if (value.length >= 32)
+        return value;
+    // Keep the easy two-variable setup working. An explicit session secret remains preferred.
+    const password = envValue('PARTYPRINT_ADMIN_PASSWORD');
+    if (password.length >= 12)
+        return createHash('sha256').update('partyprint-session:' + password).digest('hex');
+    throw Error('PARTYPRINT_SESSION_SECRET must have at least 32 characters');
+}
 function signature(data: string) { return createHmac('sha256', secret()).update(data).digest('base64url'); }
 function equal(a: string, b: string) { const x = Buffer.from(a), y = Buffer.from(b); return x.length === y.length && timingSafeEqual(x, y); }
 function stamp(hash: string) { return createHash('sha256').update(hash).digest('hex'); }
@@ -34,9 +55,9 @@ function simpleCredentials(): SimpleCredential[] {
         else if (password)
             accounts.push({ email: normalized, password, stamp: stamp('plain:' + normalized + ':' + password) });
     };
-    add(process.env.PARTYPRINT_ADMIN_EMAIL, process.env.PARTYPRINT_ADMIN_PASSWORD, process.env.PARTYPRINT_ADMIN_PASSWORD_HASH);
+    add(envValue('PARTYPRINT_ADMIN_EMAIL'), envValue('PARTYPRINT_ADMIN_PASSWORD'), envValue('PARTYPRINT_ADMIN_PASSWORD_HASH'));
     for (let i = 1; i <= 20; i++)
-        add(process.env[`PARTYPRINT_STAFF_${i}_EMAIL`], process.env[`PARTYPRINT_STAFF_${i}_PASSWORD`], process.env[`PARTYPRINT_STAFF_${i}_PASSWORD_HASH`]);
+        add(envValue(`PARTYPRINT_STAFF_${i}_EMAIL`), envValue(`PARTYPRINT_STAFF_${i}_PASSWORD`), envValue(`PARTYPRINT_STAFF_${i}_PASSWORD_HASH`));
     return accounts;
 }
 function credential(email: string): Credential | null {
@@ -66,10 +87,52 @@ export async function authenticatedUser(h: Headers): Promise<RuntimeUser | null>
     }
 }
 function cookieValue(token: string, maxAge: number) { return `${cookie}=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${maxAge}${publicOrigin().startsWith('https:') ? '; Secure' : ''}`; }
+function trustedHostnames() {
+    const hosts = new Set<string>();
+    const add = (value: string) => {
+        const host = value.trim().replace(/^https?:\/\//, '').split('/')[0].split(':')[0].toLowerCase();
+        if (!host)
+            return;
+        hosts.add(host);
+        hosts.add(host.startsWith('www.') ? host.slice(4) : 'www.' + host);
+    };
+    add(new URL(publicOrigin()).hostname);
+    for (const value of envValue('VINEXT_TRUSTED_HOSTS').split(','))
+        add(value);
+    return hosts;
+}
+function sameSiteRequest(r: Request) {
+    const origin = r.headers.get('origin') || (() => {
+        const referer = r.headers.get('referer');
+        if (!referer)
+            return '';
+        try {
+            return new URL(referer).origin;
+        }
+        catch {
+            return '';
+        }
+    })();
+    if (!origin)
+        return false;
+    try {
+        const u = new URL(origin);
+        const publicUrl = new URL(publicOrigin());
+        return u.protocol === publicUrl.protocol && trustedHostnames().has(u.hostname.toLowerCase());
+    }
+    catch {
+        return false;
+    }
+}
+function loginFailure(r: Request, status: number, error: string, code: string) {
+    if ((r.headers.get('accept') || '').includes('text/html'))
+        return new Response(null, { status: 303, headers: { ...privateHeaders, Location: '/signin-with-chatgpt?error=' + code } });
+    return Response.json({ error }, { status, headers: privateHeaders });
+}
 export async function login(r: Request) {
     try {
-        if (r.headers.get('origin') !== publicOrigin())
-            return new Response(null, { status: 403 });
+        if (!sameSiteRequest(r))
+            return loginFailure(r, 403, 'כתובת האתר אינה מורשית להתחברות.', 'origin');
         const text = await r.text();
         if (text.length > 4096)
             return new Response(null, { status: 413 });
@@ -84,7 +147,7 @@ export async function login(r: Request) {
             DB.prepare('INSERT INTO form_rate_limits(key,count,expires_at) VALUES (?,1,?) ON CONFLICT(key) DO UPDATE SET count=count+1 WHERE count<30 RETURNING count').bind('login:ip:' + stamp(ip) + ':' + bucket, now + 1800000),
         ]);
         if (limits.some(limit => !wasChanged(limit)))
-            return Response.json({ error: 'יותר מדי ניסיונות. נסו שוב בעוד 15 דקות.' }, { status: 429, headers: privateHeaders });
+            return loginFailure(r, 429, 'יותר מדי ניסיונות. נסו שוב בעוד 15 דקות.', 'rate');
         await DB.prepare('DELETE FROM form_rate_limits WHERE expires_at < ?').bind(now).run();
         const current = credential(email);
         let valid = false;
@@ -98,16 +161,16 @@ export async function login(r: Request) {
                 valid = equal(scryptSync(password, parts[1], 64).toString('hex'), parts[2]);
         }
         if (!current || !valid)
-            return Response.json({ error: 'המייל או הסיסמה אינם נכונים.' }, { status: 401, headers: privateHeaders });
+            return loginFailure(r, 401, 'המייל או הסיסמה אינם נכונים.', 'credentials');
         const p = Buffer.from(JSON.stringify({ email, exp: now + 8 * 3600000, stamp: current.stamp, nonce: randomBytes(16).toString('hex') })).toString('base64url');
         return new Response(null, { status: 303, headers: { ...privateHeaders, Location: '/admin', 'Set-Cookie': cookieValue(p + '.' + signature(p), 8 * 3600) } });
     }
     catch {
         console.error('Staff login unavailable; check Node runtime configuration');
-        return Response.json({ error: 'ההתחברות אינה זמינה. בדקו את הגדרות השרת.' }, { status: 503, headers: privateHeaders });
+        return loginFailure(r, 503, 'ההתחברות אינה זמינה. בדקו שהגדרות השרת נשמרו ולאחר מכן בצעו Redeploy.', 'config');
     }
 }
-export async function logout(r: Request) { if (r.method === 'POST' && r.headers.get('origin') !== publicOrigin())
+export async function logout(r: Request) { if (r.method === 'POST' && !sameSiteRequest(r))
     return new Response(null, { status: 403 }); return new Response(null, { status: 303, headers: { ...privateHeaders, Location: '/admin', 'Set-Cookie': cookieValue('', 0) } }); }
 // Set only when the trusted reverse proxy overwrites this header. Direct client
 // headers are otherwise ignored; the fallback deliberately shares a rate limit.
