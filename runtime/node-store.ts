@@ -1,5 +1,5 @@
 import { DatabaseSync } from 'node:sqlite';
-import { mkdirSync, readFileSync, readdirSync } from 'node:fs';
+import { mkdirSync, readFileSync, readdirSync, chmodSync } from 'node:fs';
 import { readFile, writeFile, rename, unlink, mkdir, readdir } from 'node:fs/promises';
 import { resolve, join, isAbsolute, dirname } from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
@@ -12,7 +12,10 @@ export function sqlite() {
         return database;
     const dir = dataDirectory();
     mkdirSync(dir, { recursive: true, mode: 0o700 });
-    const db = new DatabaseSync(join(dir, 'partyprint.sqlite'));
+    chmodSync(dir, 0o700);
+    const databasePath = join(dir, 'partyprint.sqlite');
+    const db = new DatabaseSync(databasePath);
+    chmodSync(databasePath, 0o600);
     db.exec('PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON; PRAGMA busy_timeout=5000; CREATE TABLE IF NOT EXISTS runtime_migrations (name TEXT PRIMARY KEY);');
     // The build command includes the canonical SQL migrations with the Node bundle.
     const migrations = resolve(dirname(process.argv[1]), 'drizzle');

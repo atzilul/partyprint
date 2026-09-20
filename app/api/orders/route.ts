@@ -11,6 +11,7 @@ import {insertOrder,saveOrder} from '@/lib/order-store';
 import {getPricing,getCoupon} from '@/lib/studio-settings';
 import {priceFor,couponDiscount} from '@/lib/pricing';
 import {imageUploadError} from '@/lib/upload-limits';
+import {cleanSingleLine} from '@/lib/text';
 const fail=(error:string,status=400)=>Response.json({error},{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 export async function POST(request:Request){
  if(request.headers.get('origin')!==new URL(request.url).origin)return fail('הבקשה אינה מורשית.',403);
@@ -24,7 +25,7 @@ export async function POST(request:Request){
  if(!count)return fail('נשלחו יותר מדי פניות. נסו שוב בעוד שעה או פנו ב־WhatsApp.',429);
  await bindings.DB.prepare('DELETE FROM form_rate_limits WHERE expires_at < ?').bind(now).run();
  const data=await readLimitedForm(request);if(String(data.get('website')||''))return fail('לא ניתן לשלוח את הפנייה.',400);
- const name=String(data.get('name')||'').trim(),phone=String(data.get('phone')||'').trim(),email=String(data.get('email')||'').trim(),brief=String(data.get('brief')||'');const pack=Number(data.get('package')),quantity=Number(data.get('quantity')),mode=String(data.get('mode'));
+ const name=cleanSingleLine(String(data.get('name')||''),100),phone=String(data.get('phone')||'').trim(),email=String(data.get('email')||'').trim(),brief=String(data.get('brief')||'');const pack=Number(data.get('package')),quantity=Number(data.get('quantity')),mode=String(data.get('mode'));
  const eventDate=String(data.get('eventDate')||'');if(eventDate&&(!validCalendarDate(eventDate)||eventDate<new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jerusalem'})))return fail('בחרו תאריך אירוע מהיום והלאה.');const source=String(data.get('source')||'direct').replace(/[^a-zA-Z0-9_ .-]/g,'').slice(0,100)||'direct';const pricing=await getPricing();let subtotal:number;try{subtotal=priceFor(pricing,pack,quantity)}catch{return fail('בחרו חבילה וכמות חולצות תקינה.')}
  const code=String(data.get('coupon')||'').trim().toUpperCase();let coupon=null,discount=0;if(code){coupon=await getCoupon(code);if(!coupon)return fail('קוד המבצע לא נמצא.');try{discount=couponDiscount(coupon,subtotal,quantity,pack)}catch{return fail('קוד המבצע אינו פעיל או לא מתאים להזמנה.')}}const total=Math.round((subtotal-discount)*100)/100;
  if(data.has('expectedPrice')&&Number(data.get('expectedPrice'))!==total)return fail('המחיר עודכן. בדקו את הסכום החדש ולחצו שוב על שליחה.',409);

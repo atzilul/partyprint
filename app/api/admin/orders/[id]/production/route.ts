@@ -4,6 +4,7 @@ import {getOrder,saveOrder,bindings} from '@/lib/order-store';
 import {tokenHash} from '@/lib/order-access';
 import {shirtSignature,paidTotal,PaymentEntry} from '@/lib/production';
 import {validateShirts} from '@/lib/catalog';
+import {approvalLinkDays} from '@/lib/security';
 export async function POST(request:Request,{params}:{params:Promise<{id:string}>}){
  const denied=await guard(request);if(denied)return denied;
  const copies:string[]=[];let committed=false;
@@ -16,7 +17,7 @@ export async function POST(request:Request,{params}:{params:Promise<{id:string}>
    const keys=v.keys;if(!Array.isArray(keys)||!keys.length||keys.length>10||new Set(keys).size!==keys.length||keys.some(k=>!o.images.some(i=>i.key===k&&(i.role==='design'||i.role==='print'))))return Response.json({error:'בחרו בין עיצוב אחד לעשרה עיצובים שסומנו כעיצוב לאישור או להדפסה.'},{status:400,headers:PRIVATE_HEADERS});
    if(o.printSpecs?.some(s=>!keys.includes(s.imageKey)))return Response.json({error:'כל הקבצים שבהוראות ההדפסה צריכים להיכלל בגרסה לאישור.'},{status:400,headers:PRIVATE_HEADERS});const token=Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b=>b.toString(16).padStart(2,'0')).join(''),id=crypto.randomUUID(),images=[];
    for(const key of keys){const source=await bindings().BUCKET.get(key);if(!source)throw Error('missing');const copy:string=`orders/${o.id}/approval-${id}/${images.length}`;await bindings().BUCKET.put(copy,await source.arrayBuffer(),{httpMetadata:source.httpMetadata});copies.push(copy);images.push({key:copy,name:o.images.find(i=>i.key===key)!.name})}
-   const approval={printSignature:JSON.stringify({specs:o.printSpecs||[],note:o.printNote||''}),id,hash:await tokenHash(token),expiresAt:Date.now()+30*86400000,state:'pending' as const,createdAt:new Date().toISOString(),sourceKeys:keys,images,shirtsSignature:shirtSignature(o),quantity:o.quantity,shirts:o.shirts};
+   const approval={printSignature:JSON.stringify({specs:o.printSpecs||[],note:o.printNote||''}),id,hash:await tokenHash(token),expiresAt:Date.now()+approvalLinkDays()*86400000,state:'pending' as const,createdAt:new Date().toISOString(),sourceKeys:keys,images,shirtsSignature:shirtSignature(o),quantity:o.quantity,shirts:o.shirts};
    const saved=await saveOrder({...o,approvalHistory:[...(o.approvalHistory||[]),...(o.approval?[o.approval]:[])],approval,status:'review'},o.version!,'נוצרה גרסת עיצוב לאישור לקוח. יש לשתף את הקישור.','מנהל');committed=true;
    return Response.json({order:saved,url:`${publicOrigin()}/design/${o.id}#${token}`},{headers:PRIVATE_HEADERS});
   }

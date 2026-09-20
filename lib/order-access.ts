@@ -1,3 +1,4 @@
 import {publicOrigin} from '#partyprint-runtime';
+import {bundleLinkDays} from './security';
 export async function tokenHash(token:string){return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token)))).map(b=>b.toString(16).padStart(2,'0')).join('')}
-export async function createOrderAccess(bucket:R2Bucket,id:string){const token=Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b=>b.toString(16).padStart(2,'0')).join('');const hash=await tokenHash(token);await bucket.put(`orders/${id}/access-${hash}.json`,JSON.stringify({hash,expiresAt:Date.now()+30*86400000}));return `${publicOrigin()}/api/order-bundle/${id}?token=${token}`}
+export async function createOrderAccess(bucket:R2Bucket,id:string){const token=Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b=>b.toString(16).padStart(2,'0')).join('');const hash=await tokenHash(token);await bucket.put(`orders/${id}/access-${hash}.json`,JSON.stringify({hash,expiresAt:Date.now()+bundleLinkDays()*86400000}));return `${publicOrigin()}/api/order-bundle/${id}?token=${token}`}

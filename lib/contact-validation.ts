@@ -1,4 +1,5 @@
 /** Shared browser/server checks; accepts local Israeli and international numbers. */
+export {cleanSingleLine} from './text';
 export function validPhone(value:string){
  const phone=value.trim();
  if(!/^\+?[0-9() \-]{9,20}$/.test(phone))return false;

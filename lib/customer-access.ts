@@ -1,4 +1,5 @@
 import {publicOrigin} from '#partyprint-runtime';
 import {tokenHash} from './order-access';import {bindings,getOrder} from './order-store';
-export async function createCustomerAccess(id:string){const token=Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b=>b.toString(16).padStart(2,'0')).join('');const hash=await tokenHash(token);await bindings().BUCKET.put(`orders/${id}/customer-${hash}.json`,JSON.stringify({expiresAt:Date.now()+90*86400000}));return `${publicOrigin()}/track/${id}#${token}`}
+import {customerLinkDays} from './security';
+export async function createCustomerAccess(id:string){const token=Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b=>b.toString(16).padStart(2,'0')).join('');const hash=await tokenHash(token);await bindings().BUCKET.put(`orders/${id}/customer-${hash}.json`,JSON.stringify({expiresAt:Date.now()+customerLinkDays()*86400000}));return `${publicOrigin()}/track/${id}#${token}`}
 export async function customerOrder(r:Request,id:string){const t=new URL(r.url).searchParams.get('token')||'';if(!/^[a-f0-9]{64}$/.test(t))return null;const grant=await bindings().BUCKET.get(`orders/${id}/customer-${await tokenHash(t)}.json`);if(!grant||(await grant.json<{expiresAt:number}>()).expiresAt<Date.now())return null;return getOrder(id)}

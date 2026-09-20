@@ -7,7 +7,7 @@ export const env = { DB, BUCKET, get RESEND_API_KEY() { return process.env.RESEN
 export function publicOrigin() { const raw = process.env.PARTYPRINT_PUBLIC_URL; if (!raw)
     throw Error('PARTYPRINT_PUBLIC_URL is required'); const u = new URL(raw); if (u.protocol !== 'https:' && !(u.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(u.hostname)))
     throw Error('Public URL must use HTTPS'); return u.origin; }
-const cookie = 'partyprint_staff', privateHeaders = { 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff' };
+const cookie = '__Host-partyprint_staff', privateHeaders = { 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer' };
 function users(): Record<string, string> { const value = JSON.parse(process.env.PARTYPRINT_STAFF_PASSWORD_HASHES || '{}'); if (!value || Array.isArray(value) || typeof value !== 'object')
     throw Error('Invalid staff credentials configuration'); return value; }
 function secret() { const value = process.env.PARTYPRINT_SESSION_SECRET || ''; if (value.length < 32)
@@ -15,19 +15,28 @@ function secret() { const value = process.env.PARTYPRINT_SESSION_SECRET || ''; i
 function signature(data: string) { return createHmac('sha256', secret()).update(data).digest('base64url'); }
 function equal(a: string, b: string) { const x = Buffer.from(a), y = Buffer.from(b); return x.length === y.length && timingSafeEqual(x, y); }
 function stamp(hash: string) { return createHash('sha256').update(hash).digest('hex'); }
+function wasChanged(value: unknown) {
+    if (!value || typeof value !== 'object' || !('meta' in value))
+        return false;
+    const meta = value.meta;
+    return !!meta && typeof meta === 'object' && 'changes' in meta && Number(meta.changes) > 0;
+}
 type Credential = { stamp: string; hash?: string; password?: string };
 type SimpleCredential = Credential & { email: string };
 function simpleCredentials(): SimpleCredential[] {
     const accounts: SimpleCredential[] = [];
-    const add = (email: string | undefined, password: string | undefined) => {
+    const add = (email: string | undefined, password: string | undefined, hash: string | undefined) => {
         const normalized = (email || '').trim().toLowerCase();
-        if (!normalized || !password || accounts.some(account => account.email === normalized))
+        if (!normalized || accounts.some(account => account.email === normalized))
             return;
-        accounts.push({ email: normalized, password, stamp: stamp('plain:' + normalized + ':' + password) });
+        if (hash)
+            accounts.push({ email: normalized, hash, stamp: stamp(hash) });
+        else if (password)
+            accounts.push({ email: normalized, password, stamp: stamp('plain:' + normalized + ':' + password) });
     };
-    add(process.env.PARTYPRINT_ADMIN_EMAIL, process.env.PARTYPRINT_ADMIN_PASSWORD);
+    add(process.env.PARTYPRINT_ADMIN_EMAIL, process.env.PARTYPRINT_ADMIN_PASSWORD, process.env.PARTYPRINT_ADMIN_PASSWORD_HASH);
     for (let i = 1; i <= 20; i++)
-        add(process.env[`PARTYPRINT_STAFF_${i}_EMAIL`], process.env[`PARTYPRINT_STAFF_${i}_PASSWORD`]);
+        add(process.env[`PARTYPRINT_STAFF_${i}_EMAIL`], process.env[`PARTYPRINT_STAFF_${i}_PASSWORD`], process.env[`PARTYPRINT_STAFF_${i}_PASSWORD_HASH`]);
     return accounts;
 }
 function credential(email: string): Credential | null {
@@ -67,10 +76,14 @@ export async function login(r: Request) {
         const f = new URLSearchParams(text), email = (f.get('email') || '').trim().toLowerCase(), password = f.get('password') || '';
         if (email.length > 150 || password.length > 1024)
             return new Response(null, { status: 400 });
-        // Account-scoped persistent throttling cannot be bypassed by spoofing proxy headers.
-        const now = Date.now(), key = 'login:' + stamp(email) + ':' + Math.floor(now / 900000);
-        const limit = await DB.prepare('INSERT INTO form_rate_limits(key,count,expires_at) VALUES (?,1,?) ON CONFLICT(key) DO UPDATE SET count=count+1 WHERE count<10 RETURNING count').bind(key, now + 1800000).first();
-        if (!limit)
+        // Account and client throttles work together. The client value is only trusted
+        // when the host has configured a reverse-proxy header it overwrites.
+        const now = Date.now(), bucket = Math.floor(now / 900000), ip = clientKey(r);
+        const limits = await DB.batch([
+            DB.prepare('INSERT INTO form_rate_limits(key,count,expires_at) VALUES (?,1,?) ON CONFLICT(key) DO UPDATE SET count=count+1 WHERE count<10 RETURNING count').bind('login:email:' + stamp(email) + ':' + bucket, now + 1800000),
+            DB.prepare('INSERT INTO form_rate_limits(key,count,expires_at) VALUES (?,1,?) ON CONFLICT(key) DO UPDATE SET count=count+1 WHERE count<30 RETURNING count').bind('login:ip:' + stamp(ip) + ':' + bucket, now + 1800000),
+        ]);
+        if (limits.some(limit => !wasChanged(limit)))
             return Response.json({ error: 'יותר מדי ניסיונות. נסו שוב בעוד 15 דקות.' }, { status: 429, headers: privateHeaders });
         await DB.prepare('DELETE FROM form_rate_limits WHERE expires_at < ?').bind(now).run();
         const current = credential(email);

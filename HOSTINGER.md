@@ -60,10 +60,15 @@ Configure these in the hosting environment, never GitHub source or client code:
 | `PARTYPRINT_SESSION_SECRET` | Random secret, at least 32 characters; keep stable across deployments |
 | `PARTYPRINT_ADMIN_EMAIL` | Simple owner login email; configure together with `PARTYPRINT_ADMIN_PASSWORD` |
 | `PARTYPRINT_ADMIN_PASSWORD` | Simple owner login password; no hash or JSON is needed |
+| `PARTYPRINT_ADMIN_PASSWORD_HASH` | Optional scrypt hash alternative to the plaintext owner password variable |
 | `PARTYPRINT_STAFF_1_EMAIL`, `PARTYPRINT_STAFF_1_PASSWORD` | Optional simple login for the first staff member; repeat with `_2`, `_3`, etc. |
+| `PARTYPRINT_STAFF_1_PASSWORD_HASH` | Optional scrypt hash alternative for a numbered staff password |
 | `PARTYPRINT_STAFF_PASSWORD_HASHES` | Optional JSON object mapping additional staff emails to password hashes (below) |
 | `VINEXT_TRUSTED_HOSTS` | Actual public hostname; enables trusted forwarded HTTPS/host handling |
 | `PARTYPRINT_TRUSTED_IP_HEADER` | A single-IP header that Hostinger confirms its edge **overwrites** (for example `x-real-ip`, only after confirmation) |
+| `PARTYPRINT_CUSTOMER_LINK_DAYS` | Optional customer tracking-link lifetime; default 30, allowed 1–90 |
+| `PARTYPRINT_BUNDLE_LINK_DAYS` | Optional order ZIP-link lifetime; default 7, allowed 1–30 |
+| `PARTYPRINT_APPROVAL_LINK_DAYS` | Optional design-approval-link lifetime; default 30, allowed 1–30 |
 | `RESEND_API_KEY`, `MAIL_FROM` | Existing mail provider credentials and verified sender |
 
 The reverse proxy must overwrite forwarded protocol/host headers and block direct
@@ -124,8 +129,10 @@ The owner signs in at `/admin`. For additional staff, both a personal password h
 in the server environment **and** an owner-granted role in the existing team panel
 are required. Removal from the team revokes authorization immediately; replacing
 their password hash invalidates their old sessions. Cookies are signed, HttpOnly,
-SameSite=Lax, Secure over HTTPS, and expire after 8 hours. Sites identity headers
-are ignored entirely by Node.
+SameSite=Lax, Secure over HTTPS, use the `__Host-` prefix, and expire after 8
+hours. Sites identity headers are ignored entirely by Node. Login attempts are
+throttled both per email and per client IP when a confirmed Hostinger-overwritten
+IP header is configured.
 
 ## Existing data and email
 
