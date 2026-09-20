@@ -57,14 +57,14 @@ Configure these in the hosting environment, never GitHub source or client code:
 | --- | --- |
 | `PARTYPRINT_DATA_DIR` | Absolute private **persistent** directory outside the deployment; writable by the app user |
 | `PARTYPRINT_PUBLIC_URL` | Actual HTTPS site origin, including a temporary Hostinger domain if needed |
-| `PARTYPRINT_SESSION_SECRET` | Random secret, at least 32 characters; keep stable across deployments |
+| `PARTYPRINT_SESSION_SECRET` | Recommended random secret, at least 32 characters; if omitted, the server derives one from the owner password |
 | `PARTYPRINT_ADMIN_EMAIL` | Simple owner login email; configure together with `PARTYPRINT_ADMIN_PASSWORD` |
 | `PARTYPRINT_ADMIN_PASSWORD` | Simple owner login password; no hash or JSON is needed |
 | `PARTYPRINT_ADMIN_PASSWORD_HASH` | Optional scrypt hash alternative to the plaintext owner password variable |
 | `PARTYPRINT_STAFF_1_EMAIL`, `PARTYPRINT_STAFF_1_PASSWORD` | Optional simple login for the first staff member; repeat with `_2`, `_3`, etc. |
 | `PARTYPRINT_STAFF_1_PASSWORD_HASH` | Optional scrypt hash alternative for a numbered staff password |
 | `PARTYPRINT_STAFF_PASSWORD_HASHES` | Optional JSON object mapping additional staff emails to password hashes (below) |
-| `VINEXT_TRUSTED_HOSTS` | Actual public hostname; enables trusted forwarded HTTPS/host handling |
+| `VINEXT_TRUSTED_HOSTS` | Public hostnames, comma-separated when both `partyprint.co.il` and `www.partyprint.co.il` are active |
 | `PARTYPRINT_TRUSTED_IP_HEADER` | A single-IP header that Hostinger confirms its edge **overwrites** (for example `x-real-ip`, only after confirmation) |
 | `PARTYPRINT_CUSTOMER_LINK_DAYS` | Optional customer tracking-link lifetime; default 30, allowed 1–90 |
 | `PARTYPRINT_BUNDLE_LINK_DAYS` | Optional order ZIP-link lifetime; default 7, allowed 1–30 |
@@ -87,14 +87,15 @@ omit WAL transactions. Test restore and a real redeployment before switching tra
 
 ## Admin credentials
 
-For the simplest setup, add these two variables in Hostinger and redeploy:
+For the simplest setup, add these variables in Hostinger and redeploy:
 
 ```text
 PARTYPRINT_ADMIN_EMAIL=your@email.com
 PARTYPRINT_ADMIN_PASSWORD=choose-a-password-with-12-or-more-characters
+VINEXT_TRUSTED_HOSTS=partyprint.co.il,www.partyprint.co.il
 ```
 
-The email becomes the owner login and the password is read only by the server. Do not put either value in GitHub or in client-side code. When these two variables are present, you can ignore `PARTYPRINT_STAFF_PASSWORD_HASHES`. The older hash-based setting remains supported for additional staff members.
+The email becomes the owner login and the password is read only by the server. Do not put either value in GitHub or in client-side code. `PARTYPRINT_SESSION_SECRET` is recommended but no longer required for the simple two-variable login. When these variables are present, you can ignore `PARTYPRINT_STAFF_PASSWORD_HASHES`. The older hash-based setting remains supported for additional staff members.
 
 To add simple staff logins, add matching pairs such as:
 
