@@ -101,28 +101,33 @@ function trustedHostnames() {
         add(value);
     return hosts;
 }
+function trustedRequestHost(r: Request) {
+    const forwarded = r.headers.get('x-forwarded-host')?.split(',')[0]?.trim();
+    const raw = forwarded || r.headers.get('host') || '';
+    return trustedHostnames().has(raw.split(':')[0].toLowerCase());
+}
 function sameSiteRequest(r: Request) {
-    const origin = r.headers.get('origin') || (() => {
-        const referer = r.headers.get('referer');
-        if (!referer)
-            return '';
+    const origin = r.headers.get('origin');
+    if (origin && origin !== 'null') {
         try {
-            return new URL(referer).origin;
+            const u = new URL(origin), publicUrl = new URL(publicOrigin());
+            return u.protocol === publicUrl.protocol && trustedHostnames().has(u.hostname.toLowerCase());
         }
         catch {
-            return '';
+            return false;
         }
-    })();
-    if (!origin)
-        return false;
-    try {
-        const u = new URL(origin);
-        const publicUrl = new URL(publicOrigin());
-        return u.protocol === publicUrl.protocol && trustedHostnames().has(u.hostname.toLowerCase());
     }
-    catch {
-        return false;
+    const referer = r.headers.get('referer');
+    if (referer) {
+        try {
+            const u = new URL(referer), publicUrl = new URL(publicOrigin());
+            if (u.protocol === publicUrl.protocol && trustedHostnames().has(u.hostname.toLowerCase()))
+                return true;
+        }
+        catch {}
     }
+    // Hostinger can remove Origin and Referer while forwarding a same-site form.
+    return trustedRequestHost(r);
 }
 function loginFailure(r: Request, status: number, error: string, code: string) {
     if ((r.headers.get('accept') || '').includes('text/html'))
