@@ -20,7 +20,7 @@ try{
  assert.equal((await request('/api/staff-login',{method:'POST',body:new URLSearchParams({email:'atzilul@gmail.com',password:'wrong'})})).status,401);
  await login();assert.equal((await request('/admin')).status,200);
  const settings=await (await request('/api/admin/settings')).json();
- const pricing=await request('/api/admin/settings',{method:'POST',body:JSON.stringify({action:'pricing',pricing:{...settings.pricing,shirtPrice:99}})});assert.equal(pricing.status,200,await pricing.text());
+ const pricing=await request('/api/admin/settings',{method:'POST',body:JSON.stringify({action:'pricing',pricing:{...settings.pricing,tiers:[{quantity:4,price:99}]}})});assert.equal(pricing.status,200,await pricing.text());
  assert.equal((await request('/api/admin/settings',{method:'POST',headers:{Origin:'https://evil.example'},body:'{}'})).status,403);
  const form=new FormData();for(const [k,v] of Object.entries({name:'Node test',phone:'0501234567',email:'test@example.com',brief:'Runtime verification',package:0,quantity:4,expectedPrice:396,mode:'order',shirts:JSON.stringify(Array.from({length:4},()=>({size:'M',color:'black'})))}))form.set(k,String(v));
  const image=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aP1sAAAAASUVORK5CYII=','base64');

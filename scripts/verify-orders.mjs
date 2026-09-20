@@ -38,9 +38,9 @@ console.log('PASS: real SQLite migrations and queries; order persistence without
 db.batch=async statements=>{sql.exec('BEGIN');try{const results=[];for(const s of statements){const r=await s.run();results.push({meta:{changes:r.changes}})}sql.exec('COMMIT');return results}catch(e){sql.exec('ROLLBACK');throw e}};
 const settings=await load('app/api/admin/settings/route.ts'),prices=await load('app/api/pricing/route.ts'),analytics=await load('app/api/admin/analytics/route.ts'),business=await load('lib/pricing.ts'),settingsStore=await load('lib/studio-settings.ts');
 const jsonRequest=v=>post('/api/admin/settings',JSON.stringify(v));
-const config={...business.DEFAULT_PRICING,shirtPrice:125,basePrices:[1,2,3,4],extraShirtPrice:1};let reply=await settings.POST(jsonRequest({action:'pricing',pricing:config}));assert.equal(reply.status,200);let configured=await reply.json();assert.equal(configured.pricing.version,1);assert.equal(business.priceFor(configured.pricing,0,5),625);
+const config={...business.DEFAULT_PRICING,tiers:[{quantity:4,price:125}],version:0};let reply=await settings.POST(jsonRequest({action:'pricing',pricing:config}));assert.equal(reply.status,200);let configured=await reply.json();assert.equal(configured.pricing.version,1);assert.equal(business.priceFor(configured.pricing,0,5),625);
 assert.equal((await settings.POST(jsonRequest({action:'pricing',pricing:config}))).status,409);
-assert.equal((await settings.POST(jsonRequest({action:'pricing',pricing:{...configured.pricing,shirtPrice:-1}}))).status,400);
+assert.equal((await settings.POST(jsonRequest({action:'pricing',pricing:{...configured.pricing,tiers:[{quantity:4,price:-1}]}}))).status,400);
 const c={code:'PARTY10',title:'Test',kind:'percent',value:10,minQuantity:4,minSubtotal:400,maxUses:1,starts:'',ends:'',enabled:true,package:0,used:0,version:0};assert.equal((await settings.POST(jsonRequest({action:'coupon',coupon:c}))).status,200);
 const preview=await prices.POST(post('/api/pricing',JSON.stringify({code:'PARTY10',package:0,quantity:4,price:1})));assert.equal(preview.status,200);assert.equal((await preview.json()).total,450);
 const discountForm=form();discountForm.set('coupon','PARTY10');discountForm.set('expectedPrice','450');const discounted=await publicRoute.POST(post('/api/orders',discountForm));assert.equal(discounted.status,201);const discountedId=(await discounted.json()).id;assert.equal((await store.getOrder(discountedId)).price,450);assert.equal((await settingsStore.getCoupon('PARTY10')).used,1);
@@ -67,10 +67,10 @@ console.log('PASS: deadline and mail filters, Israel date rollover, export match
 assert.equal(business.priceFor(business.pricingForShirt(112.25),0,4),449);
 for(const p of [0,1,2,3])assert.equal(business.priceFor(business.pricingForShirt(99.9),p,10),999);
 for(const n of [5,10,15,20])assert.equal(business.priceFor(business.pricingForShirt(99.9),4,n),Math.round(99.9*100)*n/100);
-assert(!business.validPricing({shirtPrice:1.001,version:0}));assert(!business.validPricing({shirtPrice:1001,version:0}));assert(!business.validPricing(null));
-assert.equal(business.normalizePricing({basePrices:[449,1,2,3]},9).shirtPrice,112.25);
+assert(!business.validPricing({tiers:[{quantity:4,price:1.001}],version:0}));assert(!business.validPricing({tiers:[{quantity:4,price:1001}],version:0}));assert(!business.validPricing(null));
+assert.equal(business.normalizePricing({basePrices:[449,1,2,3]},9).shirtPrice,110);assert.equal(business.unitPriceFor(business.DEFAULT_PRICING,15),93);assert.equal(business.unitPriceFor(business.DEFAULT_PRICING,20),90);
 assert.equal(configured.pricing.extraShirtPrice,125);assert.deepEqual(configured.pricing.basePrices,[500,750,750,1250]);
-console.log('PASS: single unit price across packs and custom quantities, legacy normalization, decimal precision and forged pack-price fields ignored.');
+console.log('PASS: quantity tiers across packs and custom quantities, legacy normalization, decimal precision and forged pack-price fields ignored.');
 const actions=await load('app/api/admin/orders/[id]/action/route.ts');
 globalThis.testUser=null;assert.equal((await actions.POST(post('/api/admin/orders/'+id+'/action',JSON.stringify({action:'next',version:1})),ctx)).status,403);
 globalThis.testUser={userId:'owner',email:'atzilul@gmail.com'};
