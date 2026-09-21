@@ -48,6 +48,6 @@ export default function SeoFooterLinks() {
         <div>{group.slugs.map(slug => <Link href={SEO_PAGE_URL(slug)} key={slug}>{labels[slug]}</Link>)}</div>
       </div>)}
     </div>
-    <div className="footer-seo-utility"><Link href="/guides">כל מדריכי הרעיונות</Link><Link href="/faq">שאלות ותשובות</Link><Link href="/blog">בלוג PARTYPRINT</Link></div>
+    <div className="footer-seo-utility"><Link href="/guides">כל מדריכי הרעיונות</Link><Link href="/faq">שאלות ותשובות</Link><Link href="/policies/shipping">משלוחים</Link><Link href="/policies/returns">ביטולים והחזרות</Link><Link href="/blog">בלוג PARTYPRINT</Link></div>
   </section>;
 }
