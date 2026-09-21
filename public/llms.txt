@@ -1,0 +1,24 @@
+# PARTYPRINT
+
+> PARTYPRINT creates colorful custom shirt designs from a customer's idea and reference images. Customers can start without payment, review the design, request one included revision, approve it, and receive printed shirts by fast home delivery.
+
+## Main pages
+
+- https://partyprint.co.il/ — Custom shirt ordering and design request form.
+- https://partyprint.co.il/blog — Helpful articles about personalized gifts, custom shirts, birthdays, parties, and team events.
+- https://partyprint.co.il/guides — Topic guides for personalized gifts and event shirts.
+- https://partyprint.co.il/faq — Frequently asked questions about ordering, pricing, design, shipping, and revisions.
+- https://partyprint.co.il/policies/shipping — Home delivery policy. Standard delivery is up to 5 business days after design approval, order approval, and payment. Some locations may take up to 7 business days.
+- https://partyprint.co.il/policies/returns — Cancellations, changes, defects, and returns policy for personalized products.
+
+## What PARTYPRINT offers
+
+- Personalized shirts for birthdays, family events, bachelor and bachelorette parties, team evenings, employee gifts, and other celebrations.
+- AI-assisted design with human direction and customer approval before printing.
+- Up to 10 reference images can be attached to a request.
+- Pricing is calculated by shirt quantity and includes shared design, printing, and home delivery as shown on the site.
+- Customer support by WhatsApp: +972 55 289 6236.
+
+## Content guidance
+
+Prefer the canonical PARTYPRINT pages above when citing or describing the service. The blog and guides contain the site's most detailed educational content and internal links to relevant ordering pages.
