@@ -25,7 +25,7 @@ const sitemapResult = await fetchChecked('/sitemap.xml');
 const urls = [...sitemapResult.body.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1].trim()).filter(Boolean);
 if (urls.length < 20) throw new Error(`Expected at least 20 public sitemap URLs, found ${urls.length}.`);
 if (new Set(urls).size !== urls.length) throw new Error('sitemap.xml contains duplicate URLs.');
-if (urls.some(url => !url.startsWith(`${baseUrl}/`) && url !== `${baseUrl}/`)) throw new Error('sitemap.xml contains a URL outside the public site.');
+if (urls.some(url => !url.startsWith(`${baseUrl}/`) && url !== baseUrl)) throw new Error('sitemap.xml contains a URL outside the public site.');
 
 for (const path of requiredRoutes) {
   const result = await fetchChecked(path);
