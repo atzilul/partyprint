@@ -4,7 +4,7 @@ import SeoFooterLinks from './seo-footer-links';
 export function SeoNav() {
   return <header className="seo-nav">
     <Link className="seo-brand" href="/" aria-label="PARTYPRINT — חזרה לאתר" />
-    <nav aria-label="ניווט עמודי תוכן"><Link href="/guides">מדריכי רעיונות</Link><Link href="/blog">בלוג</Link><Link href="/faq">שאלות ותשובות</Link></nav>
+    <nav aria-label="ניווט עמודי תוכן"><Link href="/about">אודות</Link><Link href="/work">דוגמאות</Link><Link href="/guides">מדריכי רעיונות</Link><Link href="/blog">בלוג</Link><Link href="/faq">שאלות ותשובות</Link></nav>
     <Link className="seo-nav-cta" href="/#order">מתחילים בלי חיוב</Link>
   </header>;
 }

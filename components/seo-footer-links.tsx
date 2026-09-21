@@ -47,6 +47,6 @@ export default function SeoFooterLinks() {
         <ul>{group.slugs.map(slug => <li key={slug}><Link href={SEO_PAGE_URL(slug)}>{labels[slug]}</Link></li>)}</ul>
       </section>)}
     </nav>
-    <nav className="footer-seo-utility" aria-label="ניווט מהיר"><span>ניווט מהיר</span><div><Link href="/guides">מדריכי רעיונות</Link><Link href="/faq">שאלות ותשובות</Link><Link href="/policies/shipping">משלוחים</Link><Link href="/policies/returns">ביטולים והחזרות</Link><Link href="/blog">בלוג PARTYPRINT</Link></div></nav>
+    <nav className="footer-seo-utility" aria-label="ניווט מהיר"><span>ניווט מהיר</span><div><Link href="/about">אודות PARTYPRINT</Link><Link href="/work">דוגמאות ותהליכים</Link><Link href="/guides">מדריכי רעיונות</Link><Link href="/faq">שאלות ותשובות</Link><Link href="/policies/shipping">משלוחים</Link><Link href="/policies/returns">ביטולים והחזרות</Link><Link href="/blog">בלוג PARTYPRINT</Link></div></nav>
   </section>;
 }

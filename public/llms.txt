@@ -5,6 +5,8 @@
 ## Canonical sources
 
 - https://partyprint.co.il/ — Main ordering page. The request form starts without payment and supports up to 10 reference images.
+- https://partyprint.co.il/about — About PARTYPRINT, the studio process, human direction and AI-assisted design workflow.
+- https://partyprint.co.il/work — Curated studio examples and process breakdowns. Examples are clearly marked as design mockups, not customer orders.
 - https://partyprint.co.il/guides — 16 topic guides covering personalized gifts, birthdays, family events, bachelor and bachelorette parties, team evenings and employee gifts.
 - https://partyprint.co.il/blog — Educational articles with images, ALT text, internal links and 10 expandable questions and answers per post.
 - https://partyprint.co.il/blog/feed.xml — Public RSS feed for discovering newly published blog posts.

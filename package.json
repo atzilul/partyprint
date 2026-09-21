@@ -14,6 +14,7 @@
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
     "seo:check": "node scripts/verify-seo.mjs",
+    "seo:links": "node scripts/verify-public-links.mjs",
     "seo:indexnow": "node scripts/submit-indexnow.mjs"
   },
   "dependencies": {
