@@ -1,0 +1,2 @@
+import {getBlogPost} from '@/lib/blog';
+export async function GET(_request:Request,{params}:{params:Promise<{slug:string}>}){try{const {slug}=await params;const post=await getBlogPost(decodeURIComponent(slug));return post?Response.json(post,{headers:{'Cache-Control':'public, max-age=300, s-maxage=900'}}):new Response(null,{status:404})}catch{return Response.json({error:'הפוסט אינו זמין כרגע.'},{status:503})}}

@@ -13,7 +13,11 @@ const { d1, r2 } = hostingConfig;
 
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
-const managedLinux = readExecutionProfile() === "managed-linux";
+// The same checkout can be built for Sites/Cloudflare or for Hostinger's
+// ordinary Node process. Hostinger and CI do not have the Sites profile; the
+// explicit switch also lets us verify that target inside the managed sandbox.
+const nodeBuild = process.env.PARTYPRINT_NODE_BUILD === "1";
+const managedLinux = readExecutionProfile() === "managed-linux" && !nodeBuild;
 const generatedCloudflareRuntime = new URL("./runtime/.generated-cloudflare.ts", import.meta.url);
 
 function prepareCloudflareRuntime() {

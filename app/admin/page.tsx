@@ -1,6 +1,7 @@
 import {requireChatGPTUser} from '@/app/chatgpt-auth';
 import Admin from './studio';
 import './studio.css';
+import '../blog/blog.css';
 export const dynamic='force-dynamic';
 export const metadata={title:'PARTYPRINT | ניהול הזמנות',robots:{index:false,follow:false}};
 import Workspace from './workspace';

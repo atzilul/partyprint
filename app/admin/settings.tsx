@@ -29,10 +29,10 @@ function TierEditor({pricing,savedPricing,onChange}:{pricing:Pricing;savedPricin
 export default function Settings({onDirty}:{onDirty:(dirty:boolean)=>void}){
  const [pricing,setPricing]=useState<Pricing>(DEFAULT_PRICING),[savedPricing,setSavedPricing]=useState<Pricing>(DEFAULT_PRICING),[coupons,setCoupons]=useState<Coupon[]>([]),[edit,setEdit]=useState<Coupon|null>(null),[loading,setLoading]=useState(true),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[changed,setChanged]=useState(false);
  useEffect(()=>{const handler=(e:BeforeUnloadEvent)=>{if(changed||edit){e.preventDefault();e.returnValue=''}};window.addEventListener('beforeunload',handler);return()=>window.removeEventListener('beforeunload',handler)},[changed,edit]);
- useEffect(()=>{onDirty(changed||!!edit)},[changed,edit,onDirty]);
- useEffect(()=>()=>onDirty(false),[onDirty]);
+ useEffect(()=>{const id=window.setTimeout(()=>onDirty(changed||!!edit),0);return()=>window.clearTimeout(id)},[changed,edit,onDirty]);
+ useEffect(()=>{const id=window.setTimeout(()=>onDirty(false),0);return()=>window.clearTimeout(id)},[onDirty]);
  async function load(){setLoading(true);try{const r=await fetch('/api/admin/settings');const v=await r.json() as {error?:string;pricing:Pricing;coupons:Coupon[]};if(!r.ok)throw Error(v.error);setPricing(v.pricing);setSavedPricing(v.pricing);setCoupons(v.coupons);setError('');setChanged(false)}catch(e){setError((e as Error).message)}finally{setLoading(false)}}
- useEffect(()=>{void load()},[]);
+ useEffect(()=>{const id=window.setTimeout(()=>void load(),0);return()=>window.clearTimeout(id)},[]);
  async function save(action:string,coupon?:Coupon){setBusy(true);setError('');setNotice('');try{const r=await fetch('/api/admin/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,pricing,coupon})});const v=await r.json() as {error?:string;pricing:Pricing;coupons:Coupon[]};if(!r.ok)throw Error(v.error);if(action==='pricing'){setPricing(v.pricing);setSavedPricing(v.pricing);setChanged(false);setNotice('מדרגות המחיר עודכנו באתר. הזמנות קיימות שומרות על המחיר שנקבע להן.')}else{setEdit(null);setNotice('קוד המבצע נשמר ויעובד לפי התנאים שהגדרתם.')}setCoupons(v.coupons)}catch(e){setError((e as Error).message)}finally{setBusy(false)}}
  function updateTiers(tiers:PriceTier[]){setPricing(v=>({...v,tiers}));setChanged(true);setNotice('')}
  function field<K extends keyof Coupon>(k:K,v:Coupon[K]){setEdit(c=>c?{...c,[k]:v}:c)}

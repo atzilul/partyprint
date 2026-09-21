@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @next/next/no-img-element -- production previews use protected dynamic files. */
 import DesignVersions from './design-versions';
 import {useState} from 'react';
 import {Order,whatsappLink} from '@/lib/orders';

@@ -11,7 +11,12 @@ if (managedLinux && command === "build") {
     fileURLToPath(new URL("./build-verified.sh", import.meta.url)), ...args,
   ], { stdio: "inherit" });
   if (result.error) throw result.error;
-  process.exit(result.status ?? 1);
+  if (result.status !== 0) process.exit(result.status ?? 1);
+  // The managed builder creates the standalone entry but does not run the
+  // Node packaging step. Keep migrations beside server.js for Hostinger's
+  // Node runtime as well as for the managed deployment artifact.
+  await import("./prepare-node-output.mjs");
+  process.exit(0);
 }
 
 if (!managedLinux && command === "build") {

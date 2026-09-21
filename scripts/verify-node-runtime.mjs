@@ -11,14 +11,14 @@ const credentials=JSON.stringify({'atzilul@gmail.com':`scrypt$${salt}$${scryptSy
 let server,logs='',cookie='';
 const request=(path,options={})=>fetch(base+path,{redirect:'manual',...options,headers:{Origin:origin,'X-Forwarded-Proto':'https','X-Forwarded-Host':'partyprint-runtime.example',...(cookie?{Cookie:cookie}:{}),...options.headers}});
 async function start(){server=spawn('npm',['start'],{detached:true,env:{...process.env,PORT:'3000',HOST:'127.0.0.1',PARTYPRINT_PUBLIC_URL:origin,VINEXT_TRUSTED_HOSTS:'partyprint-runtime.example',PARTYPRINT_DATA_DIR:data,PARTYPRINT_SESSION_SECRET:randomBytes(32).toString('hex'),PARTYPRINT_STAFF_PASSWORD_HASHES:credentials,RESEND_API_KEY:'',MAIL_FROM:''},stdio:['ignore','pipe','pipe']});server.stdout.on('data',b=>logs+=b);server.stderr.on('data',b=>logs+=b);for(let i=0;i<100;i++){if(server.exitCode!==null)throw Error(logs);try{if((await request('/api/pricing')).status===200)return}catch{}await new Promise(r=>setTimeout(r,100))}throw Error('Startup timeout: '+logs)}
-async function stop(){if(!server)return;const exited=new Promise(r=>server.once('exit',r));process.kill(-server.pid,'SIGTERM');await exited;server=undefined}
+async function stop(){if(!server)return;if(server.exitCode!==null){server=undefined;return}const exited=new Promise(r=>server.once('exit',r));try{process.kill(-server.pid,'SIGTERM')}catch(error){if(error?.code!=='ESRCH')throw error}await exited;server=undefined}
 async function login(){const r=await request('/api/staff-login',{method:'POST',body:new URLSearchParams({email:'atzilul@gmail.com',password})});assert.equal(r.status,303,await r.text());cookie=r.headers.get('set-cookie').split(';')[0];assert(r.headers.get('set-cookie').includes('HttpOnly'));assert(r.headers.get('set-cookie').includes('Secure'))}
 try{
- await start();assert.equal((await request('/')).status,200);
+ await start();assert.equal((await request('/')).status,200);assert.equal((await request('/blog')).status,200);const blogResponse=await request('/api/blog');assert.equal(blogResponse.status,200);const blogData=await blogResponse.json();assert.equal(blogData.posts.length,10);assert(blogData.posts.every(post=>post.coverImage&&post.inlineImage1&&post.inlineImage2&&post.faqs.length===10));assert.equal((await request('/blog/'+encodeURIComponent(blogData.posts[0].slug))).status,200);assert.equal((await request('/sitemap.xml')).status,200);
  assert.equal((await request('/signin-with-chatgpt')).status,200);
  assert.equal((await request('/api/admin/orders',{headers:{'oai-authenticated-user-id':'forged','oai-authenticated-user-email':'atzilul@gmail.com'}})).status,403);
  assert.equal((await request('/api/staff-login',{method:'POST',body:new URLSearchParams({email:'atzilul@gmail.com',password:'wrong'})})).status,401);
- await login();assert.equal((await request('/admin')).status,200);
+ await login();assert.equal((await request('/admin')).status,200);const adminBlog=await request('/api/admin/blog');assert.equal(adminBlog.status,200);assert.equal((await adminBlog.json()).posts.length,10);
  const settings=await (await request('/api/admin/settings')).json();
  const pricing=await request('/api/admin/settings',{method:'POST',body:JSON.stringify({action:'pricing',pricing:{...settings.pricing,tiers:[{quantity:4,price:99}]}})});assert.equal(pricing.status,200,await pricing.text());
  assert.equal((await request('/api/admin/settings',{method:'POST',headers:{Origin:'https://evil.example'},body:'{}'})).status,403);

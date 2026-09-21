@@ -1,7 +1,7 @@
 import type {Workflow} from './workflow';
 import type {DesignApproval,PaymentEntry} from './production';
 import {DEFAULT_PRICING,Pricing,priceFor} from './pricing';
-import {calculatePrice,packs,validateShirts} from './catalog';
+import {packs,validateShirts} from './catalog';
 import {cleanSingleLine} from './text';
 export const STAGES=[['received','הזמנה התקבלה'],['designing','נשלח לעיצוב'],['review','עיצוב נשלח ללקוח'],['approved','עיצוב אושר'],['printing','ההזמנה נשלחה להדפסה'],['printed','הדפסה מוכנה'],['shipped','נשלח ללקוח']] as const;
 export type Stage=typeof STAGES[number][0];
