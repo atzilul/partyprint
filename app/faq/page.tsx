@@ -8,7 +8,9 @@ import '../seo/seo.css';
 export const metadata: Metadata = {
   title: 'שאלות ותשובות על מתנות וחולצות בעיצוב אישי | PARTYPRINT',
   description: 'תשובות על מתנה בעיצוב אישי, מתנה לאמא ולאבא, חולצות למסיבות, ימי הולדת, ערבי צוות, מתנות לעובדים, מחירים, תמונות ומשלוח.',
+  keywords: ['שאלות ותשובות PARTYPRINT', 'מתנה בעיצוב אישי', 'חולצות בעיצוב אישי', 'מחיר חולצה בעיצוב אישי', 'משלוח חולצות עד הבית'],
   alternates: {canonical: '/faq'},
+  openGraph: {title: 'שאלות ותשובות על מתנות וחולצות בעיצוב אישי | PARTYPRINT', description: 'תשובות על מתנה בעיצוב אישי, מתנה לאמא ולאבא, חולצות למסיבות, ימי הולדת, ערבי צוות, מתנות לעובדים, מחירים, תמונות ומשלוח.', url: 'https://partyprint.co.il/faq', type: 'website', images: [{url: '/shirts.webp', alt: 'חולצות בעיצוב אישי של PARTYPRINT'}]},
 };
 
 const faqGroups: {title: string; items: SeoFaq[]}[] = [
@@ -44,6 +46,10 @@ function pageLink(keyword: string) {
 
 export default function FaqPage() {
   const allItems = faqGroups.flatMap(group => group.items);
-  const schema = {'@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: allItems.map(item => ({'@type': 'Question', name: item.question, acceptedAnswer: {'@type': 'Answer', text: item.answer}}))};
+  const canonical='https://partyprint.co.il/faq';
+  const schema = {'@context': 'https://schema.org', '@graph': [
+    {'@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'PARTYPRINT',item:'https://partyprint.co.il/'},{'@type':'ListItem',position:2,name:'שאלות ותשובות',item:canonical}]},
+    {'@type': 'FAQPage', '@id': canonical+'#faq', url:canonical, name:'שאלות ותשובות על מתנות וחולצות בעיצוב אישי', inLanguage:'he-IL', mainEntity: allItems.map(item => ({'@type': 'Question', name: item.question, acceptedAnswer: {'@type': 'Answer', text: item.answer}}))},
+  ]};
   return <main className="seo-page" dir="rtl"><SeoNav/><section className="faq-hero"><div><span className="seo-kicker">PARTYPRINT / GOOD QUESTIONS</span><h1>שאלות טובות<br/><span>עושות סדר.</span></h1><p>כל מה שחשוב לדעת לפני שמעצבים מתנה, חולצה לקבוצה או מזכרת לאירוע.</p><Link className="seo-primary-cta" href="/#order">יש לי רעיון · מתחילים בלי חיוב <span aria-hidden="true">←</span></Link></div><div className="faq-hero-note"><strong>לא מצאתם תשובה?</strong><span>ספרו לנו מה אתם חוגגים, ונעזור לבחור כיוון.</span><Link href="/#contact">מדברים איתנו ←</Link></div></section><section className="faq-content"><div className="seo-section-heading"><div><span className="seo-kicker">ANSWERS BEFORE THE ORDER</span><h2>מה רציתם לדעת?</h2></div><p>תשובות קצרות וברורות על רעיונות, הזמנה, תמונות, מחירים ומשלוח.</p></div><div className="faq-groups">{faqGroups.map(group => <section className="faq-group" key={group.title}><h2>{group.title}</h2>{group.items.map(item => <details key={item.question}><summary>{item.question}</summary><p>{item.answer}</p></details>)}</section>)}</div><div className="faq-related"><h2>עמודים שיעזרו לכם לבחור</h2><div><Link href={pageLink('מתנה בעיצוב אישי')}>מתנה בעיצוב אישי <span>↗</span></Link><Link href={pageLink('מתנה לאמא')}>מתנה לאמא <span>↗</span></Link><Link href={pageLink('חולצה למסיבת רווקים')}>חולצה למסיבת רווקים <span>↗</span></Link><Link href={pageLink('מתנה לערב צוות')}>מתנה לערב צוות <span>↗</span></Link><Link href="/blog">עוד רעיונות בבלוג <span>↗</span></Link></div></div></section><script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(schema).replace(/</g, '\\u003c')}}/><SeoFooter/></main>;
 }

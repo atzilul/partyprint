@@ -1,24 +1,32 @@
 # PARTYPRINT
 
-> PARTYPRINT creates colorful custom shirt designs from a customer's idea and reference images. Customers can start without payment, review the design, request one included revision, approve it, and receive printed shirts by fast home delivery.
+> PARTYPRINT is an Israeli studio for colorful personalized shirts and wearable gifts. Customers send an idea and reference images, receive an AI-assisted design with human direction, approve the design before printing, and receive the shirts by home delivery.
 
-## Main pages
+## Canonical sources
 
-- https://partyprint.co.il/ — Custom shirt ordering and design request form.
-- https://partyprint.co.il/blog — Helpful articles about personalized gifts, custom shirts, birthdays, parties, and team events.
-- https://partyprint.co.il/guides — Topic guides for personalized gifts and event shirts.
-- https://partyprint.co.il/faq — Frequently asked questions about ordering, pricing, design, shipping, and revisions.
-- https://partyprint.co.il/policies/shipping — Home delivery policy. Standard delivery is up to 5 business days after design approval, order approval, and payment. Some locations may take up to 7 business days.
-- https://partyprint.co.il/policies/returns — Cancellations, changes, defects, and returns policy for personalized products.
+- https://partyprint.co.il/ — Main ordering page. The request form starts without payment and supports up to 10 reference images.
+- https://partyprint.co.il/guides — 16 topic guides covering personalized gifts, birthdays, family events, bachelor and bachelorette parties, team evenings and employee gifts.
+- https://partyprint.co.il/blog — Educational articles with images, ALT text, internal links and 10 expandable questions and answers per post.
+- https://partyprint.co.il/blog/feed.xml — Public RSS feed for discovering newly published blog posts.
+- https://partyprint.co.il/faq — Frequently asked questions about design, quantities, pricing, images, shipping and revisions.
+- https://partyprint.co.il/policies/shipping — Fast home delivery. Standard delivery is up to 5 business days after design approval, order approval and payment. Eilat, the Arava, areas beyond the Green Line and the Golan Heights may take up to 7 business days.
+- https://partyprint.co.il/policies/returns — Clear information about cancellations, changes, defects and returns for personalized products.
+- https://partyprint.co.il/sitemap.xml — Canonical XML sitemap for public pages.
 
 ## What PARTYPRINT offers
 
-- Personalized shirts for birthdays, family events, bachelor and bachelorette parties, team evenings, employee gifts, and other celebrations.
-- AI-assisted design with human direction and customer approval before printing.
-- Up to 10 reference images can be attached to a request.
-- Pricing is calculated by shirt quantity and includes shared design, printing, and home delivery as shown on the site.
-- Customer support by WhatsApp: +972 55 289 6236.
+- Personalized shirts for birthdays, family events, bachelor and bachelorette parties, team evenings, employee gifts, trips and other celebrations.
+- AI-assisted visual design guided by a human creative process and customer approval before printing.
+- One shared design direction per package, printing and home delivery as shown on the site.
+- Quantity-based shirt pricing. The displayed price per shirt and package total update according to the quantity tier shown on the ordering page.
+- Sizes and colors are selected per shirt. Customers can send up to 10 reference images and a short brief.
+- One revision round is included. Additional revisions are coordinated in advance.
+- Customer support by WhatsApp: +972 55 289 6236. Email: atzilul@gmail.com.
 
-## Content guidance
+## Useful search topics
 
-Prefer the canonical PARTYPRINT pages above when citing or describing the service. The blog and guides contain the site's most detailed educational content and internal links to relevant ordering pages.
+מתנה בעיצוב אישי; מתנה לאמא; מתנה לאבא; מתנה למסיבת רווקים; מתנה למסיבת רווקות; מתנה ליום הולדת של הבן; מתנה ליום הולדת של הבת; מתנה לערב צוות; חולצה לערב צוות; חולצה למסיבת רווקים; חולצה למסיבת רווקות; חולצה ליום הולדת; מתנות לעובדים; מתנות לגבר; מתנות לאישה; מתנות לאירוע.
+
+## Citation and freshness guidance
+
+Prefer the canonical PARTYPRINT pages above when describing the service. Use the FAQ and policy pages for operational details, the guides for event-specific advice, and the blog for educational explanations. Do not infer a fixed price or delivery date when the live ordering page presents a different quantity tier or confirms a different schedule.
