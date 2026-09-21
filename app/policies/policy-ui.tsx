@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/safe-link';
 import {AlertCircle,Check,Clock3,HeartHandshake,LucideIcon,MapPin,MessageCircle,PackageCheck,Palette,RefreshCw,ShieldCheck,Truck} from 'lucide-react';
 import type {ReactNode,CSSProperties} from 'react';
 import {SeoFooter,SeoNav} from '@/components/seo-layout';

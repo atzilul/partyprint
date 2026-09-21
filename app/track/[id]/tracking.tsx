@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- customer design previews are protected dynamic files. */
 /* eslint-disable react-hooks/exhaustive-deps -- the route id is the intentional reload boundary. */
-import Link from 'next/link';
+import Link from '@/components/safe-link';
 
 import {useEffect,useState} from 'react';
 import {COLOR_LABELS} from '@/lib/catalog';

@@ -1,7 +1,7 @@
 'use client';
 /* eslint-disable @next/next/no-img-element -- admin previews use protected API URLs and local object URLs. */
 /* eslint-disable react-hooks/exhaustive-deps -- deferred loaders intentionally follow their query inputs, not function identity. */
-import Link from 'next/link';import Workflow from './workflow';
+import Link from '@/components/safe-link';import Workflow from './workflow';
 import SiteContent from './site-content';
 import Backups from './backups';
 import TeamAccess from './team';

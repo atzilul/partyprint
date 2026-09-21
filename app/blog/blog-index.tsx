@@ -1,11 +1,11 @@
 'use client';
 /* eslint-disable @next/next/no-img-element -- editorial images may be selected by admins. */
-import Link from 'next/link';
+import Link from '@/components/safe-link';
 import {Search,SlidersHorizontal} from 'lucide-react';
 import {useState} from 'react';
 import type {BlogPost} from '@/lib/blog';
 
-const topics=['הכול','מתנות','יום הולדת','מסיבת רווקים','מסיבת רווקות','ערב צוות'];
+const topics=['הכול','מתנות','יום הולדת','אירועים','משפחה','מסיבת רווקים','מסיבת רווקות','ערב צוות'];
 const matches=(post:BlogPost,query:string,topic:string)=>{
  const haystack=[post.title,post.excerpt,...post.keywords].join(' ').toLowerCase();
  return (!query||haystack.includes(query.toLowerCase()))&&(topic==='הכול'||haystack.includes(topic.toLowerCase()));

@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element -- editorial images can be selected from the admin and may be local or external URLs. */
-import Link from 'next/link';
+import Link from '@/components/safe-link';
 import type {Metadata} from 'next';
 import {getBlogPost,listBlogPosts} from '@/lib/blog';
 import type {BlogPost} from '@/lib/blog';

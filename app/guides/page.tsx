@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element -- curated local editorial images. */
-import Link from 'next/link';
+import Link from '@/components/safe-link';
 import type {Metadata} from 'next';
 import {SEO_PAGES,SEO_PAGE_URL} from '@/lib/seo-pages';
 import {SeoFooter,SeoNav} from '@/components/seo-layout';

@@ -110,3 +110,13 @@ button,a,input,select,textarea,summary{touch-action:manipulation}
 @keyframes mobileHeroDrift{from{transform:scale(1.02) translate3d(0,0,0)}to{transform:scale(1.06) translate3d(-1.5%,-1%,0)}}
 @keyframes mobileBarIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.hero-art:before,.hero-art>img,.hero-orbit,.mobile-sticky{animation:none}.package{transition:none}}
+.mobile-nav-toggle{display:none}
+@media(max-width:680px){
+  .nav{position:sticky;isolation:isolate}
+  .mobile-nav-toggle{display:grid;place-items:center;width:42px;height:42px;padding:0;background:transparent;border:1px solid #777;color:#fff;font-size:22px;line-height:1;z-index:2}
+  .mobile-nav-toggle:hover,.mobile-nav-toggle[aria-expanded=true]{background:var(--acid);border-color:var(--acid);color:var(--ink)}
+  .nav nav{position:absolute;display:none;top:76px;left:0;right:0;z-index:50;padding:10px 20px 16px;background:var(--ink);border-top:1px solid #444;box-shadow:0 8px 18px #0004}
+  .nav nav.is-open{display:grid;gap:0}
+  .nav nav a{display:block;padding:14px 4px;border-bottom:1px solid #444;font-size:16px}
+  .nav nav a:last-child{border-bottom:0}
+}

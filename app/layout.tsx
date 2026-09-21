@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./fonts.css";
 import "./seo/seo.css";
+import "./policy-overrides.css";
 import SiteSeoFooter from "@/components/site-seo-footer";
 
 export const metadata: Metadata = {

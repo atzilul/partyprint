@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- staff previews use protected API URLs. */
 /* eslint-disable react-hooks/exhaustive-deps -- initial workspace loading is intentionally deferred once. */
-import Link from 'next/link';
+import Link from '@/components/safe-link';
 import {useEffect,useRef,useState} from 'react';
 import type {StaffJob} from '@/lib/staff-workspace';
 import {imageUploadError} from '@/lib/upload-limits';

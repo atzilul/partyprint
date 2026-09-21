@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/safe-link';
 import type {Metadata} from 'next';
 import {listBlogPosts} from '@/lib/blog';
 import SeoFooterLinks from '@/components/seo-footer-links';

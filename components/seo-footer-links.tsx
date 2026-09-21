@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/safe-link';
 import {SEO_PAGE_URL} from '@/lib/seo-pages';
 
 const groups = [
@@ -38,16 +38,15 @@ const labels: Record<string, string> = {
 export default function SeoFooterLinks() {
   return <section className="footer-seo" aria-labelledby="footer-seo-title">
     <div className="footer-seo-heading">
-      <span className="eyebrow">FIND YOUR IDEA</span>
-      <h2 id="footer-seo-title">מחפשים את הרעיון שלכם?</h2>
-      <p>עמודים קצרים עם רעיונות וטיפים לפני שמתחילים לעצב.</p>
+      <div><span className="eyebrow">FIND YOUR IDEA</span><h2 id="footer-seo-title">מחפשים את הרעיון שלכם?</h2></div>
+      <span className="footer-seo-note">מתנות, חולצות ועיצובים אישיים לכל חגיגה</span>
     </div>
-    <div className="footer-seo-groups">
-      {groups.map(group => <div className="footer-seo-group" key={group.title}>
+    <nav className="footer-seo-groups" aria-label="עמודים לפי רעיון">
+      {groups.map(group => <section className="footer-seo-group" key={group.title}>
         <h3>{group.title}</h3>
-        <div>{group.slugs.map(slug => <Link href={SEO_PAGE_URL(slug)} key={slug}>{labels[slug]}</Link>)}</div>
-      </div>)}
-    </div>
-    <div className="footer-seo-utility"><Link href="/guides">כל מדריכי הרעיונות</Link><Link href="/faq">שאלות ותשובות</Link><Link href="/policies/shipping">משלוחים</Link><Link href="/policies/returns">ביטולים והחזרות</Link><Link href="/blog">בלוג PARTYPRINT</Link></div>
+        <ul>{group.slugs.map(slug => <li key={slug}><Link href={SEO_PAGE_URL(slug)}>{labels[slug]}</Link></li>)}</ul>
+      </section>)}
+    </nav>
+    <nav className="footer-seo-utility" aria-label="ניווט מהיר"><span>ניווט מהיר</span><div><Link href="/guides">מדריכי רעיונות</Link><Link href="/faq">שאלות ותשובות</Link><Link href="/policies/shipping">משלוחים</Link><Link href="/policies/returns">ביטולים והחזרות</Link><Link href="/blog">בלוג PARTYPRINT</Link></div></nav>
   </section>;
 }

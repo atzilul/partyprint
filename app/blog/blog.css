@@ -21,3 +21,4 @@
 @media(prefers-reduced-motion:reduce){.blog-card,.blog-card-image img,.blog-card-link span,.blog-feature-copy a span{transition:none}.blog-card:hover{transform:none}.blog-card:hover .blog-card-image img{transform:none}}
 .blog-footer{display:block}.blog-footer-bottom{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:28px max(22px,calc((100% - 1320px)/2));border-top:1px solid #444}.blog-footer .footer-seo{padding-bottom:38px}.blog-footer-bottom a{color:var(--acid);text-decoration:underline}
 @media(max-width:520px){.blog-footer-bottom{display:block;padding-bottom:90px}.blog-footer-bottom a{display:inline-block;margin-top:10px}}
+@media(max-width:520px){.blog-nav{flex-wrap:wrap;row-gap:8px}.blog-nav-links{display:flex;order:3;flex-basis:100%;gap:18px;overflow-x:auto;white-space:nowrap;padding-top:8px}.blog-nav-links a{font-size:14px;padding:5px 0}}
