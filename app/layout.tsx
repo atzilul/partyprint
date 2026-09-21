@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   description: "חולצות בעיצוב אישי עם AI לימי הולדת, מסיבות וצוותים. חבילות הכוללות עיצוב, הדפסה ומשלוח עד הבית.",
   metadataBase: new URL("https://partyprint.co.il"),
   alternates: {canonical: "/"},
+  verification: {google: "hgqOb0P2OSgVF-G8T5KAZ-9donk31AdF4cPSCS1Z7h0"},
   robots: {index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1},
   openGraph: {
     type: "website",
