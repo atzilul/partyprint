@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./fonts.css";
+import "./seo/seo.css";
+import SiteSeoFooter from "@/components/site-seo-footer";
 
 export const metadata: Metadata = {
   title: "PARTYPRINT | המתנה שהופכת לחולצה",
@@ -21,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="he" dir="rtl">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">{children}<SiteSeoFooter/></body>
     </html>
   );
 }

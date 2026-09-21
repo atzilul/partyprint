@@ -3,6 +3,7 @@ import Link from 'next/link';
 import type {Metadata} from 'next';
 import {getBlogPost,listBlogPosts} from '@/lib/blog';
 import type {BlogPost} from '@/lib/blog';
+import SeoFooterLinks from '@/components/seo-footer-links';
 import '../blog.css';
 
 export const dynamic='force-dynamic';
@@ -27,4 +28,4 @@ function ContentBlock({block}:{block:string}){const lines=block.split('\n');if(l
 function InlineImage({src,alt}:{src:string;alt:string}){return src?<figure className="blog-inline-image"><img src={src} alt={alt||'תמונה מתוך מדריך PARTYPRINT'} loading="lazy"/><figcaption>{alt||'השראה לעיצוב אישי'}</figcaption></figure>:null}
 function RelatedPosts({posts}:{posts:BlogPost[]}){return <section className="blog-related-posts" aria-labelledby="related-posts"><div className="blog-related-posts-head"><div><span className="blog-kicker">KEEP EXPLORING</span><h2 id="related-posts">עוד רעיונות שיכולים להתאים</h2></div><Link href="/blog">לכל המדריכים ←</Link></div><div className="blog-related-post-grid">{posts.map(post=><Link className="blog-related-post" href={'/blog/'+post.slug} key={post.id}><img src={post.coverImage} alt={post.coverAlt} loading="lazy"/><div><span>{post.keywords[0]||'PARTYPRINT'}</span><strong>{post.title}</strong></div></Link>)}</div></section>}
 function BlogNav(){return <header className="blog-nav"><Link className="blog-brand" href="/" aria-label="PARTYPRINT — חזרה לאתר"/><nav className="blog-nav-links"><Link href="/">האתר הראשי</Link><Link href="/#packages">החבילות</Link><Link href="/#faq">שאלות נפוצות</Link></nav><Link className="blog-nav-cta" href="/#order">מתחילים בלי חיוב</Link></header>}
-function BlogFooter(){return <footer className="blog-footer"><strong>PARTYPRINT · אנשים אמיתיים. עיצובים לא רגילים.</strong><Link href="/">חזרה לאתר הראשי</Link></footer>}
+function BlogFooter(){return <footer className="blog-footer"><SeoFooterLinks/><div className="blog-footer-bottom"><strong>PARTYPRINT · אנשים אמיתיים. עיצובים לא רגילים.</strong><Link href="/">חזרה לאתר הראשי</Link></div></footer>}
