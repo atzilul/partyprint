@@ -3,9 +3,11 @@
 ## Current flow
 The public form writes private reference originals and a summary to R2 and inserts every order in D1 before notification. An unavailable mail provider does not lose the order. Automatic WhatsApp delivery is no longer part of submission.
 
-Resend emails to atzilul@gmail.com contain an escaped HTML summary, a direct customer WhatsApp link, an owner-only admin link, and a protected ZIP download link. Files are linked rather than attached to reduce message size. Each random link lasts 30 days. Multiple mail links coexist and show the current saved order and images. Internal notes are excluded from the download and email. Mail provider acceptance does not prove inbox delivery or reading.
+Resend emails go to the configured owner and current team managers (deduplicated). The branded Hebrew RTL template contains escaped order fields, a direct customer WhatsApp link, an authenticated admin link, and a protected ZIP download link. Designers and printers are excluded. Files are linked rather than attached to reduce message size. Bundle links default to 7 days, configurable with PARTYPRINT_BUNDLE_LINK_DAYS. Multiple mail links coexist and show the current saved order and images. Internal notes are excluded from the download and email. Mail provider acceptance does not prove inbox delivery or reading.
 
 ## Mail activation, still required
+See [Resend activation](resend-activation.md) for domain verification, Hostinger variables and the delivery check. The admin settings panel reports configuration presence and recipients, not provider verification.
+
 Configure RESEND_API_KEY as a secret and MAIL_FROM as an authorized sender using hosted environment settings. Keep credentials out of source and chat. No provider credentials were available during this implementation, so no actual mail was sent. After activation, use the admin retry action for a test order and verify the email, WhatsApp destination, and ZIP manually. Retry is throttled per order to one attempt per minute.
 
 ## Administration
