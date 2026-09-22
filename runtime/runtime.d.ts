@@ -6,4 +6,5 @@ declare module '#partyprint-runtime' {
     export function authenticatedUser(headers: Headers): Promise<import('./types').RuntimeUser | null>;
     export function login(request: Request): Promise<Response>;
     export function logout(request: Request): Promise<Response>;
+    export function hashStaffPassword(password: string): Promise<string>;
 }

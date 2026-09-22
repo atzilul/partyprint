@@ -60,12 +60,46 @@ function simpleCredentials(): SimpleCredential[] {
         add(envValue(`PARTYPRINT_STAFF_${i}_EMAIL`), envValue(`PARTYPRINT_STAFF_${i}_PASSWORD`), envValue(`PARTYPRINT_STAFF_${i}_PASSWORD_HASH`));
     return accounts;
 }
-function credential(email: string): Credential | null {
+async function credential(email: string): Promise<Credential | null> {
     const simple = simpleCredentials().find(account => account.email === email);
     if (simple)
         return simple;
     const hash = users()[email];
-    return typeof hash === 'string' ? { hash, stamp: stamp(hash) } : null;
+    if (typeof hash === 'string')
+        return { hash, stamp: stamp(hash) };
+    try {
+        const row = await DB.prepare("SELECT data FROM studio_settings WHERE key='team'").first<{ data: string }>();
+        if (!row)
+            return null;
+        const team = JSON.parse(row.data) as { members?: Array<{ email?: string; passwordHash?: string }> };
+        const member = team.members?.find(item => item.email?.trim().toLowerCase() === email);
+        return member?.passwordHash ? { hash: member.passwordHash, stamp: stamp(member.passwordHash) } : null;
+    }
+    catch {
+        return null;
+    }
+}
+async function storedProfile(email: string): Promise<{ name: string } | null> {
+    try {
+        const row = await DB.prepare("SELECT data FROM studio_settings WHERE key='team'").first<{ data: string }>();
+        if (!row)
+            return null;
+        const team = JSON.parse(row.data) as { ownerProfile?: { name?: string }; members?: Array<{ email?: string; name?: string }> };
+        const ownerEmail = envValue('PARTYPRINT_ADMIN_EMAIL').toLowerCase() || 'atzilul@gmail.com';
+        if (email === ownerEmail && team.ownerProfile?.name)
+            return { name: team.ownerProfile.name };
+        const member = team.members?.find(item => item.email?.trim().toLowerCase() === email);
+        return member?.name ? { name: member.name } : null;
+    }
+    catch {
+        return null;
+    }
+}
+export async function hashStaffPassword(password: string) {
+    if (password.length < 12)
+        throw Error('password_too_short');
+    const salt = randomBytes(16).toString('hex');
+    return 'scrypt$' + salt + '$' + scryptSync(password, salt, 64).toString('hex');
 }
 export async function authenticatedUser(h: Headers): Promise<RuntimeUser | null> {
     // Never trust Sites headers on a public Node server.
@@ -77,10 +111,11 @@ export async function authenticatedUser(h: Headers): Promise<RuntimeUser | null>
         if (parts.length !== 2 || !equal(signature(parts[0]), parts[1]))
             return null;
         const p = JSON.parse(Buffer.from(parts[0], 'base64url').toString());
-        const current = typeof p.email === 'string' ? credential(p.email) : null;
+        const current = typeof p.email === 'string' ? await credential(p.email) : null;
         if (typeof p.email !== 'string' || typeof p.exp !== 'number' || p.exp < Date.now() || !current || p.stamp !== current.stamp)
             return null;
-        return { userId: p.email, email: p.email, displayName: p.email, fullName: null };
+        const profile = await storedProfile(p.email);
+        return { userId: p.email, email: p.email, displayName: profile?.name || p.email, fullName: profile?.name || null };
     }
     catch {
         return null;
@@ -154,7 +189,7 @@ export async function login(r: Request) {
         if (limits.some(limit => !wasChanged(limit)))
             return loginFailure(r, 429, 'יותר מדי ניסיונות. נסו שוב בעוד 15 דקות.', 'rate');
         await DB.prepare('DELETE FROM form_rate_limits WHERE expires_at < ?').bind(now).run();
-        const current = credential(email);
+        const current = await credential(email);
         let valid = false;
         if (current?.password !== undefined) {
             valid = equal(password, current.password);

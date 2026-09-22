@@ -46,6 +46,7 @@ export async function authenticatedUser(h: Headers): Promise<RuntimeUser | null>
 }
 export async function login(_r: Request): Promise<Response> { void _r; return new Response(null, { status: 404 }); }
 export async function logout(_r: Request): Promise<Response> { void _r; return new Response(null, { status: 404 }); }
+export async function hashStaffPassword(_password: string): Promise<string> { throw new Error('password_auth_not_available'); }
 export function clientKey(r: Request) {
   return r.headers.get('CF-Connecting-IP') || r.headers.get('oai-authenticated-user-id') || 'anonymous';
 }
