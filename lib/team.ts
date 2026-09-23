@@ -1,6 +1,6 @@
 import {bindings} from './order-store';
 export const DEFAULT_OWNER_EMAIL='atzilul@gmail.com';
-export function getOwnerEmail(){const email=(process.env.PARTYPRINT_ADMIN_EMAIL||'').trim().toLowerCase();return email||DEFAULT_OWNER_EMAIL}
+export function getOwnerEmail(){const raw=(process.env.PARTYPRINT_ADMIN_EMAIL||'').trim();const email=(raw.length>=2&&((raw.startsWith('"')&&raw.endsWith('"'))||(raw.startsWith("'")&&raw.endsWith("'")))?raw.slice(1,-1).trim():raw).toLowerCase();return email||DEFAULT_OWNER_EMAIL}
 export type TeamRole='manager'|'designer'|'printer';
 export type TeamProfile={name:string;avatarKey?:string};
 export type TeamMember={role?:TeamRole;email:string;name:string;addedAt:string;avatarKey?:string;passwordHash?:string};

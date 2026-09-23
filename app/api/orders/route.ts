@@ -5,6 +5,7 @@ import {packs,validateShirts} from '@/lib/catalog';
 import {readLimitedForm,validImage} from '@/lib/order-security';
 import {orderSummary} from '@/lib/order-summary';
 import {createCustomerAccess} from '@/lib/customer-access';
+import {mailConfiguration} from '@/lib/mail-delivery';
 import {notifyOrder,notifyCustomer} from '@/lib/order-mail';
 import {createOrderAccess} from '@/lib/order-access';
 import {insertOrder,saveOrder} from '@/lib/order-store';
@@ -48,7 +49,7 @@ export async function POST(request:Request){
   (async()=>{try{const bundleUrl=await createOrderAccess(bindings.BUCKET,id);return await notifyOrder(bindings,stored,bundleUrl)}catch{console.error('Order mail link unavailable');return false}})(),
   (async()=>{try{trackingUrl=await createCustomerAccess(id);return await notifyCustomer(bindings,stored,trackingUrl)}catch{console.error('Customer notification unavailable');return false}})()
  ]);
- try{await saveOrder({...stored,customerEmailStatus:customerEmailSent?'accepted':bindings.RESEND_API_KEY&&bindings.MAIL_FROM?'failed':'not_configured',emailStatus:emailSent?'accepted':bindings.RESEND_API_KEY&&bindings.MAIL_FROM?'failed':'not_configured'},1,'הזמנה התקבלה מהאתר','אתר');}catch{console.error('Order delivery status update failed')}
+ try{await saveOrder({...stored,customerEmailStatus:customerEmailSent?'accepted':!mailConfiguration(bindings).issue?'failed':'not_configured',emailStatus:emailSent?'accepted':!mailConfiguration(bindings).issue?'failed':'not_configured'},1,'הזמנה התקבלה מהאתר','אתר');}catch{console.error('Order delivery status update failed')}
  return Response.json({id,summary,emailSent,trackingUrl,customerEmailSent},{status:201,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
  }catch(e){if(e instanceof Error&&e.message==='coupon_unavailable')return fail('המבצע הסתיים בזמן השליחה. הסירו את הקוד ונסו שוב.',409);if(e instanceof Error&&e.message==='too_large')return fail('הקבצים גדולים מדי. עד 10 תמונות, 5MB לתמונה ו־15MB בסך הכול.',413);console.error('Order save failed');return fail('לא הצלחנו לשמור את הפנייה. הפרטים נשארו בטופס, נסו שוב או פנו ב־WhatsApp.',503)}
 }

@@ -3,7 +3,7 @@ import {fileURLToPath} from 'node:url';
 import {tmpdir} from 'node:os';
 import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';import {DatabaseSync} from 'node:sqlite';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');const output=fs.mkdtempSync(path.join(tmpdir(),'partyprint-tests-'));const cache=new Map();const dataUrl=s=>'data:text/javascript;base64,'+Buffer.from(s).toString('base64');
-function resolve(file){if(cache.has(file))return cache.get(file);let code=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;code=code.replace(/from ["']([^"']+)["']/g,(m,s)=>{if(s==='#partyprint-runtime')return 'from '+JSON.stringify(dataUrl("export const runtimeKind='cloudflare';export const env=globalThis.testEnv;export function clientKey(r){return r.headers.get('CF-Connecting-IP')||'anonymous'}export function publicOrigin(){return 'https://partyprint-ai.atzilul.chatgpt.site'}"));if(s===["cloudflare:","workers"].join(""))return 'from '+JSON.stringify(dataUrl('export const env=globalThis.testEnv;'));if(s==='@/app/chatgpt-auth')return 'from '+JSON.stringify(dataUrl('export async function getChatGPTUser(){return globalThis.testUser}'));const p=s.startsWith('@/')?path.join(root,s.slice(2)):path.resolve(path.dirname(file),s);return 'from '+JSON.stringify(resolve(p+'.ts'))});const u=dataUrl(code);cache.set(file,u);return u}
+function resolve(file){if(cache.has(file))return cache.get(file);let code=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;code=code.replace(/from ["']([^"']+)["']/g,(m,s)=>{if(s==='#partyprint-runtime')return 'from '+JSON.stringify(dataUrl("export const runtimeKind='cloudflare';export async function hashStaffPassword(){throw Error('not_available')}export const env=globalThis.testEnv;export function clientKey(r){return r.headers.get('CF-Connecting-IP')||'anonymous'}export function publicOrigin(){return 'https://partyprint-ai.atzilul.chatgpt.site'}"));if(s===["cloudflare:","workers"].join(""))return 'from '+JSON.stringify(dataUrl('export const env=globalThis.testEnv;'));if(s==='@/app/chatgpt-auth')return 'from '+JSON.stringify(dataUrl('export async function getChatGPTUser(){return globalThis.testUser}'));const p=s.startsWith('@/')?path.join(root,s.slice(2)):path.resolve(path.dirname(file),s);return 'from '+JSON.stringify(resolve(path.extname(p)?p:p+'.ts'))});const u=dataUrl(code);cache.set(file,u);return u}
 const sql=new DatabaseSync(':memory:');for(const file of fs.readdirSync(root+'/drizzle').filter(x=>x.endsWith('.sql')))sql.exec(fs.readFileSync(root+'/drizzle/'+file,'utf8'));
 const db={prepare(query){let vals=[];return{bind(...args){vals=args;return this},async first(){return sql.prepare(query).get(...vals)||null},async all(){return{results:sql.prepare(query).all(...vals)}},async run(){return sql.prepare(query).run(...vals)}}}};
 const objects=new Map();const enc=new TextEncoder();const bucket={async put(k,v,opts){objects.set(k,{bytes:typeof v==='string'?enc.encode(v):new Uint8Array(v),opts})},async get(k){const o=objects.get(k);return o?{async json(){return JSON.parse(new TextDecoder().decode(o.bytes))},async text(){return new TextDecoder().decode(o.bytes)},async arrayBuffer(){return o.bytes.slice().buffer},httpMetadata:o.opts?.httpMetadata,body:o.bytes}:null},async delete(k){objects.delete(k)},async head(k){return objects.has(k)?{size:objects.get(k).bytes.length}:null},async list(){return{objects:[...objects.keys()].map(key=>({key})),truncated:false}}};
@@ -154,3 +154,49 @@ assert.equal((await ticketDetail.PATCH(post('/api/admin/tickets/'+ticketId,JSON.
 const hydrated=await (await ticketDetail.GET(get('/api/admin/tickets/'+ticketId),ticketCtx)).json();assert.equal(hydrated.messages[0].body,'Preview is ready for review.');assert.equal(hydrated.ticket.priority,'urgent');
 const options=await ticketOptions.GET();assert.equal(options.status,200);const optionData=await options.json();assert(optionData.assignees.some(item=>item.email==='atzilul@gmail.com'));
 console.log('PASS: ticket creation, same-origin protection, customer assignment, team assignee validation, filters, priority/status updates and durable message threads.');
+
+// Notification recipients must follow the current team, including role/removal changes.
+const mailTestApi=await load('app/api/admin/mail/test/route.ts');
+const priorOwner=process.env.PARTYPRINT_ADMIN_EMAIL;
+const priorMailKey=globalThis.testEnv.RESEND_API_KEY,priorMailFrom=globalThis.testEnv.MAIL_FROM;
+const originalTeam=sql.prepare("SELECT data,version FROM studio_settings WHERE key='team'").get();
+const deliveries=[];
+try{
+ process.env.PARTYPRINT_ADMIN_EMAIL=' "owner@example.com" ';
+ globalThis.testUser={userId:'owner-test',email:'owner@example.com'};
+ globalThis.testEnv.RESEND_API_KEY=' "re_test" ';globalThis.testEnv.MAIL_FROM=' "PARTYPRINT <orders@example.com>" ';
+ const members=[{email:'manager@example.com',role:'manager'},{email:'legacy@example.com'},{email:'designer@example.com',role:'designer'},{email:'printer@example.com',role:'printer'},{email:'owner@example.com',role:'manager'}];
+ const writeTeam=members=>sql.prepare("INSERT INTO studio_settings(key,data,version) VALUES ('team',?,1) ON CONFLICT(key) DO UPDATE SET data=excluded.data").run(JSON.stringify({members,history:[]}));
+ writeTeam(members);
+ globalThis.fetch=async(_url,init)=>{deliveries.push(JSON.parse(init.body));return Response.json({id:'notification-test-id'})};
+ assert.equal((await mail.notifyOrder(globalThis.testEnv,saved,link)),true);
+ assert.deepEqual(deliveries.at(-1).to,['owner@example.com','manager@example.com','legacy@example.com']);
+ let state=await mail.orderMailStatus(globalThis.testEnv);
+ assert.deepEqual(state.recipients,state.lastAttempt.recipients);assert.equal(state.lastAttempt.messageId,'notification-test-id');
+ // Remove a manager and downgrade a legacy manager: neither receives the next alert.
+ writeTeam([{email:'legacy@example.com',role:'designer'},{email:'new@example.com',role:'manager'}]);
+ assert.equal((await mail.notifyOrder(globalThis.testEnv,saved,link,'retry')),true);
+ assert.deepEqual(deliveries.at(-1).to,['owner@example.com','new@example.com']);
+ globalThis.testUser=null;
+ assert.equal((await mailTestApi.POST(post('/api/admin/mail/test','{}'))).status,403);
+ globalThis.testUser={userId:'owner-test',email:'owner@example.com'};
+ assert.equal((await mailTestApi.POST(post('/api/admin/mail/test','{}','https://attacker.test'))).status,403);
+ let testResponse=await mailTestApi.POST(post('/api/admin/mail/test',JSON.stringify({to:['injected@example.com']})));
+ assert.equal(testResponse.status,200);assert.deepEqual(deliveries.at(-1).to,['owner@example.com','new@example.com']);
+ assert.equal((await testResponse.json()).mail.lastAttempt.kind,'test');
+ assert.equal((await mailTestApi.POST(post('/api/admin/mail/test','{}'))).status,429);
+ // A rejected notification still preserves the submitted order, with a useful admin diagnostic.
+ sql.prepare('DELETE FROM form_rate_limits').run();
+ globalThis.fetch=async()=>Response.json({name:'validation_error',message:'The sender domain is not verified.'},{status:403});
+ const failureResponse=await publicRoute.POST(post('/api/orders',form()));assert.equal(failureResponse.status,201);
+ const failedOrder=await failureResponse.json();assert.equal(failedOrder.emailSent,false);assert(await store.getOrder(failedOrder.id));
+ state=await mail.orderMailStatus(globalThis.testEnv);assert.equal(state.lastAttempt.code,'domain_not_verified');assert.equal(state.lastAttempt.orderId,failedOrder.id);
+ assert(!JSON.stringify(state).includes('re_test'));
+}finally{
+ globalThis.fetch=originalFetch;
+ if(priorOwner===undefined)delete process.env.PARTYPRINT_ADMIN_EMAIL;else process.env.PARTYPRINT_ADMIN_EMAIL=priorOwner;
+ globalThis.testEnv.RESEND_API_KEY=priorMailKey;globalThis.testEnv.MAIL_FROM=priorMailFrom;
+ if(originalTeam)sql.prepare("UPDATE studio_settings SET data=?,version=? WHERE key='team'").run(originalTeam.data,originalTeam.version);
+ else sql.prepare("DELETE FROM studio_settings WHERE key='team'").run();
+}
+console.log('PASS: live team recipients, owner normalization, role/removal changes, protected test send, recipient injection rejection, rate limiting, provider diagnostics and order persistence after Resend failure. No real emails sent.');
