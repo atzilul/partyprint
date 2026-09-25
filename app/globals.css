@@ -153,3 +153,15 @@ button,a,input,select,textarea,summary{touch-action:manipulation}
   .audience-scroll-hint svg{animation:audienceHint 1.3s ease-in-out infinite;}
   .desktop-order-cta{display:none;}
 }
+
+/* Hero event selector and opening slide refinements. */
+@media(min-width:681px){
+  .hero-copy{display:flex;flex-direction:column;}
+  .hero-copy>.hero-audience-switcher{grid-column:auto;grid-row:auto;width:100%;margin-top:auto;padding:16px 0 0;border-top:1px solid #161616;}
+  .hero-copy>.hero-audience-switcher .audience-options{justify-content:flex-start;}
+  .hero.audience-custom .audience-copy h1{width:100%;max-width:100%;font-size:clamp(48px,5.4vw,82px);}
+  .hero.audience-custom .audience-copy h1 span{display:block;max-width:100%;white-space:normal;overflow-wrap:normal;word-break:normal;padding-inline-start:0;line-height:1.02;}
+}
+@media(min-width:681px) and (max-width:1050px){
+  .hero.audience-custom .audience-copy h1{font-size:clamp(46px,7vw,68px);}
+}
