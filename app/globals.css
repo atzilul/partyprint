@@ -109,7 +109,7 @@ button,a,input,select,textarea,summary{touch-action:manipulation}
 @keyframes mobileOrbitPulse{0%,100%{transform:scale(1) rotate(-10deg)}50%{transform:scale(1.035) rotate(-8deg)}}
 @keyframes mobileGlow{0%,100%{opacity:.25;transform:translate(0,0) scale(.9)}50%{opacity:.6;transform:translate(-10px,8px) scale(1.12)}}
 @keyframes mobileHeroDrift{from{transform:scale(1.02) translate3d(0,0,0)}to{transform:scale(1.06) translate3d(-1.5%,-1%,0)}}
-@keyframes mobileBarIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes mobileBarIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}@keyframes audienceHint{0%,100%{transform:translateX(0);opacity:.65}50%{transform:translateX(-7px);opacity:1}}
 @media(prefers-reduced-motion:reduce){.hero-art:before,.hero-art>img,.hero-orbit,.mobile-sticky{animation:none}.package{transition:none}}
 .mobile-nav-toggle{display:none}
 @media(max-width:360px){.nav .small-cta svg{display:none}}
@@ -135,4 +135,21 @@ button,a,input,select,textarea,summary{touch-action:manipulation}
   .nav nav.is-open{display:grid;gap:0}
   .nav nav a{display:block;padding:14px 4px;border-bottom:1px solid #444;font-size:16px}
   .nav nav a:last-child{border-bottom:0}
+}
+
+/* Conversion and event chooser refinements. */
+.hero-audience-switcher{grid-column:1/-1;grid-row:2;justify-content:center;position:relative;margin:0;padding:18px 56px;background:inherit;border-top:1px solid #161616;}
+.hero-audience-switcher .audience-options{justify-content:center;}
+.audience-scroll-hint{display:none;}
+.desktop-order-cta{display:flex;justify-content:center;margin-top:34px;}
+.desktop-order-cta .cta{min-width:250px;justify-content:center;}
+@media(max-width:680px){
+  .hero-art{height:clamp(300px,48svh,420px);aspect-ratio:auto;}
+  .hero-audience-switcher{grid-column:auto;grid-row:auto;display:block;order:3;margin:0;padding:14px 20px 18px;border-top:1px solid #16161630;}
+  .hero-audience-switcher .audience-options{display:flex;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;overscroll-behavior-x:contain;gap:6px;padding:3px 2px 8px;scrollbar-width:none;}
+  .hero-audience-switcher .audience-options::-webkit-scrollbar{display:none;}
+  .hero-audience-switcher .audience-options label{flex:0 0 auto;white-space:nowrap;border-radius:8px;min-height:44px;padding:8px 12px;}
+  .audience-scroll-hint{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:1px;font-size:12px;font-weight:700;}
+  .audience-scroll-hint svg{animation:audienceHint 1.3s ease-in-out infinite;}
+  .desktop-order-cta{display:none;}
 }
