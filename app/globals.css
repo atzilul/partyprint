@@ -218,6 +218,7 @@ button,a,input,select,textarea,summary{touch-action:manipulation}
 
 /* The coupon editor owns one shared topbar message; the desktop/mobile copy is the same. */
 .topbar.has-launch-offer::after{display:none;}
+.topbar.promo-disabled::after{display:none;}
 .topbar .launch-offer{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-inline-start:18px;padding:4px 11px;background:var(--ink);color:var(--acid);border:1px solid var(--ink);border-radius:999px;font:900 12px/1.35 'Assistant',Arial,sans-serif;direction:rtl;unicode-bidi:plaintext;box-shadow:2px 2px 0 #16161655;cursor:pointer;transition:transform .2s,background .2s;}
 .topbar .launch-offer:hover{background:var(--orange);color:var(--ink);transform:translateY(-1px);}
 .topbar .launch-offer span{margin:0;}
