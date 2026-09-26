@@ -215,3 +215,18 @@ button,a,input,select,textarea,summary{touch-action:manipulation}
   .topbar::after{display:block;width:max-content;max-width:100%;margin:5px auto 0;padding:4px 9px;font-size:11px;box-shadow:1px 1px 0 #16161655;}
   .mobile-sticky>div::after{content:'עצבו עכשיו וקבלו 5% הנחה עם PARTYSALE';display:block;margin-top:3px;color:#5d6400;font-size:11px;font-weight:900;line-height:1.3;direction:rtl;unicode-bidi:plaintext;}
 }
+
+/* The coupon editor owns one shared topbar message; the desktop/mobile copy is the same. */
+.topbar.has-launch-offer::after{display:none;}
+.topbar .launch-offer{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-inline-start:18px;padding:4px 11px;background:var(--ink);color:var(--acid);border:1px solid var(--ink);border-radius:999px;font:900 12px/1.35 'Assistant',Arial,sans-serif;direction:rtl;unicode-bidi:plaintext;box-shadow:2px 2px 0 #16161655;cursor:pointer;transition:transform .2s,background .2s;}
+.topbar .launch-offer:hover{background:var(--orange);color:var(--ink);transform:translateY(-1px);}
+.topbar .launch-offer span{margin:0;}
+.topbar .launch-offer b{background:var(--acid);color:var(--ink);padding:2px 6px;border-radius:5px;letter-spacing:.4px;}
+.topbar .launch-offer small{font-size:11px;color:var(--acid);font-weight:800;}
+.coupon-promo-field{display:block;}
+.coupon-promo-field small{display:block;margin-top:4px;font-size:12px;color:#666;font-weight:400;line-height:1.45;}
+@media(max-width:680px){
+  .topbar .launch-offer{display:flex;width:100%;max-width:100%;margin:5px 0 0;padding:5px 8px;font-size:11px;line-height:1.35;box-shadow:1px 1px 0 #16161655;flex-wrap:wrap;}
+  .topbar .launch-offer b{padding:1px 5px;}
+  .mobile-sticky>div::after{display:none!important;}
+}

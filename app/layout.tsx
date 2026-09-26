@@ -4,6 +4,7 @@ import "./fonts.css";
 import "./seo/seo.css";
 import "./policy-overrides.css";
 import SiteSeoFooter from "@/components/site-seo-footer";
+import LaunchOffer from "@/components/launch-offer";
 
 export const metadata: Metadata = {
   title: "PARTYPRINT | המתנה שהופכת לחולצה",
@@ -52,7 +53,7 @@ export default function RootLayout({
   };
   return (
     <html lang="he" dir="rtl">
-      <body className="antialiased">{children}<SiteSeoFooter/><script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(structuredData).replace(/</g, "\\u003c")}}/></body>
+      <body className="antialiased">{children}<LaunchOffer/><SiteSeoFooter/><script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(structuredData).replace(/</g, "\\u003c")}}/></body>
     </html>
   );
 }
