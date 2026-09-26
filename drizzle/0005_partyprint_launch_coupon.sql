@@ -1,0 +1,1 @@
+INSERT OR IGNORE INTO `coupons` (`code`,`version`,`used`,`data`) VALUES ('PARTYSALE',1,0,'{"code":"PARTYSALE","title":"השקת האתר · 5% הנחה","kind":"percent","value":5,"minQuantity":0,"minSubtotal":0,"maxUses":0,"starts":"","ends":"","enabled":true,"package":-1,"used":0,"version":0}');
