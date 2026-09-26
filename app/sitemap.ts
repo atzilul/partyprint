@@ -6,7 +6,7 @@ import {STUDIO_PAGES,STUDIO_PAGE_URL} from '@/lib/studio-pages';
 export const dynamic='force-dynamic';
 
 const base='https://partyprint.co.il';
-const contentUpdatedAt=new Date(process.env.PARTYPRINT_CONTENT_UPDATED_AT||'2026-09-21T00:00:00.000Z');
+const contentUpdatedAt=new Date(process.env.PARTYPRINT_CONTENT_UPDATED_AT||'2026-09-26T00:00:00.000Z');
 
 export default async function sitemap():Promise<MetadataRoute.Sitemap>{
  const posts=await listBlogPosts();

@@ -1,6 +1,28 @@
 const baseUrl = (process.env.PARTYPRINT_PUBLIC_URL || 'https://partyprint.co.il').replace(/\/$/, '');
 const requiredRobots = ['OAI-SearchBot', 'Google-Extended', 'Claude-SearchBot', 'PerplexityBot'];
 const requiredRoutes = ['/', '/about', '/work', '/guides', '/blog', '/faq', '/policies/shipping', '/policies/returns', '/blog/feed.xml'];
+const requiredServiceRoutes = ['/guides/הדפסה-על-חולצות', '/guides/הדפסה-בעיצוב-אישי', '/guides/חולצות-לימי-הולדת', '/guides/חולצה-לצוות-ולעסק', '/guides/חולצות-לאירועים', '/guides/הדפסה-על-חולצות-צבא'];
+const keywordRoutePairs = [
+  ['הדפסה על חולצה', '/guides/הדפסה-על-חולצות'],
+  ['הדפסה מעוצבת על חולצה', '/guides/הדפסה-על-חולצות'],
+  ['הדפסה על חולצות', '/guides/הדפסה-על-חולצות'],
+  ['חולצה למסיבת רווקות', '/guides/חולצה-למסיבת-רווקות'],
+  ['חולצה למסיבת רווקים', '/guides/חולצה-למסיבת-רווקים'],
+  ['חולצה לימי הולדת', '/guides/חולצות-לימי-הולדת'],
+  ['חולצה מעוצבת לימי הולדת', '/guides/חולצות-לימי-הולדת'],
+  ['חולצה לצוות', '/guides/חולצה-לצוות-ולעסק'],
+  ['חולצה מודפסת', '/guides/הדפסה-על-חולצות'],
+  ['הדפס על חולצה', '/guides/הדפסה-על-חולצות'],
+  ['חולצה ממותגת', '/guides/חולצה-לצוות-ולעסק'],
+  ['חולצה לעסק', '/guides/חולצה-לצוות-ולעסק'],
+  ['חולצות לאירועים', '/guides/חולצות-לאירועים'],
+  ['הדפסה בעיצוב אישי', '/guides/הדפסה-בעיצוב-אישי'],
+  ['הדפסה איכותית על חולצות', '/guides/הדפסה-על-חולצות'],
+  ['הדפסה על חולצות לימי הולדת', '/guides/חולצות-לימי-הולדת'],
+  ['הדפסת לוגו על חולצות', '/guides/חולצה-לצוות-ולעסק'],
+  ['חלוצות לאירועים', '/guides/חולצות-לאירועים'],
+  ['הדפסה על חולצות צבא', '/guides/הדפסה-על-חולצות-צבא'],
+];
 
 async function fetchChecked(path) {
   const url = path.startsWith('http') ? path : `${baseUrl}${path}`;
@@ -37,7 +59,27 @@ for (const token of ['/about', '/work', '/guides', '/blog', '/faq', '/sitemap.xm
   if (!llms.body.includes(`${baseUrl}${token}`)) throw new Error(`llms.txt is missing ${token}.`);
 }
 
+const llmsFull = await fetchChecked('/llms-full.txt');
+for (const token of ['הדפסה על חולצות', 'הדפסה בעיצוב אישי', 'חולצה לימי הולדת', 'חולצה לצוות', 'חולצות לאירועים', 'הדפסה על חולצות צבא']) {
+  if (!llmsFull.body.includes(token)) throw new Error(`llms-full.txt is missing ${token}.`);
+}
+
+for (const path of requiredServiceRoutes) {
+  const result = await fetchChecked(path);
+  assertHtmlQuality(path, result);
+  if (!result.body.includes('application/ld+json')) throw new Error(`${path} is missing structured data.`);
+}
+
+for (const [keyword, path] of keywordRoutePairs) {
+  const result = await fetchChecked(path);
+  if (!result.body.includes(keyword)) throw new Error(`${path} is missing target keyword: ${keyword}.`);
+}
+
 const htmlSitemapUrls = urls.filter(url => !url.endsWith('/feed.xml'));
+const decodedSitemap = decodeURIComponent(sitemapResult.body);
+for (const [, path] of keywordRoutePairs) {
+  if (!decodedSitemap.includes(`${baseUrl}${path}`)) throw new Error(`sitemap.xml is missing keyword route ${path}.`);
+}
 for (let index = 0; index < htmlSitemapUrls.length; index += 6) {
   const batch = htmlSitemapUrls.slice(index, index + 6);
   const results = await Promise.all(batch.map(url => fetchChecked(url)));

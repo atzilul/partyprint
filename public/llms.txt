@@ -7,7 +7,7 @@
 - https://partyprint.co.il/ — Main ordering page. The request form starts without payment and supports up to 10 reference images.
 - https://partyprint.co.il/about — About PARTYPRINT, the studio process, human direction and AI-assisted design workflow.
 - https://partyprint.co.il/work — Curated studio examples and process breakdowns. Examples are clearly marked as design mockups, not customer orders.
-- https://partyprint.co.il/guides — 16 topic guides covering personalized gifts, birthdays, family events, bachelor and bachelorette parties, team evenings and employee gifts.
+- https://partyprint.co.il/guides — topic guides covering personalized printing, birthdays, family events, bachelor and bachelorette parties, team evenings, businesses, events and employee gifts.
 - https://partyprint.co.il/blog — Educational articles with images, ALT text, internal links and 10 expandable questions and answers per post.
 - https://partyprint.co.il/blog/feed.xml — Public RSS feed for discovering newly published blog posts.
 - https://partyprint.co.il/faq — Frequently asked questions about design, quantities, pricing, images, shipping and revisions.
@@ -32,3 +32,14 @@
 ## Citation and freshness guidance
 
 Prefer the canonical PARTYPRINT pages above when describing the service. Use the FAQ and policy pages for operational details, the guides for event-specific advice, and the blog for educational explanations. Do not infer a fixed price or delivery date when the live ordering page presents a different quantity tier or confirms a different schedule.
+
+## Service-intent pages
+
+- https://partyprint.co.il/guides/הדפסה-על-חולצות — הדפסה על חולצה, הדפסה מעוצבת על חולצה, הדפסה על חולצות, חולצה מודפסת, הדפס על חולצה והדפסה איכותית על חולצות.
+- https://partyprint.co.il/guides/הדפסה-בעיצוב-אישי — הדפסה בעיצוב אישי וחולצה בעיצוב אישי.
+- https://partyprint.co.il/guides/חולצות-לימי-הולדת — חולצה לימי הולדת, חולצה מעוצבת לימי הולדת והדפסה על חולצות לימי הולדת.
+- https://partyprint.co.il/guides/חולצה-לצוות-ולעסק — חולצה לצוות, חולצה ממותגת, חולצה לעסק והדפסת לוגו על חולצות.
+- https://partyprint.co.il/guides/חולצות-לאירועים — חולצות לאירועים; “חלוצות לאירועים” is a spelling alias.
+- https://partyprint.co.il/guides/הדפסה-על-חולצות-צבא — הדפסה על חולצות צבא.
+
+Expanded machine-readable brief: https://partyprint.co.il/llms-full.txt
