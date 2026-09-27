@@ -6,7 +6,9 @@ import {STUDIO_PAGES,STUDIO_PAGE_URL} from '@/lib/studio-pages';
 export const dynamic='force-dynamic';
 
 const base='https://partyprint.co.il';
-const contentUpdatedAt=new Date(process.env.PARTYPRINT_CONTENT_UPDATED_AT||'2026-09-26T00:00:00.000Z');
+const contentUpdatedAt=new Date(process.env.PARTYPRINT_CONTENT_UPDATED_AT||'2026-09-27T00:00:00.000Z');
+const absoluteImage=(src:string)=>/^https?:\/\//.test(src)?src:`${base}${src}`;
+const imageList=(...sources:(string|undefined)[])=>sources.filter(Boolean).map(absoluteImage);
 
 export default async function sitemap():Promise<MetadataRoute.Sitemap>{
  const posts=await listBlogPosts();
@@ -20,9 +22,9 @@ export default async function sitemap():Promise<MetadataRoute.Sitemap>{
   {url:base+'/faq',lastModified:contentUpdatedAt,changeFrequency:'monthly',priority:.7},
   {url:base+'/policies/shipping',lastModified:contentUpdatedAt,changeFrequency:'monthly',priority:.5},
   {url:base+'/policies/returns',lastModified:contentUpdatedAt,changeFrequency:'monthly',priority:.5},
-  ...SEO_PAGES.map(page=>({url:base+SEO_PAGE_URL(page.slug),lastModified:contentUpdatedAt,changeFrequency:'weekly' as const,priority:.8})),
-  ...STUDIO_PAGES.map(page=>({url:base+STUDIO_PAGE_URL(page.slug),lastModified:contentUpdatedAt,changeFrequency:'monthly' as const,priority:.7})),
-  ...posts.map(post=>({url:base+'/blog/'+post.slug,lastModified:new Date(post.updatedAt||post.publishedAt||contentUpdatedAt.toISOString()),changeFrequency:'monthly' as const,priority:.8})),
+  ...SEO_PAGES.map(page=>({url:base+SEO_PAGE_URL(page.slug),lastModified:contentUpdatedAt,changeFrequency:'weekly' as const,priority:.8,images:imageList(page.heroImage)})),
+  ...STUDIO_PAGES.map(page=>({url:base+STUDIO_PAGE_URL(page.slug),lastModified:contentUpdatedAt,changeFrequency:'monthly' as const,priority:.7,images:imageList(page.heroImage)})),
+  ...posts.map(post=>({url:base+'/blog/'+post.slug,lastModified:new Date(post.updatedAt||post.publishedAt||contentUpdatedAt.toISOString()),changeFrequency:'monthly' as const,priority:.8,images:imageList(post.coverImage,post.inlineImage1,post.inlineImage2)})),
  ];
  return entries;
 }

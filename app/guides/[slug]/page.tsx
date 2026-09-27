@@ -1,14 +1,15 @@
 /* eslint-disable @next/next/no-img-element -- curated local editorial images. */
 import Link from '@/components/safe-link';
 import type {Metadata} from 'next';
-import {getSeoPage,SEO_PAGE_SLUGS,SEO_PAGE_URL} from '@/lib/seo-pages';
+import {permanentRedirect} from 'next/navigation';
+import {getSeoPage,isSeoAlias,SEO_PAGE_ALIASES,SEO_PAGE_SLUGS,SEO_PAGE_URL} from '@/lib/seo-pages';
 import {SeoFooter,SeoNav} from '@/components/seo-layout';
 import '../../seo/seo.css';
 
 export const dynamic = 'force-static';
 
 export function generateStaticParams() {
-  return SEO_PAGE_SLUGS.map(slug => ({slug}));
+  return [...SEO_PAGE_SLUGS,...Object.keys(SEO_PAGE_ALIASES)].map(slug => ({slug}));
 }
 
 export async function generateMetadata({params}: {params: Promise<{slug: string}>}): Promise<Metadata> {
@@ -24,6 +25,7 @@ export default async function SeoGuidePage({params}: {params: Promise<{slug: str
   const decodedSlug = decodeURIComponent(slug);
   const item = getSeoPage(decodedSlug);
   if (!item) return <main className="seo-page" dir="rtl"><SeoNav/><section className="seo-not-found"><h1>העמוד לא נמצא</h1><p>אפשר לחזור לכל מדריכי הרעיונות ולבחור כיוון אחר.</p><Link className="seo-primary-cta" href="/guides">לכל המדריכים</Link></section><SeoFooter/></main>;
+  if (isSeoAlias(decodedSlug)) permanentRedirect(encodeURI(SEO_PAGE_URL(item.slug)));
   const canonicalUrl = `https://partyprint.co.il${SEO_PAGE_URL(item.slug)}`;
   const breadcrumbs = {'@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'PARTYPRINT', item: 'https://partyprint.co.il/' }, { '@type': 'ListItem', position: 2, name: 'מדריכי רעיונות', item: 'https://partyprint.co.il/guides' }, { '@type': 'ListItem', position: 3, name: item.title, item: canonicalUrl }]};
   const faqSchema = {'@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: item.faqs.map(faq => ({'@type': 'Question', name: faq.question, acceptedAnswer: {'@type': 'Answer', text: faq.answer}}))};
