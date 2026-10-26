@@ -75,7 +75,8 @@ Configure these in the hosting environment, never GitHub source or client code:
 | `PARTYPRINT_APPROVAL_LINK_DAYS` | Optional design-approval-link lifetime; default 30, allowed 1–30 |
 | `RESEND_API_KEY`, `MAIL_FROM` | Existing mail provider credentials and verified sender |
 | `GA_MEASUREMENT_ID` | Public GA4 Measurement ID (`G-V3QDR0W4WK`). See [docs/analytics.md](docs/analytics.md) |
-| `META_PIXEL_ID` | Public Meta pixel (dataset) ID (`2241332043403463`). Both tags load on public pages unless the visitor opts out |
+| `META_PIXEL_ID` | Public Meta pixel (dataset) ID (`2241332043403463`). GA loads on public pages unless the visitor opts out; the Meta pixel follows the region rule in docs/analytics.md |
+| `PARTYPRINT_TRUSTED_COUNTRY_HEADER` | Optional. A header that Hostinger confirms its edge **overwrites** with the visitor's ISO country code. Leave unset until confirmed: the Meta pixel then decides by browser time zone and falls back to strict (no pixel before consent). See [docs/analytics.md](docs/analytics.md) |
 
 The reverse proxy must overwrite forwarded protocol/host headers and block direct
 external access to the Node port. Do not trust arbitrary client-provided IP headers.

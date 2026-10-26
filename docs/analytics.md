@@ -16,19 +16,39 @@ Hosting environment (Hostinger): `GA_MEASUREMENT_ID=G-V3QDR0W4WK` and
 `META_PIXEL_ID=2241332043403463`. The browser reads both from
 `GET /api/analytics-config`. A missing or malformed ID simply skips that tag.
 
-## Notice and opt-out
+## Notice, opt-out and the Meta region rule
 
-- On public pages Google Analytics, the Meta pixel and the first-party
-  `/api/events` counter run by default (owner's decision, Oct 2026: maximum data
-  for the ad accounts, with notice and opt-out).
-- A notice links to `/policies/privacy`. **אישור** closes it; **לא, תודה** turns
-  GA, Meta and `/api/events` off in that browser, revokes Meta consent, denies
-  Google consent and deletes `_ga*`, `_gcl_*`, `_fbp` and `_fbc` cookies.
-  **הגדרות פרטיות ועוגיות** at the bottom of every public page reopens it.
-  The choice is stored in `localStorage` (`partyprint-consent-v1`) for 12 months.
+- **Google Analytics** and the first-party `/api/events` counter run on public
+  pages by default (owner's decision, Oct 2026: maximum data, with notice and
+  opt-out). Unchanged by the Meta rule below.
+- **Meta pixel, by region** (`metaModeFor` in `lib/analytics.ts`):
+  - **Israel, "notice" mode:** the pixel loads on entry and may send `PageView`
+    before any choice. Every other Meta event (ViewContent, InitiateCheckout,
+    Lead, Contact, FormStep, FormSubmitAttempt) is sent only after **אישור**.
+  - **Everywhere else, including the EU, and whenever the region cannot be
+    identified, "strict" mode:** the pixel is not loaded at all until **אישור**.
+  - Our code sends `PageView` itself on each route change (`fbq.disablePushState`
+    stops Meta's own history-based PageView, which would duplicate it and could
+    fire on excluded paths). When the pixel loads before a choice, Meta's
+    automatic configuration (detected button clicks, page metadata) is switched
+    off with `fbq('set', 'autoConfig', false, id)` before `init`.
+  - Region signal: a country from `PARTYPRINT_TRUSTED_COUNTRY_HEADER` (only if the
+    hosting edge is confirmed to overwrite that header) wins; otherwise the
+    browser time zone, where only `Asia/Jerusalem` / `Asia/Tel_Aviv` count as
+    Israel. No signal or any other zone means strict.
+- The notice text differs per mode and links to `/privacy-policy`. It never
+  promises that already-sent events are deleted.
+- **לא, תודה** stops GA, further Meta events and `/api/events` in that browser,
+  revokes Meta consent, denies Google consent and deletes `_ga*`, `_gcl_*`,
+  `_fbp` and `_fbc` cookies. **הגדרות פרטיות ועוגיות** at the bottom of every
+  public page reopens the notice. The choice is stored in `localStorage`
+  (`partyprint-consent-v1`) for 12 months.
 - Google consent mode: everything granted unless the visitor opts out.
 - Never measured: `/admin`, `/track/*`, `/design/*`, `/api/*` and the Sites
   sign-in routes (no notice, no tags, no events).
+- **Privacy policy:** `/privacy-policy` (draft pending legal approval; the old
+  `/policies/privacy` URL permanently redirects there). Linked from the notice,
+  the footer of every public page and the sitemap.
 
 ## GA4 events
 
@@ -74,7 +94,15 @@ currency or transaction ID is sent.
 (`begin_order_request`), `Lead` (`generate_lead`), `Contact` (WhatsApp / email /
 phone, `content_name` = channel), and custom `FormStep` / `FormSubmitAttempt`.
 Parameters are the same allowlisted values as GA (`content_category` = package
-type or CTA location). Advanced Matching is not configured in code.
+type or CTA location). Before a choice, only `PageView` and only in the Israel
+notice mode (see above).
+
+**Advanced Matching:** not configured in code, but *Automatic advanced matching*
+is **on** in Events Manager for this dataset (enabled Oct 26, 2026, with email,
+phone, name, city/state/ZIP, country, date of birth and external ID). When the
+pixel is active, Meta's own script may hash contact fields it finds on the page
+and send them. The privacy policy says so. Traffic permissions: allow list
+`partyprint.co.il` and its subdomains.
 
 ## Allowed values
 

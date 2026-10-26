@@ -1,6 +1,6 @@
 const baseUrl = (process.env.PARTYPRINT_PUBLIC_URL || 'https://partyprint.co.il').replace(/\/$/, '');
 const requiredRobots = ['OAI-SearchBot', 'Google-Extended', 'Claude-SearchBot', 'PerplexityBot'];
-const requiredRoutes = ['/', '/about', '/work', '/guides', '/blog', '/faq', '/policies/shipping', '/policies/returns', '/blog/feed.xml'];
+const requiredRoutes = ['/', '/about', '/work', '/guides', '/blog', '/faq', '/policies/shipping', '/policies/returns', '/privacy-policy', '/blog/feed.xml'];
 const requiredServiceRoutes = ['/guides/הדפסה-על-חולצות', '/guides/הדפסה-בעיצוב-אישי', '/guides/חולצות-לימי-הולדת', '/guides/חולצה-לצוות-ולעסק', '/guides/חולצות-לאירועים', '/guides/הדפסה-על-חולצות-צבא'];
 const keywordRoutePairs = [
   ['הדפסה על חולצה', '/guides/הדפסה-על-חולצות'],

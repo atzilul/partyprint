@@ -11,4 +11,5 @@ export type RuntimeEnv = {
     MAIL_FROM?: string;
     GA_MEASUREMENT_ID?: string;
     META_PIXEL_ID?: string;
+    PARTYPRINT_TRUSTED_COUNTRY_HEADER?: string;
 };

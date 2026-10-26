@@ -1,12 +1,20 @@
 // Measurement for PARTYPRINT (browser only): Google Analytics 4 and the Meta pixel.
 //
-// Notice + opt-out: on public pages both tags load immediately, and a visitor
-// who clicks "לא, תודה" turns all measurement off (GA, Meta and the
-// first-party /api/events counter) from that moment on.
+// Google Analytics: notice + opt-out (owner's decision, Oct 2026). It loads on
+// public pages unless the visitor clicks "לא, תודה".
+//
+// Meta pixel, by region (see metaMode):
+//  - Israel ("notice"): before a choice the pixel may send PageView only; other
+//    Meta events wait for "אישור"; "לא, תודה" stops every further Meta event.
+//  - Everywhere else, including the EU and any visitor whose region cannot be
+//    identified ("strict"): the pixel is not loaded at all until "אישור".
+// A refusal is stored for 12 months. Events already sent are not recalled.
 //
 // Every event name and every parameter value we send is checked against a fixed
 // allowlist; anything else is dropped. Names, emails, phones, free text, order
 // IDs, coupon codes, design text and file names are never passed in here.
+// (Meta's automatic advanced matching is a dataset setting in Events Manager,
+// not code: when enabled, Meta's own script may hash contact fields it finds.)
 // See docs/analytics.md for the measurement plan.
 
 export type ConsentChoice = 'granted' | 'denied';
@@ -16,7 +24,7 @@ declare global {
   interface Window {
     dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;
-    fbq?: ((...args: unknown[]) => void) & {queue?: unknown[]; loaded?: boolean; version?: string; push?: unknown; callMethod?: (...args: unknown[]) => void};
+    fbq?: ((...args: unknown[]) => void) & {queue?: unknown[]; loaded?: boolean; version?: string; push?: unknown; callMethod?: (...args: unknown[]) => void; disablePushState?: boolean};
     _fbq?: unknown;
     [disable: `ga-disable-${string}`]: boolean | undefined;
   }
@@ -27,6 +35,23 @@ export const CONSENT_EVENT = 'partyprint-consent';
 const CONSENT_MAX_AGE = 365 * 86400000;
 const MEASUREMENT_ID = /^G-[A-Z0-9]{4,20}$/;
 const PIXEL_ID = /^\d{8,20}$/;
+
+export type MetaMode = 'notice' | 'strict';
+const ISRAEL_TIME_ZONES = ['Asia/Jerusalem', 'Asia/Tel_Aviv'];
+
+/**
+ * Israel gets the notice mode; anything else (EU, other countries, unknown) is
+ * strict. A country from a trusted server header wins; without one, the
+ * browser's time zone is the only signal, and a missing or non-Israeli zone is
+ * treated as unknown, i.e. strict.
+ */
+export function metaModeFor(country: string, timeZone: string): MetaMode {
+  if (/^[A-Z]{2}$/.test(country)) return country === 'IL' ? 'notice' : 'strict';
+  return ISRAEL_TIME_ZONES.includes(timeZone) ? 'notice' : 'strict';
+}
+function browserTimeZone() {
+  try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch { return ''; }
+}
 
 // Staff, customer tracking and design-approval pages are never measured.
 const EXCLUDED_PREFIXES = ['/admin', '/track', '/design', '/api', '/signin-with-chatgpt', '/signout-with-chatgpt'];
@@ -167,7 +192,8 @@ export function track(name: string, params: Record<string, string | number | und
 
 function send(name: string, params: Params) {
   if (measurementId) window.gtag?.('event', name, params);
-  const meta = pixelId ? metaEvent(name, params) : null;
+  // Meta events other than PageView need an explicit "אישור" in every region.
+  const meta = metaReady() && metaAllowed('event') ? metaEvent(name, params) : null;
   if (meta) window.fbq?.(meta[0], meta[1], meta[2]);
 }
 
@@ -186,8 +212,43 @@ function flush() {
 
 let tagsState: 'idle' | 'loading' | 'ready' = 'idle';
 let loading: Promise<void> | null = null;
-let measurementId = '', pixelId = '';
-let lastLocation = '', lastPath = '';
+let measurementId = '', pixelId = '', country = '';
+let lastLocation = '', lastPath = '', lastMetaPath = '';
+let metaLoaded = false, metaMode: MetaMode = 'strict';
+
+let configLoading: Promise<void> | null = null;
+function loadConfig() {
+  configLoading ??= (async () => {
+    try {
+      const response = await fetch('/api/analytics-config', {headers: {Accept: 'application/json'}});
+      const config = response.ok ? await response.json() as {measurementId?: string; metaPixelId?: string; country?: string} : {};
+      measurementId = MEASUREMENT_ID.test(config.measurementId || '') ? config.measurementId as string : '';
+      pixelId = PIXEL_ID.test(config.metaPixelId || '') ? config.metaPixelId as string : '';
+      country = /^[A-Z]{2}$/.test(config.country || '') ? config.country as string : '';
+    } catch { measurementId = ''; pixelId = ''; country = ''; }
+  })();
+  return configLoading;
+}
+
+/** This visitor's Meta mode; the notice text depends on it. */
+export async function getMetaMode(): Promise<MetaMode> {
+  await loadConfig();
+  return metaModeFor(country, browserTimeZone());
+}
+
+/**
+ * Meta may run when the visitor chose "אישור"; before any choice only PageView,
+ * and only in the Israel notice mode. Never after "לא, תודה".
+ */
+function metaAllowed(kind: 'pageview' | 'event') {
+  if (!pixelId || !enabled()) return false;
+  const current = readConsent();
+  if (current === 'granted') return true;
+  return current === null && kind === 'pageview' && metaMode === 'notice';
+}
+function metaReady() {
+  return metaLoaded && typeof window.fbq === 'function';
+}
 
 const CAMPAIGN_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'utm_id', 'utm_source_platform', 'utm_creative_format', 'utm_marketing_tactic', 'gclid', 'gbraid', 'wbraid', 'dclid', 'fbclid'];
 
@@ -232,7 +293,7 @@ function disableMeasurement() {
   window.gtag?.('consent', 'update', {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'});
   window.fbq?.('consent', 'revoke');
   deleteCookies(name => name === '_ga' || name.startsWith('_ga_') || name === '_fbp' || name === '_fbc' || name.startsWith('_gcl_'));
-  lastPath = '';
+  lastPath = ''; lastMetaPath = '';
 }
 
 function loadGoogle(id: string) {
@@ -249,50 +310,68 @@ function loadGoogle(id: string) {
   document.head.appendChild(script);
 }
 
-function loadMeta(id: string) {
+/**
+ * `automatic` = Meta's automatic configuration (button clicks and page metadata
+ * detected by Meta's script). It is switched off when the pixel loads before a
+ * choice (Israel notice mode), because the notice promises PageView only until
+ * "אישור". It is decided once, before init, so it stays off until the next page load.
+ */
+function loadMeta(id: string, automatic: boolean) {
   if (!window.fbq) {
-    type FbqStub = ((...args: unknown[]) => void) & {queue: unknown[]; loaded: boolean; version: string; push: unknown; callMethod?: (...args: unknown[]) => void};
+    type FbqStub = ((...args: unknown[]) => void) & {queue: unknown[]; loaded: boolean; version: string; push: unknown; callMethod?: (...args: unknown[]) => void; disablePushState?: boolean};
     // Same contract as Meta's base snippet: queue calls until fbevents.js installs callMethod.
     const fbq = function fbqStub(...args: unknown[]) {
       if (fbq.callMethod) fbq.callMethod.call(fbq, ...args); else fbq.queue.push(args);
     } as FbqStub;
     fbq.queue = []; fbq.loaded = true; fbq.version = '2.0'; fbq.push = fbq;
+    // sendPageView() sends PageView itself on every route change, gated by the
+    // visitor's choice and the excluded paths; Meta's own history-based PageView
+    // would duplicate it and could fire on /admin, /track or /design.
+    fbq.disablePushState = true;
     window.fbq = fbq; window._fbq = fbq;
     const script = document.createElement('script');
     script.async = true;
     script.src = 'https://connect.facebook.net/en_US/fbevents.js';
     document.head.appendChild(script);
   }
+  if (!automatic) window.fbq!('set', 'autoConfig', false, id);
   window.fbq!('consent', 'grant');
   window.fbq!('init', id);
 }
 
 async function loadTags() {
   tagsState = 'loading';
-  try {
-    const response = await fetch('/api/analytics-config', {headers: {Accept: 'application/json'}});
-    const config = response.ok ? await response.json() as {measurementId?: string; metaPixelId?: string} : {};
-    measurementId = MEASUREMENT_ID.test(config.measurementId || '') ? config.measurementId as string : '';
-    pixelId = PIXEL_ID.test(config.metaPixelId || '') ? config.metaPixelId as string : '';
-  } catch { measurementId = ''; pixelId = ''; }
+  await loadConfig();
+  metaMode = metaModeFor(country, browserTimeZone());
   if (!enabled()) { tagsState = 'idle'; return; }
   if (measurementId) loadGoogle(measurementId);
-  if (pixelId) loadMeta(pixelId);
   tagsState = 'ready';
+}
+
+/** Loads (or re-grants) the Meta pixel only when this visitor's mode and choice allow it. */
+function ensureMeta() {
+  if (!metaAllowed('pageview') && !metaAllowed('event')) return;
+  if (!metaLoaded) { loadMeta(pixelId, metaAllowed('event')); metaLoaded = true; }
+  else window.fbq?.('consent', 'grant');
 }
 
 function sendPageView() {
   if (tagsState !== 'ready' || excludedNow()) return;
   const path = location.pathname + location.search;
-  if (path === lastPath) return;
-  lastPath = path;
-  const page = {page_location: safeLocation(), page_referrer: lastLocation || safeReferrer(), page_title: document.title.slice(0, 120)};
-  lastLocation = page.page_location;
-  if (measurementId) {
-    window.gtag?.('set', page);
-    window.gtag?.('event', 'page_view', page);
+  if (path !== lastPath) {
+    lastPath = path;
+    const page = {page_location: safeLocation(), page_referrer: lastLocation || safeReferrer(), page_title: document.title.slice(0, 120)};
+    lastLocation = page.page_location;
+    if (measurementId) {
+      window.gtag?.('set', page);
+      window.gtag?.('event', 'page_view', page);
+    }
   }
-  if (pixelId) window.fbq?.('track', 'PageView');
+  // Tracked separately: in the strict mode the pixel may load only after "אישור", on a page GA already counted.
+  if (path !== lastMetaPath && metaReady() && metaAllowed('pageview')) {
+    lastMetaPath = path;
+    window.fbq?.('track', 'PageView');
+  }
 }
 
 /** Called by the consent manager on load, after a choice and on every route change. */
@@ -305,7 +384,7 @@ export async function startAnalytics() {
     window[`ga-disable-${measurementId}`] = false;
     window.gtag?.('consent', 'update', {analytics_storage: 'granted', ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted'});
   }
-  if (pixelId) window.fbq?.('consent', 'grant');
+  ensureMeta();
   sendPageView();
   flush();
 }
