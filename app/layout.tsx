@@ -3,8 +3,10 @@ import "./globals.css";
 import "./fonts.css";
 import "./seo/seo.css";
 import "./policy-overrides.css";
+import "./consent.css";
 import SiteSeoFooter from "@/components/site-seo-footer";
 import LaunchOffer from "@/components/launch-offer";
+import AnalyticsConsent from "@/components/analytics-consent";
 
 export const metadata: Metadata = {
   title: "PARTYPRINT | הדפסה על חולצות בעיצוב אישי",
@@ -53,7 +55,7 @@ export default function RootLayout({
   };
   return (
     <html lang="he" dir="rtl">
-      <body className="antialiased">{children}<LaunchOffer/><SiteSeoFooter/><script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(structuredData).replace(/</g, "\\u003c")}}/></body>
+      <body className="antialiased">{children}<LaunchOffer/><SiteSeoFooter/><AnalyticsConsent/><script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(structuredData).replace(/</g, "\\u003c")}}/></body>
     </html>
   );
 }

@@ -9,4 +9,5 @@ export type RuntimeEnv = {
     BUCKET: R2Bucket;
     RESEND_API_KEY?: string;
     MAIL_FROM?: string;
+    GA_MEASUREMENT_ID?: string;
 };
