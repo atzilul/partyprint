@@ -3,7 +3,7 @@ import { isIP } from 'node:net';
 import { DB, BUCKET } from './node-store';
 import type { RuntimeEnv, RuntimeUser } from './types';
 export const runtimeKind = 'node';
-export const env = { DB, BUCKET, get RESEND_API_KEY() { return process.env.RESEND_API_KEY; }, get MAIL_FROM() { return process.env.MAIL_FROM; }, get GA_MEASUREMENT_ID() { return process.env.GA_MEASUREMENT_ID; } } as unknown as RuntimeEnv;
+export const env = { DB, BUCKET, get RESEND_API_KEY() { return process.env.RESEND_API_KEY; }, get MAIL_FROM() { return process.env.MAIL_FROM; }, get GA_MEASUREMENT_ID() { return process.env.GA_MEASUREMENT_ID; }, get META_PIXEL_ID() { return process.env.META_PIXEL_ID; } } as unknown as RuntimeEnv;
 export function publicOrigin() { const raw = process.env.PARTYPRINT_PUBLIC_URL; if (!raw)
     throw Error('PARTYPRINT_PUBLIC_URL is required'); const u = new URL(raw); if (u.protocol !== 'https:' && !(u.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(u.hostname)))
     throw Error('Public URL must use HTTPS'); return u.origin; }

@@ -10,4 +10,5 @@ export type RuntimeEnv = {
     RESEND_API_KEY?: string;
     MAIL_FROM?: string;
     GA_MEASUREMENT_ID?: string;
+    META_PIXEL_ID?: string;
 };

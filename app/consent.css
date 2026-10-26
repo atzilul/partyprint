@@ -9,9 +9,10 @@
 .consent-reject{background:#fff;color:var(--ink,#161616)}
 .consent-accept:hover{background:#000}
 .consent-reject:hover{background:var(--acid,#efff5c)}
-.consent-settings{display:flex;justify-content:center;padding:14px 16px 22px;background:var(--background,#f5f4ef)}
-.consent-settings button{background:none;color:#555;font-size:14px;text-decoration:underline;text-underline-offset:3px;padding:4px 8px}
-.consent-settings button:hover{color:var(--ink,#161616)}
+.consent-copy a{text-decoration:underline;text-underline-offset:3px;font-weight:700;white-space:nowrap}
+.consent-settings{display:flex;justify-content:center;align-items:center;gap:6px;padding:14px 16px 22px;background:var(--background,#f5f4ef);color:#555;font-size:14px}
+.consent-settings a,.consent-settings button{background:none;color:#555;font-size:14px;text-decoration:underline;text-underline-offset:3px;padding:4px 8px}
+.consent-settings a:hover,.consent-settings button:hover{color:var(--ink,#161616)}
 @media (max-width:700px){
 .consent-banner{flex-direction:column;align-items:stretch;gap:14px;inset:auto 10px max(10px,env(safe-area-inset-bottom)) 10px;padding:16px}
 .consent-copy p{font-size:14px}

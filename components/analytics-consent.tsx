@@ -5,9 +5,10 @@ import {usePathname} from 'next/navigation';
 import {CONSENT_EVENT, installInteractionTracking, isExcludedPath, readConsent, saveConsent, startAnalytics, type ConsentChoice} from '@/lib/analytics';
 
 /**
- * Analytics consent: nothing is measured until the visitor accepts. The banner
- * stays out of the way of the order form, and "הגדרות פרטיות" at the bottom of
- * every public page reopens it so the choice can be changed at any time.
+ * Measurement notice with opt-out. Google Analytics and the Meta pixel run on
+ * public pages unless the visitor clicks "לא, תודה". The notice shows until a
+ * choice is made, and "הגדרות פרטיות ועוגיות" at the bottom of every public
+ * page reopens it so the choice can be changed at any time.
  */
 export default function AnalyticsConsent() {
   const pathname = usePathname() || '/';
@@ -26,7 +27,7 @@ export default function AnalyticsConsent() {
   }, [excluded]);
 
   useEffect(() => {
-    if (!excluded && choice === 'granted') void startAnalytics();
+    if (!excluded && choice !== undefined && choice !== 'denied') void startAnalytics();
   }, [choice, pathname, excluded]);
 
   if (excluded || choice === undefined) return null;
@@ -37,15 +38,15 @@ export default function AnalyticsConsent() {
   return <>
     {open && <section className="consent-banner" role="region" aria-label="הגדרות פרטיות" dir="rtl">
       <div className="consent-copy">
-        <strong>סטטיסטיקת שימוש? רק אם תאשרו.</strong>
-        <p>נשמח להשתמש ב־Google Analytics ובמונה פנימי כדי לשפר את האתר. לא נשלחים שם, טלפון, מייל, תמונות או תוכן הטופס. ההזמנה עובדת גם בלי אישור.</p>
-        {choice && <small>הבחירה הנוכחית: {choice === 'granted' ? 'מאושר' : 'לא מאושר'}. אפשר לשנות בכל עת.</small>}
+        <strong>עוגיות למדידה ולפרסום</strong>
+        <p>האתר משתמש ב־Google Analytics ובפיקסל של Meta כדי למדוד את השימוש באתר ואת הפרסום שלנו. פרטי הטופס, התמונות והרעיון שלכם לא נשלחים לכלים האלה. <a href="/policies/privacy">מדיניות הפרטיות</a></p>
+        {choice && <small>הבחירה הנוכחית: {choice === 'granted' ? 'מאושר' : 'המדידה כבויה'}. אפשר לשנות בכל עת.</small>}
       </div>
       <div className="consent-actions">
-        <button ref={firstButton} type="button" className="consent-accept" onClick={() => decide('granted')}>מאשרים סטטיסטיקה</button>
+        <button ref={firstButton} type="button" className="consent-accept" onClick={() => decide('granted')}>אישור</button>
         <button type="button" className="consent-reject" onClick={() => decide('denied')}>לא, תודה</button>
       </div>
     </section>}
-    <div className="consent-settings"><button type="button" onClick={reopen}>הגדרות פרטיות ועוגיות</button></div>
+    <div className="consent-settings"><a href="/policies/privacy">מדיניות פרטיות</a><span aria-hidden="true">·</span><button type="button" onClick={reopen}>הגדרות פרטיות ועוגיות</button></div>
   </>;
 }
