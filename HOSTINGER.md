@@ -29,14 +29,18 @@ and `drizzle` directories. If the platform starts in the output directory itself
 the equivalent entry command is `node server.js`. The generated server reads
 `PORT` from the environment (defaults to 3000) and binds to `0.0.0.0`.
 
-The repository now also contains `server.js`, which forwards to the standalone
-entry. Thus the same entry filename works whether the host starts from the
-repository or the output directory. The standalone package explicitly declares
-its `main` and `start` entries. The portable build ends with two HTTP boot checks:
-the repository entry and a standalone copy outside the source checkout. It fails
-if either cannot serve the homepage. Look for both `[partyprint] PASS` lines in
-the deployment build log. These checks verify boot, not Hostinger's routing or
-the production environment variables.
+The repository also contains `server.js`, which forwards to the
+standalone entry. Thus the same entry filename works whether the host starts
+from the repository or the output directory. The standalone package explicitly
+declares its `main` and `start` entries. The portable build starts both the
+repository entry and an isolated standalone copy, then waits for each process
+to report `Production server running at http://127.0.0.1:<port>` and remain
+alive. In Hostinger's build log, the server printed this startup marker but a
+parent-process request to the loopback port returned no HTTP response. The
+packaging check therefore verifies process startup without assuming that the
+build runner permits loopback HTTP. Look for both `[partyprint] PASS` lines.
+This confirms startup only; after deployment, verify the public homepage,
+routing, environment variables, and order storage separately.
 
 If a deployment still fails after both checks, obtain the post-build deployment
 or startup error from Hostinger; the transform log alone cannot identify it.

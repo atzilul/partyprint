@@ -3,7 +3,6 @@ import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { once } from "node:events";
 import { cp, mkdtemp, rm } from "node:fs/promises";
-import { request } from "node:http";
 import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -12,19 +11,6 @@ import { fileURLToPath } from "node:url";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const temp = await mkdtemp(join(tmpdir(), "partyprint-entry-"));
 const isolated = join(temp, "app");
-function requestHomepage(port) {
-  return new Promise((resolve, reject) => {
-    const req = request({ hostname: "127.0.0.1", port, path: "/", method: "GET" }, response => {
-      let body = "";
-      response.setEncoding("utf8");
-      response.on("data", chunk => { body += chunk; });
-      response.on("end", () => resolve({ status: response.statusCode, body }));
-    });
-    req.setTimeout(2000, () => req.destroy(new Error("Homepage request timed out.")));
-    req.on("error", reject);
-    req.end();
-  });
-}
 async function check(label, cwd, args) {
   const socket = createServer();
   socket.listen(0, "127.0.0.1");
@@ -45,17 +31,16 @@ async function check(label, cwd, args) {
     child.once("close", resolve);
   });
   try {
-    let response;
+    const readyPattern = /Production server running at http:\/\/127\.0\.0\.1:\d+/;
     const deadline = Date.now() + 15000;
     while (Date.now() < deadline && child.exitCode === null && child.signalCode === null) {
-      try {
-        response = await requestHomepage(port);
-        break;
-      } catch { await new Promise(resolve => setTimeout(resolve, 100)); }
+      if (readyPattern.test(logs)) break;
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
-    assert.equal(response?.status, 200, `${label} did not boot successfully.\n${logs}`);
-    assert.match(response.body, /PARTYPRINT/i);
-    console.log(`[partyprint] PASS ${label}: HTTP 200 on Node ${process.versions.node}`);
+    assert.match(logs, readyPattern, `${label} did not report a ready server.\n${logs}`);
+    assert.equal(child.exitCode, null, `${label} exited during startup.\n${logs}`);
+    assert.equal(child.signalCode, null, `${label} was signaled during startup.\n${logs}`);
+    console.log(`[partyprint] PASS ${label}: startup marker on Node ${process.versions.node}`);
   } finally {
     child.kill("SIGTERM");
     const killTimer = setTimeout(() => child.kill("SIGKILL"), 3000);

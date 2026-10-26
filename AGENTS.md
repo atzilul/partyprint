@@ -1,16 +1,29 @@
-# PARTYPRINT source synchronization
+# PARTYPRINT editing and release rules
 
-The user requests that every completed site update also be published to
-https://github.com/atzilul/partyprint on branch main.
+Read [docs/operating-model.md](docs/operating-model.md) before changing the site,
+its code, hosting, coupons, or email delivery.
 
-Before editing, inspect GitHub main and reconcile incoming changes. Preserve
-the registered Sites project and its hosting manifest. After validation, push
-the complete source and assets to GitHub. Use a fast-forward push, or the
-GitHub connector's blob/tree/commit/update-ref APIs with the current main
-commit as parent. Never force-push or overwrite unreviewed remote changes.
-Do not commit credentials, customer orders, uploads, or local runtime state.
-Verify the remote commit and report synchronization failures honestly.
+The editable code source is https://github.com/atzilul/partyprint on `main`.
+The public production site is https://partyprint.co.il/ on Hostinger. Hostinger
+automatically deploys pushes to `main`, so every push is a production release.
+The Sites project is a separate managed copy. Reuse its existing project ID from
+`.openai/hosting.json`; never create another project for this site.
 
-GitHub source synchronization does not migrate the runtime. This application
-currently needs Cloudflare D1/R2 and Sites authentication. Hostinger deployment
-requires adapting those capabilities before claiming it works there.
+Before editing, inspect the live site, the current GitHub `main` head, and
+Hostinger's latest deployment status. Reconcile differences before making
+changes. Never use an old Sites screenshot, saved version, or archive as proof
+of production content or as the base for a source update.
+
+Base source edits on the latest `main`, preserve unreviewed remote changes, and
+never force-push. Keep production orders, uploads, credentials, and runtime
+settings outside Git. Do not change production data while editing source.
+
+After a push, verify that Hostinger built the same commit successfully and that
+the public site shows the intended result. A GitHub commit or a Sites publish
+alone does not prove the public site is current. If any signal is unavailable or
+fails, report it as unverified and do not describe the change as live.
+
+Only sync the existing Sites project after Hostinger production is verified.
+Compare its homepage, logo, offer text, and the requested behavior with
+`partyprint.co.il`. Report the GitHub SHA, Hostinger deployment result, Sites
+version, and any outstanding Resend verification state.
