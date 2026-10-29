@@ -231,3 +231,5 @@ button,a,input,select,textarea,summary{touch-action:manipulation}
   .topbar .launch-offer b{padding:1px 5px;}
   .mobile-sticky>div::after{display:none!important;}
 }
+
+.shirt-size-type{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:9px 0 4px;font-size:14px;font-weight:600}.shirt-size-toggle{display:inline-flex;overflow:hidden;border:1px solid #888;border-radius:8px}.shirt-size-toggle button{min-height:40px;padding:7px 16px;border:0;border-left:1px solid #aaa;background:#fff;color:#161616;font:600 14px 'Rubik',sans-serif;cursor:pointer}.shirt-size-toggle button:last-child{border-left:0}.shirt-size-toggle button[aria-pressed='true']{background:#efff5c;box-shadow:inset 0 0 0 1px #161616}.shirt-size-toggle button:focus-visible{position:relative;z-index:1;outline:3px solid #7351fb;outline-offset:-3px}.shirt-size-caption{margin:4px 0 0!important;font-size:12px!important;color:#666}

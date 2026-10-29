@@ -2,6 +2,7 @@ import {clientKey} from '#partyprint-runtime';
 import {validPhone,validCalendarDate} from '@/lib/contact-validation';
 import {env} from '#partyprint-runtime';
 import {packs,validateShirts} from '@/lib/catalog';
+import type {ShirtSelection} from '@/lib/catalog';
 import {readLimitedForm,validImage} from '@/lib/order-security';
 import {orderSummary} from '@/lib/order-summary';
 import {createCustomerAccess} from '@/lib/customer-access';
@@ -39,7 +40,7 @@ export async function POST(request:Request){
  const uploadError=imageUploadError(files);if(uploadError)return fail(uploadError);
  const payloads=[];for(const f of files){const bytes=await f.arrayBuffer();if(!validImage(new Uint8Array(bytes),f.type))return fail('אחד הקבצים אינו תמונת JPG, PNG או WEBP תקינה.');payloads.push({name:f.name,bytes,type:f.type})}
  const id=crypto.randomUUID(),saved:string[]=[];
- const order={eventDate,source,stageHistory:[{status:'received',at:new Date().toISOString()}],subtotal,discount,...(coupon?{couponCode:coupon.code}:{}),pricingVersion:pricing.version,id,name,phone,email,brief,package:pack,packageName:packs[pack].name,quantity,price:total,shirts:shirts as {size:string;color:string}[],baseQuantity:packs[pack].n,extraShirtPrice:pricing.extraShirtPrice,priceStatus:'advertised',mode,createdAt:new Date().toISOString(),status:'received',communicationChannel:'email',communicationStatus:'pending',images:[] as {name:string;key:string;size:number;role:string}[]};
+ const order={eventDate,source,stageHistory:[{status:'received',at:new Date().toISOString()}],subtotal,discount,...(coupon?{couponCode:coupon.code}:{}),pricingVersion:pricing.version,id,name,phone,email,brief,package:pack,packageName:packs[pack].name,quantity,price:total,shirts:shirts as ShirtSelection[],baseQuantity:packs[pack].n,extraShirtPrice:pricing.extraShirtPrice,priceStatus:'advertised',mode,createdAt:new Date().toISOString(),status:'received',communicationChannel:'email',communicationStatus:'pending',images:[] as {name:string;key:string;size:number;role:string}[]};
  try{for(let i=0;i<payloads.length;i++){const f=payloads[i],key=`orders/${id}/reference-${i}`;await bindings.BUCKET.put(key,f.bytes,{httpMetadata:{contentType:f.type}});saved.push(key);order.images.push({name:f.name,key,size:f.bytes.byteLength,role:"reference"})}}catch(e){await Promise.allSettled(saved.map(k=>bindings.BUCKET.delete(k)));throw e}
  const summary=orderSummary(order);
  await bindings.BUCKET.put(`orders/${id}/order.txt`,summary,{httpMetadata:{contentType:'text/plain; charset=utf-8'}});

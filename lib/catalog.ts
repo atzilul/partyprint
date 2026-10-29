@@ -15,7 +15,25 @@ export function calculatePrice(pack:number,quantity:number){
  return packs[pack].price+(quantity-packs[pack].n)*EXTRA_SHIRT_PRICE;
 }
 export const SIZES=['S','M','L','XL'] as const;
+export const CHILD_SIZES=['2','4','6','8','10','12','14','16','18'] as const;
 export const COLORS=['white','black','gray'] as const;
 export const COLOR_LABELS={white:'לבן',black:'שחור',gray:'אפור'};
-export type ShirtSelection={size:string;color:string};
-export function validateShirts(value:unknown,quantity:number):value is ShirtSelection[]{return Array.isArray(value)&&value.length===quantity&&value.every(v=>v&&typeof v==='object'&&SIZES.includes(v.size)&&COLORS.includes(v.color))}
+export type ShirtSizeType='adult'|'child';
+export type ShirtSelection={size:string;color:string;sizeType?:ShirtSizeType};
+export function isAllowedShirtSize(size:unknown,sizeType:unknown):boolean{
+ const type=sizeType===undefined?'adult':sizeType;
+ if(typeof size!=='string')return false;
+ if(type==='adult')return SIZES.some(value=>value===size);
+ if(type==='child')return CHILD_SIZES.some(value=>value===size);
+ return false;
+}
+export function shirtSizeLabel(shirt:Pick<ShirtSelection,'size'|'sizeType'>):string{
+ return shirt.sizeType==='child'?'ילד, גיל '+shirt.size:'מבוגר '+shirt.size;
+}
+export function validateShirts(value:unknown,quantity:number):value is ShirtSelection[]{
+ return Array.isArray(value)&&value.length===quantity&&value.every(item=>{
+  if(!item||typeof item!=='object')return false;
+  const shirt=item as Record<string,unknown>;
+  return isAllowedShirtSize(shirt.size,shirt.sizeType)&&COLORS.some(color=>color===shirt.color);
+ });
+}
