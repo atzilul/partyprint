@@ -1,0 +1,49 @@
+name: Verify PartyPrint security update
+on:
+  push:
+    branches:
+      - security/hostinger-vulnerability-fixes-2026-10
+    paths:
+      - .github/workflows/site-smoke.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --no-audit --no-fund
+      - run: npm audit --audit-level=low
+      - run: npm run lint
+      - run: npm run build
+      - name: Smoke-check production server and public routes
+        run: |
+          set -euo pipefail
+          HOST=127.0.0.1 PORT=3333 npm run start > /tmp/partyprint-smoke.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for _ in $(seq 1 60); do
+            if curl --fail --silent --show-error http://127.0.0.1:3333/ >/dev/null; then
+              ready=1
+              break
+            fi
+            if ! kill -0 "$server_pid" 2>/dev/null; then
+              cat /tmp/partyprint-smoke.log
+              exit 1
+            fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then
+            cat /tmp/partyprint-smoke.log
+            exit 1
+          fi
+          export PARTYPRINT_PUBLIC_URL=http://127.0.0.1:3333
+          npm run seo:check
+          npm run seo:links
