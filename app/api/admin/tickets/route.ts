@@ -1,4 +1,5 @@
 import {guard} from '@/lib/admin-auth';
+import {readLimitedJson} from '@/lib/order-security';
 import {PRIVATE_HEADERS} from '@/lib/security';
 import {bindings} from '@/lib/order-store';
 import {TicketStatus} from '@/lib/ticketing';
@@ -28,7 +29,7 @@ export async function GET(request:Request){
 export async function POST(request:Request){
  const denied=await guard(request);if(denied)return denied;
  try{
-  const payload=await request.json() as Record<string,unknown>,values=ensureTicketValues(payload),order=await orderFor(values.orderId);
+  const payload=await readLimitedJson(request,64*1024) as Record<string,unknown>,values=ensureTicketValues(payload),order=await orderFor(values.orderId);
   const customerName=values.customerName||order?.name||'',customerEmail=values.customerEmail||order?.email||'';
   if(!customerName||!customerEmail||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail))throw Error('invalid_input');
   const assigned=await resolveAssignee(payload.assigneeEmail),user=await actor(),now=new Date().toISOString(),id=newId(),db=bindings().DB;

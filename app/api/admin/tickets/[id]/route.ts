@@ -1,4 +1,5 @@
 import {guard} from '@/lib/admin-auth';
+import {readLimitedJson} from '@/lib/order-security';
 import {PRIVATE_HEADERS} from '@/lib/security';
 import {bindings} from '@/lib/order-store';
 import {ensureTicketValues,failure,orderFor,resolveAssignee,ticketFromRow} from '../_shared';
@@ -13,7 +14,7 @@ export async function GET(_request:Request,{params}:{params:Promise<{id:string}>
 export async function PATCH(request:Request,{params}:{params:Promise<{id:string}>}){
  const denied=await guard(request);if(denied)return denied;
  try{
-  const {id}=await params,payload=await request.json() as Record<string,unknown>,old=ticketFromRow(await current(id));
+  const {id}=await params,payload=await readLimitedJson(request,64*1024) as Record<string,unknown>,old=ticketFromRow(await current(id));
   const values=ensureTicketValues({title:payload.title===undefined?old.title:payload.title,description:payload.description===undefined?old.description:payload.description,customerName:payload.customerName===undefined?old.customerName:payload.customerName,customerEmail:payload.customerEmail===undefined?old.customerEmail:payload.customerEmail,dueAt:payload.dueAt===undefined?old.dueAt:payload.dueAt,orderId:payload.orderId===undefined?old.orderId:payload.orderId,status:payload.status===undefined?old.status:payload.status,priority:payload.priority===undefined?old.priority:payload.priority});
   const order=await orderFor(values.orderId),customerName=values.customerName||order?.name||'',customerEmail=values.customerEmail||order?.email||'';if(!customerName||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail))throw Error('invalid_input');
   const assigned=await resolveAssignee(payload.assigneeEmail===undefined?old.assigneeEmail:payload.assigneeEmail),now=new Date().toISOString(),row=await bindings().DB.prepare('UPDATE tickets SET title=?,description=?,status=?,priority=?,customer_name=?,customer_email=?,order_id=?,assignee_email=?,assignee_name=?,due_at=?,updated_at=?,version=version+1 WHERE id=? AND version=? RETURNING *').bind(values.title,values.description,values.status,values.priority,customerName,customerEmail,values.orderId||null,assigned.email||null,assigned.name||null,values.dueAt||null,now,id,old.version).first<Record<string,unknown>>();

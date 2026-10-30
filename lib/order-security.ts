@@ -1,4 +1,21 @@
 export const MAX_BODY=16*1024*1024;
+export async function readLimitedJson(request:Request,maxBytes=64*1024):Promise<unknown>{
+ const declared=Number(request.headers.get('content-length')||0);
+ if(Number.isFinite(declared)&&declared>maxBytes)throw new Error('too_large');
+ const reader=request.body?.getReader();
+ if(!reader)throw new Error('invalid_json');
+ const chunks:Uint8Array[]=[];let length=0;
+ while(true){
+  const {value,done}=await reader.read();if(done)break;
+  length+=value.byteLength;
+  if(length>maxBytes){await reader.cancel();throw new Error('too_large')}
+  chunks.push(value);
+ }
+ const bytes=new Uint8Array(length);let offset=0;
+ for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength}
+ try{return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes))}
+ catch{throw new Error('invalid_json')}
+}
 export async function readLimitedForm(request:Request){
  const declared=Number(request.headers.get('content-length')||0);if(declared>MAX_BODY)throw new Error('too_large');
  const reader=request.body?.getReader();if(!reader)throw new Error('empty');const parts:Uint8Array[]=[];let length=0;

@@ -1,5 +1,6 @@
 export const SECURITY_HEADERS = {
   'X-Content-Type-Options': 'nosniff',
+  'Content-Security-Policy': "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
   'X-Frame-Options': 'DENY',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
