@@ -1,0 +1,43 @@
+name: Audit dependency fixes
+on:
+  push:
+    branches:
+      - security/hostinger-vulnerability-fixes-2026-10
+    paths:
+      - .github/workflows/security-audit.yml
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply compatible npm security fixes to the lockfile
+        run: npm audit fix --package-lock-only --ignore-scripts --no-fund || true
+      - name: Summarize remaining advisories
+        run: |
+          npm audit --json > /tmp/partyprint-audit.json || true
+          node --input-type=commonjs -e '
+            const a = JSON.parse(require("fs").readFileSync("/tmp/partyprint-audit.json", "utf8"));
+            console.log("AUDIT_COUNTS " + JSON.stringify(a.metadata?.vulnerabilities || {}));
+            for (const [name, v] of Object.entries(a.vulnerabilities || {})) {
+              const advisories = (v.via || []).filter(x => typeof x === "object").map(x => ({ id: x.name, title: x.title, range: x.range }));
+              console.log("AUDIT_PACKAGE " + JSON.stringify({ name, severity: v.severity, range: v.range, fixAvailable: v.fixAvailable, advisories }));
+            }
+          '
+      - name: Commit security-updated lockfile
+        run: |
+          if git diff --quiet -- package-lock.json; then
+            echo "No additional lockfile changes from npm audit fix"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          git commit -m "fix: apply compatible npm audit security updates"
+          git push
