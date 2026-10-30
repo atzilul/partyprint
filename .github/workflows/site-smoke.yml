@@ -23,7 +23,56 @@ jobs:
       - run: npm audit --audit-level=low
       - run: npm run lint
       - run: npm run build
-      - name: Smoke-check production server and public routes
+      - name: Smoke-check server and every sitemap route
+        run: |
+          set -euo pipefail
+          HOST=127.0.0.1 PORT=3333 npm run start > /tmp/partyprint-smoke.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for _ in $(seq 1 60); do
+            if curl --fail --silent --show-error http://127.0.0.1:3333/ >/dev/null; then
+              ready=1
+              break
+            fi
+            if ! kill -0 "$server_pid" 2>/dev/null; then
+              cat /tmp/partyprint-smoke.log
+              exit 1
+            fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then
+            cat /tmp/partyprint-smoke.log
+            exit 1
+          fi
+          curl --fail --silent --show-error http://127.0.0.1:3333/sitemap.xml -o /tmp/partyprint-sitemap.xml
+          node --input-type=module <<'NODE' > /tmp/partyprint-routes.txt
+          import { readFileSync } from 'node:fs';
+          const xml = readFileSync('/tmp/partyprint-sitemap.xml', 'utf8');
+          const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1].trim());
+          if (!urls.length) throw new Error('Sitemap contains no routes');
+          for (const value of urls) {
+            const url = new URL(value);
+            console.log(url.pathname + url.search);
+          }
+          NODE
+          count=0
+          while IFS= read -r path; do
+            [ -n "$path" ] || continue
+            status=$(curl --silent --show-error -o /tmp/partyprint-route.html -w '%{http_code}' "http://127.0.0.1:3333$path")
+            if [[ ! "$status" =~ ^2[0-9][0-9]$ ]]; then
+              echo "Route $path returned HTTP $status"
+              cat /tmp/partyprint-smoke.log
+              exit 1
+            fi
+            count=$((count + 1))
+          done < /tmp/partyprint-routes.txt
+          curl --fail --silent --show-error http://127.0.0.1:3333/api/analytics-config -o /tmp/partyprint-analytics.json
+          node --input-type=module -e "const value=JSON.parse(await (await import('node:fs/promises')).readFile('/tmp/partyprint-analytics.json','utf8')); if(typeof value.measurementId!=='string'||typeof value.metaPixelId!=='string'||typeof value.country!=='string') throw new Error('Analytics config response shape changed');"
+          headers=$(curl --fail --silent --show-error -I http://127.0.0.1:3333/)
+          printf '%s\n' "$headers" | grep -qi '^x-content-type-options: nosniff'
+          printf '%s\n' "$headers" | grep -qi '^content-security-policy:'
+          echo "HTTP smoke check passed: home page, $count sitemap routes, analytics config and security headers."
         run: |
           set -euo pipefail
           HOST=127.0.0.1 PORT=3333 npm run start > /tmp/partyprint-smoke.log 2>&1 &
