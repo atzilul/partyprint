@@ -18,7 +18,9 @@ jobs:
         with:
           node-version: '22'
       - name: Apply compatible npm security fixes to the lockfile
-        run: npm audit fix --package-lock-only --ignore-scripts --no-fund || true
+        run: |
+          echo 'Review current security lockfile'
+          npm audit fix --package-lock-only --ignore-scripts --no-fund || true
       - name: Summarize remaining advisories
         run: |
           npm audit --json > /tmp/partyprint-audit.json || true
