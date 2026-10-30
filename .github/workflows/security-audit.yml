@@ -26,8 +26,8 @@ jobs:
             const a = JSON.parse(require("fs").readFileSync("/tmp/partyprint-audit.json", "utf8"));
             console.log("AUDIT_COUNTS " + JSON.stringify(a.metadata?.vulnerabilities || {}));
             for (const [name, v] of Object.entries(a.vulnerabilities || {})) {
-              const advisories = (v.via || []).filter(x => typeof x === "object").map(x => ({ id: x.name, title: x.title, range: x.range }));
-              console.log("AUDIT_PACKAGE " + JSON.stringify({ name, severity: v.severity, range: v.range, fixAvailable: v.fixAvailable, advisories }));
+              const via = (v.via || []).map(x => typeof x === "string" ? x : ({ id: x.name, title: x.title, range: x.range }));
+              console.log("AUDIT_PACKAGE " + JSON.stringify({ name, severity: v.severity, range: v.range, fixAvailable: v.fixAvailable, via }));
             }
           '
       - name: Commit security-updated lockfile
