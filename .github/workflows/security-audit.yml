@@ -19,7 +19,7 @@ jobs:
           node-version: '22'
       - name: Apply compatible npm security fixes to the lockfile
         run: |
-          echo 'Review current security lockfile'
+          echo 'Review complete dependency tree'
           npm audit fix --package-lock-only --ignore-scripts --no-fund || true
       - name: Summarize remaining advisories
         run: |
