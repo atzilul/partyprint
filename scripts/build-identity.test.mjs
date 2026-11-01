@@ -4,7 +4,7 @@ import {execFileSync} from 'node:child_process';
 import {mkdtempSync,mkdirSync,writeFileSync,rmSync,symlinkSync,chmodSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {createBuildIdentity} from './build-identity.mjs';
+import {createBuildIdentity,collectBuildSourceDiagnostics} from './build-identity.mjs';
 
 function fixture(t){
  const root=mkdtempSync(join(tmpdir(),'partyprint-release-test-'));
@@ -59,5 +59,32 @@ test('executable-bit changes preserve source identity while staged byte changes 
  chmodSync(join(root,'app/page.tsx'),0o755);
  const modeOnly=createBuildIdentity({root});assert.equal(modeOnly.sourceState,'clean');assert.equal(modeOnly.sourceFingerprint,before.sourceFingerprint);
  writeFileSync(join(root,'app/page.tsx'),'different compiled content');git('add','app/page.tsx');
+ assert.equal(createBuildIdentity({root}).sourceState,'modified');
+});
+
+test('build diagnostics report scoped names and status without file contents or runtime values',t=>{
+ const {root}=fixture(t);
+ writeFileSync(join(root,'app/page.tsx'),'PRIVATE_SOURCE_CONTENT');
+ writeFileSync(join(root,'app/new.ts'),'PRIVATE_NEW_CONTENT');
+ writeFileSync(join(root,'.env.local'),'PRIVATE_ENV_CONTENT');
+ mkdirSync(join(root,'partyprint-data'));writeFileSync(join(root,'partyprint-data/order.json'),'PRIVATE_ORDER_CONTENT');
+ mkdirSync(join(root,'docs'));writeFileSync(join(root,'docs/untracked.md'),'PRIVATE_DOC_CONTENT');
+ const diagnostic=collectBuildSourceDiagnostics({root});
+ assert.equal(diagnostic.gitAvailable,true);assert.equal(diagnostic.node,process.version);
+ assert.deepEqual(diagnostic.entries.map(e=>e.path).sort(),['app/new.ts','app/page.tsx']);
+ assert.ok(diagnostic.entries.every(e=>e.status==='??'||e.status===' M'));
+ assert.equal(diagnostic.truncated,false);
+ const text=JSON.stringify(diagnostic);assert.ok(!text.includes('PRIVATE_'));assert.ok(!text.includes(root));
+ assert.equal(createBuildIdentity({root}).sourceState,'modified');
+});
+test('build diagnostics mark unavailable Git without exposing command errors',t=>{
+ const root=mkdtempSync(join(tmpdir(),'partyprint-diagnostics-no-git-'));t.after(()=>rmSync(root,{recursive:true,force:true}));
+ const diagnostic=collectBuildSourceDiagnostics({root});
+ assert.equal(diagnostic.gitAvailable,false);assert.deepEqual(diagnostic.entries,[]);assert.ok(!JSON.stringify(diagnostic).includes(root));
+});
+test('build diagnostics bound the number of source names in logs',t=>{
+ const {root}=fixture(t);for(let i=0;i<101;i++)writeFileSync(join(root,'app','new-'+i+'.ts'),'fixture');
+ const diagnostic=collectBuildSourceDiagnostics({root});
+ assert.equal(diagnostic.entries.length,100);assert.equal(diagnostic.truncated,true);
  assert.equal(createBuildIdentity({root}).sourceState,'modified');
 });
