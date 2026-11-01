@@ -11,13 +11,18 @@ try{
  for(const viewport of [{width:390,height:844},{width:1366,height:900}]){
   const context=await browser.newContext({viewport,locale:'he-IL',timezoneId:'Asia/Jerusalem',reducedMotion:'reduce'});
   await context.addInitScript(()=>{
-   window.__partyprintSearchPerf={lcpMilliseconds:null,cls:0,longTaskMilliseconds:0,supported:[]};
+   window.__partyprintSearchPerf={lcpMilliseconds:null,clsSessionMax:0,layoutShiftSum:0,layoutShifts:[],longTaskMilliseconds:0,supported:[]};
+   let sessionStart=0,lastShift=0,sessionValue=0;
    for(const type of ['largest-contentful-paint','layout-shift','longtask']){
     try{
      new PerformanceObserver(list=>{for(const entry of list.getEntries()){
       const p=window.__partyprintSearchPerf;
       if(type==='largest-contentful-paint')p.lcpMilliseconds=entry.startTime;
-      if(type==='layout-shift'&&!entry.hadRecentInput)p.cls+=entry.value;
+      if(type==='layout-shift'&&!entry.hadRecentInput){
+       if(!sessionStart||entry.startTime-lastShift>=1000||entry.startTime-sessionStart>=5000){sessionStart=entry.startTime;sessionValue=0;}
+       lastShift=entry.startTime;sessionValue+=entry.value;p.layoutShiftSum+=entry.value;p.clsSessionMax=Math.max(p.clsSessionMax,sessionValue);
+       if(p.layoutShifts.length<20)p.layoutShifts.push({at:entry.startTime,value:entry.value,sources:(entry.sources||[]).map(s=>({node:s.node?s.node.tagName.toLowerCase()+(s.node.id?'#'+s.node.id:'')+(typeof s.node.className==='string'?'.'+s.node.className.trim().split(/\s+/).slice(0,4).join('.'):''):'unknown',before:{x:s.previousRect.x,y:s.previousRect.y,width:s.previousRect.width,height:s.previousRect.height},after:{x:s.currentRect.x,y:s.currentRect.y,width:s.currentRect.width,height:s.currentRect.height}}))});
+      }
       if(type==='longtask')p.longTaskMilliseconds+=entry.duration;
      }}).observe({type,buffered:true});
      window.__partyprintSearchPerf.supported.push(type);
@@ -42,13 +47,13 @@ try{
   let labPerformance=null;
   const check=(name,condition)=>{assert.ok(condition,name);checks.push(name);};
   try{
-   await page.goto(base+'/#order',{waitUntil:'domcontentloaded',timeout:45000});
+   await page.goto(base+'/',{waitUntil:'domcontentloaded',timeout:45000});
    await page.waitForLoadState('networkidle',{timeout:15000});
    labPerformance=await page.evaluate(()=>{
     const n=performance.getEntriesByType('navigation')[0];
     return {...window.__partyprintSearchPerf,ttfbMilliseconds:n?n.responseStart-n.requestStart:null,
      fcpMilliseconds:performance.getEntriesByName('first-contentful-paint')[0]?.startTime??null,
-     note:'CI browser observation before form interaction; reduced motion, write/tracker blocking; no mobile CPU/network throttling; not field Core Web Vitals'};
+     note:'CI homepage load before scrolling or form interaction; reduced motion, write/tracker blocking; no mobile CPU/network throttling; not field Core Web Vitals'};
    });
    await page.locator('#order-form').scrollIntoViewIfNeeded();
    const deny=page.getByRole('button',{name:'לא, תודה',exact:true});

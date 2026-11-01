@@ -62,6 +62,12 @@ try{
   const missing=await read('/'+group+'/__search-audit-missing__');
   check(group+' missing page returns 404',missing.status===404,'HTTP '+missing.status);
  }
+ if(local){
+  for(const path of ['/','/ordering-guide?utm_source=redirect-audit']){
+   const res=await fetch(base+path,{redirect:'manual',headers:{host:'www.partyprint.co.il'},signal:AbortSignal.timeout(15000)});
+   check('www canonical redirect '+path,res.status===308&&res.headers.get('location')===PUBLIC_ORIGIN+path,'HTTP '+res.status+' '+res.headers.get('location'));
+  }
+ }
  if(local){const api=await read('/api/analytics-config');check('private API noindex',/\bnoindex\b/.test(api.headers.get('x-robots-tag')||''));}
 }catch(error){check('audit completed',false,error.message);}
 await mkdir('artifacts',{recursive:true});
