@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {EDITORIAL_LINKS} from '../lib/editorial-links.ts';
 import {SEO_PAGES,SEO_PAGE_ALIASES,getSeoPage} from '../lib/seo-pages.ts';
 test('all existing guide addresses stay unique and resolve their aliases',()=>{
  assert.equal(SEO_PAGES.length,22);
@@ -36,4 +37,16 @@ test('metadata, visible answers and editorial dates are complete',()=>{
   assert.ok(p.heroImage.startsWith('/')&&!p.heroImage.startsWith('//'));
  }
  assert.equal(new Set(questions).size,questions.length,'Each audience must have its own useful questions');
+});
+
+test('editorial navigation uses canonical guides and distinct safe article targets',()=>{
+ const pairs=new Set();
+ for(const link of EDITORIAL_LINKS){
+  assert.ok(SEO_PAGES.some(page=>page.slug===link.guideSlug),'Unknown service-guide target');
+  assert.ok(!SEO_PAGE_ALIASES[link.guideSlug],'Use a canonical guide rather than an alias');
+  assert.ok(link.articleSlug&&!/[/:?#]/.test(link.articleSlug),'Only a public article slug is accepted');
+  assert.ok(link.title&&link.description);
+  const pair=link.guideSlug+'|'+link.articleSlug;
+  assert.ok(!pairs.has(pair),'Duplicate editorial navigation');pairs.add(pair);
+ }
 });

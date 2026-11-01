@@ -10,7 +10,8 @@ export default function LaunchOffer(){
  useEffect(()=>{
   const node=document.querySelector<HTMLElement>('.topbar');
   if(!node)return;
-  const reveal=window.setTimeout(()=>setTarget(node),0);
+  const slot=node.querySelector<HTMLElement>('#launch-offer-slot')||node;
+  const reveal=window.setTimeout(()=>setTarget(slot),0);
   fetch('/api/promo').then(r=>r.ok?r.json() as Promise<Promo>:null).then(v=>{if(v?.text&&v.code){node.classList.add('has-launch-offer');setPromo({text:v.text,code:v.code})}else if(v){node.classList.add('promo-disabled')}}).catch(()=>{});
   return()=>{window.clearTimeout(reveal);node.classList.remove('has-launch-offer','promo-disabled')};
  },[]);

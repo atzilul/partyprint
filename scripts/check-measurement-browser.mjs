@@ -9,7 +9,7 @@ const gaId='G-PARTYPRINTQA',pixel='9999999999999999';
 const report={base,at:new Date().toISOString(),scope:'Isolated client contract: synthetic contact fields, mocked analytics vendors and mocked order responses; no network writes or emails',scenarios:[],errors:[]};
 const browser=await chromium.launch({headless:true});
 try{
- for(const scenario of [{name:'Israel notice',country:'IL',timezone:'Asia/Jerusalem',width:390},{name:'Strict Meta region',country:'DE',timezone:'Europe/Berlin',width:1366},{name:'Stored refusal',country:'IL',timezone:'Asia/Jerusalem',width:390,denied:true}]){
+ for(const scenario of [{name:'Israel notice',country:'IL',timezone:'Asia/Jerusalem',width:390},{name:'Strict Meta region',country:'DE',timezone:'Europe/Berlin',width:1366},{name:'Stored refusal',country:'IL',timezone:'Asia/Jerusalem',width:320,denied:true}]){
   const context=await browser.newContext({viewport:{width:scenario.width,height:900},locale:'he-IL',timezoneId:scenario.timezone,reducedMotion:'reduce'});
   await context.addInitScript(({denied})=>{
    history.replaceState(null,'','/?utm_source=measurement_qa&email=qa%40example.invalid&phone=0500000000&order_id=private-fixture');
@@ -23,7 +23,7 @@ try{
   await context.route('**/*',async route=>{
    const req=route.request(),url=new URL(req.url()),method=req.method();
    if(url.origin===base&&url.pathname==='/api/analytics-config')return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({measurementId:gaId,metaPixelId:pixel,country:scenario.country})});
-   if(url.origin===base&&url.pathname==='/api/promo'){await promoGate;return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({text:'הטבת בדיקת ממשק בלבד',code:'QA-PROMO'})});}
+   if(url.origin===base&&url.pathname==='/api/promo'){await promoGate;return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({text:'הטבה לקבוצה שלכם עם אישור העיצוב לפני ההדפסה',code:'QA-PROMO'})});}
    if(url.hostname==='www.googletagmanager.com'&&method==='GET'){counts.googleScripts++;return route.fulfill({status:200,contentType:'application/javascript',body:'/* vendor intentionally stubbed */'});}
    if(url.hostname==='connect.facebook.net'&&method==='GET'){counts.metaScripts++;return route.fulfill({status:200,contentType:'application/javascript',body:'/* vendor intentionally stubbed */'});}
    if(!['GET','HEAD','OPTIONS'].includes(method)){

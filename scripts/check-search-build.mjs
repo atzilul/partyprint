@@ -17,5 +17,9 @@ try{
  }
  if(!ready)throw new Error('Production server did not become ready.');
  await run('scripts/audit-search.mjs');
- if(process.env.PARTYPRINT_BROWSER_CHECK==='1')await run('scripts/check-order-browser.mjs');
+ if(process.env.PARTYPRINT_BROWSER_CHECK==='1'){
+  await run('scripts/check-order-browser.mjs');
+  process.env.PARTYPRINT_EXPECT_STABLE_PROMO='1';
+  await run('scripts/check-measurement-browser.mjs');
+ }
 }finally{server.kill('SIGTERM');}

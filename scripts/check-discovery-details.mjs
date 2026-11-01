@@ -28,6 +28,8 @@ for(const agent of ['Googlebot','OAI-SearchBot','Claude-SearchBot','PerplexityBo
 for(const path of ['/admin','/api/admin/analytics','/api/analytics-config']){
  try{const r=await get(path);await r.body?.cancel();report.privateRouteProbes.push({path,status:r.status,location:r.headers.get('location')?.split('?')[0]||null,noindex:r.headers.get('x-robots-tag'),note:'Unauthenticated request; response body not retained'});}catch(e){report.privateRouteProbes.push({path,error:e.message});}
 }
+report.aliasErrors=report.aliases.filter(item=>![301,308].includes(item.status)||decodeURI(item.location||'').replace(/^https:\/\/partyprint\.co\.il/,'')!==item.expected);
 await mkdir('artifacts',{recursive:true});
 await writeFile('artifacts/discovery-details.json',JSON.stringify(report,null,2));
 console.log(JSON.stringify(report,null,2));
+if(report.aliasErrors.length)process.exitCode=1;

@@ -72,6 +72,16 @@ try{
    check('www canonical redirect '+path,res.status===308&&res.location===PUBLIC_ORIGIN+path,'HTTP '+res.status+' '+res.location);
   }
  }
+ if(local){
+  const preview=await new Promise((resolve,reject)=>{
+   const req=httpRequest(base+'/',{method:'HEAD',headers:{host:'partyprint-ai.atzilul.chatgpt.site'}},res=>{res.resume();resolve({status:res.statusCode,noindex:res.headers['x-robots-tag']});});
+   req.setTimeout(15000,()=>req.destroy(new Error('Preview header check timed out')));req.on('error',reject);req.end();
+  });
+  check('managed preview host noindex',preview.status===200&&/\bnoindex\b/.test(preview.noindex||''),'HTTP '+preview.status+' '+preview.noindex);
+  const admin=await read('/admin');
+  check('unauthenticated admin remains protected',[301,302,303,307,308,401,403].includes(admin.status),'HTTP '+admin.status);
+  check('admin response noindex',/\bnoindex\b/.test(admin.headers.get('x-robots-tag')||''));
+ }
  if(local){const api=await read('/api/analytics-config');check('private API noindex',/\bnoindex\b/.test(api.headers.get('x-robots-tag')||''));}
 }catch(error){check('audit completed',false,error.message);}
 await mkdir('artifacts',{recursive:true});
