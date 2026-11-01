@@ -1,3 +1,4 @@
+import {notFound} from 'next/navigation';
 /* eslint-disable @next/next/no-img-element -- editorial images can be selected from the admin and may be local or external URLs. */
 import Link from '@/components/safe-link';
 import type {Metadata} from 'next';
@@ -8,12 +9,12 @@ import '../blog.css';
 
 export const dynamic='force-dynamic';
 
-export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{const {slug}=await params;const post=await getBlogPost(decodeURIComponent(slug));if(!post)return {title:'הפוסט לא נמצא | PARTYPRINT'};const canonical='https://partyprint.co.il/blog/'+post.slug;return {title:post.seoTitle||post.title,description:post.seoDescription||post.excerpt,keywords:post.keywords,alternates:{canonical:'/blog/'+post.slug},robots:{index:true,follow:true},openGraph:{title:post.seoTitle||post.title,description:post.seoDescription||post.excerpt,url:canonical,type:'article',locale:'he_IL',publishedTime:post.publishedAt||post.createdAt,modifiedTime:post.updatedAt,authors:[post.author],images:post.coverImage?[{url:post.coverImage,alt:post.coverAlt}]:[]},twitter:{card:'summary_large_image',title:post.seoTitle||post.title,description:post.seoDescription||post.excerpt,images:post.coverImage?[post.coverImage]:[]}}}
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{const {slug}=await params;const post=await getBlogPost(decodeURIComponent(slug));if(!post) notFound();const canonical='https://partyprint.co.il/blog/'+post.slug;return {title:post.seoTitle||post.title,description:post.seoDescription||post.excerpt,keywords:post.keywords,alternates:{canonical:'/blog/'+post.slug},robots:{index:true,follow:true},openGraph:{title:post.seoTitle||post.title,description:post.seoDescription||post.excerpt,url:canonical,type:'article',locale:'he_IL',publishedTime:post.publishedAt||post.createdAt,modifiedTime:post.updatedAt,authors:[post.author],images:post.coverImage?[{url:post.coverImage,alt:post.coverAlt}]:[]},twitter:{card:'summary_large_image',title:post.seoTitle||post.title,description:post.seoDescription||post.excerpt,images:post.coverImage?[post.coverImage]:[]}}}
 
 export default async function BlogPostPage({params}:{params:Promise<{slug:string}>}){
  const {slug}=await params;
  const post=await getBlogPost(decodeURIComponent(slug));
- if(!post)return <main className="blog-page" dir="rtl"><BlogNav/><section className="blog-post-shell blog-not-found"><h1>הפוסט לא נמצא</h1><p>יכול להיות שהקישור השתנה.</p><Link className="blog-back-link" href="/blog">חזרה לכל הפוסטים ←</Link></section><BlogFooter/></main>;
+ if(!post) notFound();
  const allPosts=await listBlogPosts();
  const related=allPosts.filter(item=>item.id!==post.id).sort((a,b)=>sharedKeywords(b,post)-sharedKeywords(a,post)).slice(0,3);
  const blocks=post.content.split(/\n\s*\n/).filter(Boolean);
