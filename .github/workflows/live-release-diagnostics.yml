@@ -1,0 +1,23 @@
+name: Public release diagnostics
+on:
+  push:
+    branches: [ops/search-deployment-check-2026-11]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/check-live-release.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: live-release-diagnostics
+          path: artifacts/live-release-diagnostics.json
+          if-no-files-found: error
