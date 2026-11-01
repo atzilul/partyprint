@@ -53,7 +53,9 @@ jobs:
         if: always()
         with:
           name: search-production-report
-          path: artifacts/search-audit.json
+          path: |
+            artifacts/search-audit.json
+            artifacts/public-routing.json
           if-no-files-found: error
   production-form:
     runs-on: ubuntu-latest
