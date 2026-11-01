@@ -288,3 +288,13 @@ button,a,input,select,textarea,summary{touch-action:manipulation}
 .blog-service-guides>div>a{display:flex;justify-content:space-between;gap:14px;min-height:48px;padding:12px;border:1px solid #ccc;font-weight:700;background:#fff}
 .blog-service-guides>div>a:hover{border-color:#161616}
 .blog-service-guides p a{text-decoration:underline;text-underline-offset:3px}
+
+.blog-preparation{margin:32px 0;padding:24px;background:#f5f4ef;border:1px solid #d0d0c6}
+.blog-preparation h2{font-size:clamp(27px,4vw,38px);line-height:1.25;margin:0 0 16px}
+.blog-preparation h3{font-size:21px;line-height:1.4;letter-spacing:-.02em;margin:0 0 8px}
+.blog-preparation p{font-size:17px;line-height:1.8;margin:10px 0}
+.blog-preparation ol{display:grid;gap:20px;margin:24px 0;padding-inline-start:24px}
+.blog-preparation li{padding-inline-start:6px}
+.blog-preparation li::marker{font-weight:800}
+.blog-preparation a{text-decoration:underline;text-underline-offset:3px;font-weight:700}
+@media(max-width:680px){.blog-preparation{padding:18px}.blog-preparation p{font-size:16px}}

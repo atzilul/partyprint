@@ -103,5 +103,5 @@ jobs:
         if: always()
         with:
           name: dependency-audit
-          path: artifacts/dependency-audit.json
+          path: artifacts/dependency-audit-*.json
           if-no-files-found: error
