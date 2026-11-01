@@ -19,13 +19,20 @@ jobs:
           node-version: '22'
       - run: npm ci --no-audit --no-fund
       - run: node --test scripts/search-utils.test.mjs
+      - run: node --experimental-strip-types --test scripts/search-content.test.mjs
       - run: npm run build
+      - name: Install isolated browser QA tooling
+        run: npm install --prefix /tmp/partyprint-browser --no-save --package-lock=false --ignore-scripts playwright@1.64.1
+      - run: /tmp/partyprint-browser/node_modules/.bin/playwright install --with-deps chromium
       - run: node scripts/check-search-build.mjs
+        env:
+          PARTYPRINT_BROWSER_CHECK: '1'
+          PARTYPRINT_PLAYWRIGHT_ROOT: /tmp/partyprint-browser
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: search-local-report
-          path: artifacts/search-audit.json
+          path: artifacts/*.json
           if-no-files-found: ignore
   production-audit:
     runs-on: ubuntu-latest
@@ -44,4 +51,26 @@ jobs:
         with:
           name: search-production-report
           path: artifacts/search-audit.json
+          if-no-files-found: error
+  production-form:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated browser QA tooling
+        run: npm install --prefix /tmp/partyprint-browser --no-save --package-lock=false --ignore-scripts playwright@1.64.1
+      - run: /tmp/partyprint-browser/node_modules/.bin/playwright install --with-deps chromium
+      - name: Public form interaction; all writes blocked
+        run: node scripts/check-order-browser.mjs
+        env:
+          PARTYPRINT_PLAYWRIGHT_ROOT: /tmp/partyprint-browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: order-production-browser
+          path: artifacts/order-browser-production.json
           if-no-files-found: error

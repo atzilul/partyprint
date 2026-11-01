@@ -55,7 +55,7 @@ try{
  for(const value of urls){try{publicPageUrl(value);validUrls.push(value);}catch(error){check('sitemap canonical HTML',false,error.message);}}
  const paths=validUrls.map(value=>new URL(value).pathname);
  if(local)for(const path of required)check('sitemap '+path,paths.some(x=>decodeURI(x).replace(/\/$/,'')===path.replace(/\/$/,'')));
- const targets=local?[...required,'/guides/'+encodeURIComponent('הדפסה-על-חולצות')]:[...new Set([...required,...paths])];
+ const targets=[...new Set(local?[...required,...paths.filter(path=>path.startsWith('/guides/')||path.startsWith('/work/'))]:[...required,...paths])];
  if(targets.length>500)throw new Error('Audit limited to 500 pages; split the audit explicitly.');
  for(let i=0;i<targets.length;i+=4)await Promise.all(targets.slice(i,i+4).map(html));
  for(const group of ['guides','work',...(local?[]:['blog'])]){
