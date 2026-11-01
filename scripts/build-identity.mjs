@@ -16,16 +16,25 @@ export function createBuildIdentity({root=process.cwd(),target='node',mode='prod
  try{
   const sha=git(['rev-parse','--verify','HEAD']).trim();
   if(!SHA.test(sha))return base;
-  // Check the same application/build scope we fingerprint. Host-generated files
-  // outside that scope and documentation do not relabel application source.
-  if(git(['status','--porcelain','--untracked-files=normal','--',...SOURCE_PATHS]).trim())return {...base,sourceState:'modified'};
-  const files=git(['ls-files','-z','--',...SOURCE_PATHS]).split('\0').filter(Boolean).sort();
-  if(!files.length)return base;
+  // Compare content with HEAD: executable bits changed by hosting must not
+  // be mistaken for changed application bytes. Extra source still fails closed.
+  if(git(['ls-files','--others','--exclude-standard','-z','--',...SOURCE_PATHS]))return {...base,sourceState:'modified'};
+  const entries=git(['ls-tree','-r','-z','--full-tree',sha,'--',...SOURCE_PATHS]).split('\0').filter(Boolean).map(line=>{
+   const at=line.indexOf('\t'),[mode,type,blob]=line.slice(0,at).split(' ');
+   return {name:line.slice(at+1),mode,type,blob};
+  }).sort((a,b)=>a.name<b.name?-1:a.name>b.name?1:0);
+  const tracked=git(['ls-files','-z','--',...SOURCE_PATHS]).split('\0').filter(Boolean).sort();
+  if(!entries.length)return base;
+  if(JSON.stringify(entries.map(e=>e.name))!==JSON.stringify(tracked))return {...base,sourceState:'modified'};
   const hash=createHash('sha256');
-  for(const name of files){
+  for(const {name,mode,type,blob} of entries){
+   if(type!=='blob'||!['100644','100755'].includes(mode))return base;
    const path=resolve(root,name);
    if(!lstatSync(path).isFile())return base;
-   hash.update(name+'\0').update(readFileSync(path)).update('\0');
+   const bytes=readFileSync(path);
+   const object=createHash(blob.length===64?'sha256':'sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
+   if(object!==blob)return {...base,sourceState:'modified'};
+   hash.update(name+'\0').update(bytes).update('\0');
   }
   return {...base,sourceState:'clean',sourceCommit:sha,sourceFingerprint:hash.digest('hex')};
  }catch{return base;}

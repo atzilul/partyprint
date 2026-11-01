@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
-import {mkdtempSync,mkdirSync,writeFileSync,rmSync,symlinkSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,writeFileSync,rmSync,symlinkSync,chmodSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createBuildIdentity} from './build-identity.mjs';
@@ -52,4 +52,12 @@ test('missing Git and tracked source symlinks remain explicitly unavailable',t=>
  assert.equal(createBuildIdentity({root:absent}).sourceState,'unavailable');
  const {root,git}=fixture(t);symlinkSync('../.git/config',join(root,'app/link'));git('add','app/link');git('commit','-qm','symlink');
  const r=createBuildIdentity({root});assert.equal(r.sourceState,'unavailable');assert.equal(r.sourceCommit,null);
+});
+
+test('executable-bit changes preserve source identity while staged byte changes do not',t=>{
+ const {root,git}=fixture(t),before=createBuildIdentity({root});
+ chmodSync(join(root,'app/page.tsx'),0o755);
+ const modeOnly=createBuildIdentity({root});assert.equal(modeOnly.sourceState,'clean');assert.equal(modeOnly.sourceFingerprint,before.sourceFingerprint);
+ writeFileSync(join(root,'app/page.tsx'),'different compiled content');git('add','app/page.tsx');
+ assert.equal(createBuildIdentity({root}).sourceState,'modified');
 });
