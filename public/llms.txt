@@ -8,12 +8,15 @@
 - https://partyprint.co.il/about — About PARTYPRINT, the studio process, human direction and AI-assisted design workflow.
 - https://partyprint.co.il/work — Curated studio examples and process breakdowns. Examples are clearly marked as design mockups, not customer orders.
 - https://partyprint.co.il/guides — topic guides covering personalized printing, birthdays, family events, bachelor and bachelorette parties, team evenings, businesses, events and employee gifts.
-- https://partyprint.co.il/blog — Educational articles with images, ALT text, internal links and 10 expandable questions and answers per post.
+- https://partyprint.co.il/blog — Educational articles and practical answers about personalized shirts.
 - https://partyprint.co.il/blog/feed.xml — Public RSS feed for discovering newly published blog posts.
 - https://partyprint.co.il/faq — Frequently asked questions about design, quantities, pricing, images, shipping and revisions.
 - https://partyprint.co.il/policies/shipping — Fast home delivery. Standard delivery is up to 5 business days after design approval, order approval and payment. Eilat, the Arava, areas beyond the Green Line and the Golan Heights may take up to 7 business days.
 - https://partyprint.co.il/policies/returns — Clear information about cancellations, changes, defects and returns for personalized products.
 - https://partyprint.co.il/sitemap.xml — Canonical XML sitemap for public pages.
+
+- https://partyprint.co.il/ordering-guide — Practical preparation guide: choosing reference photos, collecting adult and child sizes, understanding pricing and coordinating the event date.
+- https://partyprint.co.il/privacy-policy — Current privacy notice; observe any draft labels or incomplete details on that page.
 
 ## What PARTYPRINT offers
 

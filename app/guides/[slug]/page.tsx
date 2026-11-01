@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element -- curated local editorial images. */
 import Link from '@/components/safe-link';
 import type {Metadata} from 'next';
-import {permanentRedirect} from 'next/navigation';
+import {notFound,permanentRedirect} from 'next/navigation';
 import {getSeoPage,isSeoAlias,SEO_PAGE_ALIASES,SEO_PAGE_SLUGS,SEO_PAGE_URL} from '@/lib/seo-pages';
 import {SeoFooter,SeoNav} from '@/components/seo-layout';
 import '../../seo/seo.css';
@@ -15,7 +15,7 @@ export function generateStaticParams() {
 export async function generateMetadata({params}: {params: Promise<{slug: string}>}): Promise<Metadata> {
   const {slug} = await params;
   const item = getSeoPage(decodeURIComponent(slug));
-  if (!item) return {title: 'העמוד לא נמצא | PARTYPRINT'};
+  if(!item) notFound();
   const canonical=`https://partyprint.co.il${SEO_PAGE_URL(item.slug)}`;
   return {title: item.seoTitle, description: item.seoDescription, keywords: item.keywords, alternates: {canonical: SEO_PAGE_URL(item.slug)}, robots: {index:true,follow:true}, openGraph: {title: item.seoTitle, description: item.seoDescription, url: canonical, type: 'article', locale:'he_IL', images: [{url: item.heroImage, alt: item.heroAlt}]}, twitter:{card:'summary_large_image',title:item.seoTitle,description:item.seoDescription,images:[item.heroImage]} };
 }
@@ -24,7 +24,7 @@ export default async function SeoGuidePage({params}: {params: Promise<{slug: str
   const {slug} = await params;
   const decodedSlug = decodeURIComponent(slug);
   const item = getSeoPage(decodedSlug);
-  if (!item) return <main className="seo-page" dir="rtl"><SeoNav/><section className="seo-not-found"><h1>העמוד לא נמצא</h1><p>אפשר לחזור לכל מדריכי הרעיונות ולבחור כיוון אחר.</p><Link className="seo-primary-cta" href="/guides">לכל המדריכים</Link></section><SeoFooter/></main>;
+  if(!item) notFound();
   if (isSeoAlias(decodedSlug)) permanentRedirect(encodeURI(SEO_PAGE_URL(item.slug)));
   const canonicalUrl = `https://partyprint.co.il${SEO_PAGE_URL(item.slug)}`;
   const breadcrumbs = {'@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'PARTYPRINT', item: 'https://partyprint.co.il/' }, { '@type': 'ListItem', position: 2, name: 'מדריכי רעיונות', item: 'https://partyprint.co.il/guides' }, { '@type': 'ListItem', position: 3, name: item.title, item: canonicalUrl }]};

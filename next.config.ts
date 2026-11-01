@@ -3,7 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // vinext emits the Node.js production entry at dist/standalone/server.js.
   output: "standalone",
-  headers: async () => [{
+  headers: async () => [
+    ...['/admin/:path*','/api/:path*','/design/:path*','/track/:path*','/signin-with-chatgpt','/signout-with-chatgpt','/chatgpt-auth/:path*'].map(source=>({source,headers:[{key:'X-Robots-Tag',value:'noindex, nofollow, noarchive'}]})),
+    {
     source: "/(.*)",
     headers: [
       { key: "X-Content-Type-Options", value: "nosniff" },

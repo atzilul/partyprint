@@ -30,9 +30,6 @@ export const metadata: Metadata = {
     images: [{url: "/partyprint-logo.png", width: 2048, height: 682, alt: "PARTYPRINT"}],
   },
   twitter: {card: "summary_large_image", title: "PARTYPRINT | הדפסה על חולצות בעיצוב אישי", description: "הדפסה על חולצות בעיצוב אישי לימי הולדת, מסיבות, צוותים ועסקים.", images: ["/partyprint-logo.png"]},
-  other: {
-    "codex-preview": "development",
-  },
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
@@ -49,7 +46,6 @@ export default function RootLayout({
     "@graph": [
       {"@type": "Organization", "@id": "https://partyprint.co.il/#organization", name: "PARTYPRINT", url: "https://partyprint.co.il/", logo: "https://partyprint.co.il/partyprint-logo.png", description: "סטודיו ישראלי לחולצות ומתנות בעיצוב אישי עם AI, הדפסה ומשלוח עד הבית.", contactPoint: [{"@type": "ContactPoint", contactType: "customer service", telephone: "+972-55-289-6236", email: "atzilul@gmail.com", availableLanguage: ["he", "en"]}]},
       {"@type": "WebSite", "@id": "https://partyprint.co.il/#website", url: "https://partyprint.co.il/", name: "PARTYPRINT", description: "הדפסה על חולצות והדפסה בעיצוב אישי לימי הולדת, אירועים, משפחות, מסיבות, צוותים ועסקים.", publisher: {"@id": "https://partyprint.co.il/#organization"}, inLanguage: "he-IL"},
-      {"@type": "WebPage", "@id": "https://partyprint.co.il/#webpage", url: "https://partyprint.co.il/", name: "PARTYPRINT | הדפסה על חולצות בעיצוב אישי", description: "הדפסה על חולצות בעיצוב אישי לימי הולדת, מסיבות, צוותים ועסקים.", isPartOf: {"@id": "https://partyprint.co.il/#website"}, about: {"@id": "https://partyprint.co.il/#organization"}, inLanguage: "he-IL"},
       {"@type": "Service", "@id": "https://partyprint.co.il/#service", name: "הדפסה על חולצות בעיצוב אישי", alternateName: ["הדפסה מעוצבת על חולצה", "חולצה מודפסת", "הדפסת לוגו על חולצות"], serviceType: "Personalized shirt design and printing", provider: {"@id": "https://partyprint.co.il/#organization"}, areaServed: {"@type": "Country", name: "ישראל"}, audience: {"@type": "Audience", audienceType: "משפחות, חברים, חוגגים, צוותים ועסקים"}, url: "https://partyprint.co.il/#order", serviceOutput: "חולצות מודפסות בעיצוב אישי עם משלוח עד הבית"},
     ],
   };

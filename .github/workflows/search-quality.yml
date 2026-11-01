@@ -1,0 +1,47 @@
+name: Search discovery quality
+on:
+  push:
+    branches: [seo/search-discovery-2026-11]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --no-audit --no-fund
+      - run: node --test scripts/search-utils.test.mjs
+      - run: npm run build
+      - run: node scripts/check-search-build.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: search-local-report
+          path: artifacts/search-audit.json
+          if-no-files-found: ignore
+  production-audit:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read-only production audit (findings do not deploy anything)
+        run: node scripts/audit-search.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: search-production-report
+          path: artifacts/search-audit.json
+          if-no-files-found: error

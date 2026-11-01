@@ -1,3 +1,4 @@
+import {notFound} from 'next/navigation';
 /* eslint-disable @next/next/no-img-element -- curated studio examples. */
 import Link from 'next/link';
 import type {Metadata} from 'next';
@@ -8,9 +9,9 @@ import '../../seo/seo.css';
 export const dynamic='force-static';
 export function generateStaticParams(){return STUDIO_PAGE_SLUGS.map(slug=>({slug}))}
 
-export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{const {slug}=await params;const item=getStudioPage(decodeURIComponent(slug));if(!item)return {title:'הדוגמה לא נמצאה | PARTYPRINT'};const canonical=`https://partyprint.co.il${STUDIO_PAGE_URL(item.slug)}`;return {title:item.seoTitle,description:item.seoDescription,keywords:item.keywords,alternates:{canonical:STUDIO_PAGE_URL(item.slug)},robots:{index:true,follow:true},openGraph:{title:item.seoTitle,description:item.seoDescription,url:canonical,type:'article',locale:'he_IL',images:[{url:item.heroImage,alt:item.heroAlt}]},twitter:{card:'summary_large_image',title:item.seoTitle,description:item.seoDescription,images:[item.heroImage]}}}
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{const {slug}=await params;const item=getStudioPage(decodeURIComponent(slug));if(!item) notFound();const canonical=`https://partyprint.co.il${STUDIO_PAGE_URL(item.slug)}`;return {title:item.seoTitle,description:item.seoDescription,keywords:item.keywords,alternates:{canonical:STUDIO_PAGE_URL(item.slug)},robots:{index:true,follow:true},openGraph:{title:item.seoTitle,description:item.seoDescription,url:canonical,type:'article',locale:'he_IL',images:[{url:item.heroImage,alt:item.heroAlt}]},twitter:{card:'summary_large_image',title:item.seoTitle,description:item.seoDescription,images:[item.heroImage]}}}
 
-export default async function WorkDetailPage({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const item=getStudioPage(decodeURIComponent(slug));if(!item)return <main className="seo-page" dir="rtl"><SeoNav/><section className="seo-not-found"><h1>הדוגמה לא נמצאה</h1><p>אפשר לחזור לכל הדוגמאות ולבחור כיוון אחר.</p><Link className="seo-primary-cta" href="/work">לכל הדוגמאות</Link></section><SeoFooter/></main>;
+export default async function WorkDetailPage({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const item=getStudioPage(decodeURIComponent(slug));if(!item) notFound();
  const canonical=`https://partyprint.co.il${STUDIO_PAGE_URL(item.slug)}`;
  const breadcrumbs={'@context':'https://schema.org','@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'PARTYPRINT',item:'https://partyprint.co.il/'},{'@type':'ListItem',position:2,name:'דוגמאות ותהליכי עבודה',item:'https://partyprint.co.il/work'},{'@type':'ListItem',position:3,name:item.title,item:canonical}]};
  const schema={'@context':'https://schema.org','@type':'CreativeWork','@id':canonical+'#creative-work',name:item.title,headline:item.title,description:item.seoDescription,url:canonical,inLanguage:'he-IL',image:`https://partyprint.co.il${item.heroImage}`,isPartOf:{'@id':'https://partyprint.co.il/#website'},creator:{'@id':'https://partyprint.co.il/#organization'},keywords:item.keywords,about:{'@type':'Thing',name:item.audience}};
