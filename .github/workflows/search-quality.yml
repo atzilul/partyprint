@@ -21,7 +21,7 @@ jobs:
           node-version: '22'
       - run: npm ci --no-audit --no-fund
       - run: node --test scripts/search-utils.test.mjs scripts/search-metrics.test.mjs
-      - run: node --experimental-strip-types --test scripts/search-content.test.mjs
+      - run: node --experimental-strip-types --test scripts/search-content.test.mjs scripts/analytics-contract.test.mjs
       - run: npm run build
       - name: Install isolated browser QA tooling
         run: npm install --prefix /tmp/partyprint-browser --no-save --package-lock=false --ignore-scripts playwright@1.64.1

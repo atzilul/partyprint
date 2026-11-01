@@ -1,11 +1,13 @@
 import {mkdir,writeFile} from 'node:fs/promises';
 import {SEO_PAGE_ALIASES,SEO_PAGE_URL} from '../lib/seo-pages.ts';
+import {EDITORIAL_LINKS} from '../lib/editorial-links.ts';
+import {ARTICLE_PREPARATION} from '../lib/editorial-preparation.ts';
 import {attributes} from './search-utils.mjs';
 const base='https://partyprint.co.il';
 const articles=['הדפסת-לוגו-על-חולצות-לעסק','חולצות-משפחתיות-בעיצוב-אישי','חולצות-לטיול-משפחתי','חולצה-לערב-צוות','מתנות-לעובדים-לחג','איך-לבחור-תמונה-לחולצה-בעיצוב-אישי','הדפסה-בעיצוב-אישי-מתמונה','מהי-הדפסה-על-חולצות','איך-להזמין-חולצות-לאירועים'];
-const paths=['/','/ordering-guide',...articles.map(x=>'/blog/'+x),'/blog/מתנה-לבת-מצווה:cj9vy2','/guides/מתנה-לאמא:9qfnii'];
+const paths=['/','/ordering-guide',...[...new Set(EDITORIAL_LINKS.map(x=>x.guideSlug))].map(x=>'/guides/'+x),...articles.map(x=>'/blog/'+x),'/blog/מתנה-לבת-מצווה:cj9vy2','/guides/מתנה-לאמא:9qfnii'];
 const strip=s=>s.replace(/<[^>]*>/g,' ').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/\s+/g,' ').trim();
-const report={at:new Date().toISOString(),scope:'Public GET/HEAD only; no order, analytics, authentication or account writes',pages:[],aliases:[],syntheticCrawlerProbes:[],privateRouteProbes:[]};
+const report={at:new Date().toISOString(),scope:'Public GET/HEAD only; no order, analytics, authentication or account writes',pages:[],aliases:[],syntheticCrawlerProbes:[],privateRouteProbes:[],editorialLinks:[],articlePreparation:[]};
 async function get(path,{method='GET',agent='PARTYPRINT-DiscoveryAudit/1.0'}={}){
  const url=new URL(path,base);
  if(url.origin!==base)throw Error('Off-site URL refused');
@@ -15,6 +17,16 @@ async function get(path,{method='GET',agent='PARTYPRINT-DiscoveryAudit/1.0'}={})
 for(const path of paths){
  try{
   const r=await get(path),body=await r.text(),canonical=[...body.matchAll(/<link\b[^>]*>/gi)].map(m=>attributes(m[0])).find(a=>a.rel==='canonical')?.href||null;
+  const hrefs=new Set([...body.matchAll(/<a\b[^>]*>/gi)].map(m=>attributes(m[0]).href).filter(Boolean).map(href=>{try{const u=new URL(href,base);return u.origin===base?decodeURI(u.pathname):'';}catch{return '';}}));
+  if(path.startsWith('/guides/')){
+   for(const link of EDITORIAL_LINKS.filter(link=>path==='/guides/'+link.guideSlug))report.editorialLinks.push({from:path,to:'/blog/'+link.articleSlug,present:hrefs.has('/blog/'+link.articleSlug)});
+  }
+  if(path.startsWith('/blog/')){
+   const slug=path.slice('/blog/'.length);
+   for(const link of EDITORIAL_LINKS.filter(link=>link.articleSlug===slug))report.editorialLinks.push({from:path,to:'/guides/'+link.guideSlug,present:hrefs.has('/guides/'+link.guideSlug)});
+   const note=ARTICLE_PREPARATION[slug];
+   if(note){const headings=[...body.matchAll(/<h[1-6]\b[^>]*>([\s\S]*?)<\/h[1-6]>/gi)].map(m=>strip(m[1]));report.articlePreparation.push({path,expectedModifiedAt:note.updatedAt,titlePresent:headings.includes(note.title),items:note.items.map(item=>({title:item.title,present:headings.includes(item.title)}))});}
+  }
   report.pages.push({path,status:r.status,canonical,location:r.headers.get('location'),noindex:r.headers.get('x-robots-tag'),h1:strip(body.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1]||''),headings:[...body.matchAll(/<h2\b[^>]*>([\s\S]*?)<\/h2>/gi)].map(m=>strip(m[1])).slice(0,10),paragraphs:[...body.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/gi)].slice(0,5).map(m=>strip(m[1]).slice(0,250))});
  }catch(e){report.pages.push({path,error:e.message});}
 }
@@ -29,7 +41,8 @@ for(const path of ['/admin','/api/admin/analytics','/api/analytics-config']){
  try{const r=await get(path);await r.body?.cancel();report.privateRouteProbes.push({path,status:r.status,location:r.headers.get('location')?.split('?')[0]||null,noindex:r.headers.get('x-robots-tag'),note:'Unauthenticated request; response body not retained'});}catch(e){report.privateRouteProbes.push({path,error:e.message});}
 }
 report.aliasErrors=report.aliases.filter(item=>![301,308].includes(item.status)||decodeURI(item.location||'').replace(/^https:\/\/partyprint\.co\.il/,'')!==item.expected);
+report.editorialComplete=report.editorialLinks.length===EDITORIAL_LINKS.length*2&&report.editorialLinks.every(link=>link.present)&&report.articlePreparation.length===Object.keys(ARTICLE_PREPARATION).length&&report.articlePreparation.every(note=>note.titlePresent&&note.items.every(item=>item.present));
 await mkdir('artifacts',{recursive:true});
 await writeFile('artifacts/discovery-details.json',JSON.stringify(report,null,2));
 console.log(JSON.stringify(report,null,2));
-if(report.aliasErrors.length)process.exitCode=1;
+if(report.aliasErrors.length||(process.env.PARTYPRINT_EXPECT_EDITORIAL==='1'&&!report.editorialComplete))process.exitCode=1;
