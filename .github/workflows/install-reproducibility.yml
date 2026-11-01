@@ -1,7 +1,7 @@
 name: Install reproducibility
 on:
   push:
-    branches: [main, fix/hostinger-lockfile-compatibility]
+    branches: [main]
     paths: ['package.json', 'package-lock.json', 'scripts/check-install-lock.mjs', '.github/workflows/install-reproducibility.yml']
   pull_request:
     branches: [main]
