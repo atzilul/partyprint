@@ -24,10 +24,12 @@ in `scripts/build-identity.mjs`. Documentation, runtime data and host-generated
 files outside that scope do not alter the fingerprint. Two documentation-only
 revisions can have different commit IDs and the same source fingerprint.
 
-Uncommitted changes or new files in the selected scope return `modified`, with
+Changed bytes or new/staged paths in the selected scope return `modified`, with
 null commit and fingerprint. Missing Git, unreadable source or tracked source
 symlinks return `unavailable`, also with null evidence. The build still runs.
 No environment variable fallback can label an older artifact as a newer commit.
+Working bytes are compared against HEAD blob IDs. Executable-bit changes alone
+are ignored; the selected-source fingerprint describes paths and bytes.
 
 ## Verification
 
