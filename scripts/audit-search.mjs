@@ -51,8 +51,9 @@ try{
  const urls=sitemapUrls(sitemap.body);
  check('sitemap unique',new Set(urls).size===urls.length);
  check('sitemap discovery',urls.length>=20,urls.length+' page URLs');
- for(const value of urls)publicPageUrl(value);
- const paths=urls.map(value=>new URL(value).pathname);
+ const validUrls=[];
+ for(const value of urls){try{publicPageUrl(value);validUrls.push(value);}catch(error){check('sitemap canonical HTML',false,error.message);}}
+ const paths=validUrls.map(value=>new URL(value).pathname);
  if(local)for(const path of required)check('sitemap '+path,paths.some(x=>decodeURI(x).replace(/\/$/,'')===path.replace(/\/$/,'')));
  const targets=local?[...required,'/guides/'+encodeURIComponent('הדפסה-על-חולצות')]:[...new Set([...required,...paths])];
  if(targets.length>500)throw new Error('Audit limited to 500 pages; split the audit explicitly.');
