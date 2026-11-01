@@ -1,3 +1,4 @@
+import {request as httpRequest} from 'node:http';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {PUBLIC_ORIGIN,sitemapUrls,publicPageUrl,attributes} from './search-utils.mjs';
 const base=(process.env.PARTYPRINT_PUBLIC_URL||PUBLIC_ORIGIN).replace(/\/$/,'');
@@ -64,8 +65,11 @@ try{
  }
  if(local){
   for(const path of ['/','/ordering-guide?utm_source=redirect-audit']){
-   const res=await fetch(base+path,{redirect:'manual',headers:{host:'www.partyprint.co.il'},signal:AbortSignal.timeout(15000)});
-   check('www canonical redirect '+path,res.status===308&&res.headers.get('location')===PUBLIC_ORIGIN+path,'HTTP '+res.status+' '+res.headers.get('location'));
+   const res=await new Promise((resolve,reject)=>{
+    const request=httpRequest(base+path,{method:'HEAD',headers:{host:'www.partyprint.co.il'}},response=>{response.resume();resolve({status:response.statusCode,location:response.headers.location});});
+    request.setTimeout(15000,()=>request.destroy(new Error('Redirect check timed out')));request.on('error',reject);request.end();
+   });
+   check('www canonical redirect '+path,res.status===308&&res.location===PUBLIC_ORIGIN+path,'HTTP '+res.status+' '+res.location);
   }
  }
  if(local){const api=await read('/api/analytics-config');check('private API noindex',/\bnoindex\b/.test(api.headers.get('x-robots-tag')||''));}

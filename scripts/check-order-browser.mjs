@@ -21,7 +21,7 @@ try{
       if(type==='layout-shift'&&!entry.hadRecentInput){
        if(!sessionStart||entry.startTime-lastShift>=1000||entry.startTime-sessionStart>=5000){sessionStart=entry.startTime;sessionValue=0;}
        lastShift=entry.startTime;sessionValue+=entry.value;p.layoutShiftSum+=entry.value;p.clsSessionMax=Math.max(p.clsSessionMax,sessionValue);
-       if(p.layoutShifts.length<20)p.layoutShifts.push({at:entry.startTime,value:entry.value,sources:(entry.sources||[]).map(s=>({node:s.node?s.node.tagName.toLowerCase()+(s.node.id?'#'+s.node.id:'')+(typeof s.node.className==='string'?'.'+s.node.className.trim().split(/\s+/).slice(0,4).join('.'):''):'unknown',before:{x:s.previousRect.x,y:s.previousRect.y,width:s.previousRect.width,height:s.previousRect.height},after:{x:s.currentRect.x,y:s.currentRect.y,width:s.currentRect.width,height:s.currentRect.height}}))});
+       if(p.layoutShifts.length<20)p.layoutShifts.push({at:entry.startTime,value:entry.value,sources:(entry.sources||[]).map(s=>({node:s.node?String(s.node.tagName||s.node.nodeName||'unknown').toLowerCase()+(s.node.id?'#'+s.node.id:'')+(typeof s.node.className==='string'?'.'+s.node.className.trim().split(/\s+/).slice(0,4).join('.'):''):'unknown',before:{x:s.previousRect.x,y:s.previousRect.y,width:s.previousRect.width,height:s.previousRect.height},after:{x:s.currentRect.x,y:s.currentRect.y,width:s.currentRect.width,height:s.currentRect.height}}))});
       }
       if(type==='longtask')p.longTaskMilliseconds+=entry.duration;
      }}).observe({type,buffered:true});
