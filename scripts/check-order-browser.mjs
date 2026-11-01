@@ -10,6 +10,20 @@ const browser=await chromium.launch({headless:true});
 try{
  for(const viewport of [{width:390,height:844},{width:1366,height:900}]){
   const context=await browser.newContext({viewport,locale:'he-IL',timezoneId:'Asia/Jerusalem',reducedMotion:'reduce'});
+  await context.addInitScript(()=>{
+   window.__partyprintSearchPerf={lcpMilliseconds:null,cls:0,longTaskMilliseconds:0,supported:[]};
+   for(const type of ['largest-contentful-paint','layout-shift','longtask']){
+    try{
+     new PerformanceObserver(list=>{for(const entry of list.getEntries()){
+      const p=window.__partyprintSearchPerf;
+      if(type==='largest-contentful-paint')p.lcpMilliseconds=entry.startTime;
+      if(type==='layout-shift'&&!entry.hadRecentInput)p.cls+=entry.value;
+      if(type==='longtask')p.longTaskMilliseconds+=entry.duration;
+     }}).observe({type,buffered:true});
+     window.__partyprintSearchPerf.supported.push(type);
+    }catch{}
+   }
+  });
   const page=await context.newPage();
   const pageErrors=[],blocked=[];
   let orderAttempts=0;
@@ -25,10 +39,17 @@ try{
    return route.continue();
   });
   const checks=[];
+  let labPerformance=null;
   const check=(name,condition)=>{assert.ok(condition,name);checks.push(name);};
   try{
    await page.goto(base+'/#order',{waitUntil:'domcontentloaded',timeout:45000});
    await page.waitForLoadState('networkidle',{timeout:15000});
+   labPerformance=await page.evaluate(()=>{
+    const n=performance.getEntriesByType('navigation')[0];
+    return {...window.__partyprintSearchPerf,ttfbMilliseconds:n?n.responseStart-n.requestStart:null,
+     fcpMilliseconds:performance.getEntriesByName('first-contentful-paint')[0]?.startTime??null,
+     note:'CI browser observation before form interaction; reduced motion, write/tracker blocking; no mobile CPU/network throttling; not field Core Web Vitals'};
+   });
    await page.locator('#order-form').scrollIntoViewIfNeeded();
    const deny=page.getByRole('button',{name:'לא, תודה',exact:true});
    if(await deny.isVisible().catch(()=>false))await deny.click();
@@ -73,10 +94,10 @@ try{
    check('Form fits the viewport',!!box&&box.x>=-2&&box.x+box.width<=viewport.width+2);
    check('No unhandled client exception',pageErrors.length===0);
    check('No order request was sent',orderAttempts===0);
-   report.screens.push({viewport,checks,blockedWriteCount:blocked.length,orderAttempts,pageErrors});
+   report.screens.push({viewport,checks,blockedWriteCount:blocked.length,orderAttempts,pageErrors,labPerformance});
   }catch(error){
    report.errors.push({viewport,message:error.message.slice(0,500),pageErrors});
-   report.screens.push({viewport,checks,blockedWriteCount:blocked.length,orderAttempts});
+   report.screens.push({viewport,checks,blockedWriteCount:blocked.length,orderAttempts,labPerformance});
   }finally{await context.close();}
  }
 }finally{await browser.close();}

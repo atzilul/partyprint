@@ -2,8 +2,10 @@ name: Search discovery quality
 on:
   push:
     branches: [main]
+    paths-ignore: ['docs/**']
   pull_request:
     branches: [main]
+    paths-ignore: ['docs/**']
   workflow_dispatch:
 permissions:
   contents: read
@@ -18,7 +20,7 @@ jobs:
         with:
           node-version: '22'
       - run: npm ci --no-audit --no-fund
-      - run: node --test scripts/search-utils.test.mjs
+      - run: node --test scripts/search-utils.test.mjs scripts/search-metrics.test.mjs
       - run: node --experimental-strip-types --test scripts/search-content.test.mjs
       - run: npm run build
       - name: Install isolated browser QA tooling
@@ -44,6 +46,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - run: node scripts/check-public-routing.mjs
       - name: Read-only production audit (findings do not deploy anything)
         run: node scripts/audit-search.mjs
       - uses: actions/upload-artifact@v4
