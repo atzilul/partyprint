@@ -1,3 +1,4 @@
+import {editorialModifiedAt} from '@/lib/editorial-preparation';
 import type {MetadataRoute} from 'next';
 import {listBlogPosts} from '@/lib/blog';
 import type {BlogPost} from '@/lib/blog';
@@ -21,7 +22,7 @@ export default async function sitemap():Promise<MetadataRoute.Sitemap>{
  try {posts=await listBlogPosts();}
  catch {console.warn('Sitemap: blog list unavailable; serving static public URLs.');}
  const blogUpdatedAt=posts.reduce((latest,post)=>{
-  const date=validDate(post.updatedAt||post.publishedAt);
+  const date=validDate(editorialModifiedAt(post.slug,post.updatedAt||post.publishedAt||fallbackDate));
   return date>latest?date:latest;
  },contentUpdatedAt);
  const paths=['/guides','/about','/work','/faq','/policies/shipping','/policies/returns','/privacy-policy'];
@@ -32,6 +33,6 @@ export default async function sitemap():Promise<MetadataRoute.Sitemap>{
   ...paths.map(path=>({url:base+path,lastModified:path==='/faq'?editorialUpdatedAt:contentUpdatedAt})),
   ...SEO_PAGES.map(page=>({url:base+SEO_PAGE_URL(page.slug),lastModified:validDate(page.updatedAt),images:imageList(page.heroImage)})),
   ...STUDIO_PAGES.map(page=>({url:base+STUDIO_PAGE_URL(page.slug),lastModified:contentUpdatedAt,images:imageList(page.heroImage)})),
-  ...posts.map(post=>({url:base+'/blog/'+post.slug,lastModified:validDate(post.updatedAt||post.publishedAt),images:imageList(post.coverImage,post.inlineImage1,post.inlineImage2)})),
+  ...posts.map(post=>({url:base+'/blog/'+post.slug,lastModified:validDate(editorialModifiedAt(post.slug,post.updatedAt||post.publishedAt||fallbackDate)),images:imageList(post.coverImage,post.inlineImage1,post.inlineImage2)})),
  ];
 }

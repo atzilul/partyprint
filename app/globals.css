@@ -271,3 +271,30 @@ button,a,input,select,textarea,summary{touch-action:manipulation}
   .optional-order-fields{gap:12px}
   .summary-shirt-details>summary{min-height:48px}
 }
+
+/* Keep the promotion's place while its current text loads. */
+.topbar{display:grid;grid-template-columns:minmax(0,auto) minmax(240px,420px);justify-content:center;align-items:center;gap:4px 20px;min-height:52px}
+.topbar-message{min-width:0}
+.topbar-promo{display:flex;align-items:center;justify-content:center;min-width:0;min-height:36px}
+.topbar-promo .promo-fallback{margin:0;font-size:12px;font-weight:700;line-height:1.5}
+.topbar.has-launch-offer .promo-fallback{display:none}
+.topbar .topbar-promo .launch-offer{width:100%;max-width:100%;margin:0;min-height:36px}
+@media(max-width:680px){.topbar{grid-template-columns:minmax(0,1fr);padding:7px 16px}.topbar-promo,.topbar .topbar-promo .launch-offer{min-height:56px}.topbar-promo .promo-fallback{font-size:11px}}
+
+.blog-service-guides{margin:34px 0;padding:24px;border:1px solid #161616;background:#f5f4ef}
+.blog-service-guides h2{font-size:clamp(25px,3vw,34px);line-height:1.25;margin:0 0 14px}
+.blog-service-guides p{font-size:16px;line-height:1.75;margin:12px 0}
+.blog-service-guides>div{display:grid;gap:10px}
+.blog-service-guides>div>a{display:flex;justify-content:space-between;gap:14px;min-height:48px;padding:12px;border:1px solid #ccc;font-weight:700;background:#fff}
+.blog-service-guides>div>a:hover{border-color:#161616}
+.blog-service-guides p a{text-decoration:underline;text-underline-offset:3px}
+
+.blog-preparation{margin:32px 0;padding:24px;background:#f5f4ef;border:1px solid #d0d0c6}
+.blog-preparation h2{font-size:clamp(27px,4vw,38px);line-height:1.25;margin:0 0 16px}
+.blog-preparation h3{font-size:21px;line-height:1.4;letter-spacing:-.02em;margin:0 0 8px}
+.blog-preparation p{font-size:17px;line-height:1.8;margin:10px 0}
+.blog-preparation ol{display:grid;gap:20px;margin:24px 0;padding-inline-start:24px}
+.blog-preparation li{padding-inline-start:6px}
+.blog-preparation li::marker{font-weight:800}
+.blog-preparation a{text-decoration:underline;text-underline-offset:3px;font-weight:700}
+@media(max-width:680px){.blog-preparation{padding:18px}.blog-preparation p{font-size:16px}}

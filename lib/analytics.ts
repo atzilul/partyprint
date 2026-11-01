@@ -54,7 +54,7 @@ function browserTimeZone() {
 }
 
 // Staff, customer tracking and design-approval pages are never measured.
-const EXCLUDED_PREFIXES = ['/admin', '/track', '/design', '/api', '/signin-with-chatgpt', '/signout-with-chatgpt'];
+const EXCLUDED_PREFIXES = ['/admin', '/track', '/design', '/api', '/signin-with-chatgpt', '/signout-with-chatgpt', '/chatgpt-auth'];
 export function isExcludedPath(path: string) {
   return EXCLUDED_PREFIXES.some(prefix => path === prefix || path.startsWith(prefix + '/'));
 }

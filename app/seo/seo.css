@@ -23,3 +23,14 @@
 .seo-guide-toc a{text-decoration:underline;text-underline-offset:.2em}
 .seo-content-section{scroll-margin-top:6rem}
 @media(max-width:680px){.seo-guide-toc ul{grid-template-columns:1fr}}
+
+/* Contextual reading connects service planning to useful editorial detail. */
+.seo-reading{margin:28px 0 34px;padding:24px;border:1px solid var(--ink,#161616);background:#fff}
+.seo-reading h2{font-size:clamp(23px,3vw,30px);line-height:1.25;margin:0 0 18px}
+.seo-reading>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.seo-reading a{display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid #d6d6ce;line-height:1.6}
+.seo-reading a:hover{border-color:#161616;background:#f5f4ef}
+.seo-reading a strong{font-size:18px;line-height:1.4}
+.seo-reading a span{font-size:15px;color:#555}
+.seo-reading a b{font-size:14px;margin-top:auto}
+@media(max-width:680px){.seo-reading{padding:18px}.seo-reading>div{grid-template-columns:1fr}.seo-reading a{min-height:48px}}

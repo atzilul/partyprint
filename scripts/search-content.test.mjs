@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {ARTICLE_PREPARATION,editorialModifiedAt} from '../lib/editorial-preparation.ts';
+import {EDITORIAL_LINKS} from '../lib/editorial-links.ts';
 import {SEO_PAGES,SEO_PAGE_ALIASES,getSeoPage} from '../lib/seo-pages.ts';
 test('all existing guide addresses stay unique and resolve their aliases',()=>{
  assert.equal(SEO_PAGES.length,22);
@@ -36,4 +38,27 @@ test('metadata, visible answers and editorial dates are complete',()=>{
   assert.ok(p.heroImage.startsWith('/')&&!p.heroImage.startsWith('//'));
  }
  assert.equal(new Set(questions).size,questions.length,'Each audience must have its own useful questions');
+});
+
+test('editorial navigation uses canonical guides and distinct safe article targets',()=>{
+ const pairs=new Set();
+ for(const link of EDITORIAL_LINKS){
+  assert.ok(SEO_PAGES.some(page=>page.slug===link.guideSlug),'Unknown service-guide target');
+  assert.ok(!SEO_PAGE_ALIASES[link.guideSlug],'Use a canonical guide rather than an alias');
+  assert.ok(link.articleSlug&&!/[/:?#]/.test(link.articleSlug),'Only a public article slug is accepted');
+  assert.ok(link.title&&link.description);
+  const pair=link.guideSlug+'|'+link.articleSlug;
+  assert.ok(!pairs.has(pair),'Duplicate editorial navigation');pairs.add(pair);
+ }
+});
+
+test('authored article notes keep valid navigation and honest modified dates',()=>{
+ for(const [slug,note]of Object.entries(ARTICLE_PREPARATION)){
+  assert.ok(EDITORIAL_LINKS.some(link=>link.articleSlug===slug));
+  assert.ok(Number.isFinite(Date.parse(note.updatedAt))&&Date.parse(note.updatedAt)<=Date.now());
+  assert.ok(note.items.length>=3&&note.items.every(item=>item.title&&item.body.length>80));
+  assert.equal(editorialModifiedAt(slug,'2026-09-27T00:00:00.000Z'),note.updatedAt);
+  assert.equal(editorialModifiedAt(slug,'2026-11-01T12:00:00.000Z'),'2026-11-01T12:00:00.000Z');
+ }
+ assert.equal(editorialModifiedAt('__other__','2026-10-01T00:00:00.000Z'),'2026-10-01T00:00:00.000Z');
 });
