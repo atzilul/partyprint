@@ -5,6 +5,7 @@ import { defineConfig } from "vite";
 import hostingConfig from "./.openai/hosting.json";
 import { readExecutionProfile } from "./scripts/execution-profile.mjs";
 import { sites } from "./build/sites-vite-plugin";
+import { createBuildIdentity } from "./scripts/build-identity.mjs";
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
   "00000000-0000-4000-8000-000000000000";
@@ -75,7 +76,7 @@ const localBindingConfig = {
     : [],
 };
 
-export default defineConfig(async () => {
+export default defineConfig(async ({command}) => {
   // Use Miniflare's local Request.cf placeholder unless fetching is requested.
   process.env.CLOUDFLARE_CF_FETCH_ENABLED ??= "false";
   process.env.WRANGLER_SEND_METRICS ??= "false";
@@ -93,6 +94,13 @@ export default defineConfig(async () => {
   const cloudflarePlugin = managedLinux ? (await import("@cloudflare/vite-plugin")).cloudflare : null;
 
   return {
+    define: {
+      __PARTYPRINT_RELEASE__: JSON.stringify(createBuildIdentity({
+        root: fileURLToPath(new URL('./',import.meta.url)),
+        target: managedLinux ? 'cloudflare' : 'node',
+        mode: command === 'build' ? 'production' : 'development',
+      })),
+    },
     resolve: {
       alias: {
         "#partyprint-runtime": managedLinux

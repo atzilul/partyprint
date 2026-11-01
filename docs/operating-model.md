@@ -50,6 +50,16 @@ deployed commit is identified and the public page is checked.
 If Hostinger status or the public site cannot be inspected, keep the production
 state explicitly unverified. Do not call a stale Sites page current.
 
+## Public build-source diagnostic
+
+When available, read `/api/release` on the public production origin and compare
+its compiled source revision with the selected GitHub revision. Its source
+fingerprint helps distinguish documentation-only changes from selected source
+changes. Follow [release-identity.md](release-identity.md) for the scope, failure
+states and audit command. An absent or unverified identity remains explicit.
+This diagnostic does not replace Hostinger's successful deployment receipt or
+the public behavior checks above, and does not prove order or email operation.
+
 ## Promotion checks
 
 For a requested discount, compare the configured coupon percentage and code

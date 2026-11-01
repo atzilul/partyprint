@@ -17,6 +17,7 @@ try{
  }
  if(!ready)throw new Error('Production server did not become ready.');
  await run('scripts/audit-search.mjs');
+ await run('scripts/check-release-identity.mjs');
  if(process.env.PARTYPRINT_BROWSER_CHECK==='1'){
   await run('scripts/check-order-browser.mjs');
   process.env.PARTYPRINT_EXPECT_STABLE_PROMO='1';
