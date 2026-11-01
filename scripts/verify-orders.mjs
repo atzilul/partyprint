@@ -200,3 +200,35 @@ try{
  else sql.prepare("DELETE FROM studio_settings WHERE key='team'").run();
 }
 console.log('PASS: live team recipients, owner normalization, role/removal changes, protected test send, recipient injection rejection, rate limiting, provider diagnostics and order persistence after Resend failure. No real emails sent.');
+
+// Quantity changes are exercised against the actual route with only the
+// in-memory SQLite/bucket fixture. No customer order or external send is made.
+const quantityPriorFetch=globalThis.fetch,quantityPriorKey=globalThis.testEnv.RESEND_API_KEY,quantityPriorFrom=globalThis.testEnv.MAIL_FROM;
+let quantityNetworkAttempts=0;
+try{
+ delete globalThis.testEnv.RESEND_API_KEY;delete globalThis.testEnv.MAIL_FROM;
+ globalThis.fetch=async()=>{quantityNetworkAttempts++;throw Error('External network is forbidden in quantity API QA')};
+ const quantityConfig=await settingsStore.getPricing();
+ const quantityForm=(pack,n)=>{const f=form();f.delete('images');f.set('package',String(pack));f.set('quantity',String(n));f.set('mode',pack===4?'custom':'order');f.set('shirts',JSON.stringify(Array.from({length:Number.isInteger(n)&&n>=4&&n<=100?n:4},()=>({size:'M',color:'white',sizeType:'adult'}))));return f};
+ for(const [pack,n] of [[0,5],[1,4],[2,7],[3,4],[3,14],[4,4],[4,7],[4,21]]){
+  sql.prepare('DELETE FROM form_rate_limits').run();
+  const f=quantityForm(pack,n),expected=business.priceFor(quantityConfig,pack,n);f.set('expectedPrice',String(expected));
+  const response=await publicRoute.POST(post('/api/orders',f));assert.equal(response.status,201,'quantity '+n+' in package '+pack);
+  const submitted=await response.json(),stored=await store.getOrder(submitted.id);
+  assert.equal(stored.quantity,n);assert.equal(stored.shirts.length,n);assert.equal(stored.price,expected);assert.equal(submitted.emailSent,false);
+ }
+ for(const n of [3,4.5,101,NaN]){
+  sql.prepare('DELETE FROM form_rate_limits').run();
+  assert.equal((await publicRoute.POST(post('/api/orders',quantityForm(4,n)))).status,400);
+ }
+ sql.prepare('DELETE FROM form_rate_limits').run();
+ const stalePrice=quantityForm(4,7);stalePrice.set('expectedPrice','1');
+ assert.equal((await publicRoute.POST(post('/api/orders',stalePrice))).status,409);
+ sql.prepare('DELETE FROM form_rate_limits').run();
+ const wrongCount=quantityForm(4,7);wrongCount.set('shirts',JSON.stringify(Array.from({length:8},()=>({size:'M',color:'white'}))));
+ assert.equal((await publicRoute.POST(post('/api/orders',wrongCount))).status,400);
+ assert.equal(quantityNetworkAttempts,0);
+}finally{
+ globalThis.fetch=quantityPriorFetch;globalThis.testEnv.RESEND_API_KEY=quantityPriorKey;globalThis.testEnv.MAIL_FROM=quantityPriorFrom;
+}
+console.log('PASS: all packages support minimum four and arbitrary quantities; actual order API checks quantity, active shirt count and server price in isolated fixtures; zero external network calls.');
