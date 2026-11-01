@@ -42,6 +42,11 @@ test('ignored runtime settings and customer storage do not enter the fingerprint
  const after=createBuildIdentity({root});assert.equal(after.sourceState,'clean');assert.equal(after.sourceFingerprint,before.sourceFingerprint);
  assert.ok(!JSON.stringify(after).includes('PRIVATE_FIXTURE'));
 });
+test('host-generated files and documentation outside build inputs do not hide the application revision',t=>{
+ const {root}=fixture(t),before=createBuildIdentity({root});
+ writeFileSync(join(root,'.htaccess'),'host generated fixture');mkdirSync(join(root,'docs'));writeFileSync(join(root,'docs/draft.md'),'uncommitted documentation');
+ const after=createBuildIdentity({root});assert.equal(after.sourceState,'clean');assert.equal(after.sourceCommit,before.sourceCommit);assert.equal(after.sourceFingerprint,before.sourceFingerprint);
+});
 test('missing Git and tracked source symlinks remain explicitly unavailable',t=>{
  const absent=mkdtempSync(join(tmpdir(),'partyprint-no-git-'));t.after(()=>rmSync(absent,{recursive:true,force:true}));
  assert.equal(createBuildIdentity({root:absent}).sourceState,'unavailable');

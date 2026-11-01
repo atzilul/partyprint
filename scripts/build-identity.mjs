@@ -6,7 +6,7 @@ import {resolve} from 'node:path';
 // A public diagnostic allowlist, never a dump of the host's environment.
 const SOURCE_PATHS=['app','components','lib','runtime','build','scripts','public',
  'package.json','package-lock.json','pnpm-lock.yaml','yarn.lock','vite.config.ts',
- 'next.config.ts','middleware.ts','server.js','tsconfig.json'];
+ 'next.config.ts','middleware.ts','server.js','tsconfig.json','.openai/hosting.json','.gitignore'];
 const SHA=/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/;
 
 export function createBuildIdentity({root=process.cwd(),target='node',mode='production',builtAt=new Date().toISOString()}={}){
@@ -16,8 +16,9 @@ export function createBuildIdentity({root=process.cwd(),target='node',mode='prod
  try{
   const sha=git(['rev-parse','--verify','HEAD']).trim();
   if(!SHA.test(sha))return base;
-  // An uncommitted build must never claim to be an exact Git revision.
-  if(git(['status','--porcelain','--untracked-files=normal']).trim())return {...base,sourceState:'modified'};
+  // Check the same application/build scope we fingerprint. Host-generated files
+  // outside that scope and documentation do not relabel application source.
+  if(git(['status','--porcelain','--untracked-files=normal','--',...SOURCE_PATHS]).trim())return {...base,sourceState:'modified'};
   const files=git(['ls-files','-z','--',...SOURCE_PATHS]).split('\0').filter(Boolean).sort();
   if(!files.length)return base;
   const hash=createHash('sha256');
