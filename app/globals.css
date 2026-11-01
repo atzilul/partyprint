@@ -298,3 +298,17 @@ button,a,input,select,textarea,summary{touch-action:manipulation}
 .blog-preparation li::marker{font-weight:800}
 .blog-preparation a{text-decoration:underline;text-underline-offset:3px;font-weight:700}
 @media(max-width:680px){.blog-preparation{padding:18px}.blog-preparation p{font-size:16px}}
+
+/* Order quantity remains editable throughout the wizard. */
+.quantity-control input[type=number]{width:68px;min-height:44px;padding:6px 3px;border:0;border-radius:0;background:#fff;color:#161616;text-align:center;font:600 18px 'Rubik',sans-serif;direction:ltr;appearance:textfield}
+.quantity-control input[type=number]::-webkit-inner-spin-button,.quantity-control input[type=number]::-webkit-outer-spin-button{appearance:none;margin:0}
+.quantity-control input[type=number]:focus-visible{outline:3px solid #7351fb;outline-offset:-3px}
+.quantity-control button{min-width:44px;min-height:44px}
+.order-quantity-panel{padding:16px;border:1px solid #c5c5b7;background:#f5f5eb;border-radius:12px;margin:0 0 22px}
+.order-quantity-panel .quantity-control{margin:0 0 12px;font-size:16px;font-weight:700;flex-wrap:wrap}
+.order-quantity-prices{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px 16px}
+.order-quantity-unit{font-size:18px}.order-quantity-subtotal{font-size:14px}
+.order-quantity-panel p{font-size:13px;line-height:1.65;margin:8px 0 0}
+.order-quantity-tier{font-weight:600}
+.custom-package .quantity-control{color:#fff}
+@media(max-width:380px){.order-quantity-panel{padding:12px}.order-quantity-panel .quantity-control{font-size:14px;gap:8px}}

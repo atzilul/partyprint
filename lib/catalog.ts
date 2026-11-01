@@ -8,10 +8,14 @@ export const packs=[
 {name:'צוות עם אופי',tag:'TEAM SPIRIT',n:10,price:1122.50,desc:'מעצבים את האנשים שמאחורי הצוות.',icon:'↗',cls:'green',image:'/tech-team.webp'},
 {name:'הרעיון שלכם',tag:'YOUR OWN THING',n:5,price:561.25,desc:'כל רעיון, כל אירוע. עיצוב שנולד מכם.',icon:'✺',cls:'custom',image:'/shirts.webp'}
 ];
+export const MIN_SHIRT_QUANTITY=4;
+export const MAX_SHIRT_QUANTITY=100;
+export function isOrderQuantity(value:unknown):value is number{
+ return typeof value==='number'&&Number.isInteger(value)&&value>=MIN_SHIRT_QUANTITY&&value<=MAX_SHIRT_QUANTITY;
+}
 export function calculatePrice(pack:number,quantity:number){
- if(!Number.isInteger(pack)||pack<0||pack>=packs.length||!Number.isInteger(quantity))throw new Error('Invalid package or quantity');
- if(pack===4){if(!(quantity in CUSTOM_PRICES))throw new Error('Invalid custom quantity');return CUSTOM_PRICES[quantity]}
- if(quantity<packs[pack].n||quantity>100)throw new Error('Invalid package quantity');
+ if(!Number.isInteger(pack)||pack<0||pack>=packs.length||!isOrderQuantity(quantity))throw new Error('Invalid package or quantity');
+ if(pack===4)return Math.round(DEFAULT_SHIRT_PRICE*quantity*100)/100;
  return packs[pack].price+(quantity-packs[pack].n)*EXTRA_SHIRT_PRICE;
 }
 export const SIZES=['S','M','L','XL'] as const;

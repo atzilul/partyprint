@@ -20,8 +20,10 @@ jobs:
         with:
           node-version: '24.22.1'
       - run: npm ci --no-audit --no-fund
-      - run: node --test scripts/search-utils.test.mjs scripts/search-metrics.test.mjs scripts/build-identity.test.mjs
+      - run: node --test scripts/search-utils.test.mjs scripts/search-metrics.test.mjs scripts/build-identity.test.mjs scripts/order-quantity.test.mjs
       - run: node --experimental-strip-types --test scripts/search-content.test.mjs scripts/analytics-contract.test.mjs
+      - name: Isolated order API regression; synthetic storage and no external mail
+        run: node scripts/verify-orders.mjs
       - run: npm run build
       - name: Install isolated browser QA tooling
         run: npm install --prefix /tmp/partyprint-browser --no-save --package-lock=false --ignore-scripts playwright@1.64.1
@@ -77,6 +79,10 @@ jobs:
         run: node scripts/check-order-browser.mjs
         env:
           PARTYPRINT_PLAYWRIGHT_ROOT: /tmp/partyprint-browser
+      - name: Quantity and tier pricing; writes mocked, matching deployment required to exercise feature
+        run: node scripts/check-quantity-browser.mjs
+        env:
+          PARTYPRINT_PLAYWRIGHT_ROOT: /tmp/partyprint-browser
       - name: Isolated measurement contract; vendors and order responses mocked
         run: node scripts/check-measurement-browser.mjs
         env:
@@ -88,6 +94,7 @@ jobs:
           path: |
             artifacts/order-browser-production.json
             artifacts/measurement-contract-production.json
+            artifacts/quantity-browser-production.json
           if-no-files-found: error
 
   dependency-audit:
