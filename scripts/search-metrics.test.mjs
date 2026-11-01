@@ -28,3 +28,10 @@ test('duplicate grains and other domains fail; private customer URLs are exclude
  const r=analyze([{...row,page:'/track/private-token'}]);
  assert.equal(r.gsc.rows,0);assert.equal(r.gsc.excludedPrivateRows,1);
 });
+
+test('unknown landing values cannot become invented page URLs',()=>{
+ for(const landing_page of ['(not set)','unknown','not-a-rooted-path'])assert.throws(()=>analyze([],[{date:'2026-10-29',landing_page,sessions:2}]),/rooted page path/);
+ const r=analyze([],[{date:'2026-10-29',landing_page:'/',sessions:2}]);
+ assert.equal(r.ga4.sessions,2);
+ assert.equal(r.ga4.pages[0].page,'https://partyprint.co.il');
+});

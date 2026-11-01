@@ -23,8 +23,10 @@ function numeric(value,name,optional=false){
 }
 function date(value){const s=String(value||'').replace(/^(\d{4})(\d{2})(\d{2})$/,'$1-$2-$3');if(!/^\d{4}-\d{2}-\d{2}$/.test(s)||new Date(s).toISOString().slice(0,10)!==s)throw Error('Expected a complete ISO date');return s;}
 function page(value){
- if(!String(value||'').trim())throw Error('Missing page path');
- const url=new URL(String(value),'https://partyprint.co.il');
+ const raw=String(value||'').trim();
+ if(!raw)throw Error('Missing page path');
+ if(!raw.startsWith('/')&&!/^https?:\/\//i.test(raw))throw Error('Expected a rooted page path or absolute site URL; quarantine unknown landing pages');
+ const url=new URL(raw,'https://partyprint.co.il');
  if(url.username||url.password||url.port||!['partyprint.co.il','www.partyprint.co.il'].includes(url.hostname)||!['https:','http:'].includes(url.protocol))throw Error('Export contains another site');
  if(/^\/(?:admin|api|track|design)(?:\/|$)/.test(decodeURIComponent(url.pathname)))return null;
  return url.origin+decodeURIComponent(url.pathname).replace(/\/$/,'');
