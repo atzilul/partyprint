@@ -1,7 +1,7 @@
 name: Search discovery quality
 on:
   push:
-    branches: [seo/search-discovery-2026-11]
+    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
