@@ -53,6 +53,34 @@ variables below. Do not use a temporary directory to make this requirement pass.
 Do not select Vite static hosting: this application has private server APIs.
 Do not change `execution-profile.mjs`, `build-verified.sh` or the local profile.
 
+## Lockfile reproducibility and build identity
+
+The saved Hostinger install setting remains `npm install`. The lockfile was
+normalized with Node 24.22.1 / npm 11.19.1 after reproducing the host's reported
+post-install rewrite. Retained package versions and package.json were unchanged.
+A new isolated check verifies that the first, repeated and clean installs leave
+both manifests byte-identical:
+
+```sh
+node scripts/check-install-lock.mjs
+```
+
+Run this check with Node 24.22.1 and npm 11.19.1, as in the install-reproducibility
+workflow. Do not delete the lockfile or accept unrelated version changes to fix
+metadata drift. If the host's npm version changes, capture it in the build log
+and recheck install stability before normalizing again. npm ci is an available
+frozen-install alternative when the platform permits changing the install step;
+it is not the currently selected Hostinger setting.
+
+Before embedding the public build identity, Vite logs Node/npm versions and
+bounded Git status metadata for the selected source scope. File contents and
+environment values are not logged. Permission-only Git status entries do not
+necessarily make the byte-based identity modified. Follow
+[the build identity specification](docs/release-identity.md) and
+[the incident report](docs/search-execution/hostinger-lockfile-2026-11-01.md).
+A clean source identity still needs the matching successful Hostinger receipt
+and public behavior checks.
+
 ## Runtime environment
 
 Configure these in the hosting environment, never GitHub source or client code:

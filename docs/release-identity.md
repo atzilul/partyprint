@@ -49,6 +49,22 @@ are retained. A production artifact must report the expected revision; when
 comparing documentation-only revisions, inspect the known source diff and
 fingerprint separately instead of silently accepting a different SHA.
 
+## Build-log diagnostics and install stability
+
+Before identity calculation, production builds log the Node/npm versions and
+at most 100 Git porcelain entries from the same source allowlist. Only relative
+names and statuses are included; file bytes, environment values and raw command
+errors are excluded. Missing Git and truncation are explicit. These diagnostics
+are not fields in the public release response. Git can report executable-bit
+changes that do not alter the byte-based identity.
+
+The isolated `node scripts/check-install-lock.mjs` check runs npm install three
+times (initial, repeated, then without node_modules) against copied public
+manifests, requiring exact byte stability. Its report is written to ignored
+artifacts; it does not alter the checkout's manifests or runtime data.
+[The Hostinger lockfile report](search-execution/hostinger-lockfile-2026-11-01.md)
+records the reproduced npm 11 rewrite and candidate evidence.
+
 ## Limits
 
 This is a source diagnostic, not a signed attestation or a Hostinger control

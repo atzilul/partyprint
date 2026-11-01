@@ -5,7 +5,7 @@ import { defineConfig } from "vite";
 import hostingConfig from "./.openai/hosting.json";
 import { readExecutionProfile } from "./scripts/execution-profile.mjs";
 import { sites } from "./build/sites-vite-plugin";
-import { createBuildIdentity } from "./scripts/build-identity.mjs";
+import { createBuildIdentity, collectBuildSourceDiagnostics } from "./scripts/build-identity.mjs";
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
   "00000000-0000-4000-8000-000000000000";
@@ -92,6 +92,12 @@ export default defineConfig(async ({command}) => {
 
   // Wrangler snapshots its log path while the Cloudflare plugin is imported.
   const cloudflarePlugin = managedLinux ? (await import("@cloudflare/vite-plugin")).cloudflare : null;
+
+  if (command === 'build') {
+    console.log('[partyprint] Build source diagnostics ' + JSON.stringify(
+      collectBuildSourceDiagnostics({ root: fileURLToPath(new URL('./', import.meta.url)) }),
+    ));
+  }
 
   return {
     define: {

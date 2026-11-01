@@ -18,7 +18,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24.22.1'
       - run: npm ci --no-audit --no-fund
       - run: node --test scripts/search-utils.test.mjs scripts/search-metrics.test.mjs scripts/build-identity.test.mjs
       - run: node --experimental-strip-types --test scripts/search-content.test.mjs scripts/analytics-contract.test.mjs

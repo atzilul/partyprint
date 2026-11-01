@@ -1,0 +1,30 @@
+name: Install reproducibility
+on:
+  push:
+    branches: [main]
+    paths: ['package.json', 'package-lock.json', 'scripts/check-install-lock.mjs', '.github/workflows/install-reproducibility.yml']
+  pull_request:
+    branches: [main]
+    paths: ['package.json', 'package-lock.json', 'scripts/check-install-lock.mjs', '.github/workflows/install-reproducibility.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  node24-install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.1'
+      - run: node scripts/check-install-lock.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: install-reproducibility
+          path: |
+            artifacts/install-lock-report.json
+            artifacts/package-lock.node24.json
+          if-no-files-found: error
