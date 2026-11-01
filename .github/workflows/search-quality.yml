@@ -47,6 +47,7 @@ jobs:
         with:
           node-version: '22'
       - run: node scripts/check-public-routing.mjs
+      - run: node --experimental-strip-types scripts/check-discovery-details.mjs
       - name: Read-only production audit (findings do not deploy anything)
         run: node scripts/audit-search.mjs
       - uses: actions/upload-artifact@v4
@@ -56,6 +57,7 @@ jobs:
           path: |
             artifacts/search-audit.json
             artifacts/public-routing.json
+            artifacts/discovery-details.json
           if-no-files-found: error
   production-form:
     runs-on: ubuntu-latest
@@ -73,9 +75,15 @@ jobs:
         run: node scripts/check-order-browser.mjs
         env:
           PARTYPRINT_PLAYWRIGHT_ROOT: /tmp/partyprint-browser
+      - name: Isolated measurement contract; vendors and order responses mocked
+        run: node scripts/check-measurement-browser.mjs
+        env:
+          PARTYPRINT_PLAYWRIGHT_ROOT: /tmp/partyprint-browser
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: order-production-browser
-          path: artifacts/order-browser-production.json
+          path: |
+            artifacts/order-browser-production.json
+            artifacts/measurement-contract-production.json
           if-no-files-found: error
