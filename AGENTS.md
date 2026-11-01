@@ -27,3 +27,16 @@ Only sync the existing Sites project after Hostinger production is verified.
 Compare its homepage, logo, offer text, and the requested behavior with
 `partyprint.co.il`. Report the GitHub SHA, Hostinger deployment result, Sites
 version, and any outstanding Resend verification state.
+
+## Search growth continuity
+
+Before continuing search, content, indexing, analytics, or AI-discovery work, read
+[the project memory](docs/search-execution/PROJECT_MEMORY.md), then the current
+[task register](docs/search-execution/backlog.csv) and the latest execution record.
+Resume unresolved tasks from their stable IDs; preserve all 75 original tasks.
+After each work session, record actual results, evidence, dates, blockers, and
+next actions. Distinguish implemented, tested, publicly observed, account-verified,
+and indexed states. Do not close a task without its stated acceptance evidence.
+Treat owner-reported connections separately from successful data reads. Do not
+infer background execution or scheduled reviews from this file; keep any actual
+automation IDs and schedules in the project memory when one is explicitly set up.
