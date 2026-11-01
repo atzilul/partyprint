@@ -87,3 +87,21 @@ jobs:
             artifacts/order-browser-production.json
             artifacts/measurement-contract-production.json
           if-no-files-found: error
+
+  dependency-audit:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/audit-dependencies.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-audit
+          path: artifacts/dependency-audit.json
+          if-no-files-found: error
