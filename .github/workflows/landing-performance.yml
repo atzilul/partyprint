@@ -63,10 +63,10 @@ jobs:
             const ref = await github.rest.git.getRef({owner, repo, ref:'heads/'+branch});
             if (ref.data.object.sha !== context.sha) throw new Error('Branch advanced; do not overwrite');
             const paths = [
-              ...fs.readdirSync('public/landing').filter(x=>/^(party-crew|family-shared-v2|bride-shared-v2|groom-shared-v2|tech-team)-\d+\.webp$|^(asset|font)-report\.json$/.test(x)).map(x=>'public/landing/'+x),
+              ...fs.readdirSync('public/landing').filter(x=>/^(party-crew|family-shared-v2|bride-shared-v2|groom-shared-v2|tech-team)-\d+\.(webp|avif)$|^logo(-header)?\.webp$|^(asset|font)-report\.json$/.test(x)).map(x=>'public/landing/'+x),
               ...fs.readdirSync('public/fonts').filter(x=>/^(assistant-(400|600|700)|rubik-(400|600|900))\.woff2$/.test(x)).map(x=>'public/fonts/'+x)
             ].sort();
-            if (paths.length !== 28) throw new Error('Unexpected generated asset count: '+paths.length);
+            if (paths.length !== 40) throw new Error('Unexpected generated asset count: '+paths.length);
             const entries=[];
             for(const path of paths){
               const data=fs.readFileSync(path);
