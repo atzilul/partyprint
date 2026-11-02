@@ -95,6 +95,7 @@ try{
       check(!result.resources.some(x=>/\/fonts\/.*\.ttf$/.test(x.name)),'WOFF2 fonts used');
       if(sample===1){const jpeg=await page.screenshot({type:'jpeg',quality:55});console.log('LANDING_SCREENSHOT_'+profile.name.toUpperCase()+' '+jpeg.toString('base64'))}
       check(result.cls<=0.1,'Lab CLS within 0.1');
+      check(!result.resources.some(x=>/family-shared-v2|bride-shared-v2|groom-shared-v2|tech-team/.test(x.name)),'Other event artwork is deferred');
       if(sample===1){
        for(let i=0;i<5;i++){
         await page.locator('.hero .audience-options label').nth(i).click();

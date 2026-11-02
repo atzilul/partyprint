@@ -24,6 +24,7 @@ jobs:
       - run: node --experimental-strip-types --test scripts/search-content.test.mjs scripts/analytics-contract.test.mjs
       - name: Isolated order API regression; synthetic storage and no external mail
         run: node scripts/verify-orders.mjs
+      - run: node scripts/verify-immutable-media.mjs
       - run: npm run build
       - name: Install isolated browser QA tooling
         run: npm install --prefix /tmp/partyprint-browser --no-save --package-lock=false --ignore-scripts playwright@1.64.1
@@ -87,6 +88,10 @@ jobs:
         run: node scripts/check-measurement-browser.mjs
         env:
           PARTYPRINT_PLAYWRIGHT_ROOT: /tmp/partyprint-browser
+      - name: Public responsive media, font subsets and cache policy; matching source required
+        run: node scripts/check-media-browser.mjs
+        env:
+          PARTYPRINT_PLAYWRIGHT_ROOT: /tmp/partyprint-browser
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -95,6 +100,7 @@ jobs:
             artifacts/order-browser-production.json
             artifacts/measurement-contract-production.json
             artifacts/quantity-browser-production.json
+            artifacts/immutable-media-production.json
           if-no-files-found: error
 
   dependency-audit:
