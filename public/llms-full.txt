@@ -49,7 +49,7 @@ The common typo “חלוצות לאירועים” is an alias of the canonical
 ## How the service works
 
 1. The customer chooses a package and quantity and optionally supplies an event date.
-2. The customer supplies a name and phone, optionally a short idea, email and up to 10 reference images. The request is saved before any sizes are required; confirmation offers optional sizes/colors or WhatsApp coordination.
+2. The customer supplies a name and phone, optionally a short idea, email and up to 10 reference images. Sizes and colors are optional: customers may explicitly confirm them inside the form before sending, or complete them on the confirmation page or WhatsApp. Saving a request never requires collecting every size first.
 3. PARTYPRINT develops a shared design direction using AI-assisted exploration and human direction.
 4. The customer reviews the design, receives one included revision round, and approves it.
 5. PARTYPRINT prints the approved shirts and coordinates home delivery.
