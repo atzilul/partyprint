@@ -14,7 +14,7 @@ const profiles=[
 ];
 const safe=u=>{try{const x=new URL(u);return x.origin+x.pathname}catch{return ''}};
 const browser=await chromium.launch({headless:true});
-const report={kind:'landing-performance-lab',checkedAt:new Date().toISOString(),browser:browser.version(),samplesPerProfile:samples,observationMs:12000,cache:'fresh browser context, HTTP cache disabled; upstream cache not purged',runner:process.env.RUNNER_OS||'unknown',thirdParty:'Vendor scripts allowed; all non-GET and measurement collection requests blocked',fieldData:null,results:[]};
+const report={kind:'landing-performance-lab',checkedAt:new Date().toISOString(),browser:browser.version(),samplesPerProfile:samples,observationMs:12000,cache:'fresh browser context, HTTP cache disabled; upstream cache not purged',transport:process.env.PERF_SERVER_PROFILE||'public origin',runner:process.env.RUNNER_OS||'unknown',thirdParty:'Vendor scripts allowed; all non-GET and measurement collection requests blocked',fieldData:null,results:[]};
 try{
  for(const origin of origins){
   let release=null;try{const r=await fetch(origin+'/api/release',{signal:AbortSignal.timeout(20000)});if(r.ok)release=await r.json()}catch{}
@@ -38,10 +38,10 @@ try{
      }
     });
     await page.addInitScript(()=>{
-     window.__landingPerf={lcp:[],cls:0,longTasks:0,longTaskMs:0,heroSources:[]};
+     window.__landingPerf={lcp:[],cls:0,shifts:[],longTasks:0,longTaskMs:0,heroSources:[]};
      const state=window.__landingPerf;
      new PerformanceObserver(list=>{for(const e of list.getEntries())state.lcp.push({time:e.startTime,renderTime:e.renderTime,loadTime:e.loadTime,size:e.size,url:e.url,element:e.element?e.element.tagName.toLowerCase()+'.'+String(e.element.className||'').slice(0,100):null})}).observe({type:'largest-contentful-paint',buffered:true});
-     new PerformanceObserver(list=>{for(const e of list.getEntries())if(!e.hadRecentInput)state.cls+=e.value}).observe({type:'layout-shift',buffered:true});
+     new PerformanceObserver(list=>{for(const e of list.getEntries())if(!e.hadRecentInput){state.cls+=e.value;state.shifts.push({time:e.startTime,value:e.value,sources:(e.sources||[]).map(x=>({element:x.node?x.node.nodeName+'.'+String(x.node.className||'').slice(0,100):null,previous:x.previousRect,current:x.currentRect}))})}}).observe({type:'layout-shift',buffered:true});
      new PerformanceObserver(list=>{for(const e of list.getEntries()){state.longTasks++;state.longTaskMs+=e.duration}}).observe({type:'longtask',buffered:true});
      document.addEventListener('DOMContentLoaded',()=>{
       const add=()=>{const hero=document.querySelector('.hero-art img');if(hero)state.heroSources.push({time:performance.now(),src:hero.currentSrc||hero.src})};add();
@@ -82,15 +82,20 @@ try{
       check(new Set(result.heroSources.map(x=>x.src)).size===1,'Opening audience stays stable for 12 seconds');
       check(!result.resources.some(x=>/\/statement-family-fixed\.webp/.test(x.name)),'Distant statement artwork deferred');
       check(!result.resources.some(x=>/\/fonts\/.*\.ttf$/.test(x.name)),'WOFF2 fonts used');
+      if(sample===1){const jpeg=await page.screenshot({type:'jpeg',quality:55});console.log('LANDING_SCREENSHOT_'+profile.name.toUpperCase()+' '+jpeg.toString('base64'))}
       check(result.cls<=0.1,'Lab CLS within 0.1');
       if(sample===1){
-       const jpeg=await page.screenshot({type:'jpeg',quality:55});console.log('LANDING_SCREENSHOT_'+profile.name.toUpperCase()+' '+jpeg.toString('base64'));
        for(let i=0;i<5;i++){
         await page.locator('.hero .audience-options label').nth(i).click();
         await page.waitForFunction(()=>{const image=document.querySelector('.hero-art img');return image?.complete&&image.naturalWidth>0});
         check((await page.locator('.hero').getAttribute('class')).includes(['audience-family','audience-bride','audience-groom','audience-team','audience-custom'][i]),'Manual audience '+i+' responds');
        }
+       await cdp.send('Emulation.setDisabledImageTypes',{imageTypes:['avif']});
+       await page.goto(origin+'/',{waitUntil:'domcontentloaded'});
+       await page.waitForFunction(()=>{const image=document.querySelector('.hero-art img');return image?.complete&&image.naturalWidth>0&&image.currentSrc.endsWith('.webp')});
+       check((await page.locator('.hero-art img').getAttribute('src')).includes('/landing/'),'WebP fallback decodes when AVIF is disabled');
       }
+      check(errors.length===0,'No client exceptions during hero selection and fallback');
      }catch(e){result.error=e.message.slice(0,300)}
     }
     result.blockedRequests=blocked;result.clientErrors=errors;result.failedRequests=failed;result.responseHeaders=headers;
