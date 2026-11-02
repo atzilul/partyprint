@@ -30,15 +30,17 @@
     "zlib-ng": "2.3.3",
     "sharp": "0.35.5"
   },
-  "quality": 78,
+  "webpQuality": 78,
+  "avifQuality": 50,
   "widths": [
     640,
     960,
-    1280,
-    1536
+    1254
   ],
   "images": [
     {
+      "avif": "public/landing/party-crew-640.avif",
+      "avifBytes": 43639,
       "source": "public/party-crew.webp",
       "sourceBytes": 350814,
       "sourceSha256": "7d2e4b125033245b91d5765e34068da33e23ec584aa76ce22b26aabede8a6f00",
@@ -48,6 +50,8 @@
       "height": 640
     },
     {
+      "avif": "public/landing/party-crew-960.avif",
+      "avifBytes": 77064,
       "source": "public/party-crew.webp",
       "sourceBytes": 350814,
       "sourceSha256": "7d2e4b125033245b91d5765e34068da33e23ec584aa76ce22b26aabede8a6f00",
@@ -57,24 +61,19 @@
       "height": 960
     },
     {
+      "avif": "public/landing/party-crew-1254.avif",
+      "avifBytes": 123574,
       "source": "public/party-crew.webp",
       "sourceBytes": 350814,
       "sourceSha256": "7d2e4b125033245b91d5765e34068da33e23ec584aa76ce22b26aabede8a6f00",
-      "path": "public/landing/party-crew-1280.webp",
+      "path": "public/landing/party-crew-1254.webp",
       "bytes": 211198,
       "width": 1254,
       "height": 1254
     },
     {
-      "source": "public/party-crew.webp",
-      "sourceBytes": 350814,
-      "sourceSha256": "7d2e4b125033245b91d5765e34068da33e23ec584aa76ce22b26aabede8a6f00",
-      "path": "public/landing/party-crew-1536.webp",
-      "bytes": 211198,
-      "width": 1254,
-      "height": 1254
-    },
-    {
+      "avif": "public/landing/family-shared-v2-640.avif",
+      "avifBytes": 33661,
       "source": "public/family-shared-v2.webp",
       "sourceBytes": 294580,
       "sourceSha256": "278a96a81606bc471f167600cd2144d703e40bc199de3aeaa5a6a69b4223e416",
@@ -84,6 +83,8 @@
       "height": 640
     },
     {
+      "avif": "public/landing/family-shared-v2-960.avif",
+      "avifBytes": 59379,
       "source": "public/family-shared-v2.webp",
       "sourceBytes": 294580,
       "sourceSha256": "278a96a81606bc471f167600cd2144d703e40bc199de3aeaa5a6a69b4223e416",
@@ -93,24 +94,19 @@
       "height": 960
     },
     {
+      "avif": "public/landing/family-shared-v2-1254.avif",
+      "avifBytes": 96226,
       "source": "public/family-shared-v2.webp",
       "sourceBytes": 294580,
       "sourceSha256": "278a96a81606bc471f167600cd2144d703e40bc199de3aeaa5a6a69b4223e416",
-      "path": "public/landing/family-shared-v2-1280.webp",
+      "path": "public/landing/family-shared-v2-1254.webp",
       "bytes": 161564,
       "width": 1254,
       "height": 1254
     },
     {
-      "source": "public/family-shared-v2.webp",
-      "sourceBytes": 294580,
-      "sourceSha256": "278a96a81606bc471f167600cd2144d703e40bc199de3aeaa5a6a69b4223e416",
-      "path": "public/landing/family-shared-v2-1536.webp",
-      "bytes": 161564,
-      "width": 1254,
-      "height": 1254
-    },
-    {
+      "avif": "public/landing/bride-shared-v2-640.avif",
+      "avifBytes": 39639,
       "source": "public/bride-shared-v2.webp",
       "sourceBytes": 298292,
       "sourceSha256": "527a6911906665e07811e22958d82ac77f270a3800ece92d44701876df8100e9",
@@ -120,6 +116,8 @@
       "height": 640
     },
     {
+      "avif": "public/landing/bride-shared-v2-960.avif",
+      "avifBytes": 68752,
       "source": "public/bride-shared-v2.webp",
       "sourceBytes": 298292,
       "sourceSha256": "527a6911906665e07811e22958d82ac77f270a3800ece92d44701876df8100e9",
@@ -129,24 +127,19 @@
       "height": 960
     },
     {
+      "avif": "public/landing/bride-shared-v2-1254.avif",
+      "avifBytes": 105485,
       "source": "public/bride-shared-v2.webp",
       "sourceBytes": 298292,
       "sourceSha256": "527a6911906665e07811e22958d82ac77f270a3800ece92d44701876df8100e9",
-      "path": "public/landing/bride-shared-v2-1280.webp",
+      "path": "public/landing/bride-shared-v2-1254.webp",
       "bytes": 171274,
       "width": 1254,
       "height": 1254
     },
     {
-      "source": "public/bride-shared-v2.webp",
-      "sourceBytes": 298292,
-      "sourceSha256": "527a6911906665e07811e22958d82ac77f270a3800ece92d44701876df8100e9",
-      "path": "public/landing/bride-shared-v2-1536.webp",
-      "bytes": 171274,
-      "width": 1254,
-      "height": 1254
-    },
-    {
+      "avif": "public/landing/groom-shared-v2-640.avif",
+      "avifBytes": 34457,
       "source": "public/groom-shared-v2.webp",
       "sourceBytes": 256716,
       "sourceSha256": "1cd11271e8cd2fde71bc482813322f761147e98436f56a30b753669aabefbf7f",
@@ -156,6 +149,8 @@
       "height": 640
     },
     {
+      "avif": "public/landing/groom-shared-v2-960.avif",
+      "avifBytes": 58147,
       "source": "public/groom-shared-v2.webp",
       "sourceBytes": 256716,
       "sourceSha256": "1cd11271e8cd2fde71bc482813322f761147e98436f56a30b753669aabefbf7f",
@@ -165,24 +160,19 @@
       "height": 960
     },
     {
+      "avif": "public/landing/groom-shared-v2-1254.avif",
+      "avifBytes": 90044,
       "source": "public/groom-shared-v2.webp",
       "sourceBytes": 256716,
       "sourceSha256": "1cd11271e8cd2fde71bc482813322f761147e98436f56a30b753669aabefbf7f",
-      "path": "public/landing/groom-shared-v2-1280.webp",
+      "path": "public/landing/groom-shared-v2-1254.webp",
       "bytes": 143868,
       "width": 1254,
       "height": 1254
     },
     {
-      "source": "public/groom-shared-v2.webp",
-      "sourceBytes": 256716,
-      "sourceSha256": "1cd11271e8cd2fde71bc482813322f761147e98436f56a30b753669aabefbf7f",
-      "path": "public/landing/groom-shared-v2-1536.webp",
-      "bytes": 143868,
-      "width": 1254,
-      "height": 1254
-    },
-    {
+      "avif": "public/landing/tech-team-640.avif",
+      "avifBytes": 33413,
       "source": "public/tech-team.webp",
       "sourceBytes": 236176,
       "sourceSha256": "c4a04392cf1d0396858defb77dd0f76bb3ac24a156f940f25be0977f39181794",
@@ -192,6 +182,8 @@
       "height": 640
     },
     {
+      "avif": "public/landing/tech-team-960.avif",
+      "avifBytes": 58192,
       "source": "public/tech-team.webp",
       "sourceBytes": 236176,
       "sourceSha256": "c4a04392cf1d0396858defb77dd0f76bb3ac24a156f940f25be0977f39181794",
@@ -201,22 +193,31 @@
       "height": 960
     },
     {
+      "avif": "public/landing/tech-team-1254.avif",
+      "avifBytes": 90890,
       "source": "public/tech-team.webp",
       "sourceBytes": 236176,
       "sourceSha256": "c4a04392cf1d0396858defb77dd0f76bb3ac24a156f940f25be0977f39181794",
-      "path": "public/landing/tech-team-1280.webp",
+      "path": "public/landing/tech-team-1254.webp",
       "bytes": 147868,
       "width": 1254,
       "height": 1254
+    }
+  ],
+  "logos": [
+    {
+      "source": "public/partyprint-logo-header.png",
+      "path": "public/landing/logo-header.webp",
+      "bytes": 33182,
+      "width": 600,
+      "height": 200
     },
     {
-      "source": "public/tech-team.webp",
-      "sourceBytes": 236176,
-      "sourceSha256": "c4a04392cf1d0396858defb77dd0f76bb3ac24a156f940f25be0977f39181794",
-      "path": "public/landing/tech-team-1536.webp",
-      "bytes": 147868,
-      "width": 1254,
-      "height": 1254
+      "source": "public/partyprint-logo.png",
+      "path": "public/landing/logo.webp",
+      "bytes": 40032,
+      "width": 600,
+      "height": 200
     }
   ]
 }
