@@ -35,7 +35,7 @@ export async function POST(request:Request){
  if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return fail('כתובת המייל אינה תקינה.');
  let shirts:unknown;try{shirts=JSON.parse(String(data.get('shirts')||'[]'))}catch{return fail('בחרו מידות וצבעים תקינים.')}
  const details=String(data.get('shirtDetailsStatus')||'');if(details&&!['pending','complete'].includes(details))return fail('מצב המידות אינו תקין.');
- const shirtDetailsStatus: 'pending'|'complete'=mode==='lead'||details==='pending'?'pending':'complete';
+ const shirtDetailsStatus: 'pending'|'complete'=details==='pending'||mode==='lead'&&details!=='complete'?'pending':'complete';
  if(shirtDetailsStatus==='pending'){if(!Array.isArray(shirts)||shirts.length!==0)return fail('יש לשלוח מידות ריקות כשבוחרים להשלים אותן בהמשך.');shirts=[];}
  else if(!validateShirts(shirts,quantity))return fail('יש לבחור מידה וצבע מותרים לכל חולצה.');
  const files=data.getAll('images').filter((f):f is File=>f instanceof File&&f.size>0);

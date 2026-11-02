@@ -266,3 +266,19 @@ console.log('PASS: all packages support minimum four and arbitrary quantities; a
  }finally{globalThis.fetch=beforeFetch;globalThis.testEnv.RESEND_API_KEY=priorKey;globalThis.testEnv.MAIL_FROM=priorFrom;}
  console.log('PASS: quote saved with optional email and explicit pending sizes; private capability-only, same-origin, bounded size PATCH with version/field/production locks; single shirt 180; group minimum four preserved; zero external requests.');
 }
+
+// Optional sizing can now be explicitly confirmed before saving any request
+// mode. Legacy consultation requests still require an empty pending array.
+{
+ const previousFetch=globalThis.fetch,previousKey=globalThis.testEnv.RESEND_API_KEY,previousFrom=globalThis.testEnv.MAIL_FROM;let external=0;
+ delete globalThis.testEnv.RESEND_API_KEY;delete globalThis.testEnv.MAIL_FROM;globalThis.fetch=async()=>{external++;throw Error('External network forbidden in pre-submit sizing QA')};
+ try{
+  const choices=Array.from({length:4},(_,i)=>({sizeType:i===0?'child':'adult',size:i===0?'8':'M',color:i===0?'gray':'black'}));const ordersModule=await load('lib/orders.ts');
+  for(const mode of ['order','custom','lead']){sql.prepare('DELETE FROM form_rate_limits').run();const f=form('');f.delete('images');f.set('mode',mode);f.set('shirtDetailsStatus','complete');f.set('shirts',JSON.stringify(choices));const response=await publicRoute.POST(post('/api/orders',f));assert.equal(response.status,201,mode);const receipt=await response.json(),o=await store.getOrder(receipt.id);assert.equal(o.shirtDetailsStatus,'complete');assert.deepEqual(o.shirts,choices);assert.equal(o.mode,mode);
+   const edited=ordersModule.editOrder(o,{...o,...defaults,shirtDetailsStatus:'complete'},await settingsStore.getPricing());assert.deepEqual(edited.shirts,choices,'admin edit preserves explicitly chosen sizes for '+mode);
+  }
+  for(const [status,shirts] of [['complete',choices.slice(0,3)],['complete',[{sizeType:'child',size:'3',color:'black'},...choices.slice(1)]],['pending',choices]]){sql.prepare('DELETE FROM form_rate_limits').run();const f=form('');f.delete('images');f.set('mode','lead');f.set('shirtDetailsStatus',status);f.set('shirts',JSON.stringify(shirts));assert.equal((await publicRoute.POST(post('/api/orders',f))).status,400);}
+  sql.prepare('DELETE FROM form_rate_limits').run();const legacy=form('');legacy.delete('images');legacy.set('mode','lead');legacy.set('shirts',JSON.stringify(choices));assert.equal((await publicRoute.POST(post('/api/orders',legacy))).status,400);assert.equal(external,0);
+ }finally{globalThis.fetch=previousFetch;globalThis.testEnv.RESEND_API_KEY=previousKey;globalThis.testEnv.MAIL_FROM=previousFrom;}
+ console.log('PASS: explicit pre-submit adult/child selections persist across all modes and admin edits; incomplete/pending/legacy invalid arrays rejected; zero external requests.');
+}
