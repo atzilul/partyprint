@@ -1,0 +1,30 @@
+name: Landing performance laboratory
+on:
+  push:
+    branches: ['codex/landing-lcp-2026-11-02']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.1'
+      - run: npm install --prefix /tmp/partyprint-browser --no-save --package-lock=false --ignore-scripts playwright@1.64.1
+      - run: /tmp/partyprint-browser/node_modules/.bin/playwright install --with-deps chromium
+      - run: node scripts/check-landing-performance.mjs
+        env:
+          PERF_ORIGINS: https://partyprint.co.il
+          PERF_SAMPLES: '3'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: landing-performance
+          path: artifacts/landing-performance.json
+          if-no-files-found: error
