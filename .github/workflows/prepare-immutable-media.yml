@@ -16,26 +16,16 @@ jobs:
         with:
           node-version: '24.22.1'
       - run: npm ci --no-audit --no-fund
-      - run: npm run build
-      - name: Inspect static serving and cache headers
+      - name: Inspect installed static server and public baseline
         run: |
           node --input-type=module <<'NODE'
           import {readFileSync,readdirSync} from 'node:fs';
-          import {spawn} from 'node:child_process';
-          import {setTimeout as delay} from 'node:timers/promises';
-          const path=new URL(import.meta.resolve('vinext/server/prod-server'));
-          const source=readFileSync(path,'utf8');const lines=source.split('\n');
-          console.log('PROD_SERVER_PATH '+path.pathname.split('/node_modules/')[1]);
-          console.log('PROD_SERVER_IMPORTS '+lines.slice(0,70).join('\n'));
-          for(let i=0;i<lines.length;i++)if(/cache-control|serveStatic|max-age=3600|immutable|customHeaders|configHeaders/i.test(lines[i]))console.log('STATIC_CODE '+lines.slice(Math.max(0,i-5),i+8).join('\n'));
-          const manifest=JSON.parse(readFileSync('lib/landing-media.json','utf8'));
-          const image=manifest.images['/party-crew.webp'].avif.find(x=>x.width===960).src;
-          const paths=[image,'/_next/static/media/'+image.split('/').at(-1),'/api/release'];
-          const server=spawn(process.execPath,['server.js'],{stdio:'inherit',env:{...process.env,HOST:'127.0.0.1',PORT:'3899'}});
-          try{
-            for(let i=0;i<60;i++){try{if((await fetch('http://127.0.0.1:3899/api/release')).ok)break}catch{}await delay(500)}
-            for(const path of paths){const r=await fetch('http://127.0.0.1:3899'+path);console.log('LOCAL_CACHE '+JSON.stringify({path,status:r.status,cacheControl:r.headers.get('cache-control'),type:r.headers.get('content-type'),bytes:(await r.arrayBuffer()).byteLength}))}
-          }finally{server.kill('SIGTERM')}
+          import {dirname,join} from 'node:path';
+          const entry=new URL(import.meta.resolve('vinext/server/prod-server'));
+          const source=readFileSync(entry,'utf8');
+          console.log('PROD_SERVER '+source);
+          function scan(dir){for(const item of readdirSync(dir,{withFileTypes:true})){const path=join(dir,item.name);if(item.isDirectory())scan(path);else if(item.name.endsWith('.js')){const lines=readFileSync(path,'utf8').split('\n');for(let i=0;i<lines.length;i++)if(/max-age=3600|cacheControl|immutable|serveStaticFile|apply.*Headers/.test(lines[i]))console.log('STATIC_DEP '+path.split('/node_modules/')[1]+'\n'+lines.slice(Math.max(0,i-5),i+9).join('\n'))}}}
+          scan(dirname(entry.pathname));
           for(const path of ['/api/release','/landing/party-crew-960.avif','/fonts/rubik-600.woff2','/transformation.webp']){
             try{const r=await fetch('https://partyprint.co.il'+path,{signal:AbortSignal.timeout(10000)});console.log('PUBLIC_BASELINE '+JSON.stringify({path,status:r.status,cacheControl:r.headers.get('cache-control'),...(path==='/api/release'?{release:await r.json()}:{bytes:(await r.arrayBuffer()).byteLength})}))}catch(e){console.log('PUBLIC_BASELINE '+JSON.stringify({path,error:e.cause?.code||e.message}))}
           }
