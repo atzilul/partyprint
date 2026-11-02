@@ -1,0 +1,53 @@
+{
+  "fonttools": "4.68.0",
+  "fonts": [
+    {
+      "source": "public/fonts/assistant-400.ttf",
+      "path": "public/fonts/assistant-400.woff2",
+      "sourceBytes": 47696,
+      "bytes": 19736,
+      "glyphs": 445,
+      "unicodeCodepoints": 431
+    },
+    {
+      "source": "public/fonts/assistant-600.ttf",
+      "path": "public/fonts/assistant-600.woff2",
+      "sourceBytes": 47716,
+      "bytes": 19580,
+      "glyphs": 445,
+      "unicodeCodepoints": 431
+    },
+    {
+      "source": "public/fonts/assistant-700.ttf",
+      "path": "public/fonts/assistant-700.woff2",
+      "sourceBytes": 47644,
+      "bytes": 19756,
+      "glyphs": 445,
+      "unicodeCodepoints": 431
+    },
+    {
+      "source": "public/fonts/rubik-400.ttf",
+      "path": "public/fonts/rubik-400.woff2",
+      "sourceBytes": 174992,
+      "bytes": 56192,
+      "glyphs": 1075,
+      "unicodeCodepoints": 885
+    },
+    {
+      "source": "public/fonts/rubik-600.ttf",
+      "path": "public/fonts/rubik-600.woff2",
+      "sourceBytes": 175600,
+      "bytes": 56728,
+      "glyphs": 1078,
+      "unicodeCodepoints": 885
+    },
+    {
+      "source": "public/fonts/rubik-900.ttf",
+      "path": "public/fonts/rubik-900.woff2",
+      "sourceBytes": 175196,
+      "bytes": 52936,
+      "glyphs": 1078,
+      "unicodeCodepoints": 885
+    }
+  ]
+}

@@ -1,0 +1,222 @@
+{
+  "tool": {
+    "aom": "3.15.1",
+    "archive": "3.8.9",
+    "cairo": "1.18.6",
+    "cgif": "0.5.4",
+    "exif": "0.6.26",
+    "expat": "2.8.5",
+    "ffi": "3.8.0",
+    "fontconfig": "2.18.3",
+    "freetype": "2.14.3",
+    "fribidi": "1.0.17",
+    "glib": "2.90.0",
+    "harfbuzz": "14.5.0",
+    "heif": "1.23.5",
+    "highway": "1.4.0",
+    "imagequant": "2.4.1",
+    "lcms": "2.19.1",
+    "mozjpeg": "0826579",
+    "pango": "1.58.2",
+    "pixman": "0.46.4",
+    "png": "1.6.58",
+    "proxy-libintl": "0.5",
+    "rsvg": "2.63.2",
+    "tiff": "4.7.2",
+    "uhdr": "2.0.2",
+    "vips": "8.18.7",
+    "webp": "1.6.0",
+    "xml2": "2.15.4",
+    "zlib-ng": "2.3.3",
+    "sharp": "0.35.5"
+  },
+  "quality": 78,
+  "widths": [
+    640,
+    960,
+    1280,
+    1536
+  ],
+  "images": [
+    {
+      "source": "public/party-crew.webp",
+      "sourceBytes": 350814,
+      "sourceSha256": "7d2e4b125033245b91d5765e34068da33e23ec584aa76ce22b26aabede8a6f00",
+      "path": "public/landing/party-crew-640.webp",
+      "bytes": 75058,
+      "width": 640,
+      "height": 640
+    },
+    {
+      "source": "public/party-crew.webp",
+      "sourceBytes": 350814,
+      "sourceSha256": "7d2e4b125033245b91d5765e34068da33e23ec584aa76ce22b26aabede8a6f00",
+      "path": "public/landing/party-crew-960.webp",
+      "bytes": 133028,
+      "width": 960,
+      "height": 960
+    },
+    {
+      "source": "public/party-crew.webp",
+      "sourceBytes": 350814,
+      "sourceSha256": "7d2e4b125033245b91d5765e34068da33e23ec584aa76ce22b26aabede8a6f00",
+      "path": "public/landing/party-crew-1280.webp",
+      "bytes": 211198,
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "source": "public/party-crew.webp",
+      "sourceBytes": 350814,
+      "sourceSha256": "7d2e4b125033245b91d5765e34068da33e23ec584aa76ce22b26aabede8a6f00",
+      "path": "public/landing/party-crew-1536.webp",
+      "bytes": 211198,
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "source": "public/family-shared-v2.webp",
+      "sourceBytes": 294580,
+      "sourceSha256": "278a96a81606bc471f167600cd2144d703e40bc199de3aeaa5a6a69b4223e416",
+      "path": "public/landing/family-shared-v2-640.webp",
+      "bytes": 59864,
+      "width": 640,
+      "height": 640
+    },
+    {
+      "source": "public/family-shared-v2.webp",
+      "sourceBytes": 294580,
+      "sourceSha256": "278a96a81606bc471f167600cd2144d703e40bc199de3aeaa5a6a69b4223e416",
+      "path": "public/landing/family-shared-v2-960.webp",
+      "bytes": 104150,
+      "width": 960,
+      "height": 960
+    },
+    {
+      "source": "public/family-shared-v2.webp",
+      "sourceBytes": 294580,
+      "sourceSha256": "278a96a81606bc471f167600cd2144d703e40bc199de3aeaa5a6a69b4223e416",
+      "path": "public/landing/family-shared-v2-1280.webp",
+      "bytes": 161564,
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "source": "public/family-shared-v2.webp",
+      "sourceBytes": 294580,
+      "sourceSha256": "278a96a81606bc471f167600cd2144d703e40bc199de3aeaa5a6a69b4223e416",
+      "path": "public/landing/family-shared-v2-1536.webp",
+      "bytes": 161564,
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "source": "public/bride-shared-v2.webp",
+      "sourceBytes": 298292,
+      "sourceSha256": "527a6911906665e07811e22958d82ac77f270a3800ece92d44701876df8100e9",
+      "path": "public/landing/bride-shared-v2-640.webp",
+      "bytes": 70252,
+      "width": 640,
+      "height": 640
+    },
+    {
+      "source": "public/bride-shared-v2.webp",
+      "sourceBytes": 298292,
+      "sourceSha256": "527a6911906665e07811e22958d82ac77f270a3800ece92d44701876df8100e9",
+      "path": "public/landing/bride-shared-v2-960.webp",
+      "bytes": 117478,
+      "width": 960,
+      "height": 960
+    },
+    {
+      "source": "public/bride-shared-v2.webp",
+      "sourceBytes": 298292,
+      "sourceSha256": "527a6911906665e07811e22958d82ac77f270a3800ece92d44701876df8100e9",
+      "path": "public/landing/bride-shared-v2-1280.webp",
+      "bytes": 171274,
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "source": "public/bride-shared-v2.webp",
+      "sourceBytes": 298292,
+      "sourceSha256": "527a6911906665e07811e22958d82ac77f270a3800ece92d44701876df8100e9",
+      "path": "public/landing/bride-shared-v2-1536.webp",
+      "bytes": 171274,
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "source": "public/groom-shared-v2.webp",
+      "sourceBytes": 256716,
+      "sourceSha256": "1cd11271e8cd2fde71bc482813322f761147e98436f56a30b753669aabefbf7f",
+      "path": "public/landing/groom-shared-v2-640.webp",
+      "bytes": 58994,
+      "width": 640,
+      "height": 640
+    },
+    {
+      "source": "public/groom-shared-v2.webp",
+      "sourceBytes": 256716,
+      "sourceSha256": "1cd11271e8cd2fde71bc482813322f761147e98436f56a30b753669aabefbf7f",
+      "path": "public/landing/groom-shared-v2-960.webp",
+      "bytes": 98614,
+      "width": 960,
+      "height": 960
+    },
+    {
+      "source": "public/groom-shared-v2.webp",
+      "sourceBytes": 256716,
+      "sourceSha256": "1cd11271e8cd2fde71bc482813322f761147e98436f56a30b753669aabefbf7f",
+      "path": "public/landing/groom-shared-v2-1280.webp",
+      "bytes": 143868,
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "source": "public/groom-shared-v2.webp",
+      "sourceBytes": 256716,
+      "sourceSha256": "1cd11271e8cd2fde71bc482813322f761147e98436f56a30b753669aabefbf7f",
+      "path": "public/landing/groom-shared-v2-1536.webp",
+      "bytes": 143868,
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "source": "public/tech-team.webp",
+      "sourceBytes": 236176,
+      "sourceSha256": "c4a04392cf1d0396858defb77dd0f76bb3ac24a156f940f25be0977f39181794",
+      "path": "public/landing/tech-team-640.webp",
+      "bytes": 57190,
+      "width": 640,
+      "height": 640
+    },
+    {
+      "source": "public/tech-team.webp",
+      "sourceBytes": 236176,
+      "sourceSha256": "c4a04392cf1d0396858defb77dd0f76bb3ac24a156f940f25be0977f39181794",
+      "path": "public/landing/tech-team-960.webp",
+      "bytes": 95738,
+      "width": 960,
+      "height": 960
+    },
+    {
+      "source": "public/tech-team.webp",
+      "sourceBytes": 236176,
+      "sourceSha256": "c4a04392cf1d0396858defb77dd0f76bb3ac24a156f940f25be0977f39181794",
+      "path": "public/landing/tech-team-1280.webp",
+      "bytes": 147868,
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "source": "public/tech-team.webp",
+      "sourceBytes": 236176,
+      "sourceSha256": "c4a04392cf1d0396858defb77dd0f76bb3ac24a156f940f25be0977f39181794",
+      "path": "public/landing/tech-team-1536.webp",
+      "bytes": 147868,
+      "width": 1254,
+      "height": 1254
+    }
+  ]
+}
