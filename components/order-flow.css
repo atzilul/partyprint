@@ -38,3 +38,6 @@ main:has(.pp-request:focus-within)>.mobile-sticky,body:has(.pp-size-dialog[open]
 @media(max-width:560px){.pp-order-flow.pp-size-dialog{width:100vw;max-height:100dvh;height:100dvh;border-radius:0;margin:0;border:0}.pp-size-dialog>header,.pp-size-dialog-body{padding:var(--space-pp-lg)}.pp-size-dialog>footer{padding:var(--space-pp-md) var(--space-pp-lg) max(var(--space-pp-md),env(safe-area-inset-bottom))}.pp-size-dialog h2{font-size:21px}}
 
 .pp-field-error{min-height:1.4em}.pp-privacy a{white-space:nowrap}
+
+/* Keep the size dialog independent of legacy landing controls and footer. */
+.pp-order-flow .pp-size-toggle button[aria-pressed=true]{background:var(--color-pp-ink);color:var(--color-pp-paper);border-color:var(--color-pp-ink)}.pp-size-dialog>footer{grid-template-columns:minmax(0,1fr);justify-content:stretch;align-items:stretch}.pp-contact-grid{gap:var(--space-pp-sm);margin-bottom:var(--space-pp-md)}.pp-contact-grid .pp-field{gap:var(--space-pp-xs)}
