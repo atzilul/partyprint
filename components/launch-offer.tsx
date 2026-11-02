@@ -1,27 +1,9 @@
 'use client';
-
 import {createPortal} from 'react-dom';
 import {useEffect,useState} from 'react';
-
-type Promo={text:string;code:string};
-
 export default function LaunchOffer(){
- const [target,setTarget]=useState<HTMLElement|null>(null),[promo,setPromo]=useState<Promo|null>(null),[copied,setCopied]=useState(false);
- useEffect(()=>{
-  const node=document.querySelector<HTMLElement>('.topbar');
-  if(!node)return;
-  const slot=node.querySelector<HTMLElement>('#launch-offer-slot')||node;
-  const reveal=window.setTimeout(()=>setTarget(slot),0);
-  fetch('/api/promo').then(r=>r.ok?r.json() as Promise<Promo>:null).then(v=>{if(v?.text&&v.code){node.classList.add('has-launch-offer');setPromo({text:v.text,code:v.code})}else if(v){node.classList.add('promo-disabled')}}).catch(()=>{});
-  return()=>{window.clearTimeout(reveal);node.classList.remove('has-launch-offer','promo-disabled')};
- },[]);
- async function copyCode(){
-  if(!promo)return;
-  try{await navigator.clipboard.writeText(promo.code)}catch{
-   const input=document.createElement('textarea');input.value=promo.code;input.setAttribute('readonly','');input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();document.execCommand('copy');input.remove();
-  }
-  setCopied(true);window.setTimeout(()=>setCopied(false),1800);
- }
- if(!target||!promo)return null;
- return createPortal(<button type="button" className="launch-offer" onClick={()=>void copyCode()} title="לחצו להעתקת קוד ההנחה"><span>{promo.text}</span><b dir="ltr">{promo.code}</b>{copied&&<small role="status">הועתק!</small>}</button>,target);
+ const [target,setTarget]=useState<HTMLElement|null>(null);
+ useEffect(()=>{const slot=document.getElementById('launch-offer-slot');if(!slot)return;const node=slot.closest('.topbar');const timer=window.setTimeout(()=>{node?.classList.add('has-launch-offer');setTarget(slot);},0);return()=>{window.clearTimeout(timer);node?.classList.remove('has-launch-offer');};},[]);
+ if(!target)return null;
+ return createPortal(<a className="launch-offer" href="#packages"><span>עיצוב אישי, הדפסה ומשלוח עד הבית</span></a>,target);
 }

@@ -63,7 +63,7 @@ the public behavior checks above, and does not prove order or email operation.
 ## Promotion checks
 
 For a requested discount, compare the configured coupon percentage and code
-with the top-site offer and the server-side order calculation. Check that the
+with the eligible campaign's in-form offer and the server-side order calculation. The public top banner now describes included value without revealing the coupon code. Check that the
 same offer is displayed on desktop and mobile and that the discount is applied
 to a controlled quote. Do not treat hard-coded fallback text or a different
 Sites database as proof that the live coupon works.

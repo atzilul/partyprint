@@ -1,20 +1,27 @@
 export const DEFAULT_SHIRT_PRICE = 112.25;
 export const EXTRA_SHIRT_PRICE = DEFAULT_SHIRT_PRICE;
 export const CUSTOM_PRICES: Record<number, number> = {5:561.25,10:1122.50,15:1683.75,20:2245};
+export const SINGLE_PACK_INDEX=5;
+export const SINGLE_SHIRT_PRICE=180;
 export const packs=[
 {name:'יומולדת משפחתי',tag:'SUPER FAMILY',n:4,price:449,desc:'הילד גיבור־על. כל המשפחה לצידו.',icon:'✳',cls:'orange',image:'/family-shared-v2.webp'},
 {name:'הכלה והחברות',tag:'BRIDE SQUAD',n:6,price:673.50,desc:'שש חברות. עיר אחת. ערב שלכן.',icon:'♡',cls:'pink',image:'/bride-shared-v2.webp'},
 {name:'החתן והחבר׳ה',tag:'THE WOLF PACK',n:6,price:673.50,desc:'הקאסט שלכם. המסיבה שלכם.',icon:'✦',cls:'blue',image:'/groom-shared-v2.webp'},
 {name:'צוות עם אופי',tag:'TEAM SPIRIT',n:10,price:1122.50,desc:'מעצבים את האנשים שמאחורי הצוות.',icon:'↗',cls:'green',image:'/tech-team.webp'},
-{name:'הרעיון שלכם',tag:'YOUR OWN THING',n:5,price:561.25,desc:'כל רעיון, כל אירוע. עיצוב שנולד מכם.',icon:'✺',cls:'custom',image:'/shirts.webp'}
+{name:'הרעיון שלכם',tag:'YOUR OWN THING',n:5,price:561.25,desc:'כל רעיון, כל אירוע. עיצוב שנולד מכם.',icon:'✺',cls:'custom',image:'/shirts.webp'},
+{name:'חולצה אחת. מתנה אישית.',tag:'ONE OF A KIND',n:1,price:SINGLE_SHIRT_PRICE,desc:'אדם אחד, סיפור אחד ועיצוב שנוצר במיוחד בשבילו.',icon:'✦',cls:'single',image:'/shirts.webp'}
 ];
 export const MIN_SHIRT_QUANTITY=4;
 export const MAX_SHIRT_QUANTITY=100;
 export function isOrderQuantity(value:unknown):value is number{
  return typeof value==='number'&&Number.isInteger(value)&&value>=MIN_SHIRT_QUANTITY&&value<=MAX_SHIRT_QUANTITY;
 }
+export function isPackageQuantity(pack:number,value:unknown):value is number{
+ return Number.isInteger(pack)&&pack>=0&&pack<packs.length&&(pack===SINGLE_PACK_INDEX?value===1:isOrderQuantity(value));
+}
 export function calculatePrice(pack:number,quantity:number){
- if(!Number.isInteger(pack)||pack<0||pack>=packs.length||!isOrderQuantity(quantity))throw new Error('Invalid package or quantity');
+ if(!isPackageQuantity(pack,quantity))throw new Error('Invalid package or quantity');
+ if(pack===SINGLE_PACK_INDEX)return SINGLE_SHIRT_PRICE;
  if(pack===4)return Math.round(DEFAULT_SHIRT_PRICE*quantity*100)/100;
  return packs[pack].price+(quantity-packs[pack].n)*EXTRA_SHIRT_PRICE;
 }

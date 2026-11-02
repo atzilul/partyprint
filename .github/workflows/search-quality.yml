@@ -20,7 +20,8 @@ jobs:
         with:
           node-version: '24.22.1'
       - run: npm ci --no-audit --no-fund
-      - run: node --test scripts/search-utils.test.mjs scripts/search-metrics.test.mjs scripts/build-identity.test.mjs scripts/order-quantity.test.mjs
+      - run: npx tsc --noEmit
+      - run: node --test scripts/search-utils.test.mjs scripts/search-metrics.test.mjs scripts/build-identity.test.mjs scripts/order-quantity.test.mjs scripts/quote-planning.test.mjs
       - run: node --experimental-strip-types --test scripts/search-content.test.mjs scripts/analytics-contract.test.mjs
       - name: Isolated order API regression; synthetic storage and no external mail
         run: node scripts/verify-orders.mjs
@@ -76,6 +77,8 @@ jobs:
       - name: Install isolated browser QA tooling
         run: npm install --prefix /tmp/partyprint-browser --no-save --package-lock=false --ignore-scripts playwright@1.64.1
       - run: /tmp/partyprint-browser/node_modules/.bin/playwright install --with-deps chromium
+      - name: Public non-mutating price quote and thanks noindex
+        run: node scripts/check-public-quote.mjs
       - name: Public form interaction; all writes blocked
         run: node scripts/check-order-browser.mjs
         env:
@@ -97,6 +100,7 @@ jobs:
         with:
           name: order-production-browser
           path: |
+            artifacts/public-quote.json
             artifacts/order-browser-production.json
             artifacts/measurement-contract-production.json
             artifacts/quantity-browser-production.json

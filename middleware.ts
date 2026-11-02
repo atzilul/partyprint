@@ -1,6 +1,6 @@
 import {NextResponse,type NextRequest} from 'next/server';
 
-const privatePrefixes=['/admin','/api','/track','/design','/signin-with-chatgpt','/signout-with-chatgpt','/chatgpt-auth'];
+const privatePrefixes=['/thanks','/admin','/api','/track','/design','/signin-with-chatgpt','/signout-with-chatgpt','/chatgpt-auth'];
 // Canonical production redirects preserve campaign attribution. The managed
 // preview receives noindex when this source is eventually deployed there.
 export function middleware(request:NextRequest){
