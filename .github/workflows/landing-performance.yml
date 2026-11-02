@@ -1,5 +1,8 @@
 name: Landing performance laboratory
 on:
+  push:
+    branches: [main]
+    paths: ['app/**', 'components/**', 'public/landing/**', 'public/fonts/**', 'scripts/check-landing-*.mjs', '.github/workflows/landing-performance.yml']
   pull_request:
     branches: [main]
     paths:
@@ -37,6 +40,8 @@ jobs:
           path: artifacts/landing-performance.json
           if-no-files-found: error
   production:
+    if: github.event_name != 'pull_request'
+    needs: candidate
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -52,6 +57,7 @@ jobs:
         env:
           PERF_SAMPLES: '3'
           PERF_EXPECT_OPTIMIZED: auto
+          PERF_REQUIRE_MATCH: '1'
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -19,7 +19,13 @@ const browser=await chromium.launch({headless:true});
 const report={kind:'landing-performance-lab',checkedAt:new Date().toISOString(),browser:browser.version(),samplesPerProfile:samples,observationMs:12000,cache:'fresh browser context, HTTP cache disabled; upstream cache not purged',transport:process.env.PERF_SERVER_PROFILE||'public origin',runner:process.env.RUNNER_OS||'unknown',thirdParty:'Vendor scripts allowed; all non-GET and measurement collection requests blocked',fieldData:null,expectedSourceFingerprint:expectedIdentity.sourceFingerprint,clsDefinition:'largest session window (gap <1s, duration <5s); initial 12-second observation only',results:[]};
 try{
  for(const origin of origins){
-  let release=null;try{const r=await fetch(origin+'/api/release',{signal:AbortSignal.timeout(20000)});if(r.ok)release=await r.json()}catch{}
+  async function readRelease(){try{const r=await fetch(origin+'/api/release',{signal:AbortSignal.timeout(5000)});return r.ok?await r.json():null}catch{return null}}
+  let release=await readRelease();
+  if(process.env.PERF_REQUIRE_MATCH==='1'){
+   const matches=()=>release?.sourceState==='clean'&&release.sourceCommit===expectedIdentity.sourceCommit&&release.sourceFingerprint===expectedIdentity.sourceFingerprint;
+   for(let attempt=0;attempt<24&&!matches();attempt++){await new Promise(resolve=>setTimeout(resolve,5000));release=await readRelease()}
+   if(!matches()){report.results.push({origin,error:'waiting_for_matching_deployment',featureValidation:'waiting_for_matching_deployment',release,clientErrors:[],status:null});continue}
+  }
   const optimized=process.env.PERF_EXPECT_OPTIMIZED==='1'||(process.env.PERF_EXPECT_OPTIMIZED==='auto'&&release?.sourceState==='clean'&&release.sourceFingerprint===expectedIdentity.sourceFingerprint);
   for(const profile of profiles){
    for(let sample=1;sample<=samples;sample++){
