@@ -145,3 +145,7 @@ server with Google and Meta requests blocked (scratch test).
 A source plus paid UTM medium qualifies this tab for a server-verified public promotion; `fbclid` alone does not. `/api/promo` supplies the active code, and `/api/pricing` checks quantity, package, dates, uses and subtotal. The banner no longer exposes coupon codes to all visitors. Only confirmed discounts show an applied badge; codes never go to measurement.
 
 The release acceptance record is [quote-request-flow.md](quote-request-flow.md). Public browser QA stubs order/tracking writes and vendor calls; the separate public pricing quote is non-mutating. Exact deployment receipt, external tag account delivery, Advanced Matching and actual end-to-end mail are separate evidence, not inferred from these mocks.
+
+## Q03 — visible optional sizes (2026-11-02)
+
+Both request screens now expose an optional size/color dialog. Explicit confirmation emits the existing allowlisted form_field_complete(shirts); opening/cancelling the dialog neither submits nor generates a Lead. Customers can still save without sizes, and confirmed selections are stored with any request mode. The post-save editor remains optional form_step3 shirts_optional. Its version/current-quantity refresh and bulk Undo do not create another request or Lead. Consent/region/refusal rules are unchanged. See [form-ux-plan.md](form-ux-plan.md) for public-source, API, browser and testing limits; no external analytics-account setting or real vendor delivery was verified by these mocks.
