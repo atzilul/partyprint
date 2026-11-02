@@ -88,3 +88,5 @@ test('build diagnostics bound the number of source names in logs',t=>{
  assert.equal(diagnostic.entries.length,100);assert.equal(diagnostic.truncated,true);
  assert.equal(createBuildIdentity({root}).sourceState,'modified');
 });
+
+test('root design tokens are compiled source and cannot bypass release identity',t=>{const {root,git}=fixture(t);writeFileSync(join(root,'tokens.css'),':root{--color-test:oklch(100% 0 0)}');assert.equal(createBuildIdentity({root}).sourceState,'modified');git('add','tokens.css');git('commit','-qm','design tokens');const before=createBuildIdentity({root});assert.equal(before.sourceState,'clean');writeFileSync(join(root,'tokens.css'),':root{--color-test:oklch(20% 0 0)}');assert.equal(createBuildIdentity({root}).sourceState,'modified');git('add','tokens.css');git('commit','-qm','change design tokens');assert.notEqual(createBuildIdentity({root}).sourceFingerprint,before.sourceFingerprint);});
