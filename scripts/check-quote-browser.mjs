@@ -72,6 +72,14 @@ export async function checkQuoteBrowser(kind){
    await page.goto(base+'/',{waitUntil:'networkidle',timeout:45000});await form.scrollIntoViewIfNeeded();
    check('Request starts at four without a separate single-shirt selector',await q.inputValue()==='4'&&await form.locator('.pp-product-choice').count()===0);
    check('Progress starts at shirt selection',await form.getByRole('progressbar',{name:'ההתקדמות שלכם',exact:true}).getAttribute('aria-valuenow')==='1');
+   const sizeEntry=await form.locator('.pp-size-entry').evaluate(el=>{const s=getComputedStyle(el),b=getComputedStyle(el.querySelector('b'));return {height:el.getBoundingClientRect().height,border:parseFloat(s.borderTopWidth),shadow:s.boxShadow,bold:b.fontWeight};});
+   check('Sizing entry has a distinct filled surface, strong border and touch target',sizeEntry.height>=88&&sizeEntry.border===2&&sizeEntry.shadow!=='none'&&Number(sizeEntry.bold)>=700);
+   check('Reduced motion disables stage entrance',await form.locator('.pp-stage-heading').evaluate(el=>getComputedStyle(el).animationName==='none'));
+   if(kind==='ux-browser'&&viewport.width===375){
+    await page.emulateMedia({reducedMotion:'no-preference'});await toContacts();
+    check('Stage change uses a brief entrance when motion is allowed',await form.locator('.pp-stage-heading').evaluate(el=>getComputedStyle(el).animationName==='pp-stage-reveal'));
+    await toShirts();await page.emulateMedia({reducedMotion:'reduce'});
+   }
    if(kind==='quantity-browser'){
     for(let p=0;p<5;p++){await form.getByRole('combobox',{name:'בחירת חבילה',exact:true}).selectOption(String(p));for(const n of [1,2,3,4,5,6,7,8,9,10,14,15,19,20,21,100]){await setQ(n);await verifyPrice(n);}check('Occasion '+p+' respects all reached quantity tiers',true);}
     check('Maximum disables increase',await form.getByRole('button',{name:'הוספת חולצה',exact:true}).isDisabled());
@@ -92,7 +100,7 @@ export async function checkQuoteBrowser(kind){
     promoMode='empty';await page.goto(base+'/',{waitUntil:'networkidle'});check('No active promotion retains the existing fallback',await page.locator('.launch-offer').count()===0&&await page.locator('.promo-fallback').isVisible());
    }else if(kind==='ux-browser'){
     initialHeight=await form.evaluate(el=>Math.round(el.getBoundingClientRect().height));
-    const contrast=await page.evaluate(()=>{const ctx=document.createElement('canvas').getContext('2d'),style=getComputedStyle(document.documentElement);const lum=name=>{ctx.fillStyle=style.getPropertyValue('--color-pp-'+name).trim();ctx.fillRect(0,0,1,1);const c=[...ctx.getImageData(0,0,1,1).data].slice(0,3).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return c[0]*.2126+c[1]*.7152+c[2]*.0722;};return [['ink','paper',4.5],['muted','paper',4.5],['ink','accent',4.5],['focus','paper',3],['success','success-soft',4.5],['error','error-soft',4.5]].every(([a,b,min])=>(Math.max(lum(a),lum(b))+.05)/(Math.min(lum(a),lum(b))+.05)>=min);});check('Brand text and focus pairs retain WCAG contrast',contrast);
+    const contrast=await page.evaluate(()=>{const ctx=document.createElement('canvas').getContext('2d'),style=getComputedStyle(document.documentElement);const lum=name=>{ctx.fillStyle=style.getPropertyValue('--color-pp-'+name).trim();ctx.fillRect(0,0,1,1);const c=[...ctx.getImageData(0,0,1,1).data].slice(0,3).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return c[0]*.2126+c[1]*.7152+c[2]*.0722;};return [['ink','paper',4.5],['ink','acid',4.5],['focus','acid',3],['muted','paper',4.5],['ink','accent',4.5],['focus','paper',3],['success','success-soft',4.5],['error','error-soft',4.5]].every(([a,b,min])=>(Math.max(lum(a),lum(b))+.05)/(Math.min(lum(a),lum(b))+.05)>=min);});check('Brand text and focus pairs retain WCAG contrast',contrast);
     await form.getByRole('button',{name:/מידות וצבעים.*אפשר לבחור עכשיו/}).click();await page.getByRole('dialog',{name:'מידות וצבעים לחולצות',exact:true}).waitFor();await page.keyboard.press('Escape');await page.locator('#order-size-dialog').waitFor({state:'hidden'});check('Optional size dialog closes without saving contacts or orders',contacts.size===0&&orders.size===0);
     await setQ(7);await form.getByRole('combobox',{name:'בחירת חבילה',exact:true}).selectOption('0');await setQ(1);await setQ(7);check('Occasion survives quantity reduction and increase',await form.getByRole('combobox',{name:'בחירת חבילה',exact:true}).inputValue()==='0');
     await fillContact();contactHeight=await form.evaluate(el=>Math.round(el.getBoundingClientRect().height));
