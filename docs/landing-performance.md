@@ -32,14 +32,41 @@ Full sanitized resource timings are in [the baseline](performance/landing-baseli
 - Header/footer logos use compact lossless WebP at 600px; original metadata/social images remain available.
 - No pricing, coupon, order storage, email configuration or consent semantics are changed.
 
-## Verification and release state
-Candidate/browser/production results are pending. Never turn a successful candidate build into a statement that production is fixed.
+## Verified public result
 
-The landing workflow measures three samples per device profile and checks initial image selection, decoding, stable event choice, deferred distant artwork, WOFF2 use and lab CLS. First samples also exercise all five event choices. Existing order, quantity/tier, measurement, SEO, standalone and API isolation checks must pass before release.
+Application release: **30346940b85bcc2872acb36a933f27d9dae1a74f**, [PR #18](https://github.com/atzilul/partyprint/pull/18).
+Source fingerprint: **81e89758827b0ef9ca6acdf8b7e0555e1870dd774df19402fa93cdf62cdaeda8**.
 
-After deployment, rerun the public lab using the same profiles and verify clean sourceCommit/fingerprint. Report synthetic timings separately from CrUX or consented real-visitor monitoring. No real order/email is sent by these probes.
+The public release API was clean with this exact SHA/fingerprint at 2026-11-02T07:04:04.025Z, matching CI. The subsequent public performance run required that same identity before measuring; all six samples passed the feature checks.
 
-Hostinger's exact successful deployment receipt is still unavailable. Sites remains the separate version 28; its sync is blocked by the disconnected execution environment. Resend sender verification remains outstanding. No new background monitoring is enabled.
+| Public profile | Baseline median | After median | After range | Lab CLS after |
+| --- | --- | --- | --- | --- |
+| Mobile | 10.372s | **1.908s** | 1.860–2.012s | 0 |
+| Desktop | 1.624s | **0.440s** | 0.424–0.512s | 0.00161 |
+
+These are three cold-context samples per profile using the same network/CPU/viewport configuration, not the user's earlier unknown audit conditions. Runs use GitHub-hosted Ubuntu runners; hardware/location and upstream caches are not held perfectly constant. Do not present the change as field p75 or campaign conversion uplift.
+
+On desktop the final observed LCP candidate became a headline span; the hero image finished downloading at 0.354–0.433s. On mobile the hero image remained the LCP candidate. The public browser selected the 960px AVIF (77,064 decoded bytes); screenshots confirmed artwork, logo and the dynamic 10% offer remained visible.
+
+Evidence:
+- [Candidate lab](https://github.com/atzilul/partyprint/actions/runs/41403149608/job/125139171796): mobile 1.660s / desktop 0.376s medians with a **local-only Brotli text proxy**, lab CLS 0 / 0.00161. Local timings are not directly compared to public server latency.
+- [Main build](https://github.com/atzilul/partyprint/actions/runs/41403621843/job/125140630311): 32 regression tests, isolated real order API against synthetic storage/no mail, production build, isolated standalone startup and 339 local SEO checks passed.
+- [Public lab](https://github.com/atzilul/partyprint/actions/runs/41403621836/job/125141494983), began 2026-11-02T07:04:45.267Z: 6/6 samples passed. All five event choices responded, WebP fallback decoded with AVIF disabled, distant artwork stayed deferred, WOFF2 was used, and no client exceptions occurred.
+- [Public form/quantity/measurement](https://github.com/atzilul/partyprint/actions/runs/41403621843/job/125141694443): 14 form checks plus 31 quantity/tier checks in each of 390×844 and 1366×900, then three isolated measurement scenarios passed on the matching public application at 07:05:24–07:05:56 UTC. No real order, quote, analytics write or email was sent.
+- [Public source/SEO audit](https://github.com/atzilul/partyprint/actions/runs/41403621843/job/125141305996): clean exact application revision/fingerprint and 550 SEO checks, zero errors, at 07:04 UTC.
+- Full sanitized [public timing report](performance/landing-public-2026-11-02.json) and [candidate timing report](performance/landing-candidate-2026-11-02.json).
+
+Faster first paint exposed a desktop layout shift in an intermediate candidate. Unexpected movement was recorded in clipped landing containers; using overflow:clip for the root/body/hero instead of scrollable overflow:hidden eliminated the large shift. Final public CLS above uses the largest session window (less than 1s between shifts, at most 5s), observed for 12 seconds before test interaction. This does not measure lifetime CLS or INP.
+
+The first main public audit returned generic fetch failures, and the first quantity probe still saw the old release. Those are not acceptance evidence and are retained in Actions history. The post-deployment audit and quantity runs linked above supersede them; the exact cause of the initial fetch failures was not established.
+
+## Continuing verification
+
+The workflow at .github/workflows/landing-performance.yml runs candidate laboratory QA for relevant PRs/pushes and a read-only production probe after main candidate success (or manual dispatch). Production waits for the exact clean commit/fingerprint; a nonmatching deployment is marked waiting_for_matching_deployment and cannot pass as a verified rollout. The CI is real; no recurring field monitoring or new paid service was configured.
+
+T10's measured homepage fix is implemented and publicly observed. T09 still records missing verified field data and further page sampling. Neither this test nor a good individual lab run establishes that 75% of actual visitors meet Google's LCP target.
+
+Hostinger's exact successful deployment receipt is still unavailable; public application evidence above does not close V02. Sites was read again and remains public version 28. Its source sync remains blocked by the disconnected execution environment as well as the outstanding hosting receipt gate. No new Site was created or published. Resend sender verification remains outstanding. N01 remains a separate development dependency advisory (16 moderate findings, zero production/high/critical in this run); dependencies/lockfile were unchanged.
 
 ## Rebuild asset provenance
 The generated image/font reports in public/landing record tool versions, dimensions, source hashes and bytes. Recompression scripts use isolated Sharp 0.35.5 and fonttools 4.68.0; they are not application dependencies. Generated binary files are committed before builds, so installation/build does not rewrite source assets or the lockfile.
