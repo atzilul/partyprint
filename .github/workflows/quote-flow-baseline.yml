@@ -1,0 +1,20 @@
+name: Quote flow baseline
+on:
+  push:
+    branches: ['codex/quote-flow-2026-11-02']
+permissions:
+  contents: read
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.1'
+      - run: npm install --prefix /tmp/partyprint-browser --no-save --package-lock=false --ignore-scripts playwright@1.64.1
+      - run: /tmp/partyprint-browser/node_modules/.bin/playwright install --with-deps chromium
+      - run: node scripts/audit-quote-flow.mjs
