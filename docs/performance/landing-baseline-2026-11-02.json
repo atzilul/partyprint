@@ -1,0 +1,3603 @@
+{
+  "kind": "landing-performance-lab",
+  "checkedAt": "2026-11-02T06:30:40.435Z",
+  "browser": "156.0.8078.4",
+  "samplesPerProfile": 3,
+  "observationMs": 12000,
+  "cache": "fresh browser context, HTTP cache disabled; upstream cache not purged",
+  "runner": "Linux",
+  "thirdParty": "Vendor scripts allowed; all non-GET and measurement collection requests blocked",
+  "fieldData": null,
+  "results": [
+    {
+      "origin": "https://partyprint.co.il",
+      "profile": "mobile",
+      "sample": 1,
+      "release": {
+        "app": "PARTYPRINT",
+        "schemaVersion": 1,
+        "target": "node",
+        "mode": "production",
+        "builtAt": "2026-11-01T19:56:42.766Z",
+        "sourceState": "clean",
+        "sourceCommit": "290534b6a3ee927b33014f571df2cc5b094f331b",
+        "sourceFingerprint": "d8b66600c41e29998eef3d520f1386b671c769f070a826b02ad75d442151348e"
+      },
+      "network": {
+        "latencyMs": 150,
+        "downloadKbps": 1600,
+        "cpuSlowdown": 4
+      },
+      "status": 200,
+      "html": {
+        "bytes": 121288,
+        "hasInitialHero": true,
+        "preloads": []
+      },
+      "title": "PARTYPRINT | הדפסה על חולצות בעיצוב אישי",
+      "path": "/",
+      "nav": {
+        "ttfbMs": 249.60000000000582,
+        "htmlEndMs": 470.8000000000029,
+        "domContentLoadedMs": 2223.300000000003,
+        "loadMs": 0,
+        "transfer": 19301,
+        "encoded": 19001,
+        "decoded": 121288
+      },
+      "lcp": [
+        {
+          "time": 2112,
+          "renderTime": 2112,
+          "loadTime": 0,
+          "size": 7232,
+          "url": "",
+          "element": "div.topbar-message"
+        },
+        {
+          "time": 4124,
+          "renderTime": 4124,
+          "loadTime": 0,
+          "size": 21723,
+          "url": "",
+          "element": "span."
+        },
+        {
+          "time": 7432,
+          "renderTime": 7432,
+          "loadTime": 0,
+          "size": 38400,
+          "url": "",
+          "element": "p."
+        },
+        {
+          "time": 10196,
+          "renderTime": 10196,
+          "loadTime": 10156.699999999997,
+          "size": 145029,
+          "url": "https://partyprint.co.il/party-crew.webp",
+          "element": "img."
+        }
+      ],
+      "cls": 0,
+      "longTasks": 6,
+      "longTaskMs": 776,
+      "heroSources": [
+        {
+          "time": 2223.100000000006,
+          "src": "https://partyprint.co.il/party-crew.webp"
+        }
+      ],
+      "resources": [
+        {
+          "name": "https://partyprint.co.il/party-crew.webp",
+          "type": "link",
+          "start": 393.1000000000058,
+          "end": 10153,
+          "duration": 9759.899999999994,
+          "transfer": 351114,
+          "encoded": 350814,
+          "decoded": 350814
+        },
+        {
+          "name": "https://partyprint.co.il/transformation.webp",
+          "type": "link",
+          "start": 394.1999999999971,
+          "end": 10063.300000000003,
+          "duration": 9669.100000000006,
+          "transfer": 345682,
+          "encoded": 345382,
+          "decoded": 345382
+        },
+        {
+          "name": "https://partyprint.co.il/statement-family-fixed.webp",
+          "type": "link",
+          "start": 394.3000000000029,
+          "end": 6703.199999999997,
+          "duration": 6308.899999999994,
+          "transfer": 165882,
+          "encoded": 165582,
+          "decoded": 165582
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/css/BiIubMuT.css",
+          "type": "link",
+          "start": 397.5,
+          "end": 717.8999999999942,
+          "duration": 320.3999999999942,
+          "transfer": 7151,
+          "encoded": 6851,
+          "decoded": 24990
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/css/Dt0iz6q6.css",
+          "type": "link",
+          "start": 397.5,
+          "end": 1895.3999999999942,
+          "duration": 1497.8999999999942,
+          "transfer": 56270,
+          "encoded": 55970,
+          "decoded": 237483
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/CZnInyh5.js",
+          "type": "other",
+          "start": 398.3999999999942,
+          "end": 1595.800000000003,
+          "duration": 1197.4000000000087,
+          "transfer": 37826,
+          "encoded": 37526,
+          "decoded": 106026
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/4fPAi2Og.js",
+          "type": "script",
+          "start": 398.3999999999942,
+          "end": 2263.199999999997,
+          "duration": 1864.800000000003,
+          "transfer": 767,
+          "encoded": 467,
+          "decoded": 723
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/CWDLVES6.js",
+          "type": "script",
+          "start": 398.5,
+          "end": 5376,
+          "duration": 4977.5,
+          "transfer": 53617,
+          "encoded": 53317,
+          "decoded": 148475
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DlzHHWqi.js",
+          "type": "script",
+          "start": 398.5,
+          "end": 6328.300000000003,
+          "duration": 5929.800000000003,
+          "transfer": 80623,
+          "encoded": 80323,
+          "decoded": 219441
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/rCuqnO2n.js",
+          "type": "other",
+          "start": 398.6000000000058,
+          "end": 2113.100000000006,
+          "duration": 1714.5,
+          "transfer": 647,
+          "encoded": 347,
+          "decoded": 465
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DG49dsWs.js",
+          "type": "other",
+          "start": 398.6000000000058,
+          "end": 2255.600000000006,
+          "duration": 1857,
+          "transfer": 898,
+          "encoded": 598,
+          "decoded": 3327
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DW4rd5NB.js",
+          "type": "other",
+          "start": 399.3000000000029,
+          "end": 2323.5,
+          "duration": 1924.199999999997,
+          "transfer": 2250,
+          "encoded": 1950,
+          "decoded": 4092
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/78gKUyL1.js",
+          "type": "other",
+          "start": 399.3000000000029,
+          "end": 2525.5,
+          "duration": 2126.199999999997,
+          "transfer": 4578,
+          "encoded": 4278,
+          "decoded": 9556
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DNZjMMYO.js",
+          "type": "other",
+          "start": 399.3999999999942,
+          "end": 4026.199999999997,
+          "duration": 3626.800000000003,
+          "transfer": 25978,
+          "encoded": 25678,
+          "decoded": 92605
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/67tTQn5A.js",
+          "type": "other",
+          "start": 399.6999999999971,
+          "end": 2120.699999999997,
+          "duration": 1721,
+          "transfer": 984,
+          "encoded": 684,
+          "decoded": 1306
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/C9aMQXoa.js",
+          "type": "other",
+          "start": 399.6999999999971,
+          "end": 2195.899999999994,
+          "duration": 1796.199999999997,
+          "transfer": 1396,
+          "encoded": 1096,
+          "decoded": 1771
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/8RR5Gkam.js",
+          "type": "other",
+          "start": 399.6999999999971,
+          "end": 2218.600000000006,
+          "duration": 1818.9000000000087,
+          "transfer": 408,
+          "encoded": 108,
+          "decoded": 142
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/BsuczznR.js",
+          "type": "other",
+          "start": 399.6999999999971,
+          "end": 2338.600000000006,
+          "duration": 1938.9000000000087,
+          "transfer": 1518,
+          "encoded": 1218,
+          "decoded": 2184
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/qWtw2eLC.js",
+          "type": "other",
+          "start": 399.6999999999971,
+          "end": 5240.899999999994,
+          "duration": 4841.199999999997,
+          "transfer": 51332,
+          "encoded": 51032,
+          "decoded": 141411
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/CRd85W-w.js",
+          "type": "other",
+          "start": 399.8000000000029,
+          "end": 2210.800000000003,
+          "duration": 1811,
+          "transfer": 757,
+          "encoded": 457,
+          "decoded": 637
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/B5Puse2C.js",
+          "type": "other",
+          "start": 399.8000000000029,
+          "end": 2234,
+          "duration": 1834.199999999997,
+          "transfer": 963,
+          "encoded": 663,
+          "decoded": 1020
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DWRqM8-0.js",
+          "type": "other",
+          "start": 399.8000000000029,
+          "end": 2248.300000000003,
+          "duration": 1848.5,
+          "transfer": 663,
+          "encoded": 363,
+          "decoded": 521
+        },
+        {
+          "name": "https://partyprint.co.il/partyprint-logo-header.png",
+          "type": "css",
+          "start": 1928.699999999997,
+          "end": 6223.300000000003,
+          "duration": 4294.600000000006,
+          "transfer": 73502,
+          "encoded": 73202,
+          "decoded": 73202
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/rubik-600.ttf",
+          "type": "css",
+          "start": 1949.800000000003,
+          "end": 6276.100000000006,
+          "duration": 4326.300000000003,
+          "transfer": 74507,
+          "encoded": 74207,
+          "decoded": 175600
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/assistant-400.ttf",
+          "type": "css",
+          "start": 1957.199999999997,
+          "end": 4048.100000000006,
+          "duration": 2090.9000000000087,
+          "transfer": 25170,
+          "encoded": 24870,
+          "decoded": 47696
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/assistant-700.ttf",
+          "type": "css",
+          "start": 1957.8999999999942,
+          "end": 4055.800000000003,
+          "duration": 2097.9000000000087,
+          "transfer": 25242,
+          "encoded": 24942,
+          "decoded": 47644
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/rubik-900.ttf",
+          "type": "css",
+          "start": 1958.1000000000058,
+          "end": 6133.699999999997,
+          "duration": 4175.599999999991,
+          "transfer": 69893,
+          "encoded": 69593,
+          "decoded": 175196
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/assistant-600.ttf",
+          "type": "css",
+          "start": 2126.699999999997,
+          "end": 4115.699999999997,
+          "duration": 1989,
+          "transfer": 25023,
+          "encoded": 24723,
+          "decoded": 47716
+        },
+        {
+          "name": "https://partyprint.co.il/partyprint-logo.png",
+          "type": "css",
+          "start": 2180.399999999994,
+          "end": 6568.399999999994,
+          "duration": 4388,
+          "transfer": 85536,
+          "encoded": 85236,
+          "decoded": 85236
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 7055.699999999997,
+          "end": 7326.600000000006,
+          "duration": 270.90000000000873,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 7058.699999999997,
+          "end": 7498.800000000003,
+          "duration": 440.1000000000058,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 7061.600000000006,
+          "end": 7490.899999999994,
+          "duration": 429.29999999998836,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/api/pricing",
+          "type": "fetch",
+          "start": 7104.399999999994,
+          "end": 7348.800000000003,
+          "duration": 244.40000000000873,
+          "transfer": 454,
+          "encoded": 154,
+          "decoded": 309
+        },
+        {
+          "name": "https://partyprint.co.il/api/events",
+          "type": "fetch",
+          "start": 7108.100000000006,
+          "end": 7162.399999999994,
+          "duration": 54.29999999998836,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://partyprint.co.il/api/promo",
+          "type": "fetch",
+          "start": 7110.5,
+          "end": 7340.699999999997,
+          "duration": 230.1999999999971,
+          "transfer": 376,
+          "encoded": 76,
+          "decoded": 72
+        },
+        {
+          "name": "https://partyprint.co.il/api/analytics-config",
+          "type": "fetch",
+          "start": 7113.300000000003,
+          "end": 7356.5,
+          "duration": 243.1999999999971,
+          "transfer": 370,
+          "encoded": 70,
+          "decoded": 78
+        },
+        {
+          "name": "https://www.googletagmanager.com/gtag/js",
+          "type": "script",
+          "start": 7414.5,
+          "end": 11023,
+          "duration": 3608.5,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://connect.facebook.net/en_US/fbevents.js",
+          "type": "script",
+          "start": 7417.100000000006,
+          "end": 10415.699999999997,
+          "duration": 2998.5999999999913,
+          "transfer": 115053,
+          "encoded": 114753,
+          "decoded": 437578
+        },
+        {
+          "name": "https://analytics.google.com/g/collect",
+          "type": "fetch",
+          "start": 11311.600000000006,
+          "end": 11320.300000000003,
+          "duration": 8.69999999999709,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://stats.g.doubleclick.net/g/collect",
+          "type": "beacon",
+          "start": 11314.899999999994,
+          "end": 11322,
+          "duration": 7.100000000005821,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://www.google.com/g/collect",
+          "type": "fetch",
+          "start": 11336,
+          "end": 11337.699999999997,
+          "duration": 1.6999999999970896,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        }
+      ],
+      "hero": {
+        "src": "https://partyprint.co.il/party-crew.webp",
+        "complete": true,
+        "naturalWidth": 1254,
+        "rect": {
+          "width": 378.59100341796875,
+          "height": 428.40997314453125,
+          "top": 162.33155822753906
+        },
+        "opacity": "1",
+        "animation": "mobileHeroDrift"
+      },
+      "fonts": "loaded",
+      "lcpMs": 10196,
+      "lcpPhases": {
+        "ttfbMs": 249.60000000000582,
+        "resourceDelayMs": 143.5,
+        "resourceDurationMs": 9759.899999999994,
+        "renderDelayMs": 43
+      },
+      "blockedRequests": 4,
+      "clientErrors": [],
+      "failedRequests": [],
+      "responseHeaders": [
+        {
+          "url": "https://partyprint.co.il/",
+          "status": 200,
+          "cacheControl": "s-maxage=31536000, stale-while-revalidate",
+          "encoding": "br",
+          "contentType": "text/html; charset=utf-8",
+          "contentLength": null
+        },
+        {
+          "url": "https://partyprint.co.il/party-crew.webp",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": null,
+          "contentType": "image/webp",
+          "contentLength": "350814"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/assistant-400.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "24870"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/assistant-700.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "24942"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/assistant-600.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "24723"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/rubik-900.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "69593"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/rubik-600.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "74207"
+        }
+      ]
+    },
+    {
+      "origin": "https://partyprint.co.il",
+      "profile": "mobile",
+      "sample": 2,
+      "release": {
+        "app": "PARTYPRINT",
+        "schemaVersion": 1,
+        "target": "node",
+        "mode": "production",
+        "builtAt": "2026-11-01T19:56:42.766Z",
+        "sourceState": "clean",
+        "sourceCommit": "290534b6a3ee927b33014f571df2cc5b094f331b",
+        "sourceFingerprint": "d8b66600c41e29998eef3d520f1386b671c769f070a826b02ad75d442151348e"
+      },
+      "network": {
+        "latencyMs": 150,
+        "downloadKbps": 1600,
+        "cpuSlowdown": 4
+      },
+      "status": 200,
+      "html": {
+        "bytes": 121288,
+        "hasInitialHero": true,
+        "preloads": []
+      },
+      "title": "PARTYPRINT | הדפסה על חולצות בעיצוב אישי",
+      "path": "/",
+      "nav": {
+        "ttfbMs": 115.69999999999709,
+        "htmlEndMs": 336.1999999999971,
+        "domContentLoadedMs": 2015.8999999999942,
+        "loadMs": 11933.699999999997,
+        "transfer": 19301,
+        "encoded": 19001,
+        "decoded": 121288
+      },
+      "lcp": [
+        {
+          "time": 1924,
+          "renderTime": 1924,
+          "loadTime": 0,
+          "size": 25991,
+          "url": "",
+          "element": "h2."
+        },
+        {
+          "time": 7048,
+          "renderTime": 7048,
+          "loadTime": 0,
+          "size": 38400,
+          "url": "",
+          "element": "p."
+        },
+        {
+          "time": 10372,
+          "renderTime": 10372,
+          "loadTime": 10331.799999999988,
+          "size": 145029,
+          "url": "https://partyprint.co.il/party-crew.webp",
+          "element": "img."
+        }
+      ],
+      "cls": 0,
+      "longTasks": 7,
+      "longTaskMs": 822,
+      "heroSources": [
+        {
+          "time": 2015,
+          "src": "https://partyprint.co.il/party-crew.webp"
+        }
+      ],
+      "resources": [
+        {
+          "name": "https://partyprint.co.il/party-crew.webp",
+          "type": "link",
+          "start": 253.5,
+          "end": 10326,
+          "duration": 10072.5,
+          "transfer": 351114,
+          "encoded": 350814,
+          "decoded": 350814
+        },
+        {
+          "name": "https://partyprint.co.il/transformation.webp",
+          "type": "link",
+          "start": 254.39999999999418,
+          "end": 10280.699999999997,
+          "duration": 10026.300000000003,
+          "transfer": 345682,
+          "encoded": 345382,
+          "decoded": 345382
+        },
+        {
+          "name": "https://partyprint.co.il/statement-family-fixed.webp",
+          "type": "link",
+          "start": 254.79999999998836,
+          "end": 6568.599999999991,
+          "duration": 6313.800000000003,
+          "transfer": 165882,
+          "encoded": 165582,
+          "decoded": 165582
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/css/Dt0iz6q6.css",
+          "type": "link",
+          "start": 257.6999999999971,
+          "end": 1738.5,
+          "duration": 1480.800000000003,
+          "transfer": 56270,
+          "encoded": 55970,
+          "decoded": 237483
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/css/BiIubMuT.css",
+          "type": "link",
+          "start": 258.3999999999942,
+          "end": 583,
+          "duration": 324.6000000000058,
+          "transfer": 7151,
+          "encoded": 6851,
+          "decoded": 24990
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/CZnInyh5.js",
+          "type": "other",
+          "start": 258.3999999999942,
+          "end": 1438.199999999997,
+          "duration": 1179.800000000003,
+          "transfer": 37826,
+          "encoded": 37526,
+          "decoded": 106026
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/4fPAi2Og.js",
+          "type": "script",
+          "start": 258.5,
+          "end": 1934,
+          "duration": 1675.5,
+          "transfer": 767,
+          "encoded": 467,
+          "decoded": 723
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DlzHHWqi.js",
+          "type": "script",
+          "start": 258.5,
+          "end": 6201.299999999988,
+          "duration": 5942.799999999988,
+          "transfer": 80623,
+          "encoded": 80323,
+          "decoded": 219441
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DG49dsWs.js",
+          "type": "other",
+          "start": 259.1999999999971,
+          "end": 1971.0999999999913,
+          "duration": 1711.8999999999942,
+          "transfer": 898,
+          "encoded": 598,
+          "decoded": 3327
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/CWDLVES6.js",
+          "type": "script",
+          "start": 259.1999999999971,
+          "end": 5128.799999999988,
+          "duration": 4869.599999999991,
+          "transfer": 53617,
+          "encoded": 53317,
+          "decoded": 148475
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/rCuqnO2n.js",
+          "type": "other",
+          "start": 259.29999999998836,
+          "end": 2045.8999999999942,
+          "duration": 1786.6000000000058,
+          "transfer": 647,
+          "encoded": 347,
+          "decoded": 465
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DW4rd5NB.js",
+          "type": "other",
+          "start": 259.3999999999942,
+          "end": 2150.5999999999913,
+          "duration": 1891.199999999997,
+          "transfer": 2250,
+          "encoded": 1950,
+          "decoded": 4092
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/78gKUyL1.js",
+          "type": "other",
+          "start": 259.79999999998836,
+          "end": 2286.0999999999913,
+          "duration": 2026.300000000003,
+          "transfer": 4578,
+          "encoded": 4278,
+          "decoded": 9556
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DNZjMMYO.js",
+          "type": "other",
+          "start": 260,
+          "end": 3944,
+          "duration": 3684,
+          "transfer": 25978,
+          "encoded": 25678,
+          "decoded": 92605
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/8RR5Gkam.js",
+          "type": "other",
+          "start": 260.09999999999127,
+          "end": 2105.699999999997,
+          "duration": 1845.6000000000058,
+          "transfer": 408,
+          "encoded": 108,
+          "decoded": 142
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/C9aMQXoa.js",
+          "type": "other",
+          "start": 260.09999999999127,
+          "end": 2120.5999999999913,
+          "duration": 1860.5,
+          "transfer": 1396,
+          "encoded": 1096,
+          "decoded": 1771
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/qWtw2eLC.js",
+          "type": "other",
+          "start": 260.09999999999127,
+          "end": 5158.299999999988,
+          "duration": 4898.199999999997,
+          "transfer": 51334,
+          "encoded": 51034,
+          "decoded": 141411
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/67tTQn5A.js",
+          "type": "other",
+          "start": 260.59999999999127,
+          "end": 2030.5999999999913,
+          "duration": 1770,
+          "transfer": 984,
+          "encoded": 684,
+          "decoded": 1306
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/B5Puse2C.js",
+          "type": "other",
+          "start": 260.59999999999127,
+          "end": 2039,
+          "duration": 1778.4000000000087,
+          "transfer": 963,
+          "encoded": 663,
+          "decoded": 1020
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/CRd85W-w.js",
+          "type": "other",
+          "start": 260.59999999999127,
+          "end": 2083.7999999999884,
+          "duration": 1823.199999999997,
+          "transfer": 757,
+          "encoded": 457,
+          "decoded": 637
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DWRqM8-0.js",
+          "type": "other",
+          "start": 260.59999999999127,
+          "end": 2128.5,
+          "duration": 1867.9000000000087,
+          "transfer": 663,
+          "encoded": 363,
+          "decoded": 521
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/BsuczznR.js",
+          "type": "other",
+          "start": 260.59999999999127,
+          "end": 2248.199999999997,
+          "duration": 1987.6000000000058,
+          "transfer": 1518,
+          "encoded": 1218,
+          "decoded": 2184
+        },
+        {
+          "name": "https://partyprint.co.il/partyprint-logo-header.png",
+          "type": "css",
+          "start": 1772.5,
+          "end": 6095.599999999991,
+          "duration": 4323.099999999991,
+          "transfer": 73502,
+          "encoded": 73202,
+          "decoded": 73202
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/rubik-600.ttf",
+          "type": "css",
+          "start": 1790.699999999997,
+          "end": 6125.799999999988,
+          "duration": 4335.099999999991,
+          "transfer": 74507,
+          "encoded": 74207,
+          "decoded": 175600
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/assistant-400.ttf",
+          "type": "css",
+          "start": 1802.2999999999884,
+          "end": 3875.699999999997,
+          "duration": 2073.4000000000087,
+          "transfer": 25170,
+          "encoded": 24870,
+          "decoded": 47696
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/assistant-700.ttf",
+          "type": "css",
+          "start": 1802.3999999999942,
+          "end": 3890.5999999999913,
+          "duration": 2088.199999999997,
+          "transfer": 25242,
+          "encoded": 24942,
+          "decoded": 47644
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/rubik-900.ttf",
+          "type": "css",
+          "start": 1803.2999999999884,
+          "end": 5968.599999999991,
+          "duration": 4165.300000000003,
+          "transfer": 69893,
+          "encoded": 69593,
+          "decoded": 175196
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/assistant-600.ttf",
+          "type": "css",
+          "start": 1942.3999999999942,
+          "end": 3936.399999999994,
+          "duration": 1994,
+          "transfer": 25023,
+          "encoded": 24723,
+          "decoded": 47716
+        },
+        {
+          "name": "https://partyprint.co.il/partyprint-logo.png",
+          "type": "css",
+          "start": 1975.2999999999884,
+          "end": 6411.299999999988,
+          "duration": 4436,
+          "transfer": 85536,
+          "encoded": 85236,
+          "decoded": 85236
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 6702.899999999994,
+          "end": 6966.299999999988,
+          "duration": 263.3999999999942,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 6706,
+          "end": 7168.099999999991,
+          "duration": 462.09999999999127,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 6708.299999999988,
+          "end": 7138.5,
+          "duration": 430.20000000001164,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/api/pricing",
+          "type": "fetch",
+          "start": 6747.699999999997,
+          "end": 6973.199999999997,
+          "duration": 225.5,
+          "transfer": 454,
+          "encoded": 154,
+          "decoded": 309
+        },
+        {
+          "name": "https://partyprint.co.il/api/events",
+          "type": "fetch",
+          "start": 6750.599999999991,
+          "end": 6793.299999999988,
+          "duration": 42.69999999999709,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://partyprint.co.il/api/promo",
+          "type": "fetch",
+          "start": 6752.399999999994,
+          "end": 6981.199999999997,
+          "duration": 228.8000000000029,
+          "transfer": 376,
+          "encoded": 76,
+          "decoded": 72
+        },
+        {
+          "name": "https://partyprint.co.il/api/analytics-config",
+          "type": "fetch",
+          "start": 6754.699999999997,
+          "end": 6989.099999999991,
+          "duration": 234.39999999999418,
+          "transfer": 370,
+          "encoded": 70,
+          "decoded": 78
+        },
+        {
+          "name": "https://partyprint.co.il/family-shared-v2.webp",
+          "type": "img",
+          "start": 6874.299999999988,
+          "end": 11931,
+          "duration": 5056.700000000012,
+          "transfer": 294880,
+          "encoded": 294580,
+          "decoded": 294580
+        },
+        {
+          "name": "https://www.googletagmanager.com/gtag/js",
+          "type": "script",
+          "start": 7045.899999999994,
+          "end": 11075.599999999991,
+          "duration": 4029.699999999997,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://connect.facebook.net/en_US/fbevents.js",
+          "type": "script",
+          "start": 7047.199999999997,
+          "end": 10183.799999999988,
+          "duration": 3136.5999999999913,
+          "transfer": 115053,
+          "encoded": 114753,
+          "decoded": 437578
+        },
+        {
+          "name": "https://connect.facebook.net/signals/config/2241332043403463",
+          "type": "script",
+          "start": 10326.399999999994,
+          "end": 11757.799999999988,
+          "duration": 1431.3999999999942,
+          "transfer": 106316,
+          "encoded": 106016,
+          "decoded": 423355
+        },
+        {
+          "name": "https://analytics.google.com/g/collect",
+          "type": "fetch",
+          "start": 11337.399999999994,
+          "end": 11344.899999999994,
+          "duration": 7.5,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://stats.g.doubleclick.net/g/collect",
+          "type": "beacon",
+          "start": 11340.5,
+          "end": 11345.399999999994,
+          "duration": 4.899999999994179,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://www.google.com/g/collect",
+          "type": "fetch",
+          "start": 11357.699999999997,
+          "end": 11359.099999999991,
+          "duration": 1.3999999999941792,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        }
+      ],
+      "hero": {
+        "src": "https://partyprint.co.il/party-crew.webp",
+        "complete": true,
+        "naturalWidth": 1254,
+        "rect": {
+          "width": 378.7431945800781,
+          "height": 428.5821533203125,
+          "top": 162.1982879638672
+        },
+        "opacity": "1",
+        "animation": "mobileHeroDrift"
+      },
+      "fonts": "loaded",
+      "lcpMs": 10372,
+      "lcpPhases": {
+        "ttfbMs": 115.69999999999709,
+        "resourceDelayMs": 137.8000000000029,
+        "resourceDurationMs": 10072.5,
+        "renderDelayMs": 46
+      },
+      "blockedRequests": 4,
+      "clientErrors": [],
+      "failedRequests": [],
+      "responseHeaders": [
+        {
+          "url": "https://partyprint.co.il/",
+          "status": 200,
+          "cacheControl": "s-maxage=31536000, stale-while-revalidate",
+          "encoding": "br",
+          "contentType": "text/html; charset=utf-8",
+          "contentLength": null
+        },
+        {
+          "url": "https://partyprint.co.il/party-crew.webp",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": null,
+          "contentType": "image/webp",
+          "contentLength": "350814"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/assistant-400.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "24870"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/assistant-700.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "24942"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/assistant-600.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "24723"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/rubik-900.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "69593"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/rubik-600.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "74207"
+        }
+      ]
+    },
+    {
+      "origin": "https://partyprint.co.il",
+      "profile": "mobile",
+      "sample": 3,
+      "release": {
+        "app": "PARTYPRINT",
+        "schemaVersion": 1,
+        "target": "node",
+        "mode": "production",
+        "builtAt": "2026-11-01T19:56:42.766Z",
+        "sourceState": "clean",
+        "sourceCommit": "290534b6a3ee927b33014f571df2cc5b094f331b",
+        "sourceFingerprint": "d8b66600c41e29998eef3d520f1386b671c769f070a826b02ad75d442151348e"
+      },
+      "network": {
+        "latencyMs": 150,
+        "downloadKbps": 1600,
+        "cpuSlowdown": 4
+      },
+      "status": 200,
+      "html": {
+        "bytes": 121288,
+        "hasInitialHero": true,
+        "preloads": []
+      },
+      "title": "PARTYPRINT | הדפסה על חולצות בעיצוב אישי",
+      "path": "/",
+      "nav": {
+        "ttfbMs": 106.39999999999418,
+        "htmlEndMs": 321.1000000000058,
+        "domContentLoadedMs": 2040.699999999997,
+        "loadMs": 11935,
+        "transfer": 19301,
+        "encoded": 19001,
+        "decoded": 121288
+      },
+      "lcp": [
+        {
+          "time": 1936,
+          "renderTime": 1936,
+          "loadTime": 0,
+          "size": 25991,
+          "url": "",
+          "element": "h2."
+        },
+        {
+          "time": 7088,
+          "renderTime": 7088,
+          "loadTime": 0,
+          "size": 38400,
+          "url": "",
+          "element": "p."
+        },
+        {
+          "time": 10400,
+          "renderTime": 10400,
+          "loadTime": 10371.799999999988,
+          "size": 145029,
+          "url": "https://partyprint.co.il/party-crew.webp",
+          "element": "img."
+        }
+      ],
+      "cls": 0,
+      "longTasks": 7,
+      "longTaskMs": 878,
+      "heroSources": [
+        {
+          "time": 2040,
+          "src": "https://partyprint.co.il/party-crew.webp"
+        }
+      ],
+      "resources": [
+        {
+          "name": "https://partyprint.co.il/party-crew.webp",
+          "type": "link",
+          "start": 241.8000000000029,
+          "end": 10259,
+          "duration": 10017.199999999997,
+          "transfer": 351114,
+          "encoded": 350814,
+          "decoded": 350814
+        },
+        {
+          "name": "https://partyprint.co.il/transformation.webp",
+          "type": "link",
+          "start": 242.89999999999418,
+          "end": 10213.600000000006,
+          "duration": 9970.700000000012,
+          "transfer": 345682,
+          "encoded": 345382,
+          "decoded": 345382
+        },
+        {
+          "name": "https://partyprint.co.il/statement-family-fixed.webp",
+          "type": "link",
+          "start": 243.39999999999418,
+          "end": 6554.100000000006,
+          "duration": 6310.700000000012,
+          "transfer": 165882,
+          "encoded": 165582,
+          "decoded": 165582
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/css/BiIubMuT.css",
+          "type": "link",
+          "start": 246.1999999999971,
+          "end": 575.8999999999942,
+          "duration": 329.6999999999971,
+          "transfer": 7151,
+          "encoded": 6851,
+          "decoded": 24990
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/css/Dt0iz6q6.css",
+          "type": "link",
+          "start": 246.1999999999971,
+          "end": 1724.3999999999942,
+          "duration": 1478.199999999997,
+          "transfer": 56270,
+          "encoded": 55970,
+          "decoded": 237483
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/CZnInyh5.js",
+          "type": "other",
+          "start": 246.3000000000029,
+          "end": 1438.3999999999942,
+          "duration": 1192.0999999999913,
+          "transfer": 37826,
+          "encoded": 37526,
+          "decoded": 106026
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/4fPAi2Og.js",
+          "type": "script",
+          "start": 247.10000000000582,
+          "end": 1919.699999999997,
+          "duration": 1672.5999999999913,
+          "transfer": 767,
+          "encoded": 467,
+          "decoded": 723
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DlzHHWqi.js",
+          "type": "script",
+          "start": 247.10000000000582,
+          "end": 6149,
+          "duration": 5901.899999999994,
+          "transfer": 80623,
+          "encoded": 80323,
+          "decoded": 219441
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DG49dsWs.js",
+          "type": "other",
+          "start": 247.5,
+          "end": 1941.199999999997,
+          "duration": 1693.699999999997,
+          "transfer": 898,
+          "encoded": 598,
+          "decoded": 3327
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/CWDLVES6.js",
+          "type": "script",
+          "start": 247.5,
+          "end": 5136.699999999997,
+          "duration": 4889.199999999997,
+          "transfer": 53617,
+          "encoded": 53317,
+          "decoded": 148475
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/rCuqnO2n.js",
+          "type": "other",
+          "start": 247.60000000000582,
+          "end": 1994.699999999997,
+          "duration": 1747.0999999999913,
+          "transfer": 647,
+          "encoded": 347,
+          "decoded": 465
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DW4rd5NB.js",
+          "type": "other",
+          "start": 247.60000000000582,
+          "end": 2181.699999999997,
+          "duration": 1934.0999999999913,
+          "transfer": 2250,
+          "encoded": 1950,
+          "decoded": 4092
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/78gKUyL1.js",
+          "type": "other",
+          "start": 247.6999999999971,
+          "end": 2361.399999999994,
+          "duration": 2113.699999999997,
+          "transfer": 4578,
+          "encoded": 4278,
+          "decoded": 9556
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DNZjMMYO.js",
+          "type": "other",
+          "start": 247.6999999999971,
+          "end": 3824,
+          "duration": 3576.300000000003,
+          "transfer": 25978,
+          "encoded": 25678,
+          "decoded": 92605
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/8RR5Gkam.js",
+          "type": "other",
+          "start": 248.3000000000029,
+          "end": 2061.699999999997,
+          "duration": 1813.3999999999942,
+          "transfer": 408,
+          "encoded": 108,
+          "decoded": 142
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/qWtw2eLC.js",
+          "type": "other",
+          "start": 248.3000000000029,
+          "end": 5166.199999999997,
+          "duration": 4917.899999999994,
+          "transfer": 51332,
+          "encoded": 51032,
+          "decoded": 141411
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/C9aMQXoa.js",
+          "type": "other",
+          "start": 248.39999999999418,
+          "end": 2076.699999999997,
+          "duration": 1828.300000000003,
+          "transfer": 1396,
+          "encoded": 1096,
+          "decoded": 1771
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/67tTQn5A.js",
+          "type": "other",
+          "start": 248.39999999999418,
+          "end": 2106.5,
+          "duration": 1858.1000000000058,
+          "transfer": 984,
+          "encoded": 684,
+          "decoded": 1306
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/BsuczznR.js",
+          "type": "other",
+          "start": 248.39999999999418,
+          "end": 2226.100000000006,
+          "duration": 1977.7000000000116,
+          "transfer": 1518,
+          "encoded": 1218,
+          "decoded": 2184
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DWRqM8-0.js",
+          "type": "other",
+          "start": 249,
+          "end": 2092,
+          "duration": 1843,
+          "transfer": 663,
+          "encoded": 363,
+          "decoded": 521
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/B5Puse2C.js",
+          "type": "other",
+          "start": 249.10000000000582,
+          "end": 2099.600000000006,
+          "duration": 1850.5,
+          "transfer": 963,
+          "encoded": 663,
+          "decoded": 1020
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/CRd85W-w.js",
+          "type": "other",
+          "start": 249.10000000000582,
+          "end": 2114.300000000003,
+          "duration": 1865.199999999997,
+          "transfer": 757,
+          "encoded": 457,
+          "decoded": 637
+        },
+        {
+          "name": "https://partyprint.co.il/partyprint-logo-header.png",
+          "type": "css",
+          "start": 1760.800000000003,
+          "end": 6081.5,
+          "duration": 4320.699999999997,
+          "transfer": 73502,
+          "encoded": 73202,
+          "decoded": 73202
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/rubik-600.ttf",
+          "type": "css",
+          "start": 1779.8999999999942,
+          "end": 6134.199999999997,
+          "duration": 4354.300000000003,
+          "transfer": 74507,
+          "encoded": 74207,
+          "decoded": 175600
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/assistant-400.ttf",
+          "type": "css",
+          "start": 1793.6000000000058,
+          "end": 3899.399999999994,
+          "duration": 2105.7999999999884,
+          "transfer": 25170,
+          "encoded": 24870,
+          "decoded": 47696
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/assistant-700.ttf",
+          "type": "css",
+          "start": 1794.300000000003,
+          "end": 3907.199999999997,
+          "duration": 2112.899999999994,
+          "transfer": 25242,
+          "encoded": 24942,
+          "decoded": 47644
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/rubik-900.ttf",
+          "type": "css",
+          "start": 1794.3999999999942,
+          "end": 5983.699999999997,
+          "duration": 4189.300000000003,
+          "transfer": 69893,
+          "encoded": 69593,
+          "decoded": 175196
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/assistant-600.ttf",
+          "type": "css",
+          "start": 1951.3999999999942,
+          "end": 3929.199999999997,
+          "duration": 1977.800000000003,
+          "transfer": 25023,
+          "encoded": 24723,
+          "decoded": 47716
+        },
+        {
+          "name": "https://partyprint.co.il/partyprint-logo.png",
+          "type": "css",
+          "start": 1994.300000000003,
+          "end": 6411.5,
+          "duration": 4417.199999999997,
+          "transfer": 85536,
+          "encoded": 85236,
+          "decoded": 85236
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 6735.199999999997,
+          "end": 6996.899999999994,
+          "duration": 261.6999999999971,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 6738.199999999997,
+          "end": 7153.699999999997,
+          "duration": 415.5,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 6740.300000000003,
+          "end": 7168.699999999997,
+          "duration": 428.3999999999942,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/api/pricing",
+          "type": "fetch",
+          "start": 6780.600000000006,
+          "end": 7004.699999999997,
+          "duration": 224.09999999999127,
+          "transfer": 454,
+          "encoded": 154,
+          "decoded": 309
+        },
+        {
+          "name": "https://partyprint.co.il/api/events",
+          "type": "fetch",
+          "start": 6783,
+          "end": 6827.800000000003,
+          "duration": 44.80000000000291,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://partyprint.co.il/api/promo",
+          "type": "fetch",
+          "start": 6785.199999999997,
+          "end": 7019.5,
+          "duration": 234.3000000000029,
+          "transfer": 376,
+          "encoded": 76,
+          "decoded": 72
+        },
+        {
+          "name": "https://partyprint.co.il/api/analytics-config",
+          "type": "fetch",
+          "start": 6787.5,
+          "end": 7011.600000000006,
+          "duration": 224.10000000000582,
+          "transfer": 370,
+          "encoded": 70,
+          "decoded": 78
+        },
+        {
+          "name": "https://partyprint.co.il/family-shared-v2.webp",
+          "type": "img",
+          "start": 6903.399999999994,
+          "end": 11915.799999999988,
+          "duration": 5012.399999999994,
+          "transfer": 294880,
+          "encoded": 294580,
+          "decoded": 294580
+        },
+        {
+          "name": "https://www.googletagmanager.com/gtag/js",
+          "type": "script",
+          "start": 7085.899999999994,
+          "end": 11031.799999999988,
+          "duration": 3945.899999999994,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://connect.facebook.net/en_US/fbevents.js",
+          "type": "script",
+          "start": 7087.100000000006,
+          "end": 10221.299999999988,
+          "duration": 3134.1999999999825,
+          "transfer": 115053,
+          "encoded": 114753,
+          "decoded": 437578
+        },
+        {
+          "name": "https://connect.facebook.net/signals/config/2241332043403463",
+          "type": "script",
+          "start": 10368.299999999988,
+          "end": 11773.600000000006,
+          "duration": 1405.3000000000175,
+          "transfer": 106316,
+          "encoded": 106016,
+          "decoded": 423355
+        },
+        {
+          "name": "https://analytics.google.com/g/collect",
+          "type": "fetch",
+          "start": 11334.399999999994,
+          "end": 11342.299999999988,
+          "duration": 7.899999999994179,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://stats.g.doubleclick.net/g/collect",
+          "type": "beacon",
+          "start": 11337.799999999988,
+          "end": 11342.700000000012,
+          "duration": 4.900000000023283,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://www.google.com/g/collect",
+          "type": "fetch",
+          "start": 11356.200000000012,
+          "end": 11357.899999999994,
+          "duration": 1.6999999999825377,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        }
+      ],
+      "hero": {
+        "src": "https://partyprint.co.il/party-crew.webp",
+        "complete": true,
+        "naturalWidth": 1254,
+        "rect": {
+          "width": 378.7431945800781,
+          "height": 428.5821533203125,
+          "top": 162.1982879638672
+        },
+        "opacity": "1",
+        "animation": "mobileHeroDrift"
+      },
+      "fonts": "loaded",
+      "lcpMs": 10400,
+      "lcpPhases": {
+        "ttfbMs": 106.39999999999418,
+        "resourceDelayMs": 135.40000000000873,
+        "resourceDurationMs": 10017.199999999997,
+        "renderDelayMs": 141
+      },
+      "blockedRequests": 4,
+      "clientErrors": [],
+      "failedRequests": [],
+      "responseHeaders": [
+        {
+          "url": "https://partyprint.co.il/",
+          "status": 200,
+          "cacheControl": "s-maxage=31536000, stale-while-revalidate",
+          "encoding": "br",
+          "contentType": "text/html; charset=utf-8",
+          "contentLength": null
+        },
+        {
+          "url": "https://partyprint.co.il/party-crew.webp",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": null,
+          "contentType": "image/webp",
+          "contentLength": "350814"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/assistant-400.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "24870"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/assistant-700.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "24942"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/assistant-600.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "24723"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/rubik-900.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "69593"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/rubik-600.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "74207"
+        }
+      ]
+    },
+    {
+      "origin": "https://partyprint.co.il",
+      "profile": "desktop",
+      "sample": 1,
+      "release": {
+        "app": "PARTYPRINT",
+        "schemaVersion": 1,
+        "target": "node",
+        "mode": "production",
+        "builtAt": "2026-11-01T19:56:42.766Z",
+        "sourceState": "clean",
+        "sourceCommit": "290534b6a3ee927b33014f571df2cc5b094f331b",
+        "sourceFingerprint": "d8b66600c41e29998eef3d520f1386b671c769f070a826b02ad75d442151348e"
+      },
+      "network": {
+        "latencyMs": 40,
+        "downloadKbps": 10000,
+        "cpuSlowdown": 1
+      },
+      "status": 200,
+      "html": {
+        "bytes": 121288,
+        "hasInitialHero": true,
+        "preloads": []
+      },
+      "title": "PARTYPRINT | הדפסה על חולצות בעיצוב אישי",
+      "path": "/",
+      "nav": {
+        "ttfbMs": 113,
+        "htmlEndMs": 156.60000000000582,
+        "domContentLoadedMs": 370.1000000000058,
+        "loadMs": 2041.8000000000175,
+        "transfer": 19301,
+        "encoded": 19001,
+        "decoded": 121288
+      },
+      "lcp": [
+        {
+          "time": 400,
+          "renderTime": 400,
+          "loadTime": 0,
+          "size": 45615,
+          "url": "",
+          "element": "div.art-label"
+        },
+        {
+          "time": 900,
+          "renderTime": 900,
+          "loadTime": 0,
+          "size": 85198,
+          "url": "",
+          "element": "span."
+        },
+        {
+          "time": 1624,
+          "renderTime": 1624,
+          "loadTime": 1590,
+          "size": 543641,
+          "url": "https://partyprint.co.il/party-crew.webp",
+          "element": "img."
+        }
+      ],
+      "cls": 0.24174273825897605,
+      "longTasks": 1,
+      "longTaskMs": 81,
+      "heroSources": [
+        {
+          "time": 370,
+          "src": "https://partyprint.co.il/party-crew.webp"
+        },
+        {
+          "time": 7620.3000000000175,
+          "src": "https://partyprint.co.il/family-shared-v2.webp"
+        }
+      ],
+      "resources": [
+        {
+          "name": "https://partyprint.co.il/party-crew.webp",
+          "type": "link",
+          "start": 124.90000000002328,
+          "end": 1589.3000000000175,
+          "duration": 1464.3999999999942,
+          "transfer": 351114,
+          "encoded": 350814,
+          "decoded": 350814
+        },
+        {
+          "name": "https://partyprint.co.il/transformation.webp",
+          "type": "link",
+          "start": 125.20000000001164,
+          "end": 1803.9000000000233,
+          "duration": 1678.7000000000116,
+          "transfer": 345682,
+          "encoded": 345382,
+          "decoded": 345382
+        },
+        {
+          "name": "https://partyprint.co.il/statement-family-fixed.webp",
+          "type": "link",
+          "start": 125.30000000001746,
+          "end": 1267.6000000000058,
+          "duration": 1142.2999999999884,
+          "transfer": 165882,
+          "encoded": 165582,
+          "decoded": 165582
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/css/Dt0iz6q6.css",
+          "type": "link",
+          "start": 126.20000000001164,
+          "end": 273.6000000000058,
+          "duration": 147.39999999999418,
+          "transfer": 56270,
+          "encoded": 55970,
+          "decoded": 237483
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/css/BiIubMuT.css",
+          "type": "link",
+          "start": 126.30000000001746,
+          "end": 240.30000000001746,
+          "duration": 114,
+          "transfer": 7151,
+          "encoded": 6851,
+          "decoded": 24990
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/CZnInyh5.js",
+          "type": "other",
+          "start": 126.40000000002328,
+          "end": 453.70000000001164,
+          "duration": 327.29999999998836,
+          "transfer": 37826,
+          "encoded": 37526,
+          "decoded": 106026
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/4fPAi2Og.js",
+          "type": "script",
+          "start": 126.5,
+          "end": 487.9000000000233,
+          "duration": 361.4000000000233,
+          "transfer": 767,
+          "encoded": 467,
+          "decoded": 723
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DlzHHWqi.js",
+          "type": "script",
+          "start": 126.5,
+          "end": 984.8000000000175,
+          "duration": 858.3000000000175,
+          "transfer": 80623,
+          "encoded": 80323,
+          "decoded": 219441
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DG49dsWs.js",
+          "type": "other",
+          "start": 126.60000000000582,
+          "end": 506,
+          "duration": 379.3999999999942,
+          "transfer": 898,
+          "encoded": 598,
+          "decoded": 3327
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/CWDLVES6.js",
+          "type": "script",
+          "start": 126.60000000000582,
+          "end": 975,
+          "duration": 848.3999999999942,
+          "transfer": 53617,
+          "encoded": 53317,
+          "decoded": 148475
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/rCuqnO2n.js",
+          "type": "other",
+          "start": 126.70000000001164,
+          "end": 504.20000000001164,
+          "duration": 377.5,
+          "transfer": 647,
+          "encoded": 347,
+          "decoded": 465
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DW4rd5NB.js",
+          "type": "other",
+          "start": 126.80000000001746,
+          "end": 518.8000000000175,
+          "duration": 392,
+          "transfer": 2250,
+          "encoded": 1950,
+          "decoded": 4092
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/78gKUyL1.js",
+          "type": "other",
+          "start": 126.80000000001746,
+          "end": 535.2000000000116,
+          "duration": 408.3999999999942,
+          "transfer": 4578,
+          "encoded": 4278,
+          "decoded": 9556
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/8RR5Gkam.js",
+          "type": "other",
+          "start": 126.90000000002328,
+          "end": 509.70000000001164,
+          "duration": 382.79999999998836,
+          "transfer": 408,
+          "encoded": 108,
+          "decoded": 142
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DNZjMMYO.js",
+          "type": "other",
+          "start": 126.90000000002328,
+          "end": 825.8000000000175,
+          "duration": 698.8999999999942,
+          "transfer": 25978,
+          "encoded": 25678,
+          "decoded": 92605
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/qWtw2eLC.js",
+          "type": "other",
+          "start": 126.90000000002328,
+          "end": 992.6000000000058,
+          "duration": 865.6999999999825,
+          "transfer": 51332,
+          "encoded": 51032,
+          "decoded": 141411
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/C9aMQXoa.js",
+          "type": "other",
+          "start": 127,
+          "end": 543.9000000000233,
+          "duration": 416.9000000000233,
+          "transfer": 1396,
+          "encoded": 1096,
+          "decoded": 1771
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/67tTQn5A.js",
+          "type": "other",
+          "start": 127,
+          "end": 548.9000000000233,
+          "duration": 421.9000000000233,
+          "transfer": 984,
+          "encoded": 684,
+          "decoded": 1306
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/BsuczznR.js",
+          "type": "other",
+          "start": 127,
+          "end": 563.1000000000058,
+          "duration": 436.1000000000058,
+          "transfer": 1518,
+          "encoded": 1218,
+          "decoded": 2184
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DWRqM8-0.js",
+          "type": "other",
+          "start": 127.10000000000582,
+          "end": 546.8000000000175,
+          "duration": 419.70000000001164,
+          "transfer": 663,
+          "encoded": 363,
+          "decoded": 521
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/CRd85W-w.js",
+          "type": "other",
+          "start": 127.10000000000582,
+          "end": 547.5,
+          "duration": 420.3999999999942,
+          "transfer": 757,
+          "encoded": 457,
+          "decoded": 637
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/B5Puse2C.js",
+          "type": "other",
+          "start": 127.10000000000582,
+          "end": 550.7000000000116,
+          "duration": 423.6000000000058,
+          "transfer": 963,
+          "encoded": 663,
+          "decoded": 1020
+        },
+        {
+          "name": "https://partyprint.co.il/partyprint-logo-header.png",
+          "type": "css",
+          "start": 290.4000000000233,
+          "end": 1141.9000000000233,
+          "duration": 851.5,
+          "transfer": 73502,
+          "encoded": 73202,
+          "decoded": 73202
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/rubik-600.ttf",
+          "type": "css",
+          "start": 295.9000000000233,
+          "end": 1163,
+          "duration": 867.0999999999767,
+          "transfer": 74507,
+          "encoded": 74207,
+          "decoded": 175600
+        },
+        {
+          "name": "https://partyprint.co.il/partyprint-logo.png",
+          "type": "css",
+          "start": 300.4000000000233,
+          "end": 1191.9000000000233,
+          "duration": 891.5,
+          "transfer": 85536,
+          "encoded": 85236,
+          "decoded": 85236
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/assistant-400.ttf",
+          "type": "css",
+          "start": 301,
+          "end": 853.6000000000058,
+          "duration": 552.6000000000058,
+          "transfer": 25170,
+          "encoded": 24870,
+          "decoded": 47696
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/assistant-700.ttf",
+          "type": "css",
+          "start": 301.1000000000058,
+          "end": 855.3000000000175,
+          "duration": 554.2000000000116,
+          "transfer": 25242,
+          "encoded": 24942,
+          "decoded": 47644
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/assistant-600.ttf",
+          "type": "css",
+          "start": 301.1000000000058,
+          "end": 855.8000000000175,
+          "duration": 554.7000000000116,
+          "transfer": 25023,
+          "encoded": 24723,
+          "decoded": 47716
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/rubik-900.ttf",
+          "type": "css",
+          "start": 301.20000000001164,
+          "end": 1149.5,
+          "duration": 848.2999999999884,
+          "transfer": 69893,
+          "encoded": 69593,
+          "decoded": 175196
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 1063.1000000000058,
+          "end": 1202.2000000000116,
+          "duration": 139.10000000000582,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 1063.8000000000175,
+          "end": 1550,
+          "duration": 486.19999999998254,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 1064.3000000000175,
+          "end": 1601.7000000000116,
+          "duration": 537.3999999999942,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/api/pricing",
+          "type": "fetch",
+          "start": 1065.6000000000058,
+          "end": 1207.6000000000058,
+          "duration": 142,
+          "transfer": 454,
+          "encoded": 154,
+          "decoded": 309
+        },
+        {
+          "name": "https://partyprint.co.il/api/events",
+          "type": "fetch",
+          "start": 1066.7000000000116,
+          "end": 1092.5,
+          "duration": 25.79999999998836,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://partyprint.co.il/api/promo",
+          "type": "fetch",
+          "start": 1067.4000000000233,
+          "end": 1210.1000000000058,
+          "duration": 142.69999999998254,
+          "transfer": 376,
+          "encoded": 76,
+          "decoded": 72
+        },
+        {
+          "name": "https://partyprint.co.il/api/analytics-config",
+          "type": "fetch",
+          "start": 1068,
+          "end": 1216.7000000000116,
+          "duration": 148.70000000001164,
+          "transfer": 370,
+          "encoded": 70,
+          "decoded": 78
+        },
+        {
+          "name": "https://partyprint.co.il/family-shared-v2.webp",
+          "type": "img",
+          "start": 1103.1000000000058,
+          "end": 2015.2000000000116,
+          "duration": 912.1000000000058,
+          "transfer": 294880,
+          "encoded": 294580,
+          "decoded": 294580
+        },
+        {
+          "name": "https://www.googletagmanager.com/gtag/js",
+          "type": "script",
+          "start": 1222.7000000000116,
+          "end": 1887.9000000000233,
+          "duration": 665.2000000000116,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://connect.facebook.net/en_US/fbevents.js",
+          "type": "script",
+          "start": 1223,
+          "end": 1734.7000000000116,
+          "duration": 511.70000000001164,
+          "transfer": 115053,
+          "encoded": 114753,
+          "decoded": 437578
+        },
+        {
+          "name": "https://connect.facebook.net/signals/config/2241332043403463",
+          "type": "script",
+          "start": 1767.7000000000116,
+          "end": 2009.2000000000116,
+          "duration": 241.5,
+          "transfer": 106316,
+          "encoded": 106016,
+          "decoded": 423355
+        },
+        {
+          "name": "https://analytics.google.com/g/collect",
+          "type": "fetch",
+          "start": 1956.7000000000116,
+          "end": 1959.7000000000116,
+          "duration": 3,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://stats.g.doubleclick.net/g/collect",
+          "type": "beacon",
+          "start": 1957.4000000000233,
+          "end": 1959.8000000000175,
+          "duration": 2.3999999999941792,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://www.google.com/g/collect",
+          "type": "fetch",
+          "start": 1961.4000000000233,
+          "end": 1963.3000000000175,
+          "duration": 1.8999999999941792,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 7616.600000000006,
+          "end": 7735.600000000006,
+          "duration": 119,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/bride-shared-v2.webp",
+          "type": "img",
+          "start": 7617.200000000012,
+          "end": 7972.900000000023,
+          "duration": 355.70000000001164,
+          "transfer": 298592,
+          "encoded": 298292,
+          "decoded": 298292
+        }
+      ],
+      "hero": {
+        "src": "https://partyprint.co.il/family-shared-v2.webp",
+        "complete": true,
+        "naturalWidth": 1254,
+        "rect": {
+          "width": 706.1837158203125,
+          "height": 736.794189453125,
+          "top": 142.60293579101562
+        },
+        "opacity": "1",
+        "animation": "audienceImage, photoDrift"
+      },
+      "fonts": "loaded",
+      "lcpMs": 1624,
+      "lcpPhases": {
+        "ttfbMs": 113,
+        "resourceDelayMs": 11.900000000023283,
+        "resourceDurationMs": 1464.3999999999942,
+        "renderDelayMs": 34.69999999998254
+      },
+      "blockedRequests": 4,
+      "clientErrors": [],
+      "failedRequests": [],
+      "responseHeaders": [
+        {
+          "url": "https://partyprint.co.il/",
+          "status": 200,
+          "cacheControl": "s-maxage=31536000, stale-while-revalidate",
+          "encoding": "br",
+          "contentType": "text/html; charset=utf-8",
+          "contentLength": null
+        },
+        {
+          "url": "https://partyprint.co.il/party-crew.webp",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": null,
+          "contentType": "image/webp",
+          "contentLength": "350814"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/assistant-400.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "24870"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/assistant-700.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "24942"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/assistant-600.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "24723"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/rubik-900.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "69593"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/rubik-600.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "74207"
+        }
+      ]
+    },
+    {
+      "origin": "https://partyprint.co.il",
+      "profile": "desktop",
+      "sample": 2,
+      "release": {
+        "app": "PARTYPRINT",
+        "schemaVersion": 1,
+        "target": "node",
+        "mode": "production",
+        "builtAt": "2026-11-01T19:56:42.766Z",
+        "sourceState": "clean",
+        "sourceCommit": "290534b6a3ee927b33014f571df2cc5b094f331b",
+        "sourceFingerprint": "d8b66600c41e29998eef3d520f1386b671c769f070a826b02ad75d442151348e"
+      },
+      "network": {
+        "latencyMs": 40,
+        "downloadKbps": 10000,
+        "cpuSlowdown": 1
+      },
+      "status": 200,
+      "html": {
+        "bytes": 121288,
+        "hasInitialHero": true,
+        "preloads": []
+      },
+      "title": "PARTYPRINT | הדפסה על חולצות בעיצוב אישי",
+      "path": "/",
+      "nav": {
+        "ttfbMs": 112.69999999998254,
+        "htmlEndMs": 155.10000000000582,
+        "domContentLoadedMs": 349.5,
+        "loadMs": 2048.2999999999884,
+        "transfer": 19301,
+        "encoded": 19001,
+        "decoded": 121288
+      },
+      "lcp": [
+        {
+          "time": 376,
+          "renderTime": 376,
+          "loadTime": 0,
+          "size": 45615,
+          "url": "",
+          "element": "div.art-label"
+        },
+        {
+          "time": 884,
+          "renderTime": 884,
+          "loadTime": 0,
+          "size": 85207,
+          "url": "",
+          "element": "span."
+        },
+        {
+          "time": 1444,
+          "renderTime": 1444,
+          "loadTime": 1409.1000000000058,
+          "size": 543641,
+          "url": "https://partyprint.co.il/party-crew.webp",
+          "element": "img."
+        }
+      ],
+      "cls": 0.24174913427871042,
+      "longTasks": 1,
+      "longTaskMs": 58,
+      "heroSources": [
+        {
+          "time": 349.3999999999942,
+          "src": "https://partyprint.co.il/party-crew.webp"
+        },
+        {
+          "time": 7783.5,
+          "src": "https://partyprint.co.il/family-shared-v2.webp"
+        }
+      ],
+      "resources": [
+        {
+          "name": "https://partyprint.co.il/party-crew.webp",
+          "type": "link",
+          "start": 127.79999999998836,
+          "end": 1408.2999999999884,
+          "duration": 1280.5,
+          "transfer": 351114,
+          "encoded": 350814,
+          "decoded": 350814
+        },
+        {
+          "name": "https://partyprint.co.il/transformation.webp",
+          "type": "link",
+          "start": 128,
+          "end": 1590.8999999999942,
+          "duration": 1462.8999999999942,
+          "transfer": 345682,
+          "encoded": 345382,
+          "decoded": 345382
+        },
+        {
+          "name": "https://partyprint.co.il/statement-family-fixed.webp",
+          "type": "link",
+          "start": 128.10000000000582,
+          "end": 1247.3999999999942,
+          "duration": 1119.2999999999884,
+          "transfer": 165882,
+          "encoded": 165582,
+          "decoded": 165582
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/css/Dt0iz6q6.css",
+          "type": "link",
+          "start": 129,
+          "end": 278.1000000000058,
+          "duration": 149.10000000000582,
+          "transfer": 56270,
+          "encoded": 55970,
+          "decoded": 237483
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/css/BiIubMuT.css",
+          "type": "link",
+          "start": 129.10000000000582,
+          "end": 241.29999999998836,
+          "duration": 112.19999999998254,
+          "transfer": 7151,
+          "encoded": 6851,
+          "decoded": 24990
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/CZnInyh5.js",
+          "type": "other",
+          "start": 129.19999999998254,
+          "end": 453.3999999999942,
+          "duration": 324.20000000001164,
+          "transfer": 37826,
+          "encoded": 37526,
+          "decoded": 106026
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/4fPAi2Og.js",
+          "type": "script",
+          "start": 129.19999999998254,
+          "end": 497.1000000000058,
+          "duration": 367.9000000000233,
+          "transfer": 767,
+          "encoded": 467,
+          "decoded": 723
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/CWDLVES6.js",
+          "type": "script",
+          "start": 129.29999999998836,
+          "end": 769.2999999999884,
+          "duration": 640,
+          "transfer": 53617,
+          "encoded": 53317,
+          "decoded": 148475
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DlzHHWqi.js",
+          "type": "script",
+          "start": 129.29999999998836,
+          "end": 1149.1000000000058,
+          "duration": 1019.8000000000175,
+          "transfer": 80623,
+          "encoded": 80323,
+          "decoded": 219441
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/rCuqnO2n.js",
+          "type": "other",
+          "start": 129.39999999999418,
+          "end": 459.3999999999942,
+          "duration": 330,
+          "transfer": 647,
+          "encoded": 347,
+          "decoded": 465
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DG49dsWs.js",
+          "type": "other",
+          "start": 129.39999999999418,
+          "end": 460.3999999999942,
+          "duration": 331,
+          "transfer": 898,
+          "encoded": 598,
+          "decoded": 3327
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DW4rd5NB.js",
+          "type": "other",
+          "start": 129.39999999999418,
+          "end": 508.3999999999942,
+          "duration": 379,
+          "transfer": 2250,
+          "encoded": 1950,
+          "decoded": 4092
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/8RR5Gkam.js",
+          "type": "other",
+          "start": 129.5,
+          "end": 512.1999999999825,
+          "duration": 382.69999999998254,
+          "transfer": 408,
+          "encoded": 108,
+          "decoded": 142
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/78gKUyL1.js",
+          "type": "other",
+          "start": 129.5,
+          "end": 541.3999999999942,
+          "duration": 411.8999999999942,
+          "transfer": 4578,
+          "encoded": 4278,
+          "decoded": 9556
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DNZjMMYO.js",
+          "type": "other",
+          "start": 129.5,
+          "end": 769.1000000000058,
+          "duration": 639.6000000000058,
+          "transfer": 25978,
+          "encoded": 25678,
+          "decoded": 92605
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/67tTQn5A.js",
+          "type": "other",
+          "start": 129.60000000000582,
+          "end": 512.6999999999825,
+          "duration": 383.0999999999767,
+          "transfer": 984,
+          "encoded": 684,
+          "decoded": 1306
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/C9aMQXoa.js",
+          "type": "other",
+          "start": 129.60000000000582,
+          "end": 513.3999999999942,
+          "duration": 383.79999999998836,
+          "transfer": 1396,
+          "encoded": 1096,
+          "decoded": 1771
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/qWtw2eLC.js",
+          "type": "other",
+          "start": 129.60000000000582,
+          "end": 911.1999999999825,
+          "duration": 781.5999999999767,
+          "transfer": 51332,
+          "encoded": 51032,
+          "decoded": 141411
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DWRqM8-0.js",
+          "type": "other",
+          "start": 129.69999999998254,
+          "end": 547.6999999999825,
+          "duration": 418,
+          "transfer": 663,
+          "encoded": 363,
+          "decoded": 521
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/B5Puse2C.js",
+          "type": "other",
+          "start": 129.69999999998254,
+          "end": 550.3999999999942,
+          "duration": 420.70000000001164,
+          "transfer": 963,
+          "encoded": 663,
+          "decoded": 1020
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/BsuczznR.js",
+          "type": "other",
+          "start": 129.69999999998254,
+          "end": 563.6999999999825,
+          "duration": 434,
+          "transfer": 1518,
+          "encoded": 1218,
+          "decoded": 2184
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/CRd85W-w.js",
+          "type": "other",
+          "start": 129.79999999998836,
+          "end": 549.6000000000058,
+          "duration": 419.80000000001746,
+          "transfer": 757,
+          "encoded": 457,
+          "decoded": 637
+        },
+        {
+          "name": "https://partyprint.co.il/partyprint-logo-header.png",
+          "type": "css",
+          "start": 291.79999999998836,
+          "end": 1135,
+          "duration": 843.2000000000116,
+          "transfer": 73502,
+          "encoded": 73202,
+          "decoded": 73202
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/rubik-600.ttf",
+          "type": "css",
+          "start": 296.29999999998836,
+          "end": 1145.7999999999884,
+          "duration": 849.5,
+          "transfer": 74507,
+          "encoded": 74207,
+          "decoded": 175600
+        },
+        {
+          "name": "https://partyprint.co.il/partyprint-logo.png",
+          "type": "css",
+          "start": 300,
+          "end": 1197.6999999999825,
+          "duration": 897.6999999999825,
+          "transfer": 85536,
+          "encoded": 85236,
+          "decoded": 85236
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/assistant-400.ttf",
+          "type": "css",
+          "start": 300.6000000000058,
+          "end": 835.1000000000058,
+          "duration": 534.5,
+          "transfer": 25170,
+          "encoded": 24870,
+          "decoded": 47696
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/assistant-700.ttf",
+          "type": "css",
+          "start": 300.6000000000058,
+          "end": 845,
+          "duration": 544.3999999999942,
+          "transfer": 25242,
+          "encoded": 24942,
+          "decoded": 47644
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/assistant-600.ttf",
+          "type": "css",
+          "start": 300.69999999998254,
+          "end": 846.6000000000058,
+          "duration": 545.9000000000233,
+          "transfer": 25023,
+          "encoded": 24723,
+          "decoded": 47716
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/rubik-900.ttf",
+          "type": "css",
+          "start": 300.79999999998836,
+          "end": 1142.5,
+          "duration": 841.7000000000116,
+          "transfer": 69893,
+          "encoded": 69593,
+          "decoded": 175196
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 1226.3999999999942,
+          "end": 1359.3999999999942,
+          "duration": 133,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 1227.1000000000058,
+          "end": 1564.6999999999825,
+          "duration": 337.5999999999767,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 1227.6999999999825,
+          "end": 1565.1999999999825,
+          "duration": 337.5,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/api/pricing",
+          "type": "fetch",
+          "start": 1228.8999999999942,
+          "end": 1370,
+          "duration": 141.10000000000582,
+          "transfer": 454,
+          "encoded": 154,
+          "decoded": 309
+        },
+        {
+          "name": "https://partyprint.co.il/api/events",
+          "type": "fetch",
+          "start": 1229.6999999999825,
+          "end": 1253.6000000000058,
+          "duration": 23.900000000023283,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://partyprint.co.il/api/promo",
+          "type": "fetch",
+          "start": 1230.2999999999884,
+          "end": 1366.1999999999825,
+          "duration": 135.89999999999418,
+          "transfer": 376,
+          "encoded": 76,
+          "decoded": 72
+        },
+        {
+          "name": "https://partyprint.co.il/api/analytics-config",
+          "type": "fetch",
+          "start": 1230.6999999999825,
+          "end": 1371.8999999999942,
+          "duration": 141.20000000001164,
+          "transfer": 370,
+          "encoded": 70,
+          "decoded": 78
+        },
+        {
+          "name": "https://partyprint.co.il/family-shared-v2.webp",
+          "type": "img",
+          "start": 1266.5,
+          "end": 1998.3999999999942,
+          "duration": 731.8999999999942,
+          "transfer": 294880,
+          "encoded": 294580,
+          "decoded": 294580
+        },
+        {
+          "name": "https://www.googletagmanager.com/gtag/js",
+          "type": "script",
+          "start": 1380,
+          "end": 1890,
+          "duration": 510,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://connect.facebook.net/en_US/fbevents.js",
+          "type": "script",
+          "start": 1380.2999999999884,
+          "end": 1769.6999999999825,
+          "duration": 389.3999999999942,
+          "transfer": 115053,
+          "encoded": 114753,
+          "decoded": 437578
+        },
+        {
+          "name": "https://connect.facebook.net/signals/config/2241332043403463",
+          "type": "script",
+          "start": 1804.1000000000058,
+          "end": 2017.6999999999825,
+          "duration": 213.59999999997672,
+          "transfer": 106316,
+          "encoded": 106016,
+          "decoded": 423355
+        },
+        {
+          "name": "https://analytics.google.com/g/collect",
+          "type": "fetch",
+          "start": 1956,
+          "end": 1958.6000000000058,
+          "duration": 2.6000000000058208,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://stats.g.doubleclick.net/g/collect",
+          "type": "beacon",
+          "start": 1956.6999999999825,
+          "end": 1959,
+          "duration": 2.3000000000174623,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://www.google.com/g/collect",
+          "type": "fetch",
+          "start": 1960.1999999999825,
+          "end": 1961.7999999999884,
+          "duration": 1.6000000000058208,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 7780,
+          "end": 7895.399999999994,
+          "duration": 115.39999999999418,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/bride-shared-v2.webp",
+          "type": "img",
+          "start": 7780.399999999994,
+          "end": 8130.6999999999825,
+          "duration": 350.29999999998836,
+          "transfer": 298592,
+          "encoded": 298292,
+          "decoded": 298292
+        }
+      ],
+      "hero": {
+        "src": "https://partyprint.co.il/family-shared-v2.webp",
+        "complete": true,
+        "naturalWidth": 1254,
+        "rect": {
+          "width": 705.572509765625,
+          "height": 736.156494140625,
+          "top": 142.92178344726562
+        },
+        "opacity": "1",
+        "animation": "audienceImage, photoDrift"
+      },
+      "fonts": "loaded",
+      "lcpMs": 1444,
+      "lcpPhases": {
+        "ttfbMs": 112.69999999998254,
+        "resourceDelayMs": 15.10000000000582,
+        "resourceDurationMs": 1280.5,
+        "renderDelayMs": 35.70000000001164
+      },
+      "blockedRequests": 4,
+      "clientErrors": [],
+      "failedRequests": [],
+      "responseHeaders": [
+        {
+          "url": "https://partyprint.co.il/",
+          "status": 200,
+          "cacheControl": "s-maxage=31536000, stale-while-revalidate",
+          "encoding": "br",
+          "contentType": "text/html; charset=utf-8",
+          "contentLength": null
+        },
+        {
+          "url": "https://partyprint.co.il/party-crew.webp",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": null,
+          "contentType": "image/webp",
+          "contentLength": "350814"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/assistant-400.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "24870"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/assistant-700.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "24942"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/assistant-600.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "24723"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/rubik-900.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "69593"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/rubik-600.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "74207"
+        }
+      ]
+    },
+    {
+      "origin": "https://partyprint.co.il",
+      "profile": "desktop",
+      "sample": 3,
+      "release": {
+        "app": "PARTYPRINT",
+        "schemaVersion": 1,
+        "target": "node",
+        "mode": "production",
+        "builtAt": "2026-11-01T19:56:42.766Z",
+        "sourceState": "clean",
+        "sourceCommit": "290534b6a3ee927b33014f571df2cc5b094f331b",
+        "sourceFingerprint": "d8b66600c41e29998eef3d520f1386b671c769f070a826b02ad75d442151348e"
+      },
+      "network": {
+        "latencyMs": 40,
+        "downloadKbps": 10000,
+        "cpuSlowdown": 1
+      },
+      "status": 200,
+      "html": {
+        "bytes": 121288,
+        "hasInitialHero": true,
+        "preloads": []
+      },
+      "title": "PARTYPRINT | הדפסה על חולצות בעיצוב אישי",
+      "path": "/",
+      "nav": {
+        "ttfbMs": 325.30000000001746,
+        "htmlEndMs": 368.1000000000058,
+        "domContentLoadedMs": 584.6000000000058,
+        "loadMs": 2255.8000000000175,
+        "transfer": 19301,
+        "encoded": 19001,
+        "decoded": 121288
+      },
+      "lcp": [
+        {
+          "time": 612,
+          "renderTime": 612,
+          "loadTime": 0,
+          "size": 45615,
+          "url": "",
+          "element": "div.art-label"
+        },
+        {
+          "time": 1020,
+          "renderTime": 1020,
+          "loadTime": 0,
+          "size": 67228,
+          "url": "",
+          "element": "span."
+        },
+        {
+          "time": 1892,
+          "renderTime": 1892,
+          "loadTime": 1853.1000000000058,
+          "size": 543641,
+          "url": "https://partyprint.co.il/party-crew.webp",
+          "element": "img."
+        }
+      ],
+      "cls": 0.24184727174384232,
+      "longTasks": 1,
+      "longTaskMs": 82,
+      "heroSources": [
+        {
+          "time": 584.6000000000058,
+          "src": "https://partyprint.co.il/party-crew.webp"
+        },
+        {
+          "time": 7806,
+          "src": "https://partyprint.co.il/family-shared-v2.webp"
+        }
+      ],
+      "resources": [
+        {
+          "name": "https://partyprint.co.il/party-crew.webp",
+          "type": "link",
+          "start": 338.1000000000058,
+          "end": 1852,
+          "duration": 1513.8999999999942,
+          "transfer": 351114,
+          "encoded": 350814,
+          "decoded": 350814
+        },
+        {
+          "name": "https://partyprint.co.il/statement-family-fixed.webp",
+          "type": "link",
+          "start": 338.4000000000233,
+          "end": 1505.8000000000175,
+          "duration": 1167.3999999999942,
+          "transfer": 165882,
+          "encoded": 165582,
+          "decoded": 165582
+        },
+        {
+          "name": "https://partyprint.co.il/transformation.webp",
+          "type": "link",
+          "start": 338.4000000000233,
+          "end": 2062.2000000000116,
+          "duration": 1723.7999999999884,
+          "transfer": 345682,
+          "encoded": 345382,
+          "decoded": 345382
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/css/Dt0iz6q6.css",
+          "type": "link",
+          "start": 339.30000000001746,
+          "end": 485.5,
+          "duration": 146.19999999998254,
+          "transfer": 56270,
+          "encoded": 55970,
+          "decoded": 237483
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/css/BiIubMuT.css",
+          "type": "link",
+          "start": 339.4000000000233,
+          "end": 452.1000000000058,
+          "duration": 112.69999999998254,
+          "transfer": 7151,
+          "encoded": 6851,
+          "decoded": 24990
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/4fPAi2Og.js",
+          "type": "script",
+          "start": 339.5,
+          "end": 537.5,
+          "duration": 198,
+          "transfer": 767,
+          "encoded": 467,
+          "decoded": 723
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/CZnInyh5.js",
+          "type": "other",
+          "start": 339.5,
+          "end": 772,
+          "duration": 432.5,
+          "transfer": 37826,
+          "encoded": 37526,
+          "decoded": 106026
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DG49dsWs.js",
+          "type": "other",
+          "start": 339.6000000000058,
+          "end": 646,
+          "duration": 306.3999999999942,
+          "transfer": 898,
+          "encoded": 598,
+          "decoded": 3327
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/CWDLVES6.js",
+          "type": "script",
+          "start": 339.6000000000058,
+          "end": 1131.3000000000175,
+          "duration": 791.7000000000116,
+          "transfer": 53617,
+          "encoded": 53317,
+          "decoded": 148475
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DlzHHWqi.js",
+          "type": "script",
+          "start": 339.6000000000058,
+          "end": 1162.5,
+          "duration": 822.8999999999942,
+          "transfer": 80623,
+          "encoded": 80323,
+          "decoded": 219441
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/rCuqnO2n.js",
+          "type": "other",
+          "start": 339.70000000001164,
+          "end": 646.6000000000058,
+          "duration": 306.8999999999942,
+          "transfer": 647,
+          "encoded": 347,
+          "decoded": 465
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DW4rd5NB.js",
+          "type": "other",
+          "start": 339.80000000001746,
+          "end": 660.9000000000233,
+          "duration": 321.1000000000058,
+          "transfer": 2250,
+          "encoded": 1950,
+          "decoded": 4092
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/78gKUyL1.js",
+          "type": "other",
+          "start": 339.80000000001746,
+          "end": 691.8000000000175,
+          "duration": 352,
+          "transfer": 4578,
+          "encoded": 4278,
+          "decoded": 9556
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/8RR5Gkam.js",
+          "type": "other",
+          "start": 339.9000000000233,
+          "end": 651.1000000000058,
+          "duration": 311.19999999998254,
+          "transfer": 408,
+          "encoded": 108,
+          "decoded": 142
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/C9aMQXoa.js",
+          "type": "other",
+          "start": 339.9000000000233,
+          "end": 684.7000000000116,
+          "duration": 344.79999999998836,
+          "transfer": 1396,
+          "encoded": 1096,
+          "decoded": 1771
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DNZjMMYO.js",
+          "type": "other",
+          "start": 339.9000000000233,
+          "end": 937.7000000000116,
+          "duration": 597.7999999999884,
+          "transfer": 25978,
+          "encoded": 25678,
+          "decoded": 92605
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/qWtw2eLC.js",
+          "type": "other",
+          "start": 339.9000000000233,
+          "end": 1148.9000000000233,
+          "duration": 809,
+          "transfer": 51332,
+          "encoded": 51032,
+          "decoded": 141411
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/67tTQn5A.js",
+          "type": "other",
+          "start": 340,
+          "end": 685.3000000000175,
+          "duration": 345.30000000001746,
+          "transfer": 984,
+          "encoded": 684,
+          "decoded": 1306
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/CRd85W-w.js",
+          "type": "other",
+          "start": 340.1000000000058,
+          "end": 687.9000000000233,
+          "duration": 347.80000000001746,
+          "transfer": 757,
+          "encoded": 457,
+          "decoded": 637
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/DWRqM8-0.js",
+          "type": "other",
+          "start": 340.1000000000058,
+          "end": 689.6000000000058,
+          "duration": 349.5,
+          "transfer": 663,
+          "encoded": 363,
+          "decoded": 521
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/B5Puse2C.js",
+          "type": "other",
+          "start": 340.1000000000058,
+          "end": 690,
+          "duration": 349.8999999999942,
+          "transfer": 963,
+          "encoded": 663,
+          "decoded": 1020
+        },
+        {
+          "name": "https://partyprint.co.il/_next/static/chunks/BsuczznR.js",
+          "type": "other",
+          "start": 340.1000000000058,
+          "end": 706.6000000000058,
+          "duration": 366.5,
+          "transfer": 1518,
+          "encoded": 1218,
+          "decoded": 2184
+        },
+        {
+          "name": "https://partyprint.co.il/partyprint-logo-header.png",
+          "type": "css",
+          "start": 502.80000000001746,
+          "end": 1301.2000000000116,
+          "duration": 798.3999999999942,
+          "transfer": 73502,
+          "encoded": 73202,
+          "decoded": 73202
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/rubik-600.ttf",
+          "type": "css",
+          "start": 507.70000000001164,
+          "end": 1298.4000000000233,
+          "duration": 790.7000000000116,
+          "transfer": 74507,
+          "encoded": 74207,
+          "decoded": 175600
+        },
+        {
+          "name": "https://partyprint.co.il/partyprint-logo.png",
+          "type": "css",
+          "start": 512.8000000000175,
+          "end": 1346,
+          "duration": 833.1999999999825,
+          "transfer": 85536,
+          "encoded": 85236,
+          "decoded": 85236
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/assistant-400.ttf",
+          "type": "css",
+          "start": 513.9000000000233,
+          "end": 962.9000000000233,
+          "duration": 449,
+          "transfer": 25170,
+          "encoded": 24870,
+          "decoded": 47696
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/assistant-700.ttf",
+          "type": "css",
+          "start": 514.1000000000058,
+          "end": 963.3000000000175,
+          "duration": 449.20000000001164,
+          "transfer": 25242,
+          "encoded": 24942,
+          "decoded": 47644
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/assistant-600.ttf",
+          "type": "css",
+          "start": 514.2000000000116,
+          "end": 968.6000000000058,
+          "duration": 454.3999999999942,
+          "transfer": 25023,
+          "encoded": 24723,
+          "decoded": 47716
+        },
+        {
+          "name": "https://partyprint.co.il/fonts/rubik-900.ttf",
+          "type": "css",
+          "start": 514.4000000000233,
+          "end": 1292.2000000000116,
+          "duration": 777.7999999999884,
+          "transfer": 69893,
+          "encoded": 69593,
+          "decoded": 175196
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 1245.6000000000058,
+          "end": 1412.8000000000175,
+          "duration": 167.20000000001164,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 1246.3000000000175,
+          "end": 1612.1000000000058,
+          "duration": 365.79999999998836,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 1247,
+          "end": 1589.5,
+          "duration": 342.5,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/api/pricing",
+          "type": "fetch",
+          "start": 1248.2000000000116,
+          "end": 1405.7000000000116,
+          "duration": 157.5,
+          "transfer": 454,
+          "encoded": 154,
+          "decoded": 309
+        },
+        {
+          "name": "https://partyprint.co.il/api/events",
+          "type": "fetch",
+          "start": 1249.2000000000116,
+          "end": 1277.4000000000233,
+          "duration": 28.20000000001164,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://partyprint.co.il/api/promo",
+          "type": "fetch",
+          "start": 1249.8000000000175,
+          "end": 1406.2000000000116,
+          "duration": 156.39999999999418,
+          "transfer": 376,
+          "encoded": 76,
+          "decoded": 72
+        },
+        {
+          "name": "https://partyprint.co.il/api/analytics-config",
+          "type": "fetch",
+          "start": 1250.3000000000175,
+          "end": 1410.4000000000233,
+          "duration": 160.10000000000582,
+          "transfer": 370,
+          "encoded": 70,
+          "decoded": 78
+        },
+        {
+          "name": "https://partyprint.co.il/family-shared-v2.webp",
+          "type": "img",
+          "start": 1288,
+          "end": 2216.8000000000175,
+          "duration": 928.8000000000175,
+          "transfer": 294880,
+          "encoded": 294580,
+          "decoded": 294580
+        },
+        {
+          "name": "https://www.googletagmanager.com/gtag/js",
+          "type": "script",
+          "start": 1422.1000000000058,
+          "end": 2119.3000000000175,
+          "duration": 697.2000000000116,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://connect.facebook.net/en_US/fbevents.js",
+          "type": "script",
+          "start": 1422.4000000000233,
+          "end": 1945.2000000000116,
+          "duration": 522.7999999999884,
+          "transfer": 115053,
+          "encoded": 114753,
+          "decoded": 437578
+        },
+        {
+          "name": "https://connect.facebook.net/signals/config/2241332043403463",
+          "type": "script",
+          "start": 1978.4000000000233,
+          "end": 2225.8000000000175,
+          "duration": 247.39999999999418,
+          "transfer": 106316,
+          "encoded": 106016,
+          "decoded": 423355
+        },
+        {
+          "name": "https://analytics.google.com/g/collect",
+          "type": "fetch",
+          "start": 2189.600000000006,
+          "end": 2192.5,
+          "duration": 2.8999999999941792,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://stats.g.doubleclick.net/g/collect",
+          "type": "beacon",
+          "start": 2190.3000000000175,
+          "end": 2192.9000000000233,
+          "duration": 2.6000000000058208,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://www.google.com/g/collect",
+          "type": "fetch",
+          "start": 2194.100000000006,
+          "end": 2195.600000000006,
+          "duration": 1.5,
+          "transfer": 0,
+          "encoded": 0,
+          "decoded": 0
+        },
+        {
+          "name": "https://partyprint.co.il/api/content",
+          "type": "fetch",
+          "start": 7802.5,
+          "end": 7921.200000000012,
+          "duration": 118.70000000001164,
+          "transfer": 348,
+          "encoded": 48,
+          "decoded": 41
+        },
+        {
+          "name": "https://partyprint.co.il/bride-shared-v2.webp",
+          "type": "img",
+          "start": 7802.900000000023,
+          "end": 8094.400000000023,
+          "duration": 291.5,
+          "transfer": 298592,
+          "encoded": 298292,
+          "decoded": 298292
+        }
+      ],
+      "hero": {
+        "src": "https://partyprint.co.il/family-shared-v2.webp",
+        "complete": true,
+        "naturalWidth": 1254,
+        "rect": {
+          "width": 705.5130615234375,
+          "height": 736.0943603515625,
+          "top": 142.95281982421875
+        },
+        "opacity": "1",
+        "animation": "audienceImage, photoDrift"
+      },
+      "fonts": "loaded",
+      "lcpMs": 1892,
+      "lcpPhases": {
+        "ttfbMs": 325.30000000001746,
+        "resourceDelayMs": 12.799999999988358,
+        "resourceDurationMs": 1513.8999999999942,
+        "renderDelayMs": 40
+      },
+      "blockedRequests": 4,
+      "clientErrors": [],
+      "failedRequests": [],
+      "responseHeaders": [
+        {
+          "url": "https://partyprint.co.il/",
+          "status": 200,
+          "cacheControl": "s-maxage=31536000, stale-while-revalidate",
+          "encoding": "br",
+          "contentType": "text/html; charset=utf-8",
+          "contentLength": null
+        },
+        {
+          "url": "https://partyprint.co.il/party-crew.webp",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": null,
+          "contentType": "image/webp",
+          "contentLength": "350814"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/assistant-400.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "24870"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/assistant-700.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "24942"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/assistant-600.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "24723"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/rubik-900.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "69593"
+        },
+        {
+          "url": "https://partyprint.co.il/fonts/rubik-600.ttf",
+          "status": 200,
+          "cacheControl": null,
+          "encoding": "br",
+          "contentType": "application/x-font-ttf",
+          "contentLength": "74207"
+        }
+      ]
+    }
+  ],
+  "summary": [
+    {
+      "origin": "https://partyprint.co.il",
+      "profile": "mobile",
+      "samples": 3,
+      "medianLcpMs": 10372,
+      "minLcpMs": 10196,
+      "maxLcpMs": 10400,
+      "errors": 0
+    },
+    {
+      "origin": "https://partyprint.co.il",
+      "profile": "desktop",
+      "samples": 3,
+      "medianLcpMs": 1624,
+      "minLcpMs": 1444,
+      "maxLcpMs": 1892,
+      "errors": 0
+    }
+  ]
+}

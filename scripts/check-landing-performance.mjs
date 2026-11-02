@@ -44,7 +44,7 @@ try{
      new PerformanceObserver(list=>{for(const e of list.getEntries())if(!e.hadRecentInput)state.cls+=e.value}).observe({type:'layout-shift',buffered:true});
      new PerformanceObserver(list=>{for(const e of list.getEntries()){state.longTasks++;state.longTaskMs+=e.duration}}).observe({type:'longtask',buffered:true});
      document.addEventListener('DOMContentLoaded',()=>{
-      const add=()=>{const hero=document.querySelector('.hero-art>img');if(hero)state.heroSources.push({time:performance.now(),src:hero.currentSrc||hero.src})};add();
+      const add=()=>{const hero=document.querySelector('.hero-art img');if(hero)state.heroSources.push({time:performance.now(),src:hero.currentSrc||hero.src})};add();
       new MutationObserver(add).observe(document.querySelector('.hero-art')||document.body,{childList:true,attributes:true,subtree:true,attributeFilter:['src','srcset']});
      });
     });
@@ -61,9 +61,9 @@ try{
      const measurements=await page.evaluate(()=>{
       const nav=performance.getEntriesByType('navigation')[0];
       const resources=performance.getEntriesByType('resource').map(r=>({name:r.name,type:r.initiatorType,start:r.startTime,end:r.responseEnd,duration:r.duration,transfer:r.transferSize,encoded:r.encodedBodySize,decoded:r.decodedBodySize}));
-      const image=document.querySelector('.hero-art>img');
+      const image=document.querySelector('.hero-art img');
       const rect=image?.getBoundingClientRect();
-      return {title:document.title,path:location.pathname,nav:{ttfbMs:nav.responseStart,htmlEndMs:nav.responseEnd,domContentLoadedMs:nav.domContentLoadedEventEnd,loadMs:nav.loadEventEnd,transfer:nav.transferSize,encoded:nav.encodedBodySize,decoded:nav.decodedBodySize},...window.__landingPerf,resources,hero:image?{src:image.currentSrc||image.src,complete:image.complete,naturalWidth:image.naturalWidth,rect:{width:rect.width,height:rect.height,top:rect.top},opacity:getComputedStyle(image).opacity,animation:getComputedStyle(image).animationName}:null,fonts:document.fonts.status};
+      return {title:document.title,path:location.pathname,nav:{ttfbMs:nav.responseStart,htmlEndMs:nav.responseEnd,domContentLoadedMs:nav.domContentLoadedEventEnd,loadMs:nav.loadEventEnd,transfer:nav.transferSize,encoded:nav.encodedBodySize,decoded:nav.decodedBodySize},...window.__landingPerf,resources,hero:image?{src:image.currentSrc||image.src,complete:image.complete,naturalWidth:image.naturalWidth,rect:{width:rect.width,height:rect.height,top:rect.top},opacity:getComputedStyle(image).opacity,animation:getComputedStyle(image).animationName}:null,fonts:document.fonts.status,preloadLinks:[...document.querySelectorAll('link[rel="preload"]')].map(x=>({as:x.as,type:x.type,href:x.getAttribute('href'),srcset:x.getAttribute('imagesrcset'),priority:x.fetchPriority}))};
      });
      const lcp=measurements.lcp.at(-1);
      const resource=measurements.resources.find(x=>x.name===lcp?.url);
@@ -73,6 +73,26 @@ try{
      result.heroSources=result.heroSources.map(x=>({...x,src:safe(x.src)}));
      if(result.hero)result.hero.src=safe(result.hero.src);
     }catch(e){result.error=e.message.slice(0,500)}
+    if(process.env.PERF_EXPECT_OPTIMIZED==='1'&&!result.error){
+     result.optimizedChecks=[];
+     const check=(condition,message)=>{if(!condition)throw new Error(message);result.optimizedChecks.push(message)};
+     try{
+      check(/\/landing\/party-crew-(640|960|1254)\.(avif|webp)$/.test(result.hero?.src||''),'Responsive hero selected');
+      check(result.hero?.complete&&result.hero.naturalWidth>0,'Hero decoded successfully');
+      check(new Set(result.heroSources.map(x=>x.src)).size===1,'Opening audience stays stable for 12 seconds');
+      check(!result.resources.some(x=>/\/statement-family-fixed\.webp/.test(x.name)),'Distant statement artwork deferred');
+      check(!result.resources.some(x=>/\/fonts\/.*\.ttf$/.test(x.name)),'WOFF2 fonts used');
+      check(result.cls<=0.1,'Lab CLS within 0.1');
+      if(sample===1){
+       const jpeg=await page.screenshot({type:'jpeg',quality:55});console.log('LANDING_SCREENSHOT_'+profile.name.toUpperCase()+' '+jpeg.toString('base64'));
+       for(let i=0;i<5;i++){
+        await page.locator('.hero .audience-options label').nth(i).click();
+        await page.waitForFunction(()=>{const image=document.querySelector('.hero-art img');return image?.complete&&image.naturalWidth>0});
+        check((await page.locator('.hero').getAttribute('class')).includes(['audience-family','audience-bride','audience-groom','audience-team','audience-custom'][i]),'Manual audience '+i+' responds');
+       }
+      }
+     }catch(e){result.error=e.message.slice(0,300)}
+    }
     result.blockedRequests=blocked;result.clientErrors=errors;result.failedRequests=failed;result.responseHeaders=headers;
     report.results.push(result);
     console.log('SAMPLE '+JSON.stringify({origin,profile:profile.name,sample,lcpMs:result.lcpMs,lcp:result.lcp?.at(-1),phases:result.lcpPhases,nav:result.nav,hero:result.hero,longTasks:result.longTaskMs,error:result.error}));
@@ -86,6 +106,6 @@ report.summary=origins.flatMap(origin=>profiles.map(p=>{
  const times=runs.map(x=>x.lcpMs).filter(Number.isFinite).sort((a,b)=>a-b);
  return {origin,profile:p.name,samples:times.length,medianLcpMs:times.length?times[Math.floor(times.length/2)]:null,minLcpMs:times[0],maxLcpMs:times.at(-1),errors:runs.filter(x=>x.error).length};
 }));
-mkdirSync('artifacts',{recursive:true});writeFileSync('artifacts/landing-performance.json',JSON.stringify(report,null,2));
+mkdirSync('artifacts',{recursive:true});writeFileSync(process.env.PERF_OUTPUT||'artifacts/landing-performance.json',JSON.stringify(report,null,2));
 console.log('LANDING_REPORT '+JSON.stringify(report));
 if(report.results.some(x=>x.error||x.status!==200||!x.lcpMs))process.exitCode=1;

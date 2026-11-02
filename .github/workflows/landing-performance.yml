@@ -1,12 +1,42 @@
 name: Landing performance laboratory
 on:
-  push:
-    branches: ['codex/landing-lcp-2026-11-02']
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'components/**'
+      - 'public/landing/**'
+      - 'public/fonts/**'
+      - 'scripts/check-landing-*.mjs'
+      - '.github/workflows/landing-performance.yml'
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
-  baseline:
+  candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.1'
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - run: npm install --prefix /tmp/partyprint-browser --no-save --package-lock=false --ignore-scripts playwright@1.64.1
+      - run: /tmp/partyprint-browser/node_modules/.bin/playwright install --with-deps chromium
+      - run: node scripts/check-landing-build.mjs
+        env:
+          PERF_SAMPLES: '3'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: landing-performance-candidate
+          path: artifacts/landing-performance.json
+          if-no-files-found: error
+  production:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -20,64 +50,10 @@ jobs:
       - run: /tmp/partyprint-browser/node_modules/.bin/playwright install --with-deps chromium
       - run: node scripts/check-landing-performance.mjs
         env:
-          PERF_ORIGINS: https://partyprint.co.il
           PERF_SAMPLES: '3'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: landing-performance
+          name: landing-performance-production
           path: artifacts/landing-performance.json
           if-no-files-found: error
-
-  prepare-assets:
-    if: github.ref == 'refs/heads/codex/landing-lcp-2026-11-02'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24.22.1'
-      - name: Install isolated asset tools
-        run: |
-          npm install --prefix /tmp/partyprint-assets --no-save --package-lock=false --ignore-scripts sharp@0.35.5
-          python -m venv /tmp/partyprint-fonts
-          /tmp/partyprint-fonts/bin/pip install 'fonttools[woff]'
-      - name: Convert original artwork and fonts
-        run: |
-          node scripts/prepare-landing-assets.mjs
-          /tmp/partyprint-fonts/bin/python scripts/prepare-landing-fonts.py
-      - name: Commit generated assets to this feature branch only
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const crypto = require('crypto');
-            const owner = context.repo.owner, repo = context.repo.repo;
-            const branch = 'codex/landing-lcp-2026-11-02';
-            if (context.ref !== 'refs/heads/'+branch) throw new Error('Unexpected branch');
-            const ref = await github.rest.git.getRef({owner, repo, ref:'heads/'+branch});
-            if (ref.data.object.sha !== context.sha) throw new Error('Branch advanced; do not overwrite');
-            const paths = [
-              ...fs.readdirSync('public/landing').filter(x=>/^(party-crew|family-shared-v2|bride-shared-v2|groom-shared-v2|tech-team)-\d+\.(webp|avif)$|^logo(-header)?\.webp$|^(asset|font)-report\.json$/.test(x)).map(x=>'public/landing/'+x),
-              ...fs.readdirSync('public/fonts').filter(x=>/^(assistant-(400|600|700)|rubik-(400|600|900))\.woff2$/.test(x)).map(x=>'public/fonts/'+x)
-            ].sort();
-            if (paths.length !== 40) throw new Error('Unexpected generated asset count: '+paths.length);
-            const entries=[];
-            for(const path of paths){
-              const data=fs.readFileSync(path);
-              const blob=await github.rest.git.createBlob({owner,repo,content:data.toString('base64'),encoding:'base64'});
-              entries.push({path,mode:'100644',type:'blob',sha:blob.data.sha});
-            }
-            const parent=await github.rest.git.getCommit({owner,repo,commit_sha:context.sha});
-            const tree=await github.rest.git.createTree({owner,repo,base_tree:parent.data.tree.sha,tree:entries});
-            if(tree.data.sha===parent.data.tree.sha){console.log('Assets unchanged');return}
-            const commit=await github.rest.git.createCommit({owner,repo,message:'perf: add responsive WebP artwork and lossless WOFF2 font containers',tree:tree.data.sha,parents:[context.sha]});
-            const current=await github.rest.git.getRef({owner,repo,ref:'heads/'+branch});
-            if(current.data.object.sha!==context.sha)throw new Error('Branch advanced before update');
-            await github.rest.git.updateRef({owner,repo,ref:'heads/'+branch,sha:commit.data.sha,force:false});
-            console.log('ASSET_COMMIT '+commit.data.sha);

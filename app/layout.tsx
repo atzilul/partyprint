@@ -51,6 +51,7 @@ export default function RootLayout({
   };
   return (
     <html lang="he" dir="rtl">
+      <head><link rel="preload" href="/fonts/rubik-900.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/><link rel="preload" href="/fonts/assistant-400.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/></head>
       <body className="antialiased">{children}<LaunchOffer/><SiteSeoFooter/><AnalyticsConsent/><script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(structuredData).replace(/</g, "\\u003c")}}/></body>
     </html>
   );
