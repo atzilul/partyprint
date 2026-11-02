@@ -316,3 +316,6 @@ button,a,input,select,textarea,summary{touch-action:manipulation}
 /* Critical landing content is visible immediately; event changes are explicit. */
 .hero-picture{display:contents}
 .hero .hero-art img,.hero .audience-copy,.hero-copy>*,.hero h1 span{animation:none!important;opacity:1}
+
+/* Clipping must not create scroll containers that shift during hydration. */
+.hero{overflow:clip}
