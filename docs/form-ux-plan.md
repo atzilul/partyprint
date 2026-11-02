@@ -66,3 +66,19 @@ PR24 merged abe3cf9cad998f5e25d2c27d76bb503f6e67ff8b. Final candidate fingerprin
 [Performance candidate](https://github.com/atzilul/partyprint/actions/runs/41437000670/job/125249177036):3 samples each, mobile median1.460s (1.440–1.496), desktop0.360s (0.348–0.372),6 functional sample passes. Laboratory results only.
 
 Public form checks and the exact Hostinger terminal receipt remain separate until recorded below. This copy follow-up makes FAQ/guide/AI briefs consistent about optional sizing before and after saving; it does not alter interaction logic.
+
+## Public functional acceptance
+
+[Public browser/price checks](https://github.com/atzilul/partyprint/actions/runs/41437531054/job/125252597083), 11:36–11:37 UTC: clean abe3cf9cad998f5e25d2c27d76bb503f6e67ff8b and matching de4237d8 fingerprint. Order22/22/22/20/20, quantity19/19, UX24/27/24/24/24, media20/20, measurement21/20/22/4 passed. This includes child18/gray chosen before sending, saved in the synthetic payload and still editable afterward; modal Escape/defer, all age options, current server quantity, bulk/Undo and409 preserved drafts. All browser order/tracking writes and vendor sends are intercepted. Actual backend persistence and admin edits were tested separately with isolated real-route SQLite/bucket fixtures.
+
+[Public performance](https://github.com/atzilul/partyprint/actions/runs/41437530930/job/125251975574):3 samples per profile, mobile median1.564s (1.564–1.664), desktop0.420s (0.396–0.444),6/6 sample passes, same source fingerprint. Laboratory only, not field or measured conversion uplift. Public read-only pricing quote remained440−44=396 (10%) and single180; no coupon was redeemed.
+
+Source implementation and this documentation do not prove the exact hPanel terminal deployment receipt, Sites synchronization, Resend domain/inbox delivery or external analytics-account settings. Sites remains version28 and the local source executor is disconnected. No project was duplicated, no paid service or background schedule was created, and no real test order/email was sent. Known16 moderate development advisories/0 production vulnerabilities remain a separate existing task.
+
+## Final copy and public-source acceptance
+
+PR25 merged89fc6a4b93db3e5d5c0363cf26e2321bf4efe75a. [Final public QA](https://github.com/atzilul/partyprint/actions/runs/41438498852/job/125255470530), 11:42:34–11:43:57 UTC: clean89fc6a4 and fingerprint59ccc6f8b275cf8c81e20e4dbccb5805009186df3d0678f2325ea54a087615a3 matched the tested candidate. All order/quantity/UX/measurement/media checks passed with the same counts as above. The first attempt correctly recorded waiting_for_matching_deployment and was not counted as acceptance; the completed job was retried against matching source.
+
+[Final public performance](https://github.com/atzilul/partyprint/actions/runs/41438498688/job/125255243997):3 samples per profile, mobile median1.636s (1.584–1.832), desktop0.416s (0.408–0.460),6 sample passes, same final clean source. This is not field or conversion evidence. The public source and behavior are verified; formal hPanel receipt remains unverified. Sites was read again and remains active version28; the disconnected executor prevents safe packaging/sync. Resend and external account settings are unchanged/unverified.
+
+Component design review: preserved brand fonts/color roles, no page-wide redesign or production deletion. The isolated stylesheet and state preview include default/hover/focus/active/disabled/loading/error/success; rendered text/focus and selected size controls meet the measured contrast thresholds. Pre-emit critique P4/H5/E4/S5/R5/V4; component-applicable accessibility/contrast/microinteraction gates checked. Page macrostructure/nav/footer diversification is outside this component scope. No claim that the whole older marketing site passed a new design audit.
