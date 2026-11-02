@@ -51,6 +51,7 @@ jobs:
       - run: node scripts/check-landing-performance.mjs
         env:
           PERF_SAMPLES: '3'
+          PERF_EXPECT_OPTIMIZED: auto
       - uses: actions/upload-artifact@v4
         if: always()
         with:

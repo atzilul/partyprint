@@ -1,6 +1,7 @@
 // Read-only, cold-context laboratory probe; no order or analytics writes.
 import {createRequire} from 'node:module';
 import {mkdirSync,writeFileSync} from 'node:fs';
+import {createBuildIdentity} from './build-identity.mjs';
 const require=createRequire((process.env.PARTYPRINT_PLAYWRIGHT_ROOT||'/tmp/partyprint-browser')+'/package.json');
 const {chromium}=require('playwright');
 const origins=(process.env.PERF_ORIGINS||'https://partyprint.co.il').split(',');
@@ -13,11 +14,13 @@ const profiles=[
  {name:'desktop',viewport:{width:1366,height:900},isMobile:false,deviceScaleFactor:1,cpu:1,latency:40,download:10000000/8,upload:5000000/8},
 ];
 const safe=u=>{try{const x=new URL(u);return x.origin+x.pathname}catch{return ''}};
+const expectedIdentity=createBuildIdentity();
 const browser=await chromium.launch({headless:true});
-const report={kind:'landing-performance-lab',checkedAt:new Date().toISOString(),browser:browser.version(),samplesPerProfile:samples,observationMs:12000,cache:'fresh browser context, HTTP cache disabled; upstream cache not purged',transport:process.env.PERF_SERVER_PROFILE||'public origin',runner:process.env.RUNNER_OS||'unknown',thirdParty:'Vendor scripts allowed; all non-GET and measurement collection requests blocked',fieldData:null,results:[]};
+const report={kind:'landing-performance-lab',checkedAt:new Date().toISOString(),browser:browser.version(),samplesPerProfile:samples,observationMs:12000,cache:'fresh browser context, HTTP cache disabled; upstream cache not purged',transport:process.env.PERF_SERVER_PROFILE||'public origin',runner:process.env.RUNNER_OS||'unknown',thirdParty:'Vendor scripts allowed; all non-GET and measurement collection requests blocked',fieldData:null,expectedSourceFingerprint:expectedIdentity.sourceFingerprint,clsDefinition:'largest session window (gap <1s, duration <5s); initial 12-second observation only',results:[]};
 try{
  for(const origin of origins){
   let release=null;try{const r=await fetch(origin+'/api/release',{signal:AbortSignal.timeout(20000)});if(r.ok)release=await r.json()}catch{}
+  const optimized=process.env.PERF_EXPECT_OPTIMIZED==='1'||(process.env.PERF_EXPECT_OPTIMIZED==='auto'&&release?.sourceState==='clean'&&release.sourceFingerprint===expectedIdentity.sourceFingerprint);
   for(const profile of profiles){
    for(let sample=1;sample<=samples;sample++){
     const context=await browser.newContext({viewport:profile.viewport,deviceScaleFactor:profile.deviceScaleFactor,isMobile:profile.isMobile,locale:'he-IL',timezoneId:'Asia/Jerusalem',reducedMotion:'no-preference',serviceWorkers:'block'});
@@ -40,8 +43,9 @@ try{
     await page.addInitScript(()=>{
      window.__landingPerf={lcp:[],cls:0,shifts:[],longTasks:0,longTaskMs:0,heroSources:[]};
      const state=window.__landingPerf;
+     let sessionFirst=0,sessionLast=0,sessionValue=0;
      new PerformanceObserver(list=>{for(const e of list.getEntries())state.lcp.push({time:e.startTime,renderTime:e.renderTime,loadTime:e.loadTime,size:e.size,url:e.url,element:e.element?e.element.tagName.toLowerCase()+'.'+String(e.element.className||'').slice(0,100):null})}).observe({type:'largest-contentful-paint',buffered:true});
-     new PerformanceObserver(list=>{for(const e of list.getEntries())if(!e.hadRecentInput){state.cls+=e.value;state.shifts.push({time:e.startTime,value:e.value,sources:(e.sources||[]).map(x=>({element:x.node?x.node.nodeName+'.'+String(x.node.className||'').slice(0,100):null,previous:x.previousRect,current:x.currentRect}))})}}).observe({type:'layout-shift',buffered:true});
+     new PerformanceObserver(list=>{for(const e of list.getEntries())if(!e.hadRecentInput){if(sessionValue&&e.startTime-sessionLast<1000&&e.startTime-sessionFirst<5000){sessionValue+=e.value}else{sessionFirst=e.startTime;sessionValue=e.value}sessionLast=e.startTime;state.cls=Math.max(state.cls,sessionValue);state.shifts.push({time:e.startTime,value:e.value,sources:(e.sources||[]).map(x=>({element:x.node?x.node.nodeName+'.'+String(x.node.className||'').slice(0,100):null,previous:x.previousRect,current:x.currentRect}))})}}).observe({type:'layout-shift',buffered:true});
      new PerformanceObserver(list=>{for(const e of list.getEntries()){state.longTasks++;state.longTaskMs+=e.duration}}).observe({type:'longtask',buffered:true});
      document.addEventListener('DOMContentLoaded',()=>{
       const add=()=>{const hero=document.querySelector('.hero-art img');if(hero)state.heroSources.push({time:performance.now(),src:hero.currentSrc||hero.src})};add();
@@ -73,7 +77,8 @@ try{
      result.heroSources=result.heroSources.map(x=>({...x,src:safe(x.src)}));
      if(result.hero)result.hero.src=safe(result.hero.src);
     }catch(e){result.error=e.message.slice(0,500)}
-    if(process.env.PERF_EXPECT_OPTIMIZED==='1'&&!result.error){
+    result.featureValidation=optimized?'pending':'waiting_for_matching_deployment';
+    if(optimized&&!result.error){
      result.optimizedChecks=[];
      const check=(condition,message)=>{if(!condition)throw new Error(message);result.optimizedChecks.push(message)};
      try{
@@ -95,8 +100,8 @@ try{
        await page.waitForFunction(()=>{const image=document.querySelector('.hero-art img');return image?.complete&&image.naturalWidth>0&&image.currentSrc.endsWith('.webp')});
        check((await page.locator('.hero-art img').getAttribute('src')).includes('/landing/'),'WebP fallback decodes when AVIF is disabled');
       }
-      check(errors.length===0,'No client exceptions during hero selection and fallback');
-     }catch(e){result.error=e.message.slice(0,300)}
+      check(errors.length===0,'No client exceptions during hero selection and fallback');result.featureValidation='passed';
+     }catch(e){result.error=e.message.slice(0,300);result.featureValidation='failed'}
     }
     result.blockedRequests=blocked;result.clientErrors=errors;result.failedRequests=failed;result.responseHeaders=headers;
     report.results.push(result);
@@ -113,4 +118,4 @@ report.summary=origins.flatMap(origin=>profiles.map(p=>{
 }));
 mkdirSync('artifacts',{recursive:true});writeFileSync(process.env.PERF_OUTPUT||'artifacts/landing-performance.json',JSON.stringify(report,null,2));
 console.log('LANDING_REPORT '+JSON.stringify(report));
-if(report.results.some(x=>x.error||x.status!==200||!x.lcpMs))process.exitCode=1;
+if(report.results.some(x=>x.error||x.status!==200||!x.lcpMs||x.clientErrors.length>0))process.exitCode=1;
