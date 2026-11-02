@@ -1,0 +1,414 @@
+{
+  "kind": "immutable-media-browser",
+  "base": "https://partyprint.co.il",
+  "at": "2026-11-02T08:03:28.705Z",
+  "scope": "Public assets and client visuals only; all writes and external requests blocked",
+  "status": "passed",
+  "screens": [
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "checks": [
+        "Only the initial responsive hero has an image preload",
+        "Only the visible hero is eager",
+        "Wow panel is a native content-hashed asset",
+        "Extracted panel retains its crop",
+        "Wow panel is a native content-hashed asset",
+        "Extracted panel retains its crop",
+        "Wow panel is a native content-hashed asset",
+        "Extracted panel retains its crop",
+        "Three independent panel files replace the shared triptych",
+        "Offscreen artwork decodes from a hashed responsive source",
+        "Offscreen artwork decodes from a hashed responsive source",
+        "Offscreen artwork decodes from a hashed responsive source",
+        "All disjoint Hebrew, Latin and other-language font faces are declared",
+        "Critical font preload matches a CSS font URL",
+        "Critical font preload matches a CSS font URL",
+        "Hebrew with marks, Latin and other-script fallback fonts load",
+        "Original brand logo uses a content-hashed asset",
+        "Original brand logo uses a content-hashed asset",
+        "Full triptych is no longer used by the landing page",
+        "No client exceptions while scrolling through artwork"
+      ],
+      "imageSources": [
+        {
+          "src": "https://partyprint.co.il/_next/static/media/wow-reference-512.bd89b15081bdf78f.eL-EPChl.avif",
+          "alt": "תמונת רפרנס של החוגג",
+          "width": 148,
+          "rendered": 135.51205444335938,
+          "fit": "cover",
+          "left": "0px"
+        },
+        {
+          "src": "https://partyprint.co.il/_next/static/media/wow-art-512.a3d7971c4ddc64f7.DhJmBwYq.avif",
+          "alt": "העיצוב שנוצר בהשראת תמונת הרפרנס",
+          "width": 148,
+          "rendered": 152,
+          "fit": "cover",
+          "left": "0px"
+        },
+        {
+          "src": "https://partyprint.co.il/_next/static/media/wow-shirt-512.b6f870261d584129.15p7ew5X.avif",
+          "alt": "העיצוב האישי מודפס על חולצה",
+          "width": 148,
+          "rendered": 152,
+          "fit": "cover",
+          "left": "0px"
+        }
+      ],
+      "fontSources": [
+        {
+          "family": "Assistant",
+          "weight": "400",
+          "src": "url(\"/_next/static/media/assistant-400-other.aeb7cd469b80f0e2.C-ElonNG.woff2\") format(\"woff2\")",
+          "range": "U+100-103, U+10C-10D, U+112-115, U+118-119, U+120-121, U+126-127, U+12A-12B, U+141-142, U+14C-14F, U+15A-15B, U+160-161, U+16A-16B, U+178, U+17D-17E, U+18F, U+192, U+1E6-1E7, U+237, U+250, U+254, U+259, U+25B, U+283, U+28E, U+292, U+294-295, U+2A7, U+2B9, U+2C7-2C8, U+2D0, U+2D8-2D9, U+2DB, U+2DD, U+3B8, U+3C0, U+3C7, U+1E06-1E07, U+1E0C-1E0F, U+1E20-1E21, U+1E24-1E25, U+1E2A-1E2B, U+1E32-1E35, U+1E62-1E63, U+1E6C-1E6F, U+1E7E-1E7F, U+1E92-1E96, U+1EA0-1EA1, U+1EB8-1EB9, U+1ECC-1ECD, U+2074, U+2202, U+220F, U+2211, U+2215, U+2219-221A, U+221E, U+222B, U+2248, U+2260, U+2264-2265, U+25CA, U+FB01-FB02"
+        },
+        {
+          "family": "Assistant",
+          "weight": "400",
+          "src": "url(\"/_next/static/media/assistant-400-latin.1ad3ca9887b12bc4.D8vuASok.woff2\") format(\"woff2\")",
+          "range": "U+D, U+20-7E, U+A0-FF, U+131, U+152-153, U+2C6, U+2DA, U+2DC, U+300-304, U+306-308, U+30A-30C, U+31E, U+323, U+327, U+32E, U+331, U+361, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202D-202E, U+2030, U+2039-203A, U+2044, U+20AC, U+210A, U+2122, U+212E, U+2212"
+        },
+        {
+          "family": "Assistant",
+          "weight": "400",
+          "src": "url(\"/_next/static/media/assistant-400-hebrew.b531fd61c8afa524.OXudqK00.woff2\") format(\"woff2\")",
+          "range": "U+5B0-5BC, U+5BE-5C3, U+5C7, U+5D0-5EA, U+5F3-5F4, U+200E-2010, U+20AA, U+25CC, U+FB2A-FB36, U+FB38-FB3C, U+FB3E, U+FB40-FB41, U+FB43-FB44, U+FB46-FB4B"
+        },
+        {
+          "family": "Assistant",
+          "weight": "600",
+          "src": "url(\"/_next/static/media/assistant-600-other.9c74d9225ed9ae0f.D9oMbwd7.woff2\") format(\"woff2\")",
+          "range": "U+100-103, U+10C-10D, U+112-115, U+118-119, U+120-121, U+126-127, U+12A-12B, U+141-142, U+14C-14F, U+15A-15B, U+160-161, U+16A-16B, U+178, U+17D-17E, U+18F, U+192, U+1E6-1E7, U+237, U+250, U+254, U+259, U+25B, U+283, U+28E, U+292, U+294-295, U+2A7, U+2B9, U+2C7-2C8, U+2D0, U+2D8-2D9, U+2DB, U+2DD, U+3B8, U+3C0, U+3C7, U+1E06-1E07, U+1E0C-1E0F, U+1E20-1E21, U+1E24-1E25, U+1E2A-1E2B, U+1E32-1E35, U+1E62-1E63, U+1E6C-1E6F, U+1E7E-1E7F, U+1E92-1E96, U+1EA0-1EA1, U+1EB8-1EB9, U+1ECC-1ECD, U+2074, U+2202, U+220F, U+2211, U+2215, U+2219-221A, U+221E, U+222B, U+2248, U+2260, U+2264-2265, U+25CA, U+FB01-FB02"
+        },
+        {
+          "family": "Assistant",
+          "weight": "600",
+          "src": "url(\"/_next/static/media/assistant-600-latin.16b584476fdecf6c.C7O9ls_8.woff2\") format(\"woff2\")",
+          "range": "U+D, U+20-7E, U+A0-FF, U+131, U+152-153, U+2C6, U+2DA, U+2DC, U+300-304, U+306-308, U+30A-30C, U+31E, U+323, U+327, U+32E, U+331, U+361, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202D-202E, U+2030, U+2039-203A, U+2044, U+20AC, U+210A, U+2122, U+212E, U+2212"
+        },
+        {
+          "family": "Assistant",
+          "weight": "600",
+          "src": "url(\"/_next/static/media/assistant-600-hebrew.187059508184726f.kJPBlz1g.woff2\") format(\"woff2\")",
+          "range": "U+5B0-5BC, U+5BE-5C3, U+5C7, U+5D0-5EA, U+5F3-5F4, U+200E-2010, U+20AA, U+25CC, U+FB2A-FB36, U+FB38-FB3C, U+FB3E, U+FB40-FB41, U+FB43-FB44, U+FB46-FB4B"
+        },
+        {
+          "family": "Assistant",
+          "weight": "700",
+          "src": "url(\"/_next/static/media/assistant-700-other.949e3c3cd2edac2d.WK-uFFrX.woff2\") format(\"woff2\")",
+          "range": "U+100-103, U+10C-10D, U+112-115, U+118-119, U+120-121, U+126-127, U+12A-12B, U+141-142, U+14C-14F, U+15A-15B, U+160-161, U+16A-16B, U+178, U+17D-17E, U+18F, U+192, U+1E6-1E7, U+237, U+250, U+254, U+259, U+25B, U+283, U+28E, U+292, U+294-295, U+2A7, U+2B9, U+2C7-2C8, U+2D0, U+2D8-2D9, U+2DB, U+2DD, U+3B8, U+3C0, U+3C7, U+1E06-1E07, U+1E0C-1E0F, U+1E20-1E21, U+1E24-1E25, U+1E2A-1E2B, U+1E32-1E35, U+1E62-1E63, U+1E6C-1E6F, U+1E7E-1E7F, U+1E92-1E96, U+1EA0-1EA1, U+1EB8-1EB9, U+1ECC-1ECD, U+2074, U+2202, U+220F, U+2211, U+2215, U+2219-221A, U+221E, U+222B, U+2248, U+2260, U+2264-2265, U+25CA, U+FB01-FB02"
+        },
+        {
+          "family": "Assistant",
+          "weight": "700",
+          "src": "url(\"/_next/static/media/assistant-700-latin.d39d1bbeb0c740f8.DYlgM9tv.woff2\") format(\"woff2\")",
+          "range": "U+D, U+20-7E, U+A0-FF, U+131, U+152-153, U+2C6, U+2DA, U+2DC, U+300-304, U+306-308, U+30A-30C, U+31E, U+323, U+327, U+32E, U+331, U+361, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202D-202E, U+2030, U+2039-203A, U+2044, U+20AC, U+210A, U+2122, U+212E, U+2212"
+        },
+        {
+          "family": "Assistant",
+          "weight": "700",
+          "src": "url(\"/_next/static/media/assistant-700-hebrew.49a6be62c3fff44b.yH3GzKCG.woff2\") format(\"woff2\")",
+          "range": "U+5B0-5BC, U+5BE-5C3, U+5C7, U+5D0-5EA, U+5F3-5F4, U+200E-2010, U+20AA, U+25CC, U+FB2A-FB36, U+FB38-FB3C, U+FB3E, U+FB40-FB41, U+FB43-FB44, U+FB46-FB4B"
+        },
+        {
+          "family": "Rubik",
+          "weight": "400",
+          "src": "url(\"/_next/static/media/rubik-400-other.166576d3dbd033e8.D5oZm6QV.woff2\") format(\"woff2\")",
+          "range": "U+100-130, U+132-151, U+154-161, U+164-17F, U+192, U+1FC-1FF, U+218-21B, U+237, U+2C7, U+2D8-2D9, U+2DB, U+2DD, U+400-45F, U+462-463, U+46A-46B, U+472-475, U+490-49D, U+4A0-4A5, U+4AA-4AB, U+4AE-4B1, U+4B6-4BB, U+4C0-4C2, U+4CB-4CC, U+4CF-4D9, U+4DC-4DF, U+4E2-4E9, U+4EE-4F9, U+51A-51D, U+524-525, U+60C, U+61B, U+61F, U+621-63A, U+640-656, U+660-671, U+67E, U+686, U+698, U+6A1, U+6A4, U+6A9, U+6AF, U+6BA, U+6CC, U+6F0-6F9, U+1E80-1E85, U+1E9E, U+1EF2-1EF3, U+2070, U+2074-2079, U+207D-207E, U+2080-2089, U+208D-208E, U+2153-2154, U+215B-215E, U+2202, U+2206, U+220F, U+2211, U+2215, U+221A, U+221E, U+222B, U+2248, U+2260, U+2264-2265, U+25CA, U+FB01-FB02, U+FB57-FB59, U+FB7B-FB7D, U+FB8B, U+FB8F-FB91, U+FB93-FB95, U+FB9F, U+FBFD-FBFF, U+FC03-FC04, U+FC09-FC0A, U+FC0F-FC10, U+FC13-FC14, U+FC31-FC32, U+FC35-FC36, U+FC3D-FC3E, U+FC43-FC44, U+FC4F-FC50, U+FC64-FC65, U+FC67-FC6B, U+FC6D-FC71, U+FC74-FC77, U+FC79-FC7B, U+FC83-FC84, U+FC86-FC87, U+FC8A-FC8B, U+FC8D-FC8F, U+FC91-FC92, U+FC94-FC96, U+FCFB-FD08, U+FD0D-FD10, U+FD17-FD24, U+FD29-FD2C, U+FD3E-FD3F"
+        },
+        {
+          "family": "Rubik",
+          "weight": "400",
+          "src": "url(\"/_next/static/media/rubik-400-latin.551d6b10a1e44973.5JK-wQEs.woff2\") format(\"woff2\")",
+          "range": "U+20-7E, U+A0-FF, U+131, U+152-153, U+2BC, U+2C6, U+2DA, U+2DC, U+300-304, U+306-308, U+30A-30C, U+312, U+326-328, U+335, U+337-338, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+20AE, U+20B4, U+20B8-20B9, U+20BD, U+2116, U+2122, U+212E, U+2212"
+        },
+        {
+          "family": "Rubik",
+          "weight": "400",
+          "src": "url(\"/_next/static/media/rubik-400-hebrew.1c914738c30d81a4.C9TYQkzm.woff2\") format(\"woff2\")",
+          "range": "U+5B0-5BC, U+5BE, U+5C1-5C2, U+5C7, U+5D0-5EA, U+5F2-5F4, U+20AA, U+FB2A-FB36, U+FB38-FB3C, U+FB3E, U+FB40-FB41, U+FB43-FB44, U+FB46-FB4B"
+        },
+        {
+          "family": "Rubik",
+          "weight": "600",
+          "src": "url(\"/_next/static/media/rubik-600-other.ec54b9da1ebbeac7.DSI9jig4.woff2\") format(\"woff2\")",
+          "range": "U+100-130, U+132-151, U+154-161, U+164-17F, U+192, U+1FC-1FF, U+218-21B, U+237, U+2C7, U+2D8-2D9, U+2DB, U+2DD, U+400-45F, U+462-463, U+46A-46B, U+472-475, U+490-49D, U+4A0-4A5, U+4AA-4AB, U+4AE-4B1, U+4B6-4BB, U+4C0-4C2, U+4CB-4CC, U+4CF-4D9, U+4DC-4DF, U+4E2-4E9, U+4EE-4F9, U+51A-51D, U+524-525, U+60C, U+61B, U+61F, U+621-63A, U+640-656, U+660-671, U+67E, U+686, U+698, U+6A1, U+6A4, U+6A9, U+6AF, U+6BA, U+6CC, U+6F0-6F9, U+1E80-1E85, U+1E9E, U+1EF2-1EF3, U+2070, U+2074-2079, U+207D-207E, U+2080-2089, U+208D-208E, U+2153-2154, U+215B-215E, U+2202, U+2206, U+220F, U+2211, U+2215, U+221A, U+221E, U+222B, U+2248, U+2260, U+2264-2265, U+25CA, U+FB01-FB02, U+FB57-FB59, U+FB7B-FB7D, U+FB8B, U+FB8F-FB91, U+FB93-FB95, U+FB9F, U+FBFD-FBFF, U+FC03-FC04, U+FC09-FC0A, U+FC0F-FC10, U+FC13-FC14, U+FC31-FC32, U+FC35-FC36, U+FC3D-FC3E, U+FC43-FC44, U+FC4F-FC50, U+FC64-FC65, U+FC67-FC6B, U+FC6D-FC71, U+FC74-FC77, U+FC79-FC7B, U+FC83-FC84, U+FC86-FC87, U+FC8A-FC8B, U+FC8D-FC8F, U+FC91-FC92, U+FC94-FC96, U+FCFB-FD08, U+FD0D-FD10, U+FD17-FD24, U+FD29-FD2C, U+FD3E-FD3F"
+        },
+        {
+          "family": "Rubik",
+          "weight": "600",
+          "src": "url(\"/_next/static/media/rubik-600-latin.658ac80b0bcbaba6.D_2uK99L.woff2\") format(\"woff2\")",
+          "range": "U+20-7E, U+A0-FF, U+131, U+152-153, U+2BC, U+2C6, U+2DA, U+2DC, U+300-304, U+306-308, U+30A-30C, U+312, U+326-328, U+335, U+337-338, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+20AE, U+20B4, U+20B8-20B9, U+20BD, U+2116, U+2122, U+212E, U+2212"
+        },
+        {
+          "family": "Rubik",
+          "weight": "600",
+          "src": "url(\"/_next/static/media/rubik-600-hebrew.667566c1f5cec35f.BSMSxMa8.woff2\") format(\"woff2\")",
+          "range": "U+5B0-5BC, U+5BE, U+5C1-5C2, U+5C7, U+5D0-5EA, U+5F2-5F4, U+20AA, U+FB2A-FB36, U+FB38-FB3C, U+FB3E, U+FB40-FB41, U+FB43-FB44, U+FB46-FB4B"
+        },
+        {
+          "family": "Rubik",
+          "weight": "900",
+          "src": "url(\"/_next/static/media/rubik-900-other.123154a6a98714a5.DVIbWueF.woff2\") format(\"woff2\")",
+          "range": "U+100-130, U+132-151, U+154-161, U+164-17F, U+192, U+1FC-1FF, U+218-21B, U+237, U+2C7, U+2D8-2D9, U+2DB, U+2DD, U+400-45F, U+462-463, U+46A-46B, U+472-475, U+490-49D, U+4A0-4A5, U+4AA-4AB, U+4AE-4B1, U+4B6-4BB, U+4C0-4C2, U+4CB-4CC, U+4CF-4D9, U+4DC-4DF, U+4E2-4E9, U+4EE-4F9, U+51A-51D, U+524-525, U+60C, U+61B, U+61F, U+621-63A, U+640-656, U+660-671, U+67E, U+686, U+698, U+6A1, U+6A4, U+6A9, U+6AF, U+6BA, U+6CC, U+6F0-6F9, U+1E80-1E85, U+1E9E, U+1EF2-1EF3, U+2070, U+2074-2079, U+207D-207E, U+2080-2089, U+208D-208E, U+2153-2154, U+215B-215E, U+2202, U+2206, U+220F, U+2211, U+2215, U+221A, U+221E, U+222B, U+2248, U+2260, U+2264-2265, U+25CA, U+FB01-FB02, U+FB57-FB59, U+FB7B-FB7D, U+FB8B, U+FB8F-FB91, U+FB93-FB95, U+FB9F, U+FBFD-FBFF, U+FC03-FC04, U+FC09-FC0A, U+FC0F-FC10, U+FC13-FC14, U+FC31-FC32, U+FC35-FC36, U+FC3D-FC3E, U+FC43-FC44, U+FC4F-FC50, U+FC64-FC65, U+FC67-FC6B, U+FC6D-FC71, U+FC74-FC77, U+FC79-FC7B, U+FC83-FC84, U+FC86-FC87, U+FC8A-FC8B, U+FC8D-FC8F, U+FC91-FC92, U+FC94-FC96, U+FCFB-FD08, U+FD0D-FD10, U+FD17-FD24, U+FD29-FD2C, U+FD3E-FD3F"
+        },
+        {
+          "family": "Rubik",
+          "weight": "900",
+          "src": "url(\"/_next/static/media/rubik-900-latin.871f2d2056412769.CqzY1c_q.woff2\") format(\"woff2\")",
+          "range": "U+20-7E, U+A0-FF, U+131, U+152-153, U+2BC, U+2C6, U+2DA, U+2DC, U+300-304, U+306-308, U+30A-30C, U+312, U+326-328, U+335, U+337-338, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+20AE, U+20B4, U+20B8-20B9, U+20BD, U+2116, U+2122, U+212E, U+2212"
+        },
+        {
+          "family": "Rubik",
+          "weight": "900",
+          "src": "url(\"/_next/static/media/rubik-900-hebrew.00d230e36d451b8f.DRbDy9hF.woff2\") format(\"woff2\")",
+          "range": "U+5B0-5BC, U+5BE, U+5C1-5C2, U+5C7, U+5D0-5EA, U+5F2-5F4, U+20AA, U+FB2A-FB36, U+FB38-FB3C, U+FB3E, U+FB40-FB41, U+FB43-FB44, U+FB46-FB4B"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "checks": [
+        "Only the initial responsive hero has an image preload",
+        "Only the visible hero is eager",
+        "Wow panel is a native content-hashed asset",
+        "Extracted panel retains its crop",
+        "Wow panel is a native content-hashed asset",
+        "Extracted panel retains its crop",
+        "Wow panel is a native content-hashed asset",
+        "Extracted panel retains its crop",
+        "Three independent panel files replace the shared triptych",
+        "Offscreen artwork decodes from a hashed responsive source",
+        "Offscreen artwork decodes from a hashed responsive source",
+        "Offscreen artwork decodes from a hashed responsive source",
+        "All disjoint Hebrew, Latin and other-language font faces are declared",
+        "Critical font preload matches a CSS font URL",
+        "Critical font preload matches a CSS font URL",
+        "Hebrew with marks, Latin and other-script fallback fonts load",
+        "Original brand logo uses a content-hashed asset",
+        "Original brand logo uses a content-hashed asset",
+        "Full triptych is no longer used by the landing page",
+        "No client exceptions while scrolling through artwork"
+      ],
+      "imageSources": [
+        {
+          "src": "https://partyprint.co.il/_next/static/media/wow-reference-512.bd89b15081bdf78f.eL-EPChl.avif",
+          "alt": "תמונת רפרנס של החוגג",
+          "width": 280,
+          "rendered": 254.3450927734375,
+          "fit": "cover",
+          "left": "0px"
+        },
+        {
+          "src": "https://partyprint.co.il/_next/static/media/wow-art-512.a3d7971c4ddc64f7.DhJmBwYq.avif",
+          "alt": "העיצוב שנוצר בהשראת תמונת הרפרנס",
+          "width": 280,
+          "rendered": 276.75,
+          "fit": "cover",
+          "left": "0px"
+        },
+        {
+          "src": "https://partyprint.co.il/_next/static/media/wow-shirt-512.b6f870261d584129.15p7ew5X.avif",
+          "alt": "העיצוב האישי מודפס על חולצה",
+          "width": 280,
+          "rendered": 276.75,
+          "fit": "cover",
+          "left": "0px"
+        }
+      ],
+      "fontSources": [
+        {
+          "family": "Assistant",
+          "weight": "400",
+          "src": "url(\"/_next/static/media/assistant-400-other.aeb7cd469b80f0e2.C-ElonNG.woff2\") format(\"woff2\")",
+          "range": "U+100-103, U+10C-10D, U+112-115, U+118-119, U+120-121, U+126-127, U+12A-12B, U+141-142, U+14C-14F, U+15A-15B, U+160-161, U+16A-16B, U+178, U+17D-17E, U+18F, U+192, U+1E6-1E7, U+237, U+250, U+254, U+259, U+25B, U+283, U+28E, U+292, U+294-295, U+2A7, U+2B9, U+2C7-2C8, U+2D0, U+2D8-2D9, U+2DB, U+2DD, U+3B8, U+3C0, U+3C7, U+1E06-1E07, U+1E0C-1E0F, U+1E20-1E21, U+1E24-1E25, U+1E2A-1E2B, U+1E32-1E35, U+1E62-1E63, U+1E6C-1E6F, U+1E7E-1E7F, U+1E92-1E96, U+1EA0-1EA1, U+1EB8-1EB9, U+1ECC-1ECD, U+2074, U+2202, U+220F, U+2211, U+2215, U+2219-221A, U+221E, U+222B, U+2248, U+2260, U+2264-2265, U+25CA, U+FB01-FB02"
+        },
+        {
+          "family": "Assistant",
+          "weight": "400",
+          "src": "url(\"/_next/static/media/assistant-400-latin.1ad3ca9887b12bc4.D8vuASok.woff2\") format(\"woff2\")",
+          "range": "U+D, U+20-7E, U+A0-FF, U+131, U+152-153, U+2C6, U+2DA, U+2DC, U+300-304, U+306-308, U+30A-30C, U+31E, U+323, U+327, U+32E, U+331, U+361, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202D-202E, U+2030, U+2039-203A, U+2044, U+20AC, U+210A, U+2122, U+212E, U+2212"
+        },
+        {
+          "family": "Assistant",
+          "weight": "400",
+          "src": "url(\"/_next/static/media/assistant-400-hebrew.b531fd61c8afa524.OXudqK00.woff2\") format(\"woff2\")",
+          "range": "U+5B0-5BC, U+5BE-5C3, U+5C7, U+5D0-5EA, U+5F3-5F4, U+200E-2010, U+20AA, U+25CC, U+FB2A-FB36, U+FB38-FB3C, U+FB3E, U+FB40-FB41, U+FB43-FB44, U+FB46-FB4B"
+        },
+        {
+          "family": "Assistant",
+          "weight": "600",
+          "src": "url(\"/_next/static/media/assistant-600-other.9c74d9225ed9ae0f.D9oMbwd7.woff2\") format(\"woff2\")",
+          "range": "U+100-103, U+10C-10D, U+112-115, U+118-119, U+120-121, U+126-127, U+12A-12B, U+141-142, U+14C-14F, U+15A-15B, U+160-161, U+16A-16B, U+178, U+17D-17E, U+18F, U+192, U+1E6-1E7, U+237, U+250, U+254, U+259, U+25B, U+283, U+28E, U+292, U+294-295, U+2A7, U+2B9, U+2C7-2C8, U+2D0, U+2D8-2D9, U+2DB, U+2DD, U+3B8, U+3C0, U+3C7, U+1E06-1E07, U+1E0C-1E0F, U+1E20-1E21, U+1E24-1E25, U+1E2A-1E2B, U+1E32-1E35, U+1E62-1E63, U+1E6C-1E6F, U+1E7E-1E7F, U+1E92-1E96, U+1EA0-1EA1, U+1EB8-1EB9, U+1ECC-1ECD, U+2074, U+2202, U+220F, U+2211, U+2215, U+2219-221A, U+221E, U+222B, U+2248, U+2260, U+2264-2265, U+25CA, U+FB01-FB02"
+        },
+        {
+          "family": "Assistant",
+          "weight": "600",
+          "src": "url(\"/_next/static/media/assistant-600-latin.16b584476fdecf6c.C7O9ls_8.woff2\") format(\"woff2\")",
+          "range": "U+D, U+20-7E, U+A0-FF, U+131, U+152-153, U+2C6, U+2DA, U+2DC, U+300-304, U+306-308, U+30A-30C, U+31E, U+323, U+327, U+32E, U+331, U+361, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202D-202E, U+2030, U+2039-203A, U+2044, U+20AC, U+210A, U+2122, U+212E, U+2212"
+        },
+        {
+          "family": "Assistant",
+          "weight": "600",
+          "src": "url(\"/_next/static/media/assistant-600-hebrew.187059508184726f.kJPBlz1g.woff2\") format(\"woff2\")",
+          "range": "U+5B0-5BC, U+5BE-5C3, U+5C7, U+5D0-5EA, U+5F3-5F4, U+200E-2010, U+20AA, U+25CC, U+FB2A-FB36, U+FB38-FB3C, U+FB3E, U+FB40-FB41, U+FB43-FB44, U+FB46-FB4B"
+        },
+        {
+          "family": "Assistant",
+          "weight": "700",
+          "src": "url(\"/_next/static/media/assistant-700-other.949e3c3cd2edac2d.WK-uFFrX.woff2\") format(\"woff2\")",
+          "range": "U+100-103, U+10C-10D, U+112-115, U+118-119, U+120-121, U+126-127, U+12A-12B, U+141-142, U+14C-14F, U+15A-15B, U+160-161, U+16A-16B, U+178, U+17D-17E, U+18F, U+192, U+1E6-1E7, U+237, U+250, U+254, U+259, U+25B, U+283, U+28E, U+292, U+294-295, U+2A7, U+2B9, U+2C7-2C8, U+2D0, U+2D8-2D9, U+2DB, U+2DD, U+3B8, U+3C0, U+3C7, U+1E06-1E07, U+1E0C-1E0F, U+1E20-1E21, U+1E24-1E25, U+1E2A-1E2B, U+1E32-1E35, U+1E62-1E63, U+1E6C-1E6F, U+1E7E-1E7F, U+1E92-1E96, U+1EA0-1EA1, U+1EB8-1EB9, U+1ECC-1ECD, U+2074, U+2202, U+220F, U+2211, U+2215, U+2219-221A, U+221E, U+222B, U+2248, U+2260, U+2264-2265, U+25CA, U+FB01-FB02"
+        },
+        {
+          "family": "Assistant",
+          "weight": "700",
+          "src": "url(\"/_next/static/media/assistant-700-latin.d39d1bbeb0c740f8.DYlgM9tv.woff2\") format(\"woff2\")",
+          "range": "U+D, U+20-7E, U+A0-FF, U+131, U+152-153, U+2C6, U+2DA, U+2DC, U+300-304, U+306-308, U+30A-30C, U+31E, U+323, U+327, U+32E, U+331, U+361, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202D-202E, U+2030, U+2039-203A, U+2044, U+20AC, U+210A, U+2122, U+212E, U+2212"
+        },
+        {
+          "family": "Assistant",
+          "weight": "700",
+          "src": "url(\"/_next/static/media/assistant-700-hebrew.49a6be62c3fff44b.yH3GzKCG.woff2\") format(\"woff2\")",
+          "range": "U+5B0-5BC, U+5BE-5C3, U+5C7, U+5D0-5EA, U+5F3-5F4, U+200E-2010, U+20AA, U+25CC, U+FB2A-FB36, U+FB38-FB3C, U+FB3E, U+FB40-FB41, U+FB43-FB44, U+FB46-FB4B"
+        },
+        {
+          "family": "Rubik",
+          "weight": "400",
+          "src": "url(\"/_next/static/media/rubik-400-other.166576d3dbd033e8.D5oZm6QV.woff2\") format(\"woff2\")",
+          "range": "U+100-130, U+132-151, U+154-161, U+164-17F, U+192, U+1FC-1FF, U+218-21B, U+237, U+2C7, U+2D8-2D9, U+2DB, U+2DD, U+400-45F, U+462-463, U+46A-46B, U+472-475, U+490-49D, U+4A0-4A5, U+4AA-4AB, U+4AE-4B1, U+4B6-4BB, U+4C0-4C2, U+4CB-4CC, U+4CF-4D9, U+4DC-4DF, U+4E2-4E9, U+4EE-4F9, U+51A-51D, U+524-525, U+60C, U+61B, U+61F, U+621-63A, U+640-656, U+660-671, U+67E, U+686, U+698, U+6A1, U+6A4, U+6A9, U+6AF, U+6BA, U+6CC, U+6F0-6F9, U+1E80-1E85, U+1E9E, U+1EF2-1EF3, U+2070, U+2074-2079, U+207D-207E, U+2080-2089, U+208D-208E, U+2153-2154, U+215B-215E, U+2202, U+2206, U+220F, U+2211, U+2215, U+221A, U+221E, U+222B, U+2248, U+2260, U+2264-2265, U+25CA, U+FB01-FB02, U+FB57-FB59, U+FB7B-FB7D, U+FB8B, U+FB8F-FB91, U+FB93-FB95, U+FB9F, U+FBFD-FBFF, U+FC03-FC04, U+FC09-FC0A, U+FC0F-FC10, U+FC13-FC14, U+FC31-FC32, U+FC35-FC36, U+FC3D-FC3E, U+FC43-FC44, U+FC4F-FC50, U+FC64-FC65, U+FC67-FC6B, U+FC6D-FC71, U+FC74-FC77, U+FC79-FC7B, U+FC83-FC84, U+FC86-FC87, U+FC8A-FC8B, U+FC8D-FC8F, U+FC91-FC92, U+FC94-FC96, U+FCFB-FD08, U+FD0D-FD10, U+FD17-FD24, U+FD29-FD2C, U+FD3E-FD3F"
+        },
+        {
+          "family": "Rubik",
+          "weight": "400",
+          "src": "url(\"/_next/static/media/rubik-400-latin.551d6b10a1e44973.5JK-wQEs.woff2\") format(\"woff2\")",
+          "range": "U+20-7E, U+A0-FF, U+131, U+152-153, U+2BC, U+2C6, U+2DA, U+2DC, U+300-304, U+306-308, U+30A-30C, U+312, U+326-328, U+335, U+337-338, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+20AE, U+20B4, U+20B8-20B9, U+20BD, U+2116, U+2122, U+212E, U+2212"
+        },
+        {
+          "family": "Rubik",
+          "weight": "400",
+          "src": "url(\"/_next/static/media/rubik-400-hebrew.1c914738c30d81a4.C9TYQkzm.woff2\") format(\"woff2\")",
+          "range": "U+5B0-5BC, U+5BE, U+5C1-5C2, U+5C7, U+5D0-5EA, U+5F2-5F4, U+20AA, U+FB2A-FB36, U+FB38-FB3C, U+FB3E, U+FB40-FB41, U+FB43-FB44, U+FB46-FB4B"
+        },
+        {
+          "family": "Rubik",
+          "weight": "600",
+          "src": "url(\"/_next/static/media/rubik-600-other.ec54b9da1ebbeac7.DSI9jig4.woff2\") format(\"woff2\")",
+          "range": "U+100-130, U+132-151, U+154-161, U+164-17F, U+192, U+1FC-1FF, U+218-21B, U+237, U+2C7, U+2D8-2D9, U+2DB, U+2DD, U+400-45F, U+462-463, U+46A-46B, U+472-475, U+490-49D, U+4A0-4A5, U+4AA-4AB, U+4AE-4B1, U+4B6-4BB, U+4C0-4C2, U+4CB-4CC, U+4CF-4D9, U+4DC-4DF, U+4E2-4E9, U+4EE-4F9, U+51A-51D, U+524-525, U+60C, U+61B, U+61F, U+621-63A, U+640-656, U+660-671, U+67E, U+686, U+698, U+6A1, U+6A4, U+6A9, U+6AF, U+6BA, U+6CC, U+6F0-6F9, U+1E80-1E85, U+1E9E, U+1EF2-1EF3, U+2070, U+2074-2079, U+207D-207E, U+2080-2089, U+208D-208E, U+2153-2154, U+215B-215E, U+2202, U+2206, U+220F, U+2211, U+2215, U+221A, U+221E, U+222B, U+2248, U+2260, U+2264-2265, U+25CA, U+FB01-FB02, U+FB57-FB59, U+FB7B-FB7D, U+FB8B, U+FB8F-FB91, U+FB93-FB95, U+FB9F, U+FBFD-FBFF, U+FC03-FC04, U+FC09-FC0A, U+FC0F-FC10, U+FC13-FC14, U+FC31-FC32, U+FC35-FC36, U+FC3D-FC3E, U+FC43-FC44, U+FC4F-FC50, U+FC64-FC65, U+FC67-FC6B, U+FC6D-FC71, U+FC74-FC77, U+FC79-FC7B, U+FC83-FC84, U+FC86-FC87, U+FC8A-FC8B, U+FC8D-FC8F, U+FC91-FC92, U+FC94-FC96, U+FCFB-FD08, U+FD0D-FD10, U+FD17-FD24, U+FD29-FD2C, U+FD3E-FD3F"
+        },
+        {
+          "family": "Rubik",
+          "weight": "600",
+          "src": "url(\"/_next/static/media/rubik-600-latin.658ac80b0bcbaba6.D_2uK99L.woff2\") format(\"woff2\")",
+          "range": "U+20-7E, U+A0-FF, U+131, U+152-153, U+2BC, U+2C6, U+2DA, U+2DC, U+300-304, U+306-308, U+30A-30C, U+312, U+326-328, U+335, U+337-338, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+20AE, U+20B4, U+20B8-20B9, U+20BD, U+2116, U+2122, U+212E, U+2212"
+        },
+        {
+          "family": "Rubik",
+          "weight": "600",
+          "src": "url(\"/_next/static/media/rubik-600-hebrew.667566c1f5cec35f.BSMSxMa8.woff2\") format(\"woff2\")",
+          "range": "U+5B0-5BC, U+5BE, U+5C1-5C2, U+5C7, U+5D0-5EA, U+5F2-5F4, U+20AA, U+FB2A-FB36, U+FB38-FB3C, U+FB3E, U+FB40-FB41, U+FB43-FB44, U+FB46-FB4B"
+        },
+        {
+          "family": "Rubik",
+          "weight": "900",
+          "src": "url(\"/_next/static/media/rubik-900-other.123154a6a98714a5.DVIbWueF.woff2\") format(\"woff2\")",
+          "range": "U+100-130, U+132-151, U+154-161, U+164-17F, U+192, U+1FC-1FF, U+218-21B, U+237, U+2C7, U+2D8-2D9, U+2DB, U+2DD, U+400-45F, U+462-463, U+46A-46B, U+472-475, U+490-49D, U+4A0-4A5, U+4AA-4AB, U+4AE-4B1, U+4B6-4BB, U+4C0-4C2, U+4CB-4CC, U+4CF-4D9, U+4DC-4DF, U+4E2-4E9, U+4EE-4F9, U+51A-51D, U+524-525, U+60C, U+61B, U+61F, U+621-63A, U+640-656, U+660-671, U+67E, U+686, U+698, U+6A1, U+6A4, U+6A9, U+6AF, U+6BA, U+6CC, U+6F0-6F9, U+1E80-1E85, U+1E9E, U+1EF2-1EF3, U+2070, U+2074-2079, U+207D-207E, U+2080-2089, U+208D-208E, U+2153-2154, U+215B-215E, U+2202, U+2206, U+220F, U+2211, U+2215, U+221A, U+221E, U+222B, U+2248, U+2260, U+2264-2265, U+25CA, U+FB01-FB02, U+FB57-FB59, U+FB7B-FB7D, U+FB8B, U+FB8F-FB91, U+FB93-FB95, U+FB9F, U+FBFD-FBFF, U+FC03-FC04, U+FC09-FC0A, U+FC0F-FC10, U+FC13-FC14, U+FC31-FC32, U+FC35-FC36, U+FC3D-FC3E, U+FC43-FC44, U+FC4F-FC50, U+FC64-FC65, U+FC67-FC6B, U+FC6D-FC71, U+FC74-FC77, U+FC79-FC7B, U+FC83-FC84, U+FC86-FC87, U+FC8A-FC8B, U+FC8D-FC8F, U+FC91-FC92, U+FC94-FC96, U+FCFB-FD08, U+FD0D-FD10, U+FD17-FD24, U+FD29-FD2C, U+FD3E-FD3F"
+        },
+        {
+          "family": "Rubik",
+          "weight": "900",
+          "src": "url(\"/_next/static/media/rubik-900-latin.871f2d2056412769.CqzY1c_q.woff2\") format(\"woff2\")",
+          "range": "U+20-7E, U+A0-FF, U+131, U+152-153, U+2BC, U+2C6, U+2DA, U+2DC, U+300-304, U+306-308, U+30A-30C, U+312, U+326-328, U+335, U+337-338, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+20AE, U+20B4, U+20B8-20B9, U+20BD, U+2116, U+2122, U+212E, U+2212"
+        },
+        {
+          "family": "Rubik",
+          "weight": "900",
+          "src": "url(\"/_next/static/media/rubik-900-hebrew.00d230e36d451b8f.DRbDy9hF.woff2\") format(\"woff2\")",
+          "range": "U+5B0-5BC, U+5BE, U+5C1-5C2, U+5C7, U+5D0-5EA, U+5F2-5F4, U+20AA, U+FB2A-FB36, U+FB38-FB3C, U+FB3E, U+FB40-FB41, U+FB43-FB44, U+FB46-FB4B"
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "headers": [
+    {
+      "path": "/_next/static/media/wow-reference-512.bd89b15081bdf78f.eL-EPChl.avif",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "type": "image/avif"
+    },
+    {
+      "path": "/_next/static/media/wow-art-512.a3d7971c4ddc64f7.DhJmBwYq.avif",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "type": "image/avif"
+    },
+    {
+      "path": "/_next/static/media/wow-shirt-512.b6f870261d584129.15p7ew5X.avif",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "type": "image/avif"
+    },
+    {
+      "path": "/_next/static/media/shirts-768.4cbbf4a191a790f5.Dwwhonds.avif",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "type": "image/avif"
+    },
+    {
+      "path": "/_next/static/media/review-shirts-v1-1080.01ccbabdf38e31cb.gkl84GgC.avif",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "type": "image/avif"
+    },
+    {
+      "path": "/_next/static/media/statement-family-fixed-1080.bfde0f593dc36241.BtYhXlfk.avif",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "type": "image/avif"
+    },
+    {
+      "path": "/_next/static/media/rubik-900-hebrew.00d230e36d451b8f.DRbDy9hF.woff2",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "type": "font/woff2"
+    },
+    {
+      "path": "/_next/static/media/assistant-400-hebrew.b531fd61c8afa524.OXudqK00.woff2",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "type": "font/woff2"
+    },
+    {
+      "path": "/_next/static/media/logo-header.8ddd3181804dd5ef.tiTfQNpd.webp",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "type": "image/webp"
+    },
+    {
+      "path": "/_next/static/media/logo.767eb3a3b25c09af.Cks5W0_2.webp",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "type": "image/webp"
+    },
+    {
+      "path": "/_next/static/media/statement-family-fixed-768.1a4c011f57b0797a.DjLf6waO.avif",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "type": "image/avif"
+    }
+  ],
+  "errors": [],
+  "release": {
+    "expectedFingerprint": "fb4d18b5153c66ef1b832ec222c0bf09d76faa168868d8885f73f64961a14258",
+    "publicCommit": "f2943070b3fd8ddac6bfe4e8689c40b5ae08d841",
+    "publicFingerprint": "fb4d18b5153c66ef1b832ec222c0bf09d76faa168868d8885f73f64961a14258",
+    "publicState": "clean"
+  }
+}
