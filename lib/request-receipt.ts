@@ -1,6 +1,7 @@
+import type {ShirtSelection} from './catalog';
 // Kept in this tab only. No names, phone numbers, emails, free text or filenames.
 // The private tracking capability never appears in analytics or /thanks URLs.
-export type RequestReceipt={id:string;at:number;package:number;quantity:number;price:number;imagesCount:number;trackingUrl:string;emailRequested:boolean;customerEmailSent:boolean;requestMode:'order'|'custom'|'lead';couponStatus:'accepted'|'none'};
+export type RequestReceipt={suggestedShirts?:ShirtSelection[];id:string;at:number;package:number;quantity:number;price:number;imagesCount:number;trackingUrl:string;emailRequested:boolean;customerEmailSent:boolean;requestMode:'order'|'custom'|'lead';couponStatus:'accepted'|'none'};
 const KEY='partyprint-request-receipt-v1';let memory:RequestReceipt|null=null;
 function valid(v:unknown):v is RequestReceipt{
  if(!v||typeof v!=='object')return false;const x=v as RequestReceipt;
