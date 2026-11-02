@@ -1,19 +1,18 @@
 # PARTYPRINT analytics
 
-**Google Analytics 4:** account **PARTYPRINT** (`413432250`), property
-**PARTYPRINT | partyprint.co.il** (`560706114`), web stream **partyprint.co.il**
-(`16206966493`), Measurement ID `G-V3QDR0W4WK`. Enhanced Measurement and all
+**Google Analytics 4:** account **PARTYPRINT** (`[account identifier omitted]`), property
+**PARTYPRINT | partyprint.co.il** (`[account identifier omitted]`), web stream **partyprint.co.il**
+(`[account identifier omitted]`), Measurement ID `[account identifier omitted]`. Enhanced Measurement and all
 automatic event detection are **off**: every event below is sent deliberately
 from `lib/analytics.ts`.
 
-**Meta pixel:** dataset **PartyPrint Website Pixel** `2241332043403463`, the one
-assigned to the PartyPrint Meta ad account (`1810776440065682`, business
-theai.family).
+**Meta pixel:** dataset **PartyPrint Website Pixel** `[account identifier omitted]`, the one
+assigned to the PartyPrint Meta ad account (`[account identifier omitted]`, business account [identifier omitted]).
 
 ## Configuration
 
-Hosting environment (Hostinger): `GA_MEASUREMENT_ID=G-V3QDR0W4WK` and
-`META_PIXEL_ID=2241332043403463`. The browser reads both from
+Hosting environment (Hostinger): `GA_MEASUREMENT_ID=[account identifier omitted]` and
+`META_PIXEL_ID=[account identifier omitted]`. The browser reads both from
 `GET /api/analytics-config`. A missing or malformed ID simply skips that tag.
 
 ## Notice, opt-out and the Meta region rule
@@ -23,7 +22,7 @@ Hosting environment (Hostinger): `GA_MEASUREMENT_ID=G-V3QDR0W4WK` and
   opt-out). Unchanged by the Meta rule below.
 - **Meta pixel, by region** (`metaModeFor` in `lib/analytics.ts`):
   - **Israel, "notice" mode:** the pixel loads on entry and may send `PageView`
-    before any choice. Every other Meta event (ViewContent, InitiateCheckout,
+    before any choice. Every other Meta event (ViewContent, FormStart,
     Lead, Contact, FormStep, FormSubmitAttempt) is sent only after **אישור**.
   - **Everywhere else, including the EU, and whenever the region cannot be
     identified, "strict" mode:** the pixel is not loaded at all until **אישור**.
@@ -69,18 +68,18 @@ Hosting environment (Hostinger): `GA_MEASUREMENT_ID=G-V3QDR0W4WK` and
 ### Form stages
 
 Order requests (`request_mode` = `order` or `custom`):
-`form_step` 1 package → 2 shirts → `form_field_complete` shirts → `form_step` 3 details →
-`form_field_complete` name / phone / email (optional: event_date, brief, images) →
-`form_submit_attempt` → `generate_lead`.
+All request modes use two screens: `form_step` 1 package (quantity and optional event date) → `form_step` 2 details (required name/phone; optional brief/images/email) → `form_submit_attempt` → confirmed server save → `/thanks` → `generate_lead`.
 
-Consultations (`request_mode` = `lead`) start at `form_step` 3 details.
+After saving, the customer may open `form_step` 3 `shirts_optional`. Explicit size confirmation updates the existing request through its private capability and emits `form_field_complete shirts`, never another Lead. Adult M/black is a suggestion, not a confirmed print specification. Group packages retain4–100 shirts; a separate single-shirt SKU is ILS180 including design/printing/delivery.
+
+`trackSavedLead` deduplicates GA and Meta separately using a local tab receipt key (never transmitted). Reload/direct thanks cannot manufacture another Lead. If consent is granted on the confirmation screen, Meta can emit its previously unsent Lead without duplicating GA. An email failure does not invalidate a saved request.
 
 ### Contact events (one name per channel)
 
 | Event | Channel | Key event |
 | --- | --- | --- |
-| `contact_order_form` | Order request saved by the server (fires with `generate_lead`) | no (counted by `generate_lead`) |
-| `contact_consult_form` | Consultation request saved by the server (fires with `generate_lead`) | no (counted by `generate_lead`) |
+| `contact_order_form` | Legacy form-save event; current flow uses `generate_lead` only | no |
+| `contact_consult_form` | Legacy consultation-save event; current flow uses `generate_lead` only | no |
 | `contact_whatsapp` | Any `wa.me` / WhatsApp link | yes |
 | `contact_email` | Any `mailto:` link | yes |
 | `contact_phone` | Any `tel:` link (none on the site today) | — |
@@ -90,16 +89,16 @@ currency or transaction ID is sent.
 
 ## Meta pixel events
 
-`PageView` (each page), `ViewContent` (`select_package`), `InitiateCheckout`
-(`begin_order_request`), `Lead` (`generate_lead`), `Contact` (WhatsApp / email /
+`PageView` (each page), `ViewContent` (`select_package`), custom `FormStart`
+(`begin_order_request`; a quote request is not a checkout), `Lead` (`generate_lead`), `Contact` (WhatsApp / email /
 phone, `content_name` = channel), and custom `FormStep` / `FormSubmitAttempt`.
 Parameters are the same allowlisted values as GA (`content_category` = package
 type or CTA location). Before a choice, only `PageView` and only in the Israel
 notice mode (see above).
 
 **Advanced Matching:** not configured in code, but *Automatic advanced matching*
-is **on** in Events Manager for this dataset (enabled Oct 26, 2026, with email,
-phone, name, city/state/ZIP, country, date of birth and external ID). When the
+was recorded as **on** in Events Manager for this dataset (enabled Oct 26, 2026, with email,
+phone, name, city/state/ZIP, country, date of birth and external ID). This is a historical account note; Q02 did not verify or change that dataset setting. The allowlist tests verify our code's event payloads with vendors stubbed, not Meta's account-side automatic collection. When the
 pixel is active, Meta's own script may hash contact fields it finds on the page
 and send them. The privacy policy says so. Traffic permissions: allow list
 `partyprint.co.il` and its subdomains.
@@ -108,11 +107,11 @@ and send them. The privacy policy says so. Traffic permissions: allow list
 
 Anything else is dropped before sending.
 
-- `package_type`: `family_birthday`, `bride_squad`, `groom_crew`, `team`, `custom`
+- `package_type`: `family_birthday`, `bride_squad`, `groom_crew`, `team`, `custom`, `single`
 - `request_mode`: `order`, `custom`, `lead`
 - `quantity_band`: `1-5`, `6-10`, `11-20`, `21-50`, `51-100`
 - `coupon_status`: `accepted`, `rejected`, `empty`, `error`, `none`
-- `step_number` / `step_name`: `1 package`, `2 shirts`, `3 details`
+- `step_number` / `step_name`: `1 package`, `2 details`, `3 shirts_optional`
 - `field_name`: `shirts`, `name`, `phone`, `email`, `event_date`, `brief`, `images`
 - `error_type`: `missing_name`, `invalid_phone`, `invalid_email`, `invalid_event_date`,
   `missing_shirt_choice`, `upload_limit`, `network`, `rate_limited`,
@@ -140,3 +139,9 @@ Exploration **PARTYPRINT - Lead funnel** and **PARTYPRINT - Order form stages**.
 Add `?ga_debug=1` to a public URL and watch Admin → DebugView. Do not submit a
 real order to test `generate_lead`; it is verified against a disposable local
 server with Google and Meta requests blocked (scratch test).
+
+## Campaign offer and public QA (Q02)
+
+A source plus paid UTM medium qualifies this tab for a server-verified public promotion; `fbclid` alone does not. `/api/promo` supplies the active code, and `/api/pricing` checks quantity, package, dates, uses and subtotal. The banner no longer exposes coupon codes to all visitors. Only confirmed discounts show an applied badge; codes never go to measurement.
+
+The release acceptance record is [quote-request-flow.md](quote-request-flow.md). Public browser QA stubs order/tracking writes and vendor calls; the separate public pricing quote is non-mutating. Exact deployment receipt, external tag account delivery, Advanced Matching and actual end-to-end mail are separate evidence, not inferred from these mocks.
