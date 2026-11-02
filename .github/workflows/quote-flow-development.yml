@@ -1,0 +1,22 @@
+name: Quote flow development
+on:
+  push:
+    branches: [codex/quote-flow-2026-11-02]
+permissions:
+  contents: read
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.1'
+      - run: npm ci --no-audit --no-fund
+      - name: Typecheck diagnostics
+        run: npx tsc --noEmit
+      - run: node --test scripts/order-quantity.test.mjs
+      - run: node scripts/verify-orders.mjs
+      - run: npm run build

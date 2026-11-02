@@ -17,9 +17,9 @@ const quantity=await import(moduleUrl(resolve(root,'lib/order-quantity.ts')));
 
 test('all packages accept every integer quantity from four to one hundred',()=>{
  assert.equal(catalog.MIN_SHIRT_QUANTITY,4);assert.equal(catalog.MAX_SHIRT_QUANTITY,100);
- for(let pack=0;pack<catalog.packs.length;pack++)for(let n=4;n<=100;n++)assert.doesNotThrow(()=>pricing.priceFor(pricing.DEFAULT_PRICING,pack,n));
+ for(let pack=0;pack<catalog.SINGLE_PACK_INDEX;pack++)for(let n=4;n<=100;n++)assert.doesNotThrow(()=>pricing.priceFor(pricing.DEFAULT_PRICING,pack,n));
  for(const n of [-1,0,3,4.5,101,NaN,Infinity,'4',null])for(let pack=0;pack<5;pack++)assert.throws(()=>pricing.priceFor(pricing.DEFAULT_PRICING,pack,n));
- for(const pack of [-1,5,0.5,NaN])assert.throws(()=>pricing.priceFor(pricing.DEFAULT_PRICING,pack,4));
+ for(const pack of [-1,6,0.5,NaN])assert.throws(()=>pricing.priceFor(pricing.DEFAULT_PRICING,pack,4));
 });
 test('the reached tier applies through the quantity before the next threshold',()=>{
  const cases=[[4,110,440],[5,110,550],[6,105,630],[7,105,735],[8,100,800],[9,100,900],[10,95,950],[14,95,1330],[15,93,1395],[19,93,1767],[20,90,1800],[21,90,1890],[100,90,9000]];
@@ -51,3 +51,5 @@ test('shrinking and regrowing restores adult and child choices without submittin
 test('quantity input normalization enforces whole shirts and the supported bounds',()=>{
  for(const [input,expected] of [[3,4],[4,4],[7,7],[100,100],[101,100],[7.8,7],[NaN,4],[Infinity,4]])assert.equal(quantity.normalizeOrderQuantity(input),expected);
 });
+
+test('single-shirt offer is a separate SKU with no two/three-shirt group loophole',()=>{assert.equal(pricing.priceFor(pricing.DEFAULT_PRICING,catalog.SINGLE_PACK_INDEX,1),180);for(const p of [0,1,2,3,4])for(const n of [1,2,3])assert.throws(()=>pricing.priceFor(pricing.DEFAULT_PRICING,p,n));for(const n of [0,2,3,4,100])assert.throws(()=>pricing.priceFor(pricing.DEFAULT_PRICING,5,n));const config=pricing.normalizePricing({...pricing.DEFAULT_PRICING,singleShirtPrice:195},7);assert.equal(pricing.priceFor(config,5,1),195);assert.equal(pricing.priceFor(config,0,4),440);assert.equal(pricing.validPricing({...config,singleShirtPrice:-1}),false);});

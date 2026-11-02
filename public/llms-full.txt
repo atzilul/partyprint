@@ -48,8 +48,8 @@ The common typo “חלוצות לאירועים” is an alias of the canonical
 
 ## How the service works
 
-1. The customer chooses a quantity and enters sizes and colors.
-2. The customer uploads a short idea and up to 10 reference images.
+1. The customer chooses a package and quantity and optionally supplies an event date.
+2. The customer supplies a name and phone, optionally a short idea, email and up to 10 reference images. The request is saved before any sizes are required; confirmation offers optional sizes/colors or WhatsApp coordination.
 3. PARTYPRINT develops a shared design direction using AI-assisted exploration and human direction.
 4. The customer reviews the design, receives one included revision round, and approves it.
 5. PARTYPRINT prints the approved shirts and coordinates home delivery.
@@ -58,7 +58,7 @@ Submitting the request form does not charge the customer. Printing begins only a
 
 ## Audience and examples
 
-PARTYPRINT serves families, friends, birthday organizers, bachelor and bachelorette groups, workplace teams, managers, small businesses, employee-gift organizers, trip organizers and military cohorts. Available quantities are shown in the live order form. Other quantities, including a single shirt, require studio confirmation. Each shirt can have its own selected size and color while sharing one design. Adult sizes remain those offered in the form; child sizes by age are 2, 4, 6, 8, 10, 12, 14, 16 and 18.
+PARTYPRINT serves families, friends, birthday organizers, bachelor and bachelorette groups, workplace teams, managers, small businesses, employee-gift organizers, trip organizers and military cohorts. Available quantities are shown in the live order form. A single shirt is offered at ILS 180 including personal design, printing and home delivery. Group packages start at 4 shirts and support up to 100; quantities 2–3 are not offered in the public form. Each shirt can have its own selected size and color while sharing one design. Adult sizes remain those offered in the form; child sizes by age are 2, 4, 6, 8, 10, 12, 14, 16 and 18.
 
 ## Operational facts
 
@@ -83,4 +83,4 @@ The event-specific guides explain the use cases and link to the ordering flow at
 
 ## Practical preparation
 
-https://partyprint.co.il/ordering-guide explains photo preparation, adult and child sizes, pricing components, approval, revisions and event scheduling. Use the live order form for current quantities and prices; do not promise a one-shirt order or an unconfirmed delivery deadline.
+https://partyprint.co.il/ordering-guide explains photo preparation, adult and child sizes, pricing components, approval, revisions and event scheduling. Use the live order form for current quantities and prices; a single-shirt offer is ILS 180 including design, printing and delivery. Do not promise an unconfirmed delivery deadline.

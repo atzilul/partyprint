@@ -24,7 +24,8 @@
 - AI-assisted visual design guided by a human creative process and customer approval before printing.
 - One shared design direction per package, printing and home delivery as shown on the site.
 - Quantity-based shirt pricing. The displayed price per shirt and package total update according to the quantity tier shown on the ordering page.
-- Sizes and colors are selected per shirt. Customers can send up to 10 reference images and a short brief.
+- A single shirt costs ILS 180 including personal design, printing and home delivery. Group packages support 4–100 shirts; quantities 2–3 are not offered in the public form.
+- Contact is saved after two steps: package/date, then name/phone/idea/photos. Email is optional. Sizes and colors can be selected after confirmation or coordinated on WhatsApp. Customers can send up to 10 reference images and a short brief.
 - One revision round is included. Additional revisions are coordinated in advance.
 - Customer support by WhatsApp: +972 55 289 6236. Email: atzilul@gmail.com.
 

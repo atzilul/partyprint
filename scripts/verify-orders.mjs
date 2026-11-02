@@ -13,7 +13,7 @@ const base='https://example.test';const get=(p)=>new Request(base+p);const post=
 assert.equal((await admin.GET(get('/api/admin/orders'))).status,403);
 globalThis.testUser={userId:'other',email:'other@example.com'};assert.equal((await admin.GET(get('/api/admin/orders'))).status,403);
 function form(email='test@example.com'){const f=new FormData();Object.entries({name:'Test <script>',phone:'0501234567',email,brief:'<img src=x onerror=alert(1)>',package:0,quantity:4,mode:'order',shirts:JSON.stringify(Array.from({length:4},()=>({size:'M',color:'black'})))}).forEach(([k,v])=>f.set(k,String(v)));for(let i=0;i<10;i++)f.append('images',new File([new Uint8Array([255,216,255,i])],`תמונה-${i}.jpg`,{type:'image/jpeg'}));return f}
-assert.equal((await publicRoute.POST(post('/api/orders',form('')))).status,400);
+assert.equal((await publicRoute.POST(post('/api/orders',form('bad-email')))).status,400);
 const contact=await load('lib/contact-validation.ts');
 for(const value of ['050 123 4567','03-1234567','+972501234567','00972501234567'])assert(contact.validPhone(value),value);
 for(const value of ['---------','0000000000','05012','+000123456789','050abc1234567'])assert(!contact.validPhone(value),value);
@@ -232,3 +232,35 @@ try{
  globalThis.fetch=quantityPriorFetch;globalThis.testEnv.RESEND_API_KEY=quantityPriorKey;globalThis.testEnv.MAIL_FROM=quantityPriorFrom;
 }
 console.log('PASS: all packages support minimum four and arbitrary quantities; actual order API checks quantity, active shirt count and server price in isolated fixtures; zero external network calls.');
+
+// The quote is saved before optional shirt details. Tests use temporary SQLite
+// and an in-memory bucket; any attempted external request fails this block.
+{
+ const beforeFetch=globalThis.fetch,priorKey=globalThis.testEnv.RESEND_API_KEY,priorFrom=globalThis.testEnv.MAIL_FROM;
+ let external=0;delete globalThis.testEnv.RESEND_API_KEY;delete globalThis.testEnv.MAIL_FROM;
+ globalThis.fetch=async()=>{external++;throw Error('External send forbidden in quote-flow QA')};
+ const trackRoute=await load('app/api/track/[id]/route.ts');
+ const resetRate=()=>sql.prepare('DELETE FROM form_rate_limits').run();
+ const pendingForm=(p=0,n=4)=>{const f=form('');f.delete('images');f.set('package',String(p));f.set('quantity',String(n));f.set('shirts','[]');f.set('shirtDetailsStatus','pending');return f;};
+ try{
+  resetRate();const response=await publicRoute.POST(post('/api/orders',pendingForm()));assert.equal(response.status,201);const receipt=await response.json();let pending=await store.getOrder(receipt.id);assert.equal(pending.email,'');assert.equal(pending.shirtDetailsStatus,'pending');assert.deepEqual(pending.shirts,[]);assert.equal(pending.customerEmailStatus,'not_requested');assert.equal(receipt.quantity,4);assert.equal(receipt.imagesCount,0);assert(receipt.trackingUrl.includes('/track/'+receipt.id+'#'));assert.equal((await load('lib/production.ts')).productionReady(pending),false);
+  const context={params:Promise.resolve({id:receipt.id})};const u=new URL(receipt.trackingUrl),endpoint=base+'/api/track/'+receipt.id+'?token='+u.hash.slice(1);
+  const read=await trackRoute.GET(new Request(endpoint),context);assert.equal(read.status,200);const data=await read.json();assert.equal(data.shirtDetailsStatus,'pending');assert.equal(data.canEditShirts,true);assert.equal(read.headers.get('Cache-Control').includes('no-store'),true);
+  const shirts=Array.from({length:4},(_,i)=>({sizeType:i===0?'child':'adult',size:i===0?'8':'M',color:'black'}));
+  const patch=(value,origin=base,url=endpoint)=>trackRoute.PATCH(new Request(url,{method:'PATCH',headers:{origin,'Content-Type':'application/json'},body:JSON.stringify(value)}),context);
+  assert.equal((await patch({shirts,version:data.version},'https://attacker.test')).status,403);
+  assert.equal((await patch({shirts,version:data.version},base,base+'/api/track/'+receipt.id)).status,404);
+  assert.equal((await patch({shirts,version:data.version,price:1})).status,400);
+  assert.equal((await patch({shirts:shirts.slice(0,3),version:data.version})).status,400);
+  assert.equal((await patch({shirts:[{sizeType:'child',size:'3',color:'black'},...shirts.slice(1)],version:data.version})).status,400);
+  assert.equal((await patch({shirts,version:0})).status,409);
+  const savedResponse=await patch({shirts,version:data.version});assert.equal(savedResponse.status,200);const savedDetails=await savedResponse.json();assert.equal(savedDetails.shirtDetailsStatus,'complete');pending=await store.getOrder(receipt.id);assert.deepEqual(pending.shirts,shirts);assert.equal(pending.price,receipt.price);assert.equal(pending.quantity,4);assert.equal(pending.email,'');assert((await bucket.get('orders/'+receipt.id+'/order.txt')).text);assert.equal((await patch({shirts,version:data.version})).status,409);
+  const locked=await store.saveOrder({...pending,status:'review'},pending.version,'lock fixture','test');assert.equal((await patch({shirts,version:locked.version})).status,409);
+  resetRate();const single=await publicRoute.POST(post('/api/orders',pendingForm(5,1)));assert.equal(single.status,201);assert.equal((await single.json()).price,180);
+  for(const [p,n] of [[0,1],[4,2],[4,3],[5,4]]){resetRate();assert.equal((await publicRoute.POST(post('/api/orders',pendingForm(p,n)))).status,400);}
+  resetRate();const legacyMissing=pendingForm();legacyMissing.delete('shirtDetailsStatus');assert.equal((await publicRoute.POST(post('/api/orders',legacyMissing))).status,400);
+  resetRate();const mismatched=pendingForm();mismatched.set('shirts',JSON.stringify(shirts));assert.equal((await publicRoute.POST(post('/api/orders',mismatched))).status,400);
+  assert.equal(external,0);
+ }finally{globalThis.fetch=beforeFetch;globalThis.testEnv.RESEND_API_KEY=priorKey;globalThis.testEnv.MAIL_FROM=priorFrom;}
+ console.log('PASS: quote saved with optional email and explicit pending sizes; private capability-only, same-origin, bounded size PATCH with version/field/production locks; single shirt 180; group minimum four preserved; zero external requests.');
+}
