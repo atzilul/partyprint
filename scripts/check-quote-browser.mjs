@@ -32,7 +32,7 @@ export async function checkQuoteBrowser(kind){
   const setQ=async n=>{await q.fill(String(n));await q.blur();await page.waitForFunction(n=>document.querySelector('#order-shirt-quantity')?.value===String(n),n);};
   const verifyPrice=async(n,discount=0)=>{const total=round(unit(n)*n*(1-discount));await page.waitForFunction(value=>document.querySelector('.request-price strong')?.textContent.replace(/[^0-9.]/g,'')===String(value),total);};
   try{
-   await page.goto(base+'/',{waitUntil:'networkidle',timeout:45000});await form.scrollIntoViewIfNeeded();
+   await page.goto(base+'/',{waitUntil:'networkidle',timeout:45000});await form.evaluate(el=>el.scrollIntoView({block:'start'}));
    if(kind==='quantity-browser'){
     for(let p=0;p<5;p++){await form.getByRole('combobox',{name:'בחירת חבילה',exact:true}).selectOption(String(p));await setQ(4);await verifyPrice(4);check('Group '+p+' retains minimum four',await form.getByRole('button',{name:'הפחתת חולצה',exact:true}).isDisabled());await setQ(7);await verifyPrice(7);}
     for(const n of [4,5,6,7,8,9,10,14,15,19,20,21,100]){await setQ(n);await verifyPrice(n);}check('Reached tiers hold through the next threshold, including intermediate counts',true);
