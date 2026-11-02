@@ -68,3 +68,6 @@ main:has(.pp-request:focus-within)>.mobile-sticky,body:has(.pp-size-dialog[open]
 
 /* Show price bands as ranges, while keeping long configured ranges readable. */
 .pp-request .pp-price-ladder button>span{white-space:normal;line-height:1.25}.pp-price-ladder button>span bdi{white-space:nowrap}
+
+/* Explicit contact saving precedes the optional idea screen. */
+.pp-contact-notice{font-size:var(--text-pp-xs);line-height:1.65;color:var(--color-pp-muted);margin:var(--space-pp-lg) 0 0!important}.pp-contact-notice a{text-decoration:underline;text-underline-offset:3px}.pp-contact-saved{display:flex;align-items:center;justify-content:space-between;gap:var(--space-pp-sm);padding:var(--space-pp-sm) var(--space-pp-md);margin-bottom:var(--space-pp-lg);border-radius:var(--radius-pp-input);background:var(--color-pp-success-soft);color:var(--color-pp-success);font-size:var(--text-pp-sm)}.pp-contact-saved>span{display:flex;gap:var(--space-pp-xs);align-items:center}.pp-progress[data-complete=false] .pp-progress-fill-2{background:var(--color-pp-acid)}.pp-request[data-step="2"] .pp-privacy{display:none}.pp-request[data-step="2"] #request-email-help{font-size:var(--text-pp-xs);font-weight:400;color:var(--color-pp-muted)}

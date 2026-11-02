@@ -7,7 +7,7 @@ const {chromium}=require('playwright');
 const base=(process.env.PARTYPRINT_PUBLIC_URL||'https://partyprint.co.il').replace(/\/$/,'');
 if(!['https://partyprint.co.il','http://127.0.0.1:3333'].includes(base))throw Error('Unexpected audit origin');
 const gaId='G-PARTYPRINTQA',pixel='9999999999999999';
-const report={base,at:new Date().toISOString(),scope:'Isolated client contract: synthetic contact fields, mocked analytics vendors and mocked order responses; no network writes or emails',scenarios:[],errors:[]};
+const report={base,at:new Date().toISOString(),scope:'Isolated client contract: synthetic contact fields, mocked analytics vendors and mocked contact/order responses; no network writes or emails',scenarios:[],errors:[]};
 if(!base.includes('127.0.0.1')){const expected=createBuildIdentity(),live=await fetch(base+'/api/release').then(r=>r.json());report.release={expectedFingerprint:expected.sourceFingerprint,publicFingerprint:live.sourceFingerprint,publicCommit:live.sourceCommit};if(expected.sourceState!=='clean'||live.sourceState!=='clean'||expected.sourceFingerprint!==live.sourceFingerprint){report.status='waiting_for_matching_deployment';await mkdir('artifacts',{recursive:true});await writeFile('artifacts/measurement-contract-production.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));process.exit(0);}}
 const browser=await chromium.launch({headless:true});
 try{
@@ -18,7 +18,7 @@ try{
    if(denied)localStorage.setItem('partyprint-consent-v1',JSON.stringify({analytics:'denied',at:Date.now()}));
   },{denied:!!scenario.denied});
   const page=await context.newPage(),checks=[],clientErrors=[];
-  const counts={mockOrders:0,firstPartyEvents:0,googleScripts:0,metaScripts:0,blockedWrites:0,networkWrites:0};
+  let capturedContact=null;const counts={mockContacts:0,mockOrders:0,firstPartyEvents:0,googleScripts:0,metaScripts:0,blockedWrites:0,networkWrites:0};
   let releasePromo;
   const promoGate=new Promise(resolve=>{releasePromo=resolve;});
   page.on('pageerror',e=>clientErrors.push(e.message.slice(0,200)));
@@ -30,9 +30,17 @@ try{
    if(url.hostname==='connect.facebook.net'&&method==='GET'){counts.metaScripts++;return route.fulfill({status:200,contentType:'application/javascript',body:'/* vendor intentionally stubbed */'});}
    if(!['GET','HEAD','OPTIONS'].includes(method)){
     if(url.origin===base&&url.pathname==='/api/events'){counts.firstPartyEvents++;return route.fulfill({status:204,body:''});}
+    if(url.origin===base&&url.pathname==='/api/contacts'){
+     const v=req.postDataJSON();
+     if(v.action==='read')return route.fulfill({status:capturedContact?200:404,contentType:'application/json',body:JSON.stringify(capturedContact?{saved:true,id:capturedContact.id,version:1,details:capturedContact.details}:{error:'not found'})});
+     counts.mockContacts++;
+     if(counts.mockContacts<3)return route.fulfill({status:counts.mockContacts===1?503:200,contentType:'application/json',body:JSON.stringify(counts.mockContacts===1?{error:'כשל שמירה מדומה'}:{ok:true})});
+     capturedContact={id:v.id,details:{name:v.name,phone:v.phone,email:v.email,package:v.package,quantity:v.quantity,mode:v.mode,eventDate:v.eventDate,source:v.source}};
+     return route.fulfill({status:201,contentType:'application/json',body:JSON.stringify({saved:true,id:v.id,version:1,details:capturedContact.details,mailStatus:'accepted'})});
+    }
     if(url.origin===base&&url.pathname==='/api/orders'){
      counts.mockOrders++;
-     const response=counts.mockOrders===1?{status:500,body:{error:'כשל מדומה לבדיקת הממשק'}}:counts.mockOrders===2?{status:200,body:{ok:true}}:{status:201,body:{id:'12345678-1234-4234-8234-123456789abc',summary:'בדיקת ממשק בלבד; לא נוצרה הזמנה',emailSent:false}};
+     const response=counts.mockOrders===1?{status:500,body:{error:'כשל מדומה לבדיקת הממשק'}}:counts.mockOrders===2?{status:200,body:{ok:true}}:{status:201,body:{id:capturedContact.id,summary:'בדיקת ממשק בלבד; לא נוצרה הזמנה',emailSent:false}};
      return route.fulfill({status:response.status,contentType:'application/json',body:JSON.stringify(response.body)});
     }
     counts.blockedWrites++;return route.abort();
@@ -111,31 +119,34 @@ try{
     s=await snapshot();
     check('Approval does not duplicate GA or Meta PageView',eventCount(s,'page_view')===1&&metaEvents(s).filter(x=>x[1]==='PageView').length===1);
     const form=page.locator('#order-form');await form.scrollIntoViewIfNeeded();
-    await form.getByRole('button',{name:'מגניב, ממשיכים לרעיון שלנו!',exact:true}).click();
+    await form.getByRole('button',{name:'מגניב, ממשיכים לפרטים!',exact:true}).click();
     await form.locator('input[name="name"]').fill('בדיקת פרטיות סינתטית');
     await form.locator('input[name="phone"]').fill('0500000000');
-    await form.locator('.optional-order-details summary').click();
     await form.locator('input[name="email"]').fill('qa-measurement@example.invalid');
     for(let attempt=1;attempt<=3;attempt++){
-     await form.getByRole('button',{name:'יאללה, הופכים את הרעיון לחולצה!',exact:true}).click();
-     await page.waitForFunction(n=>window.dataLayer?.some(x=>Array.from(x)[0]==='event'&&Array.from(x)[1]===(n<3?'form_submit_error':'generate_lead')),attempt);
-     if(attempt===1)await form.getByRole('button',{name:'יאללה, הופכים את הרעיון לחולצה!',exact:true}).waitFor({state:'visible'});
-     if(attempt===2)await page.waitForFunction(()=>window.dataLayer?.filter(x=>Array.from(x)[0]==='event'&&Array.from(x)[1]==='form_submit_error').length===2);
+     await form.getByRole('button',{name:'שומרים פרטים וממשיכים לרעיון',exact:true}).click();
+     await page.waitForFunction(n=>window.dataLayer?.filter(x=>Array.from(x)[0]==='event'&&Array.from(x)[1]===(n<3?'contact_save_error':'generate_lead')).length>=(n<3?n:1),attempt);
      s=await snapshot();
-     check(attempt===1?'Server error emits no lead':attempt===2?'Missing save confirmation emits no lead':'Save confirmation emits exactly one lead',eventCount(s,'generate_lead')===(attempt===3?1:0));
+     check(attempt===1?'Failed contact save emits no lead':attempt===2?'Missing contact confirmation emits no lead':'Confirmed contact save emits exactly one lead',eventCount(s,'generate_lead')===(attempt===3?1:0));
+    }
+    check('No complete order is created before optional idea step',counts.mockOrders===0&&await form.locator('.pp-contact-saved').isVisible());
+    s=await snapshot();
+    if(scenario.late){check('No Meta lead before explicit consent',metaEvents(s).filter(x=>x[1]==='Lead').length===0);await page.getByRole('button',{name:'אישור',exact:true}).click();await page.waitForFunction(()=>window.fbq?.queue?.some(x=>x[1]==='Lead'));s=await snapshot();}
+    check('Captured contact emits one Meta Lead when consent permits',metaEvents(s).filter(x=>x[1]==='Lead').length===1);
+    for(let attempt=1;attempt<=3;attempt++){
+     await form.getByRole('button',{name:'יאללה, הופכים את הרעיון לחולצה!',exact:true}).click();
+     await page.waitForFunction(n=>window.dataLayer?.filter(x=>Array.from(x)[0]==='event'&&Array.from(x)[1]===(n<3?'form_submit_error':'complete_order_request')).length>=(n<3?n:1),attempt);
+     s=await snapshot();
+     check(attempt===1?'Final server error keeps the saved lead without completion':attempt===2?'Missing final confirmation is not completion':'Final confirmation emits one completion',eventCount(s,'generate_lead')===1&&eventCount(s,'complete_order_request')===(attempt===3?1:0));
     }
     s=await snapshot();
-    check('Saved receipt contains no personal data in measurement',!JSON.stringify(s).includes('qa-measurement@example.invalid')&&!JSON.stringify(s).includes('0500000000')&&!JSON.stringify(s).includes('12345678-1234-4234-8234-123456789abc'));
+    check('Final completion does not duplicate the contact Lead',metaEvents(s).filter(x=>x[1]==='Lead').length===1&&metaEvents(s).filter(x=>x[1]==='RequestComplete').length===1);
+    check('Contact data and local receipt key never reach measurement',!JSON.stringify(s).includes('qa-measurement@example.invalid')&&!JSON.stringify(s).includes('0500000000')&&!JSON.stringify(s).includes(capturedContact.id));
     check('Quote start uses custom FormStart rather than checkout',metaEvents(s).every(x=>x[1]!=='InitiateCheckout')&&(scenario.late||metaEvents(s).some(x=>x[1]==='FormStart')));
-    if(scenario.late){check('No Meta lead before explicit consent',metaEvents(s).filter(x=>x[1]==='Lead').length===0);await page.getByRole('button',{name:'אישור',exact:true}).click();await page.waitForFunction(()=>window.fbq?.queue?.some(x=>x[1]==='Lead'));s=await snapshot();}
-    check('Saved receipt emits one Meta Lead when consent permits',metaEvents(s).filter(x=>x[1]==='Lead').length===1);
-    await page.reload({waitUntil:'networkidle'});
-    await page.waitForFunction(()=>window.dataLayer?.some(x=>Array.from(x)[1]==='page_view'));
-    s=await snapshot();check('Refreshing thanks does not emit another GA or Meta lead',eventCount(s,'generate_lead')===0&&metaEvents(s).filter(x=>x[1]==='Lead').length===0);
-    // Reload resets vendor queues; prior exactly-once assertion was above.
-    check('Reload retains local conversion deduplication',metaEvents(s).filter(x=>x[1]==='Lead').length===0);
-    check('Contact values and response ID are absent from analytics payloads',!/[א-ת]{2,}\sפרטיות|0500000000|qa-measurement|example.invalid|12345678-1234-4234-8234-123456789abc/.test(JSON.stringify(s)));
-    check('Meta init has no advanced-matching contact argument',s.meta.filter(x=>x[0]==='init').every(x=>x.length===2));
+    await page.reload({waitUntil:'networkidle'});await page.waitForFunction(()=>window.dataLayer?.some(x=>Array.from(x)[1]==='page_view'));
+    s=await snapshot();check('Reload emits no duplicate lead or completion',eventCount(s,'generate_lead')===0&&eventCount(s,'complete_order_request')===0&&metaEvents(s).filter(x=>x[1]==='Lead'||x[1]==='RequestComplete').length===0);
+    check('Contact values are absent from analytics payloads',!/[א-ת]{2,}\sפרטיות|0500000000|qa-measurement|example.invalid/.test(JSON.stringify(s)));
+    check('Meta init has no advanced matching contact argument',s.meta.filter(x=>x[0]==='init').every(x=>x.length===2));
     await page.evaluate(()=>{document.cookie='_ga=qa; path=/';document.cookie='_fbp=qa; path=/';});
     await page.getByRole('button',{name:'הגדרות פרטיות ועוגיות',exact:true}).click();
     await page.getByRole('button',{name:'לא, תודה',exact:true}).click();

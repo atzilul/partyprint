@@ -45,7 +45,7 @@ Hosting environment (Hostinger): `GA_MEASUREMENT_ID=[account identifier omitted]
 - Google consent mode: everything granted unless the visitor opts out.
 - Never measured: `/admin`, `/track/*`, `/design/*`, `/api/*` and the Sites
   sign-in routes (no notice, no tags, no events).
-- **Privacy policy:** `/privacy-policy` (draft pending legal approval; the old
+- **Privacy policy:** `/privacy-policy` (describes implemented processing; legal review and operator identity are not verified; the old
   `/policies/privacy` URL permanently redirects there). Linked from the notice,
   the footer of every public page and the sitemap.
 
@@ -63,16 +63,18 @@ Hosting environment (Hostinger): `GA_MEASUREMENT_ID=[account identifier omitted]
 | `form_validation_error` | Client-side check fails | `error_type` |
 | `form_submit_error` | `/api/orders` fails | `error_type` (from HTTP status, never the message) |
 | `faq_open` | An FAQ answer is opened | `faq_index` |
-| **`generate_lead`** | Only after `/api/orders` returns the saved request | `request_mode`, `package_type`, `quantity_band`, `coupon_status` |
+| `contact_save_attempt` | Explicit contact-save button after field validation | `request_mode`, `package_type` |
+| `contact_save_error` | Contact API failed or did not confirm save | `error_type` |
+| `complete_order_request` | Only after the complete request is confirmed by `/api/orders` | `request_mode`, `package_type`, `quantity_band`, `coupon_status` |
+| **`generate_lead`** | Only after `/api/contacts` confirms saved contact details (legacy completed requests also qualify) | `request_mode`, `package_type`, `quantity_band`, `coupon_status` |
 
 ### Form stages
 
-Order requests (`request_mode` = `order` or `custom`):
-All request modes use two screens: `form_step` 1 package (quantity and optional event date) → `form_step` 2 details (required name/phone; optional brief/images/email) → `form_submit_attempt` → confirmed server save → `/thanks` → `generate_lead`.
+Order requests use three screens: 1 `package` (shirts, quantity and optional event date) → 2 `details` (required name, phone, email) → explicit `contact_save_attempt` → acknowledged contact save → `generate_lead` → 3 `idea` (optional brief/images) → final `form_submit_attempt` → confirmed order save → `/thanks` → `complete_order_request`.
 
-After saving, the customer may open `form_step` 3 `shirts_optional`. Explicit size confirmation updates the existing request through its private capability and emits `form_field_complete shirts`, never another Lead. Adult M/black is a suggestion, not a confirmed print specification. Group packages retain4–100 shirts; a separate single-shirt SKU is ILS180 including design/printing/delivery.
+The contact is a separate record, not an order. Saving it does not redeem a coupon or send a customer reminder. Optional sizes remain available throughout and in the private post-save editor (`shirts_optional`); explicit confirmation emits `form_field_complete shirts`. All visible occasions start at four; the same quantity control can reduce to one. One uses the configured unit price; two/three use the first tier; all other quantities use the reached tier.
 
-`trackSavedLead` deduplicates GA and Meta separately using a local tab receipt key (never transmitted). Reload/direct thanks cannot manufacture another Lead. If consent is granted on the confirmation screen, Meta can emit its previously unsent Lead without duplicating GA. An email failure does not invalidate a saved request.
+`trackSavedLead` and `trackSavedCompletion` deduplicate GA and Meta separately using distinct local-tab receipt keys (never transmitted). Completion reuses the contact ID, preventing another Lead. Late consent may emit the previously unsent Meta event without duplicating GA. Failed/unacknowledged contact saves emit no Lead; failed final saves emit no completion. An internal email failure does not invalidate a persisted contact. Reloading an acknowledged contact can recover its receipt within the private capability's 24-hour life.
 
 ### Contact events (one name per channel)
 
@@ -91,7 +93,7 @@ currency or transaction ID is sent.
 
 `PageView` (each page), `ViewContent` (`select_package`), custom `FormStart`
 (`begin_order_request`; a quote request is not a checkout), `Lead` (`generate_lead`), `Contact` (WhatsApp / email /
-phone, `content_name` = channel), and custom `FormStep` / `FormSubmitAttempt`.
+phone, `content_name` = channel), and custom `FormStep` / `FormSubmitAttempt` / `RequestComplete` (`complete_order_request`).
 Parameters are the same allowlisted values as GA (`content_category` = package
 type or CTA location). Before a choice, only `PageView` and only in the Israel
 notice mode (see above).
@@ -111,7 +113,7 @@ Anything else is dropped before sending.
 - `request_mode`: `order`, `custom`, `lead`
 - `quantity_band`: `1-5`, `6-10`, `11-20`, `21-50`, `51-100`
 - `coupon_status`: `accepted`, `rejected`, `empty`, `error`, `none`
-- `step_number` / `step_name`: `1 package`, `2 details`, `3 shirts_optional`
+- `step_number` / `step_name`: `1 package`, `2 details`, `3 idea`; legacy/private size editor `shirts_optional`
 - `field_name`: `shirts`, `name`, `phone`, `email`, `event_date`, `brief`, `images`
 - `error_type`: `missing_name`, `invalid_phone`, `invalid_email`, `invalid_event_date`,
   `missing_shirt_choice`, `upload_limit`, `network`, `rate_limited`,
@@ -142,10 +144,14 @@ server with Google and Meta requests blocked (scratch test).
 
 ## Campaign offer and public QA (Q02)
 
-A source plus paid UTM medium qualifies this tab for a server-verified public promotion; `fbclid` alone does not. `/api/promo` supplies the active code, and `/api/pricing` checks quantity, package, dates, uses and subtotal. The banner no longer exposes coupon codes to all visitors. Only confirmed discounts show an applied badge; codes never go to measurement.
+A source plus paid UTM medium qualifies this tab for a server-verified public promotion; `fbclid` alone does not. `/api/promo` supplies the active code, and `/api/pricing` checks quantity, package, dates, uses and subtotal. The top banner displays the active owner-managed promoText and code from `/api/promo`; the campaign rule controls automatic application in the form. Only confirmed discounts show an applied badge; codes never go to measurement.
 
 The release acceptance record is [quote-request-flow.md](quote-request-flow.md). Public browser QA stubs order/tracking writes and vendor calls; the separate public pricing quote is non-mutating. Exact deployment receipt, external tag account delivery, Advanced Matching and actual end-to-end mail are separate evidence, not inferred from these mocks.
 
 ## Q03 — visible optional sizes (2026-11-02)
 
 Both request screens now expose an optional size/color dialog. Explicit confirmation emits the existing allowlisted form_field_complete(shirts); opening/cancelling the dialog neither submits nor generates a Lead. Customers can still save without sizes, and confirmed selections are stored with any request mode. The post-save editor remains optional form_step3 shirts_optional. Its version/current-quantity refresh and bulk Undo do not create another request or Lead. Consent/region/refusal rules are unchanged. See [form-ux-plan.md](form-ux-plan.md) for public-source, API, browser and testing limits; no external analytics-account setting or real vendor delivery was verified by these mocks.
+
+## Q04 — contact captured before optional idea (2026-11-02)
+
+The new flow supersedes Q02/Q03 screen-order descriptions above. Required email is validated on both contact and final endpoints. Early Lead and completed-request metrics are separate; external GA4 key-event/account changes and real Meta/Resend delivery have not been verified. Isolated API/browser fixtures block actual recipients and production writes. See [contact-capture.md](contact-capture.md).

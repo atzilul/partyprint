@@ -70,7 +70,7 @@ export function quantityBand(quantity: number): string | undefined {
 export function requestMode(mode: string): string | undefined {
   return mode === 'lead' || mode === 'custom' || mode === 'order' ? mode : undefined;
 }
-export const STEP_NAMES = ['package', 'details', 'shirts_optional'] as const;
+export const STEP_NAMES = ['package', 'details', 'idea', 'shirts_optional'] as const;
 
 /** Maps a failed /api/orders response to a fixed category (never the message text). */
 export function submitErrorType(status: number | 'network' | 'no_confirmation'): string {
@@ -112,6 +112,9 @@ const EVENTS: Record<string, readonly string[]> = {
   form_submit_error: ['error_type'],
   faq_open: ['faq_index'],
   generate_lead: ['request_mode', 'package_type', 'quantity_band', 'coupon_status'],
+  complete_order_request: ['request_mode', 'package_type', 'quantity_band', 'coupon_status'],
+  contact_save_attempt: ['request_mode', 'package_type'],
+  contact_save_error: ['error_type'],
   // One named event per contact channel.
   contact_order_form: ['request_mode', 'package_type', 'quantity_band'],
   contact_consult_form: [],
@@ -136,6 +139,7 @@ function metaEvent(name: string, p: Params): [method: 'track' | 'trackCustom', e
   switch (name) {
     case 'select_package': return ['track', 'ViewContent', p.package_type ? {content_category: p.package_type} : {}];
     case 'begin_order_request': return ['trackCustom', 'FormStart', p.package_type ? {content_category: p.package_type} : {}];
+    case 'complete_order_request': return ['trackCustom', 'RequestComplete', p];
     case 'generate_lead': return ['track', 'Lead', {...(p.package_type ? {content_category: p.package_type} : {}), ...(p.request_mode ? {content_name: p.request_mode} : {})}];
     case 'contact_whatsapp': return ['track', 'Contact', {content_name: 'whatsapp', ...(p.cta_location ? {content_category: p.cta_location} : {})}];
     case 'contact_email': return ['track', 'Contact', {content_name: 'email', ...(p.cta_location ? {content_category: p.cta_location} : {})}];
@@ -438,12 +442,16 @@ export function installInteractionTracking() {
 // A saved receipt is a local deduplication key only; its id never leaves the tab
 // through measurement. Consent can be granted after the confirmation appears.
 const receiptEvents=new Map<string,{ga:boolean;meta:boolean}>();
-export async function trackSavedLead(localReceiptId:string,params:Record<string,string|number|undefined>){
+async function trackSavedRequestEvent(name:'generate_lead'|'complete_order_request',localReceiptId:string,params:Record<string,string|number|undefined>){
  if(!/^[a-f0-9-]{36}$/.test(localReceiptId)||!enabled())return;
- const safe=clean('generate_lead',params);if(!safe)return;
+ const safe=clean(name,params);if(!safe)return;
  await startAnalytics();if(!enabled()||tagsState!=='ready')return;
- let sent=receiptEvents.get(localReceiptId);if(!sent){try{const stored=JSON.parse(sessionStorage.getItem('partyprint-lead-'+localReceiptId)||'null');sent={ga:stored?.ga===true,meta:stored?.meta===true};}catch{sent={ga:false,meta:false};}receiptEvents.set(localReceiptId,sent);}
- if(!sent.ga&&measurementId&&window.gtag){window.gtag('event','generate_lead',safe);sent.ga=true;}
- if(!sent.meta&&metaReady()&&metaAllowed('event')){const event=metaEvent('generate_lead',safe);if(event&&window.fbq){window.fbq(event[0],event[1],event[2]);sent.meta=true;}}
- try{sessionStorage.setItem('partyprint-lead-'+localReceiptId,JSON.stringify(sent));}catch{}
+ const storageKey=(name==='generate_lead'?'partyprint-lead-':'partyprint-complete-')+localReceiptId;
+ let sent=receiptEvents.get(storageKey);if(!sent){try{const stored=JSON.parse(sessionStorage.getItem(storageKey)||'null');sent={ga:stored?.ga===true,meta:stored?.meta===true};}catch{sent={ga:false,meta:false};}receiptEvents.set(storageKey,sent);}
+ if(!sent.ga&&measurementId&&window.gtag){window.gtag('event',name,safe);sent.ga=true;}
+ if(!sent.meta&&metaReady()&&metaAllowed('event')){const event=metaEvent(name,safe);if(event&&window.fbq){window.fbq(event[0],event[1],event[2]);sent.meta=true;}}
+ try{sessionStorage.setItem(storageKey,JSON.stringify(sent));}catch{}
 }
+
+export const trackSavedLead=(id:string,params:Record<string,string|number|undefined>)=>trackSavedRequestEvent('generate_lead',id,params);
+export const trackSavedCompletion=(id:string,params:Record<string,string|number|undefined>)=>trackSavedRequestEvent('complete_order_request',id,params);

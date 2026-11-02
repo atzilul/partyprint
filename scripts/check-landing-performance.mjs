@@ -43,7 +43,7 @@ try{
     page.on('response',async r=>{
      const u=new URL(r.url());
      if(u.origin===origin&&(u.pathname==='/'||u.pathname.startsWith('/fonts/')||u.pathname.includes('.woff2')||u.pathname.includes('party-crew')||u.pathname.includes('rubik'))){
-      const h=await r.allHeaders();headers.push({url:safe(r.url()),status:r.status(),cacheControl:h['cache-control']||null,encoding:h['content-encoding']||null,contentType:h['content-type']||null,contentLength:h['content-length']||null});
+      let h;try{h=await r.allHeaders();}catch{return}headers.push({url:safe(r.url()),status:r.status(),cacheControl:h['cache-control']||null,encoding:h['content-encoding']||null,contentType:h['content-type']||null,contentLength:h['content-length']||null});
      }
     });
     await page.addInitScript(()=>{

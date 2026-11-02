@@ -41,12 +41,12 @@ function providerFailure(status:number,body:unknown,recipients:string[]){
  // Never store or expose raw provider text, request bodies, or credentials.
  return mailFailure(code,recipients,status);
 }
-export async function sendResendMail(env:MailEnv,payload:{to:string[];subject:string;html:string;text:string;reply_to?:string},idempotencyKey:string):Promise<MailResult>{
+export async function sendResendMail(env:MailEnv,payload:{to:string[];subject:string;html?:string;text:string;reply_to?:string},idempotencyKey:string,timeoutMs=15000):Promise<MailResult>{
  const config=mailConfiguration(env);
  if(config.issue)return {...config.issue,recipients:payload.to};
  if(!payload.to.length)return mailFailure('no_recipients');
  try{
-  const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+config.apiKey,'Content-Type':'application/json','Idempotency-Key':idempotencyKey},body:JSON.stringify({from:config.sender,...payload}),signal:AbortSignal.timeout(15000)});
+  const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+config.apiKey,'Content-Type':'application/json','Idempotency-Key':idempotencyKey},body:JSON.stringify({from:config.sender,...payload}),signal:AbortSignal.timeout(timeoutMs)});
   const body:unknown=await response.json().catch(()=>null);
   if(!response.ok)return providerFailure(response.status,body,payload.to);
   const id=body&&typeof body==='object'&&'id' in body?body.id:null;

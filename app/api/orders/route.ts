@@ -9,11 +9,17 @@ import {createCustomerAccess} from '@/lib/customer-access';
 import {mailConfiguration} from '@/lib/mail-delivery';
 import {notifyOrder,notifyCustomer} from '@/lib/order-mail';
 import {createOrderAccess} from '@/lib/order-access';
-import {insertOrder,saveOrder} from '@/lib/order-store';
+import {insertOrder,saveOrder,getOrder} from '@/lib/order-store';
 import {getPricing,getCoupon} from '@/lib/studio-settings';
 import {priceFor,couponDiscount} from '@/lib/pricing';
 import {imageUploadError} from '@/lib/upload-limits';
 import {cleanSingleLine} from '@/lib/text';
+import {contactGrant,validContactKey} from '@/lib/contact-leads';
+import type {Order} from '@/lib/orders';
+async function replayReceipt(order:Order){
+ let trackingUrl='';try{trackingUrl=await createCustomerAccess(order.id);}catch{console.error('Customer access unavailable');}
+ return Response.json({id:order.id,summary:orderSummary(order),emailSent:order.emailStatus==='accepted',trackingUrl,customerEmailSent:order.customerEmailStatus==='accepted',quantity:order.quantity,price:order.price,package:order.package,packageName:order.packageName,shirtDetailsStatus:order.shirtDetailsStatus||'complete',imagesCount:order.images.length,replayed:true},{headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
+}
 const fail=(error:string,status=400)=>Response.json({error},{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 export async function POST(request:Request){
  if(request.headers.get('origin')!==new URL(request.url).origin)return fail('הבקשה אינה מורשית.',403);
@@ -27,12 +33,17 @@ export async function POST(request:Request){
  if(!count)return fail('נשלחו יותר מדי פניות. נסו שוב בעוד שעה או פנו ב־WhatsApp.',429);
  await bindings.DB.prepare('DELETE FROM form_rate_limits WHERE expires_at < ?').bind(now).run();
  const data=await readLimitedForm(request);if(String(data.get('website')||''))return fail('לא ניתן לשלוח את הפנייה.',400);
+ const contactId=String(data.get('contactId')||''),contactToken=String(data.get('contactToken')||'');
+ if(contactId||contactToken){
+  if(!validContactKey(contactId,contactToken)||!await contactGrant(contactId,contactToken))return fail('שמירת פרטי הקשר פגה. חזרו לשלב הפרטים ושמרו אותם שוב.',404);
+  const existing=await getOrder(contactId);if(existing)return existing.contactCaptureId===contactId?replayReceipt(existing):fail('שמירת הפנייה אינה זמינה.',404);
+ }
  const name=cleanSingleLine(String(data.get('name')||''),100),phone=String(data.get('phone')||'').trim(),email=String(data.get('email')||'').trim(),brief=String(data.get('brief')||'');const pack=Number(data.get('package')),quantity=Number(data.get('quantity')),mode=String(data.get('mode'));
  const eventDate=String(data.get('eventDate')||'');if(eventDate&&(!validCalendarDate(eventDate)||eventDate<new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jerusalem'})))return fail('בחרו תאריך אירוע מהיום והלאה.');const source=String(data.get('source')||'direct').replace(/[^a-zA-Z0-9_ .-]/g,'').slice(0,100)||'direct';const pricing=await getPricing();let subtotal:number;try{subtotal=priceFor(pricing,pack,quantity)}catch{return fail('בחרו חבילה וכמות חולצות תקינה.')}
  const code=String(data.get('coupon')||'').trim().toUpperCase();let coupon=null,discount=0;if(code){coupon=await getCoupon(code);if(!coupon)return fail('קוד המבצע לא נמצא.');try{discount=couponDiscount(coupon,subtotal,quantity,pack)}catch{return fail('קוד המבצע אינו פעיל או לא מתאים להזמנה.')}}const total=Math.round((subtotal-discount)*100)/100;
  if(data.has('expectedPrice')&&Number(data.get('expectedPrice'))!==total)return fail('המחיר עודכן. בדקו את הסכום החדש ולחצו שוב על שליחה.',409);
  if(!name||name.length>100||!validPhone(phone)||brief.length>3000||email.length>150||!['lead','order','custom'].includes(mode))return fail('בדקו שהשם והטלפון מלאים ותקינים.');
- if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return fail('כתובת המייל אינה תקינה.');
+ if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return fail('כתובת המייל אינה תקינה.');
  let shirts:unknown;try{shirts=JSON.parse(String(data.get('shirts')||'[]'))}catch{return fail('בחרו מידות וצבעים תקינים.')}
  const details=String(data.get('shirtDetailsStatus')||'');if(details&&!['pending','complete'].includes(details))return fail('מצב המידות אינו תקין.');
  const shirtDetailsStatus: 'pending'|'complete'=details==='pending'||mode==='lead'&&details!=='complete'?'pending':'complete';
@@ -41,12 +52,12 @@ export async function POST(request:Request){
  const files=data.getAll('images').filter((f):f is File=>f instanceof File&&f.size>0);
  const uploadError=imageUploadError(files);if(uploadError)return fail(uploadError);
  const payloads=[];for(const f of files){const bytes=await f.arrayBuffer();if(!validImage(new Uint8Array(bytes),f.type))return fail('אחד הקבצים אינו תמונת JPG, PNG או WEBP תקינה.');payloads.push({name:f.name,bytes,type:f.type})}
- const id=crypto.randomUUID(),saved:string[]=[];
- const order={shirtDetailsStatus,eventDate,source,stageHistory:[{status:'received',at:new Date().toISOString()}],subtotal,discount,...(coupon?{couponCode:coupon.code}:{}),pricingVersion:pricing.version,id,name,phone,email,brief,package:pack,packageName:packs[pack].name,quantity,price:total,shirts:shirts as ShirtSelection[],baseQuantity:packs[pack].n,extraShirtPrice:pricing.extraShirtPrice,priceStatus:'advertised',mode,createdAt:new Date().toISOString(),status:'received',communicationChannel:email?'email':'whatsapp',communicationStatus:'pending',images:[] as {name:string;key:string;size:number;role:string}[]};
- try{for(let i=0;i<payloads.length;i++){const f=payloads[i],key=`orders/${id}/reference-${i}`;await bindings.BUCKET.put(key,f.bytes,{httpMetadata:{contentType:f.type}});saved.push(key);order.images.push({name:f.name,key,size:f.bytes.byteLength,role:"reference"})}}catch(e){await Promise.allSettled(saved.map(k=>bindings.BUCKET.delete(k)));throw e}
+ const id=contactId||crypto.randomUUID(),uploadBatch=crypto.randomUUID(),saved:string[]=[];
+ const order={...(contactId?{contactCaptureId:contactId}:{}),shirtDetailsStatus,eventDate,source,stageHistory:[{status:'received',at:new Date().toISOString()}],subtotal,discount,...(coupon?{couponCode:coupon.code}:{}),pricingVersion:pricing.version,id,name,phone,email,brief,package:pack,packageName:packs[pack].name,quantity,price:total,shirts:shirts as ShirtSelection[],baseQuantity:packs[pack].n,extraShirtPrice:pricing.extraShirtPrice,priceStatus:'advertised',mode,createdAt:new Date().toISOString(),status:'received',communicationChannel:email?'email':'whatsapp',communicationStatus:'pending',images:[] as {name:string;key:string;size:number;role:string}[]};
+ try{for(let i=0;i<payloads.length;i++){const f=payloads[i],key=`orders/${id}/reference-${uploadBatch}-${i}`;await bindings.BUCKET.put(key,f.bytes,{httpMetadata:{contentType:f.type}});saved.push(key);order.images.push({name:f.name,key,size:f.bytes.byteLength,role:"reference"})}}catch(e){await Promise.allSettled(saved.map(k=>bindings.BUCKET.delete(k)));throw e}
  const summary=orderSummary(order);
- await bindings.BUCKET.put(`orders/${id}/order.txt`,summary,{httpMetadata:{contentType:'text/plain; charset=utf-8'}});
- let stored;try{stored=await insertOrder(order,coupon)}catch(e){await Promise.allSettled([...saved,`orders/${id}/order.txt`].map(k=>bindings.BUCKET.delete(k)));throw e}
+ let stored;try{stored=await insertOrder(order,coupon)}catch(e){await Promise.allSettled(saved.map(k=>bindings.BUCKET.delete(k)));if(contactId){const existing=await getOrder(contactId);if(existing?.contactCaptureId===contactId)return replayReceipt(existing);}throw e}
+ try{await bindings.BUCKET.put(`orders/${id}/order.txt`,summary,{httpMetadata:{contentType:'text/plain; charset=utf-8'}});}catch{console.error('Order text snapshot unavailable; database record is saved');}
  let trackingUrl='';
  const [emailSent,customerEmailSent]=await Promise.all([
   (async()=>{try{const bundleUrl=await createOrderAccess(bindings.BUCKET,id);return await notifyOrder(bindings,stored,bundleUrl)}catch{console.error('Order mail link unavailable');return false}})(),
