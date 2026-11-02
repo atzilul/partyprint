@@ -209,15 +209,15 @@ try{
  delete globalThis.testEnv.RESEND_API_KEY;delete globalThis.testEnv.MAIL_FROM;
  globalThis.fetch=async()=>{quantityNetworkAttempts++;throw Error('External network is forbidden in quantity API QA')};
  const quantityConfig=await settingsStore.getPricing();
- const quantityForm=(pack,n)=>{const f=form();f.delete('images');f.set('package',String(pack));f.set('quantity',String(n));f.set('mode',pack===4?'custom':'order');f.set('shirts',JSON.stringify(Array.from({length:Number.isInteger(n)&&n>=4&&n<=100?n:4},()=>({size:'M',color:'white',sizeType:'adult'}))));return f};
- for(const [pack,n] of [[0,5],[1,4],[2,7],[3,4],[3,14],[4,4],[4,7],[4,21]]){
+ const quantityForm=(pack,n)=>{const f=form();f.delete('images');f.set('package',String(pack));f.set('quantity',String(n));f.set('mode',pack===4?'custom':'order');f.set('shirts',JSON.stringify(Array.from({length:Number.isInteger(n)&&n>=1&&n<=100?n:4},()=>({size:'M',color:'white',sizeType:'adult'}))));return f};
+ for(const [pack,n] of [[0,1],[0,2],[0,3],[0,5],[1,1],[1,4],[2,2],[2,7],[3,3],[3,4],[3,14],[4,1],[4,2],[4,3],[4,4],[4,7],[4,21]]){
   sql.prepare('DELETE FROM form_rate_limits').run();
   const f=quantityForm(pack,n),expected=business.priceFor(quantityConfig,pack,n);f.set('expectedPrice',String(expected));
   const response=await publicRoute.POST(post('/api/orders',f));assert.equal(response.status,201,'quantity '+n+' in package '+pack);
   const submitted=await response.json(),stored=await store.getOrder(submitted.id);
   assert.equal(stored.quantity,n);assert.equal(stored.shirts.length,n);assert.equal(stored.price,expected);assert.equal(submitted.emailSent,false);
  }
- for(const n of [3,4.5,101,NaN]){
+ for(const n of [0,-1,4.5,101,NaN]){
   sql.prepare('DELETE FROM form_rate_limits').run();
   assert.equal((await publicRoute.POST(post('/api/orders',quantityForm(4,n)))).status,400);
  }
@@ -231,7 +231,7 @@ try{
 }finally{
  globalThis.fetch=quantityPriorFetch;globalThis.testEnv.RESEND_API_KEY=quantityPriorKey;globalThis.testEnv.MAIL_FROM=quantityPriorFrom;
 }
-console.log('PASS: all packages support minimum four and arbitrary quantities; actual order API checks quantity, active shirt count and server price in isolated fixtures; zero external network calls.');
+console.log('PASS: all occasions start at four and support reduction to one with authoritative tier pricing; actual order API checks quantity, active shirt count and server price in isolated fixtures; zero external network calls.');
 
 // The quote is saved before optional shirt details. Tests use temporary SQLite
 // and an in-memory bucket; any attempted external request fails this block.
@@ -257,14 +257,14 @@ console.log('PASS: all packages support minimum four and arbitrary quantities; a
   const savedResponse=await patch({shirts,version:data.version});assert.equal(savedResponse.status,200);const savedDetails=await savedResponse.json();assert.equal(savedDetails.shirtDetailsStatus,'complete');pending=await store.getOrder(receipt.id);assert.deepEqual(pending.shirts,shirts);assert.equal(pending.price,receipt.price);assert.equal(pending.quantity,4);assert.equal(pending.email,'');assert((await bucket.get('orders/'+receipt.id+'/order.txt')).text);assert.equal((await patch({shirts,version:data.version})).status,409);
   const locked=await store.saveOrder({...pending,status:'review'},pending.version,'lock fixture','test');assert.equal((await patch({shirts,version:locked.version})).status,409);
   resetRate();const single=await publicRoute.POST(post('/api/orders',pendingForm(5,1)));assert.equal(single.status,201);assert.equal((await single.json()).price,180);
-  for(const [p,n] of [[0,1],[4,2],[4,3],[5,4]]){resetRate();assert.equal((await publicRoute.POST(post('/api/orders',pendingForm(p,n)))).status,400);}
+  for(const [p,n] of [[0,1],[4,2],[4,3]]){resetRate();const small=await publicRoute.POST(post('/api/orders',pendingForm(p,n)));assert.equal(small.status,201);assert.equal((await small.json()).price,business.priceFor(await settingsStore.getPricing(),p,n));}for(const [p,n] of [[4,0],[4,101],[5,4]]){resetRate();assert.equal((await publicRoute.POST(post('/api/orders',pendingForm(p,n)))).status,400);}
   resetRate();const legacyMissing=pendingForm();legacyMissing.delete('shirtDetailsStatus');assert.equal((await publicRoute.POST(post('/api/orders',legacyMissing))).status,400);
   resetRate();const mismatched=pendingForm();mismatched.set('shirts',JSON.stringify(shirts));assert.equal((await publicRoute.POST(post('/api/orders',mismatched))).status,400);
   assert.equal(external,0);
   let optionalMail;globalThis.fetch=async(_url,options)=>{optionalMail=JSON.parse(options.body);return Response.json({id:'optional-email-test'});};
   assert(await mail.notifyOrder({...globalThis.testEnv,RESEND_API_KEY:'re_test_optional',MAIL_FROM:'test@example.com'},pending,link));assert.equal(Object.hasOwn(optionalMail,'reply_to'),false);assert(optionalMail.html.includes('לא נמסר'));
  }finally{globalThis.fetch=beforeFetch;globalThis.testEnv.RESEND_API_KEY=priorKey;globalThis.testEnv.MAIL_FROM=priorFrom;}
- console.log('PASS: quote saved with optional email and explicit pending sizes; private capability-only, same-origin, bounded size PATCH with version/field/production locks; single shirt 180; group minimum four preserved; zero external requests.');
+ console.log('PASS: quote saved with optional email and explicit pending sizes; private capability-only, same-origin, bounded size PATCH with version/field/production locks; single shirt 180; reduction from four down to one is supported without a separate visible product; zero external requests.');
 }
 
 // Optional sizing can now be explicitly confirmed before saving any request

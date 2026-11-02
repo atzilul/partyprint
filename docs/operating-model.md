@@ -63,7 +63,7 @@ the public behavior checks above, and does not prove order or email operation.
 ## Promotion checks
 
 For a requested discount, compare the configured coupon percentage and code
-with the eligible campaign's in-form offer and the server-side order calculation. The public top banner now describes included value without revealing the coupon code. Check that the
+with the eligible campaign's in-form offer and the server-side order calculation. The public top banner must show the active coupon promoText and code returned by /api/promo, as configured by the owner in the admin panel. Preserve the existing value message as the fallback when no active public promotion is configured. Do not replace or hide owner-managed promotion copy without an explicit request. Check that the
 same offer is displayed on desktop and mobile and that the discount is applied
 to a controlled quote. Do not treat hard-coded fallback text or a different
 Sites database as proof that the live coupon works.

@@ -111,15 +111,15 @@ try{
     s=await snapshot();
     check('Approval does not duplicate GA or Meta PageView',eventCount(s,'page_view')===1&&metaEvents(s).filter(x=>x[1]==='PageView').length===1);
     const form=page.locator('#order-form');await form.scrollIntoViewIfNeeded();
-    await form.getByRole('button',{name:'המשך לפרטי קשר',exact:true}).click();
+    await form.getByRole('button',{name:'מגניב, ממשיכים לרעיון שלנו!',exact:true}).click();
     await form.locator('input[name="name"]').fill('בדיקת פרטיות סינתטית');
     await form.locator('input[name="phone"]').fill('0500000000');
     await form.locator('.optional-order-details summary').click();
     await form.locator('input[name="email"]').fill('qa-measurement@example.invalid');
     for(let attempt=1;attempt<=3;attempt++){
-     await form.getByRole('button',{name:'שליחת הפנייה',exact:true}).click();
+     await form.getByRole('button',{name:'יאללה, הופכים את הרעיון לחולצה!',exact:true}).click();
      await page.waitForFunction(n=>window.dataLayer?.some(x=>Array.from(x)[0]==='event'&&Array.from(x)[1]===(n<3?'form_submit_error':'generate_lead')),attempt);
-     if(attempt===1)await form.getByRole('button',{name:'שליחת הפנייה',exact:true}).waitFor({state:'visible'});
+     if(attempt===1)await form.getByRole('button',{name:'יאללה, הופכים את הרעיון לחולצה!',exact:true}).waitFor({state:'visible'});
      if(attempt===2)await page.waitForFunction(()=>window.dataLayer?.filter(x=>Array.from(x)[0]==='event'&&Array.from(x)[1]==='form_submit_error').length===2);
      s=await snapshot();
      check(attempt===1?'Server error emits no lead':attempt===2?'Missing save confirmation emits no lead':'Save confirmation emits exactly one lead',eventCount(s,'generate_lead')===(attempt===3?1:0));

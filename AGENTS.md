@@ -15,7 +15,9 @@ changes. Never use an old Sites screenshot, saved version, or archive as proof
 of production content or as the base for a source update.
 
 Base source edits on the latest `main`, preserve unreviewed remote changes, and
-never force-push. Keep production orders, uploads, credentials, and runtime
+never force-push. Preserve existing content and features unless the owner explicitly
+asks to remove them. Ask before any unrequested removal, including hiding public
+promotion copy or access to shirt sizing. Keep production orders, uploads, credentials, and runtime
 settings outside Git. Do not change production data while editing source.
 
 After a push, verify that Hostinger built the same commit successfully and that

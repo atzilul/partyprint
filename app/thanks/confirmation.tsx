@@ -1,6 +1,7 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import {Check,MessageCircle,ArrowUpLeft,LoaderCircle,Copy} from 'lucide-react';
+import RequestProgress from '@/components/request-progress';
 import {ShirtOptions,defaultShirts} from '@/components/shirt-options';
 import {SizeGuide} from '@/app/order-experience';
 import {readReceipt,customerApi,safeTrackingUrl} from '@/lib/request-receipt';
@@ -26,7 +27,7 @@ export default function Confirmation(){
  if(!receipt)return <main className="pp-order-flow pp-confirmation wrap"><a className="logo pp-confirmation-logo" href="/">PARTYPRINT</a><section className="pp-confirm-card"><h1>מחפשים את הפנייה שלכם?</h1><p>האישור מופיע בכרטיסייה שממנה נשלח הטופס. אם כבר שלחתם, אפשר להשתמש בקישור המעקב שקיבלתם או לפנות אלינו.</p><a className="pp-primary" href="/#order">לטופס הפנייה<ArrowUpLeft size={18}/></a><a className="pp-text-button" href="https://wa.me/972552896236">שיחה ב־WhatsApp</a></section></main>;
  const reference=receipt.id.slice(0,8).toUpperCase(),tracking=safeTrackingUrl(receipt.trackingUrl,receipt.id),count=orderView?.quantity??receipt.quantity,price=orderView?.price??receipt.price;
  return <main className="pp-order-flow pp-confirmation wrap whatsapp-handoff" data-cta-location="confirmation"><a className="logo pp-confirmation-logo" href="/">PARTYPRINT</a>
- <section className="pp-confirm-card"><div className="pp-confirm-icon"><Check size={24}/></div><h1>הרעיון שלכם בפנים.</h1><p className="pp-confirm-lead">הפנייה נשמרה בסטודיו. נחזור אליכם ב־WhatsApp כדי לתאם את ההמשך.</p>
+ <section className="pp-confirm-card"><RequestProgress stage={2}/><div className="pp-confirm-icon"><Check size={24}/></div><h1>הרעיון שלכם בפנים.</h1><p className="pp-confirm-lead">הפנייה נשמרה בסטודיו. נחזור אליכם ב־WhatsApp כדי לתאם את ההמשך.</p>
  <div className="pp-receipt wa-reference"><span>מספר פנייה</span><b dir="ltr">{reference}</b><button type="button" className="pp-text-button" onClick={()=>void copyReference()} aria-label="העתקת מספר הפנייה"><Copy size={17}/></button></div>{copyNotice&&<p className="pp-help" role="status">{copyNotice}</p>}
  <div className="pp-receipt-details"><span>{count===1?'חולצה אחת':count+' חולצות'}</span><span>{price.toLocaleString('he-IL')} ₪</span><span>{receipt.imagesCount} תמונות צורפו</span></div>
  <a className="pp-primary" target="_blank" rel="noopener noreferrer" href={'https://wa.me/972552896236?text='+encodeURIComponent('היי PARTYPRINT, שלחתי פנייה '+receipt.id+' ואשמח להמשיך בתיאום.')}><MessageCircle size={19}/> ממשיכים ב־WhatsApp</a>
