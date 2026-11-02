@@ -77,6 +77,8 @@ jobs:
       - name: Install isolated browser QA tooling
         run: npm install --prefix /tmp/partyprint-browser --no-save --package-lock=false --ignore-scripts playwright@1.64.1
       - run: /tmp/partyprint-browser/node_modules/.bin/playwright install --with-deps chromium
+      - name: Public non-mutating price quote and thanks noindex
+        run: node scripts/check-public-quote.mjs
       - name: Public form interaction; all writes blocked
         run: node scripts/check-order-browser.mjs
         env:
@@ -98,6 +100,7 @@ jobs:
         with:
           name: order-production-browser
           path: |
+            artifacts/public-quote.json
             artifacts/order-browser-production.json
             artifacts/measurement-contract-production.json
             artifacts/quantity-browser-production.json
