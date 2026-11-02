@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import rubikHeroFont from "./assets/static/rubik-900-hebrew.00d230e36d451b8f.woff2?url&no-inline";
+import assistantTextFont from "./assets/static/assistant-400-hebrew.b531fd61c8afa524.woff2?url&no-inline";
 import "./globals.css";
 import "./fonts.css";
 import "./seo/seo.css";
@@ -51,7 +53,7 @@ export default function RootLayout({
   };
   return (
     <html lang="he" dir="rtl">
-      <head><link rel="preload" href="/fonts/rubik-900.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/><link rel="preload" href="/fonts/assistant-400.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/></head>
+      <head><link rel="preload" href={rubikHeroFont} as="font" type="font/woff2" crossOrigin="anonymous"/><link rel="preload" href={assistantTextFont} as="font" type="font/woff2" crossOrigin="anonymous"/></head>
       <body className="antialiased">{children}<LaunchOffer/><SiteSeoFooter/><AnalyticsConsent/><script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(structuredData).replace(/</g, "\\u003c")}}/></body>
     </html>
   );
