@@ -34,3 +34,11 @@ Primary references checked: https://www.gov.il/BlobFolder/generalpage/manager_du
 ## Status
 
 Draft PR33, based on main c90a082. Local executor unavailable; use the repository's existing CI. Candidate/public acceptance is pending. Hostinger's direct receipt, Sites 28 synchronization, external vendor configuration and Resend delivery are separate unresolved checks.
+
+## Continuation — visible sizing and lighter transitions
+
+The sizing entry uses the existing acid-yellow brand surface, an ink outline, larger shirt/check icon and real shirt-color swatches. Completed selections retain a distinct green state. The same optional dialog and validation remain; its note now correctly explains that selected sizes can be saved with contact capture or completion.
+
+Stage headers and fields enter briefly with transform/opacity; the progress fill uses scale rather than animating layout width. No extra screen, blocking delay, overlay, library or network operation was added. Reduced-motion users get instant state changes. Three-step contact capture, required email and manual owner-only follow-up remain unchanged.
+
+PR33 merged at 264039eb39bcddcee308ceba9982bd21b3010cee. Candidate checks passed TypeScript, 36 regression/contract tests, actual SQLite/API scenarios, production build, SEO, form/quantity/UX/media and consent browser checks. Public performance probe job 125327617551 observed clean 264039e with fingerprint 6b25481d90485c5b1c3872c375ee5bbebc6c7f4d13187226d1a7ac6e509a3fa1: mobile median 1696ms, desktop 440ms (3 lab samples/profile; not field data). The first public form check ran before deployment and reported waiting; it is not acceptance. The new visual continuation will receive the complete public mocked-write QA after deployment. Direct hPanel receipt, Sites28, real Resend delivery and business identity remain open.
