@@ -11,7 +11,9 @@ export const packs=[
 {name:'הרעיון שלכם',tag:'YOUR OWN THING',n:5,price:561.25,desc:'כל רעיון, כל אירוע. עיצוב שנולד מכם.',icon:'✺',cls:'custom',image:'/shirts.webp'},
 {name:'חולצה אחת. מתנה אישית.',tag:'ONE OF A KIND',n:1,price:SINGLE_SHIRT_PRICE,desc:'אדם אחד, סיפור אחד ועיצוב שנוצר במיוחד בשבילו.',icon:'✦',cls:'single',image:'/shirts.webp'}
 ];
-export const MIN_SHIRT_QUANTITY=4;
+// Four is the starting suggestion; customers can reduce the same order to one.
+export const DEFAULT_SHIRT_QUANTITY=4;
+export const MIN_SHIRT_QUANTITY=1;
 export const MAX_SHIRT_QUANTITY=100;
 export function isOrderQuantity(value:unknown):value is number{
  return typeof value==='number'&&Number.isInteger(value)&&value>=MIN_SHIRT_QUANTITY&&value<=MAX_SHIRT_QUANTITY;
