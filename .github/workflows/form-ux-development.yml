@@ -1,0 +1,22 @@
+name: Form UX development
+on:
+  push:
+    branches: [codex/form-ux-2026-11-02]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.1'
+      - run: npm ci --no-audit --no-fund
+      - run: npx tsc --noEmit
+      - run: node --test scripts/search-utils.test.mjs scripts/search-metrics.test.mjs scripts/build-identity.test.mjs scripts/order-quantity.test.mjs scripts/quote-planning.test.mjs
+      - run: node --experimental-strip-types --test scripts/search-content.test.mjs scripts/analytics-contract.test.mjs
+      - run: node scripts/verify-orders.mjs
+      - run: npm run build
