@@ -1,20 +1,24 @@
-.consent-banner{position:fixed;inset:auto 16px max(16px,env(safe-area-inset-bottom)) 16px;z-index:60;display:flex;align-items:center;gap:24px;max-width:980px;margin:0 auto;padding:18px 22px;background:#fff;color:var(--ink,#161616);border:2px solid var(--ink,#161616);border-radius:6px;box-shadow:0 12px 40px #0003;font-family:'Assistant',Arial,sans-serif}
-.consent-copy{display:grid;gap:6px;flex:1}
-.consent-copy strong{font:700 18px/1.2 'Rubik',sans-serif;letter-spacing:-.4px}
-.consent-copy p{font-size:15px;line-height:1.45}
-.consent-copy small{font-size:13px;color:#555}
-.consent-actions{display:flex;gap:10px;flex-shrink:0}
-.consent-actions button{min-height:46px;padding:10px 18px;border-radius:4px;font-size:16px;font-weight:700;border:2px solid var(--ink,#161616)}
-.consent-accept{background:var(--ink,#161616);color:#fff}
-.consent-reject{background:#fff;color:var(--ink,#161616)}
-.consent-accept:hover{background:#000}
-.consent-reject:hover{background:var(--acid,#efff5c)}
-.consent-copy a{text-decoration:underline;text-underline-offset:3px;font-weight:700;white-space:nowrap}
-.consent-settings{display:flex;justify-content:center;align-items:center;gap:6px;padding:14px 16px 22px;background:var(--background,#f5f4ef);color:#555;font-size:14px}
-.consent-settings a,.consent-settings button{background:none;color:#555;font-size:14px;text-decoration:underline;text-underline-offset:3px;padding:4px 8px}
-.consent-settings a:hover,.consent-settings button:hover{color:var(--ink,#161616)}
+/* Compact notice; tracking policy and saved consent are owned by analytics.ts. */
+@import "../tokens.css";
+.consent-banner{position:fixed;inset:auto auto max(12px,env(safe-area-inset-bottom)) 12px;z-index:60;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:var(--space-pp-xs);width:calc(100% - 24px);max-width:440px;max-height:min(420px,calc(100dvh - 116px));padding:var(--space-pp-md);background:var(--color-pp-paper);color:var(--color-pp-ink);border:var(--rule-pp-width) solid var(--color-pp-rule);border-radius:var(--radius-pp-input);box-shadow:0 3px 16px oklch(20% 0 0 / .10);font-family:var(--font-pp-body)}
+.consent-copy{grid-row:1;min-width:0}
+.consent-copy p{margin:0;font-size:var(--text-pp-sm);line-height:1.4}
+.consent-details{grid-row:2;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.consent-details p{margin:var(--space-pp-sm) 0;font-size:var(--text-pp-sm);line-height:1.5;color:var(--color-pp-muted)}
+.consent-details small{display:block;margin-bottom:var(--space-pp-sm);font-size:var(--text-pp-xs);color:var(--color-pp-muted)}
+.consent-details a{text-decoration:underline;text-underline-offset:3px;font-weight:700;color:var(--color-pp-ink)}
+.consent-actions{grid-row:3;display:flex;align-items:center;gap:var(--space-pp-sm)}
+.consent-actions button{min-height:44px;min-width:64px;padding:var(--space-pp-sm) var(--space-pp-md);border:var(--rule-pp-width) solid var(--color-pp-rule);border-radius:var(--radius-pp-input);font-size:var(--text-pp-sm);font-weight:600;line-height:1.2;white-space:nowrap}
+.consent-accept{background:var(--color-pp-ink);color:var(--color-pp-paper)}
+.consent-reject{background:var(--color-pp-paper);color:var(--color-pp-ink)}
+.consent-actions .consent-details-toggle{margin-inline-start:auto;background:var(--color-pp-clear);color:var(--color-pp-muted);border-color:transparent;text-decoration:underline;text-underline-offset:3px}
+.consent-accept:hover{background:var(--color-pp-muted)}
+.consent-reject:hover,.consent-actions .consent-details-toggle:hover{background:var(--color-pp-canvas);color:var(--color-pp-ink)}
+.consent-actions button:active{transform:translateY(1px)}
+.consent-banner button:focus-visible,.consent-banner a:focus-visible{outline:2px solid var(--color-pp-focus);outline-offset:2px}
+.consent-settings{display:flex;justify-content:center;align-items:center;gap:6px;padding:14px 16px 22px;background:var(--background,#f5f4ef);color:var(--color-pp-muted);font-size:14px}
+.consent-settings a,.consent-settings button{background:none;color:var(--color-pp-muted);font-size:14px;text-decoration:underline;text-underline-offset:3px;padding:4px 8px}
+.consent-settings a:hover,.consent-settings button:hover{color:var(--color-pp-ink)}
 @media (max-width:700px){
-.consent-banner{flex-direction:column;align-items:stretch;gap:14px;inset:auto 10px max(10px,env(safe-area-inset-bottom)) 10px;padding:16px}
-.consent-copy p{font-size:14px}
-.consent-actions button{flex:1;padding:10px 12px;font-size:15px;white-space:nowrap}
+ body:has(.mobile-sticky:not([hidden])):not(:has(.pp-request:focus-within)):not(:has(.pp-size-dialog[open])) .consent-banner{bottom:calc(94px + env(safe-area-inset-bottom))}
 }

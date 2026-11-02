@@ -45,7 +45,7 @@ try{
   const snapshot=()=>page.evaluate(()=>({ga:(window.dataLayer||[]).map(x=>Array.from(x)),meta:Array.from(window.fbq?.queue||[]),disabled:window['ga-disable-G-PARTYPRINTQA']===true}));
   const eventCount=(s,name)=>s.ga.filter(x=>x[0]==='event'&&x[1]===name).length;
   const metaEvents=s=>s.meta.filter(x=>x[0]==='track'||x[0]==='trackCustom');
-  let promoLayout=null;
+  let promoLayout=null,consentLayouts=[];
   try{
    await page.goto(base+'/',{waitUntil:'domcontentloaded',timeout:45000});
    await page.locator('.hero').waitFor();
@@ -57,10 +57,44 @@ try{
    const after=await page.locator('.hero').boundingBox();
    promoLayout={heroTopBefore:before.y,heroTopAfter:after.y,deltaPixels:Math.abs(after.y-before.y),note:'Fonts settled; delayed synthetic promo isolates banner-induced movement'};
    if(process.env.PARTYPRINT_EXPECT_STABLE_PROMO==='1')check('Loading promotion does not move hero',promoLayout.deltaPixels<=1);
+   if(!scenario.denied){
+    const banner=page.getByRole('region',{name:'הגדרות פרטיות',exact:true});
+    await banner.waitFor({state:'visible'});
+    const savedBefore=await page.evaluate(()=>localStorage.getItem('partyprint-consent-v1'));
+    for(const width of scenario.name==='Israel notice'?[320,375,414,768,1366]:[scenario.width]){
+     await page.setViewportSize({width,height:600});
+     await page.evaluate(()=>document.fonts.ready);
+     const compact=await banner.boundingBox();
+     check(`Compact notice fits viewport at ${width}px`,compact&&compact.height<=132&&compact.x>=0&&compact.x+compact.width<=width&&compact.y>=0&&compact.y+compact.height<=600);
+     for(const name of ['אישור','לא, תודה','פרטים']){
+      const box=await banner.getByRole('button',{name,exact:true}).boundingBox();
+      check(`Accessible ${name} target at ${width}px`,box&&box.height>=44&&box.width>=44&&box.y>=compact.y&&box.y+box.height<=compact.y+compact.height);
+     }
+     const sticky=await page.locator('.mobile-sticky').isVisible()?await page.locator('.mobile-sticky').boundingBox():null;
+     check(`Notice leaves mobile action visible at ${width}px`,!sticky||compact.y+compact.height<=sticky.y);
+     await banner.getByRole('button',{name:'פרטים',exact:true}).click();
+     await banner.getByRole('link',{name:'מדיניות הפרטיות',exact:true}).waitFor({state:'visible'});
+     const expanded=await banner.boundingBox();
+     check(`Expanded details stay bounded at ${width}px`,expanded&&expanded.height<=420&&expanded.y>=0&&expanded.y+expanded.height<=600);
+     check(`Details toggle exposes expanded state at ${width}px`,await banner.getByRole('button',{name:'פחות פרטים',exact:true}).getAttribute('aria-expanded')==='true');
+     await banner.getByRole('button',{name:'פחות פרטים',exact:true}).click();
+     check(`Details collapse at ${width}px`,await banner.locator('.consent-details').isHidden());
+     consentLayouts.push({width,compactHeight:compact.height,expandedHeight:expanded.height});
+    }
+    check('Reading details does not change consent',await page.evaluate(()=>localStorage.getItem('partyprint-consent-v1'))===savedBefore);
+    await page.setViewportSize({width:scenario.width,height:900});
+    if(scenario.name==='Israel notice')console.log('CONSENT_COMPACT_SCREENSHOT '+(await page.screenshot({type:'jpeg',quality:65})).toString('base64'));
+   }
    if(scenario.denied){
     const s=await snapshot();
     check('Stored refusal loads no Google or Meta tag',counts.googleScripts===0&&counts.metaScripts===0);
     check('Stored refusal emits no page event',eventCount(s,'page_view')===0&&metaEvents(s).length===0&&counts.firstPartyEvents===0);
+    check('Stored refusal does not reopen notice',await page.locator('.consent-banner').count()===0);
+    await page.goto(base+'/privacy-policy',{waitUntil:'networkidle'});
+    await page.getByRole('button',{name:'הגדרות פרטיות ועוגיות',exact:true}).click();
+    check('Settings reopen on policy page with shared tokens',await page.locator('.consent-banner').evaluate(el=>getComputedStyle(el).fontFamily.includes('Assistant')&&getComputedStyle(el).maxWidth==='440px'));
+    await page.getByRole('button',{name:'פרטים',exact:true}).click();
+    check('Saved refusal remains visible in expanded settings',await page.locator('.consent-details').innerText().then(text=>text.includes('המדידה כבויה')));
    }else{
     await page.waitForFunction(()=>window.dataLayer?.some(x=>Array.from(x)[0]==='event'&&Array.from(x)[1]==='page_view'));
     let s=await snapshot();
@@ -118,7 +152,7 @@ try{
    check('No unhandled client exception',clientErrors.length===0);
    check('No network write was forwarded',counts.networkWrites===0);
   }catch(e){report.errors.push({scenario:scenario.name,message:e.message.slice(0,700),clientErrors});}
-  finally{releasePromo();report.scenarios.push({name:scenario.name,checks,counts,promoLayout,clientErrors});await context.close();}
+  finally{releasePromo();report.scenarios.push({name:scenario.name,checks,counts,promoLayout,consentLayouts,clientErrors});await context.close();}
  }
 }finally{await browser.close();}
 await mkdir('artifacts',{recursive:true});
