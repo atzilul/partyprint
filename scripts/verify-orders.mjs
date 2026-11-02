@@ -241,9 +241,9 @@ console.log('PASS: all occasions start at four and support reduction to one with
  globalThis.fetch=async()=>{external++;throw Error('External send forbidden in quote-flow QA')};
  const trackRoute=await load('app/api/track/[id]/route.ts');
  const resetRate=()=>sql.prepare('DELETE FROM form_rate_limits').run();
- const pendingForm=(p=0,n=4)=>{const f=form('');f.delete('images');f.set('package',String(p));f.set('quantity',String(n));f.set('shirts','[]');f.set('shirtDetailsStatus','pending');return f;};
+ const pendingForm=(p=0,n=4)=>{const f=form('contact-required@example.invalid');f.delete('images');f.set('package',String(p));f.set('quantity',String(n));f.set('shirts','[]');f.set('shirtDetailsStatus','pending');return f;};
  try{
-  resetRate();const response=await publicRoute.POST(post('/api/orders',pendingForm()));assert.equal(response.status,201);const receipt=await response.json();let pending=await store.getOrder(receipt.id);assert.equal(pending.email,'');assert.equal(pending.shirtDetailsStatus,'pending');assert.deepEqual(pending.shirts,[]);assert.equal(pending.customerEmailStatus,'not_requested');assert.equal(receipt.quantity,4);assert.equal(receipt.imagesCount,0);assert(receipt.trackingUrl.includes('/track/'+receipt.id+'#'));assert.equal((await load('lib/production.ts')).productionReady(pending),false);
+  resetRate();const response=await publicRoute.POST(post('/api/orders',pendingForm()));assert.equal(response.status,201);const receipt=await response.json();let pending=await store.getOrder(receipt.id);assert.equal(pending.email,'contact-required@example.invalid');assert.equal(pending.shirtDetailsStatus,'pending');assert.deepEqual(pending.shirts,[]);assert.equal(pending.customerEmailStatus,'not_configured');assert.equal(receipt.quantity,4);assert.equal(receipt.imagesCount,0);assert(receipt.trackingUrl.includes('/track/'+receipt.id+'#'));assert.equal((await load('lib/production.ts')).productionReady(pending),false);
   const context={params:Promise.resolve({id:receipt.id})};const u=new URL(receipt.trackingUrl),endpoint=base+'/api/track/'+receipt.id+'?token='+u.hash.slice(1);
   const read=await trackRoute.GET(new Request(endpoint),context);assert.equal(read.status,200);const data=await read.json();assert.equal(data.shirtDetailsStatus,'pending');assert.equal(data.canEditShirts,true);assert.equal(read.headers.get('Cache-Control').includes('no-store'),true);
   const shirts=Array.from({length:4},(_,i)=>({sizeType:i===0?'child':'adult',size:i===0?'8':'M',color:'black'}));
@@ -254,7 +254,7 @@ console.log('PASS: all occasions start at four and support reduction to one with
   assert.equal((await patch({shirts:shirts.slice(0,3),version:data.version})).status,400);
   assert.equal((await patch({shirts:[{sizeType:'child',size:'3',color:'black'},...shirts.slice(1)],version:data.version})).status,400);
   assert.equal((await patch({shirts,version:0})).status,409);
-  const savedResponse=await patch({shirts,version:data.version});assert.equal(savedResponse.status,200);const savedDetails=await savedResponse.json();assert.equal(savedDetails.shirtDetailsStatus,'complete');pending=await store.getOrder(receipt.id);assert.deepEqual(pending.shirts,shirts);assert.equal(pending.price,receipt.price);assert.equal(pending.quantity,4);assert.equal(pending.email,'');assert((await bucket.get('orders/'+receipt.id+'/order.txt')).text);assert.equal((await patch({shirts,version:data.version})).status,409);
+  const savedResponse=await patch({shirts,version:data.version});assert.equal(savedResponse.status,200);const savedDetails=await savedResponse.json();assert.equal(savedDetails.shirtDetailsStatus,'complete');pending=await store.getOrder(receipt.id);assert.deepEqual(pending.shirts,shirts);assert.equal(pending.price,receipt.price);assert.equal(pending.quantity,4);assert.equal(pending.email,'contact-required@example.invalid');assert((await bucket.get('orders/'+receipt.id+'/order.txt')).text);assert.equal((await patch({shirts,version:data.version})).status,409);
   const locked=await store.saveOrder({...pending,status:'review'},pending.version,'lock fixture','test');assert.equal((await patch({shirts,version:locked.version})).status,409);
   resetRate();const single=await publicRoute.POST(post('/api/orders',pendingForm(5,1)));assert.equal(single.status,201);assert.equal((await single.json()).price,180);
   for(const [p,n] of [[0,1],[4,2],[4,3]]){resetRate();const small=await publicRoute.POST(post('/api/orders',pendingForm(p,n)));assert.equal(small.status,201);assert.equal((await small.json()).price,business.priceFor(await settingsStore.getPricing(),p,n));}for(const [p,n] of [[4,0],[4,101],[5,4]]){resetRate();assert.equal((await publicRoute.POST(post('/api/orders',pendingForm(p,n)))).status,400);}
@@ -262,9 +262,9 @@ console.log('PASS: all occasions start at four and support reduction to one with
   resetRate();const mismatched=pendingForm();mismatched.set('shirts',JSON.stringify(shirts));assert.equal((await publicRoute.POST(post('/api/orders',mismatched))).status,400);
   assert.equal(external,0);
   let optionalMail;globalThis.fetch=async(_url,options)=>{optionalMail=JSON.parse(options.body);return Response.json({id:'optional-email-test'});};
-  assert(await mail.notifyOrder({...globalThis.testEnv,RESEND_API_KEY:'re_test_optional',MAIL_FROM:'test@example.com'},pending,link));assert.equal(Object.hasOwn(optionalMail,'reply_to'),false);assert(optionalMail.html.includes('לא נמסר'));
+  assert(await mail.notifyOrder({...globalThis.testEnv,RESEND_API_KEY:'re_test_optional',MAIL_FROM:'test@example.com'},{...pending,email:''},link));assert.equal(Object.hasOwn(optionalMail,'reply_to'),false);assert(optionalMail.html.includes('לא נמסר'));
  }finally{globalThis.fetch=beforeFetch;globalThis.testEnv.RESEND_API_KEY=priorKey;globalThis.testEnv.MAIL_FROM=priorFrom;}
- console.log('PASS: quote saved with optional email and explicit pending sizes; private capability-only, same-origin, bounded size PATCH with version/field/production locks; single shirt 180; reduction from four down to one is supported without a separate visible product; zero external requests.');
+ console.log('PASS: quote saved with required email and explicit pending sizes; private capability-only, same-origin, bounded size PATCH with version/field/production locks; single shirt 180; reduction from four down to one is supported without a separate visible product; zero external requests.');
 }
 
 // Optional sizing can now be explicitly confirmed before saving any request
@@ -281,4 +281,51 @@ console.log('PASS: all occasions start at four and support reduction to one with
   sql.prepare('DELETE FROM form_rate_limits').run();const legacy=form('');legacy.delete('images');legacy.set('mode','lead');legacy.set('shirts',JSON.stringify(choices));assert.equal((await publicRoute.POST(post('/api/orders',legacy))).status,400);assert.equal(external,0);
  }finally{globalThis.fetch=previousFetch;globalThis.testEnv.RESEND_API_KEY=previousKey;globalThis.testEnv.MAIL_FROM=previousFrom;}
  console.log('PASS: explicit pre-submit adult/child selections persist across all modes and admin edits; incomplete/pending/legacy invalid arrays rejected; zero external requests.');
+}
+
+// Explicit contact capture: actual SQLite/routes, provider stub, no real customer/order writes.
+{
+ const contacts=await load('app/api/contacts/route.ts'),contactAdmin=await load('app/api/admin/contacts/route.ts'),contactStore=await load('lib/contact-leads.ts'),team=await load('lib/team.ts');
+ const oldFetch=globalThis.fetch,oldKey=globalThis.testEnv.RESEND_API_KEY,oldFrom=globalThis.testEnv.MAIL_FROM,oldBatch=db.batch;
+ const messages=[];let queue=Promise.resolve();
+ db.batch=statements=>{const work=queue.then(()=>oldBatch(statements));queue=work.catch(()=>{});return work;};
+ globalThis.testEnv.RESEND_API_KEY='re_test_contact';globalThis.testEnv.MAIL_FROM='orders@example.invalid';
+ globalThis.fetch=async(url,options)=>{assert.equal(String(url),'https://api.resend.com/emails');messages.push({body:JSON.parse(options.body),key:new Headers(options.headers).get('Idempotency-Key')});return Response.json({id:'contact-fixture-'+messages.length});};
+ const key=()=>({id:crypto.randomUUID(),token:'a'.repeat(64)}),info={name:'Synthetic <script> contact',phone:'0501234567',email:'synthetic-contact@example.invalid',package:4,quantity:5,mode:'custom',eventDate:'',source:'qa'};
+ const send=(v,origin=base)=>contacts.POST(new Request(base+'/api/contacts',{method:'POST',headers:{origin,'Content-Type':'application/json'},body:JSON.stringify(v)}));
+ const reset=()=>sql.prepare('DELETE FROM form_rate_limits').run();
+ try{
+  globalThis.testUser=null;assert.equal((await contactAdmin.GET(get('/api/admin/contacts'))).status,403);assert.equal((await contactAdmin.POST(new Request(base+'/api/admin/contacts',{method:'POST',headers:{origin:base,'Content-Type':'application/json'},body:'{}'}))).status,403);
+  const credentials=key(),input={action:'save',...credentials,version:0,...info};
+  const orderCount=sql.prepare('SELECT count(*) AS n FROM orders').get().n;
+  reset();assert.equal((await send({...input,email:''})).status,400);assert.equal((await send(input,'https://attacker.test')).status,403);assert.equal((await send({...input,website:'bot'})).status,400);assert.equal(messages.length,0);
+  reset();const response=await send(input);assert.equal(response.status,201);const saved=await response.json();assert.equal(saved.saved,true);assert.equal(saved.id,credentials.id);assert.equal(saved.version,1);assert.equal(saved.details.email,info.email);assert.equal(saved.mailStatus,'accepted');assert.equal(sql.prepare('SELECT count(*) AS n FROM orders').get().n,orderCount);
+  assert.equal(messages.length,1);assert.equal(messages[0].body.html,undefined);assert.equal(messages[0].body.reply_to,info.email);assert.deepEqual(messages[0].body.to,[team.getOwnerEmail()]);assert(messages[0].body.text.includes(info.phone));assert(messages[0].body.text.includes(info.email));assert(messages[0].body.text.includes('/admin?contact='+credentials.id));assert(!messages[0].body.to.includes(info.email));
+  assert.equal((await send(input)).status,200);assert.equal(messages.length,1,'Idempotent save does not resend');
+  const row=sql.prepare('SELECT * FROM contact_leads WHERE id=?').get(credentials.id);assert.notEqual(row.token_hash,credentials.token);assert(!row.data.includes(credentials.token));
+  const read=await send({action:'read',...credentials});assert.equal(read.status,200);assert.equal(read.headers.get('Cache-Control'),'no-store');assert.equal((await read.json()).details.email,info.email);
+  assert.equal((await send({action:'read',...credentials,token:'b'.repeat(64)})).status,404);
+  assert.equal((await send({...input,name:'Updated contact',version:0})).status,409);assert.equal(messages.length,1);
+  const updated=await send({...input,name:'Updated contact',version:1});assert.equal(updated.status,200);assert.equal((await updated.json()).version,2);assert.equal(messages.length,2);assert.equal(messages[1].body.html,undefined);
+  const bodyLimit=new Request(base+'/api/contacts',{method:'POST',headers:{origin:base,'Content-Type':'application/json'},body:'x'.repeat(16001)});assert.equal((await contacts.POST(bodyLimit)).status,413);
+  globalThis.testUser={userId:'owner',email:team.getOwnerEmail()};const list=await contactAdmin.GET(get('/api/admin/contacts?id='+credentials.id));assert.equal(list.status,200);const listing=await list.json();assert.equal(listing.contacts.length,1);assert.equal(listing.contacts[0].completed,false);assert(!JSON.stringify(listing).includes(row.token_hash));
+  assert.equal((await contactAdmin.POST(new Request(base+'/api/admin/contacts',{method:'POST',headers:{origin:'https://attacker.test','Content-Type':'application/json'},body:JSON.stringify({action:'resend',id:credentials.id})}))).status,403);
+  const coupon={code:'CONTACT10',title:'Fixture',kind:'percent',value:10,minQuantity:4,minSubtotal:0,maxUses:1,starts:'',ends:'',enabled:true,package:-1,used:0,version:1};
+  sql.prepare('INSERT INTO coupons (code,version,used,data) VALUES (?,1,0,?)').run(coupon.code,JSON.stringify(coupon));assert.equal((await settingsStore.getCoupon(coupon.code)).used,0);
+  const final=()=>{const f=form(info.email);f.set('name',info.name);f.set('phone',info.phone);f.set('package','4');f.set('quantity','5');f.set('shirts','[]');f.set('shirtDetailsStatus','pending');f.set('contactId',credentials.id);f.set('contactToken',credentials.token);f.set('coupon',coupon.code);const subtotal=business.priceFor(quantityConfigForContact,4,5);f.set('expectedPrice',String(Math.round(subtotal*.9*100)/100));return f;};
+  const quantityConfigForContact=await settingsStore.getPricing();reset();
+  const beforeMail=messages.length;const completed=await publicRoute.POST(post('/api/orders',final()));assert.equal(completed.status,201);const receipt=await completed.json();assert.equal(receipt.id,credentials.id);assert.equal((await store.getOrder(receipt.id)).contactCaptureId,credentials.id);assert.equal((await settingsStore.getCoupon(coupon.code)).used,1);assert.equal(messages.length,beforeMail+2,'Only completion sends normal owner/customer confirmations');
+  const beforeRetry=messages.length;reset();const again=await publicRoute.POST(post('/api/orders',final()));assert.equal(again.status,200);assert.equal((await again.json()).id,receipt.id);assert.equal(messages.length,beforeRetry);assert.equal((await settingsStore.getCoupon(coupon.code)).used,1);assert.equal(sql.prepare('SELECT count(*) AS n FROM orders').get().n,orderCount+1);
+  const contactBackup=await load('app/api/admin/backups/route.ts');const backupSnapshot=await (await contactBackup.POST(post('/api/admin/backups',JSON.stringify({action:'start'})))).json();assert(backupSnapshot.contacts.some(row=>row.id===credentials.id));
+  const linked=await (await contactAdmin.GET(get('/api/admin/contacts?id='+credentials.id))).json();assert.equal(linked.contacts[0].completed,true);
+  const hijack={...info,...key(),id:receipt.id,action:'save'};hijack.token='c'.repeat(64);reset();assert.equal((await send(hijack)).status,404);
+  const existingLegacy=key();existingLegacy.id=id;reset();assert.equal((await send({action:'save',...existingLegacy,...info})).status,404);assert.equal(sql.prepare('SELECT count(*) AS n FROM contact_leads WHERE id=?').get(id).n,0);
+  const expiring=key();reset();assert.equal((await send({action:'save',...expiring,...info})).status,201);sql.prepare('UPDATE contact_leads SET token_expires_at=? WHERE id=?').run(Date.now()-1,expiring.id);assert.equal((await send({action:'read',...expiring})).status,404);
+  const concurrent=key();reset();const prior=messages.length;const pair=await Promise.all([send({action:'save',...concurrent,...info}),send({action:'save',...concurrent,...info})]);assert.deepEqual(pair.map(r=>r.status).sort(),[200,201]);assert.equal(messages.length,prior+1);assert.equal(sql.prepare('SELECT count(*) AS n FROM contact_leads WHERE id=?').get(concurrent.id).n,1);
+  reset();const invalidOrder=form('');assert.equal((await publicRoute.POST(post('/api/orders',invalidOrder))).status,400);
+  const retryEndpoint=new Request(base+'/api/admin/contacts',{method:'POST',headers:{origin:base,'Content-Type':'application/json'},body:JSON.stringify({action:'resend',id:concurrent.id})});assert.equal((await contactAdmin.POST(retryEndpoint)).status,200);
+  assert.equal(messages.at(-1).body.html,undefined);assert.deepEqual(messages.at(-1).body.to,[team.getOwnerEmail()]);
+  const failure=key();globalThis.fetch=async()=>Response.json({name:'validation_error',message:'sender domain is not verified'},{status:403});reset();const failedMail=await send({action:'save',...failure,...info});assert.equal(failedMail.status,201);assert.equal((await failedMail.json()).mailStatus,'domain_not_verified');assert(await contactStore.contactGrant(failure.id,failure.token));
+  console.log('PASS: required-email contact capture persists separately before ideas; owner-only plain email, no customer reminder; private resume, CSRF/body/capability/version/expiry/rate protections; deduped completion/coupon; no real external requests.');
+ }finally{globalThis.fetch=oldFetch;globalThis.testEnv.RESEND_API_KEY=oldKey;globalThis.testEnv.MAIL_FROM=oldFrom;db.batch=oldBatch;}
 }
