@@ -10,10 +10,10 @@ import {renderOrderMail,managerMailRecipients} from './order-mail-template.mjs';
 import {bindings} from './order-store';
 import {mailConfiguration,mailFailure,sendResendMail} from './mail-delivery';
 import type {MailEnv,MailResult} from './mail-delivery';
-type MailAttempt=MailResult & {at:string;kind:'order'|'test';orderId?:string};
+type MailAttempt=MailResult & {at:string;kind:'order'|'test'|'contact';orderId?:string};
 const escape=(s:string)=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
 async function recipients(){return managerMailRecipients(getOwnerEmail(),(await getTeam()).members)}
-async function recordAttempt(result:MailResult,kind:'order'|'test',orderId?:string){
+async function recordAttempt(result:MailResult,kind:'order'|'test'|'contact',orderId?:string){
  const value:MailAttempt={...result,at:new Date().toISOString(),kind,...(orderId?{orderId}:{})};
  try{await bindings().DB.prepare("INSERT INTO studio_settings (key,version,data) VALUES ('mail_last_attempt',1,?) ON CONFLICT(key) DO UPDATE SET data=excluded.data,version=studio_settings.version+1").bind(JSON.stringify(value)).run()}catch{console.error('Mail diagnostic status could not be saved')}
  if(!result.accepted)console.error('Admin notification failed',result.code,result.httpStatus||'');
@@ -53,3 +53,13 @@ export async function testOrderMail(env:MailEnv):Promise<MailResult>{
 
 export async function notifyCustomer(env:MailEnv,order:Order,url:string,attempt='initial'){
  if(!order.email||mailConfiguration(env).issue)return false;const customerDays=customerLinkDays(), text=`היי ${order.name}, בקשת ההזמנה ${order.id.slice(0,8).toUpperCase()} נשמרה ב־PARTYPRINT.\n${order.quantity} חולצות · ${order.price} ₪\nכל ${order.images.length} התמונות נשמרו.\nמעקב אחר ההזמנה (קישור פרטי ל־${customerDays} יום): ${url}\nאין חיוב בשליחת הטופס. מועד האספקה ייקבע איתכם לפני העבודה.\nכולל עיצוב משותף וסבב תיקונים אחד; סבב נוסף 100 ₪.\nשאלה? https://wa.me/972552896236`;try{const result=await sendResendMail(env,{to:[order.email],reply_to:getOwnerEmail(),subject:'PARTYPRINT · קיבלנו את הרעיון שלכם',text,html:`<div dir="rtl" style="font-family:Arial;padding:24px;line-height:1.8"><h1>הרעיון שלכם בפנים ✳</h1><p>${escape(text).replace(/\n/g,'<br/>')}</p><a href="${escape(url)}" style="display:inline-block;background:#352051;color:white;padding:16px;border-radius:12px">למעקב אחר ההזמנה</a></div>`},'partyprint/customer/'+order.id+'/'+attempt);return result.accepted}catch{return false}}
+
+export async function sendContactMail(env:MailEnv,contact:{id:string;version:number;createdAt:string;updatedAt:string;packageName:string;details:{name:string;phone:string;email:string;quantity:number;eventDate:string;pricePreview:number}},attempt='initial'):Promise<MailResult>{
+ let result:MailResult;
+ try{
+  const to=managerMailRecipients(getOwnerEmail(),[]),d=contact.details,origin=publicOrigin(),url=origin+'/admin?contact='+encodeURIComponent(contact.id);
+  const text=['פרטי קשר נשמרו ב־PARTYPRINT','מספר פנייה: '+contact.id.slice(0,8).toUpperCase(),'שם: '+d.name,'טלפון: '+d.phone,'מייל: '+d.email,'אירוע: '+contact.packageName,'כמות חולצות: '+d.quantity,'תאריך האירוע: '+(d.eventDate||'לא נמסר'),'מחיר בסיס לפני מבצע: '+d.pricePreview+' ₪ (ללא חיוב)','עודכן: '+contact.updatedAt,'','הלקוח עבר לשלב הרעיון. ייתכן שהוא עדיין ממלא את הטופס; בדקו את המצב במערכת לפני חזרה ידנית.','לא נשלחה ללקוח תזכורת אוטומטית.','לפרטים ולמצב המילוי: '+url].join('\n');
+  result=await sendResendMail(env,{to,reply_to:d.email,subject:safeMailSubject('PARTYPRINT · פרטי קשר '+(attempt==='initial'?'חדשים':'עודכנו')+' מ'+d.name+' · '+contact.id.slice(0,8).toUpperCase()),text},'partyprint/contact/'+contact.id+'/'+attempt,3000);
+ }catch{result=mailFailure('preparation_failed')}
+ return recordAttempt(result,'contact',contact.id);
+}
