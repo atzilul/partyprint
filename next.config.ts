@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   // vinext emits the Node.js production entry at dist/standalone/server.js.
   output: "standalone",
   headers: async () => [
+    {source:"/landing/party-crew-960.713184ac1ecd79fd.avif",headers:[{key:'Cache-Control',value:'public, max-age=31536000, immutable'}]},
     ...['/admin/:path*','/api/:path*','/design/:path*','/track/:path*','/signin-with-chatgpt','/signout-with-chatgpt','/chatgpt-auth/:path*'].map(source=>({source,headers:[{key:'X-Robots-Tag',value:'noindex, nofollow, noarchive'}]})),
     {
     source: "/(.*)",

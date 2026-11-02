@@ -1,75 +1,42 @@
-name: Prepare immutable landing assets
+name: Inspect immutable media serving
 on:
   push:
     branches: ['codex/landing-assets-cache-2026-11-02']
 permissions:
   contents: read
 jobs:
-  assets:
-    runs-on: ubuntu-latest
-    timeout-minutes: 12
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24.22.1'
-      - run: |
-          npm install --prefix /tmp/partyprint-assets --no-save --package-lock=false --ignore-scripts sharp@0.35.5
-          python -m venv /tmp/partyprint-fonts
-          /tmp/partyprint-fonts/bin/pip install 'fonttools[woff]==4.68.0'
-      - run: |
-          /tmp/partyprint-fonts/bin/python scripts/prepare-font-subsets.py
-          node scripts/prepare-immutable-media.mjs
-      - uses: actions/github-script@v7
-        with:
-          script: |
-            const fs=require('fs'),owner=context.repo.owner,repo=context.repo.repo,branch='codex/landing-assets-cache-2026-11-02';
-            if(context.ref!=='refs/heads/'+branch)throw Error('Unexpected branch');
-            const current=await github.rest.git.getRef({owner,repo,ref:'heads/'+branch});
-            if(current.data.object.sha!==context.sha)throw Error('Branch advanced; do not overwrite');
-            const paths=['lib/landing-media.json','docs/performance/font-subsets.json','docs/performance/optimized-media-report.json'];
-            for(const dir of ['public/landing','public/fonts'])for(const name of fs.readdirSync(dir))if(/\.[a-f0-9]{16}\.(avif|webp|woff2)$/.test(name))paths.push(dir+'/'+name);
-            const entries=[];
-            for(const path of paths.sort()){
-              const blob=await github.rest.git.createBlob({owner,repo,content:fs.readFileSync(path).toString('base64'),encoding:'base64'});
-              entries.push({path,mode:'100644',type:'blob',sha:blob.data.sha});
-            }
-            const parent=await github.rest.git.getCommit({owner,repo,commit_sha:context.sha});
-            const tree=await github.rest.git.createTree({owner,repo,base_tree:parent.data.tree.sha,tree:entries});
-            const commit=await github.rest.git.createCommit({owner,repo,message:'perf: add content-hashed responsive media and disjoint font subsets',tree:tree.data.sha,parents:[context.sha]});
-            const head=await github.rest.git.getRef({owner,repo,ref:'heads/'+branch});
-            if(head.data.object.sha!==context.sha)throw Error('Branch advanced before update');
-            await github.rest.git.updateRef({owner,repo,ref:'heads/'+branch,sha:commit.data.sha,force:false});
-            console.log('ASSET_COMMIT '+commit.data.sha);
   inspect:
-    needs: assets
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: codex/landing-assets-cache-2026-11-02
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '24.22.1'
       - run: npm ci --no-audit --no-fund
       - run: npm run build
-      - name: Inspect static serving implementation and public baseline headers
+      - name: Inspect static serving and cache headers
         run: |
           node --input-type=module <<'NODE'
-          import {readFileSync} from 'node:fs';
-          import {spawnSync} from 'node:child_process';
-          const server=readFileSync('dist/standalone/server.js','utf8');
-          console.log('STANDALONE_ENTRY '+server.slice(0,24000));
-          const search=spawnSync('rg',['-n','-C','5','max-age=3600|serveStatic|cacheControl','node_modules/vinext/dist'],{encoding:'utf8',maxBuffer:1000000});
-          console.log('STATIC_IMPLEMENTATION '+search.stdout.slice(0,30000));
-          const origin='https://partyprint.co.il';
-          for(const path of ['/','/api/release','/landing/party-crew-960.avif','/fonts/rubik-600.woff2','/transformation.webp']){
-            try{const response=await fetch(origin+path,{signal:AbortSignal.timeout(15000)});const data=Buffer.from(await response.arrayBuffer());console.log('PUBLIC_BASELINE '+JSON.stringify({path,status:response.status,cacheControl:response.headers.get('cache-control'),bytes:data.length,...(path==='/api/release'?{release:JSON.parse(data)}:{})}))}catch(e){console.log('PUBLIC_BASELINE '+JSON.stringify({path,error:e.cause?.code||e.message}))}
+          import {readFileSync,readdirSync} from 'node:fs';
+          import {spawn} from 'node:child_process';
+          import {setTimeout as delay} from 'node:timers/promises';
+          const path=new URL(import.meta.resolve('vinext/server/prod-server'));
+          const source=readFileSync(path,'utf8');const lines=source.split('\n');
+          console.log('PROD_SERVER_PATH '+path.pathname.split('/node_modules/')[1]);
+          console.log('PROD_SERVER_IMPORTS '+lines.slice(0,70).join('\n'));
+          for(let i=0;i<lines.length;i++)if(/cache-control|serveStatic|max-age=3600|immutable|customHeaders|configHeaders/i.test(lines[i]))console.log('STATIC_CODE '+lines.slice(Math.max(0,i-5),i+8).join('\n'));
+          const manifest=JSON.parse(readFileSync('lib/landing-media.json','utf8'));
+          const image=manifest.images['/party-crew.webp'].avif.find(x=>x.width===960).src;
+          const paths=[image,'/_next/static/media/'+image.split('/').at(-1),'/api/release'];
+          const server=spawn(process.execPath,['server.js'],{stdio:'inherit',env:{...process.env,HOST:'127.0.0.1',PORT:'3899'}});
+          try{
+            for(let i=0;i<60;i++){try{if((await fetch('http://127.0.0.1:3899/api/release')).ok)break}catch{}await delay(500)}
+            for(const path of paths){const r=await fetch('http://127.0.0.1:3899'+path);console.log('LOCAL_CACHE '+JSON.stringify({path,status:r.status,cacheControl:r.headers.get('cache-control'),type:r.headers.get('content-type'),bytes:(await r.arrayBuffer()).byteLength}))}
+          }finally{server.kill('SIGTERM')}
+          for(const path of ['/api/release','/landing/party-crew-960.avif','/fonts/rubik-600.woff2','/transformation.webp']){
+            try{const r=await fetch('https://partyprint.co.il'+path,{signal:AbortSignal.timeout(10000)});console.log('PUBLIC_BASELINE '+JSON.stringify({path,status:r.status,cacheControl:r.headers.get('cache-control'),...(path==='/api/release'?{release:await r.json()}:{bytes:(await r.arrayBuffer()).byteLength})}))}catch(e){console.log('PUBLIC_BASELINE '+JSON.stringify({path,error:e.cause?.code||e.message}))}
           }
           NODE
