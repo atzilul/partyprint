@@ -6,7 +6,7 @@ const require=createRequire((process.env.PARTYPRINT_PLAYWRIGHT_ROOT||'/tmp/party
 const base=(process.env.PARTYPRINT_PUBLIC_URL||'https://partyprint.co.il').replace(/\/$/,'');
 if(!['https://partyprint.co.il','http://127.0.0.1:3333'].includes(base))throw Error('Unexpected QA origin');
 const local=base.startsWith('http:'),round=n=>Math.round(n*100)/100,trackingToken='a'.repeat(64);
-const FIRST='מגניב, ממשיכים לרעיון שלנו!',CONTACT='שומרים פרטים וממשיכים לרעיון',FINAL='יאללה, הופכים את הרעיון לחולצה!';
+const FIRST='מגניב, ממשיכים לפרטים!',CONTACT='שומרים פרטים וממשיכים לרעיון',FINAL='יאללה, הופכים את הרעיון לחולצה!';
 const image={name:'qa.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jw1QAAAAASUVORK5CYII=','base64')};
 export async function checkQuoteBrowser(kind){
  const report={kind,base,at:new Date().toISOString(),scope:'Synthetic client QA: contacts, orders, quotes, tracking and vendors intercepted; no real records or mail',status:'pending',screens:[],errors:[]};

@@ -119,7 +119,7 @@ try{
     s=await snapshot();
     check('Approval does not duplicate GA or Meta PageView',eventCount(s,'page_view')===1&&metaEvents(s).filter(x=>x[1]==='PageView').length===1);
     const form=page.locator('#order-form');await form.scrollIntoViewIfNeeded();
-    await form.getByRole('button',{name:'מגניב, ממשיכים לרעיון שלנו!',exact:true}).click();
+    await form.getByRole('button',{name:'מגניב, ממשיכים לפרטים!',exact:true}).click();
     await form.locator('input[name="name"]').fill('בדיקת פרטיות סינתטית');
     await form.locator('input[name="phone"]').fill('0500000000');
     await form.locator('input[name="email"]').fill('qa-measurement@example.invalid');
