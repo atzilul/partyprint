@@ -87,6 +87,10 @@ jobs:
         run: node scripts/check-quantity-browser.mjs
         env:
           PARTYPRINT_PLAYWRIGHT_ROOT: /tmp/partyprint-browser
+      - name: Mobile UX recovery, quote loading and size conflicts; all writes mocked
+        run: node scripts/check-form-ux-browser.mjs
+        env:
+          PARTYPRINT_PLAYWRIGHT_ROOT: /tmp/partyprint-browser
       - name: Isolated measurement contract; vendors and order responses mocked
         run: node scripts/check-measurement-browser.mjs
         env:
@@ -101,6 +105,7 @@ jobs:
           name: order-production-browser
           path: |
             artifacts/public-quote.json
+            artifacts/ux-browser-production.json
             artifacts/order-browser-production.json
             artifacts/measurement-contract-production.json
             artifacts/quantity-browser-production.json

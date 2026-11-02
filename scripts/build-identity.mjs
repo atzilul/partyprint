@@ -6,7 +6,7 @@ import {resolve} from 'node:path';
 // A public diagnostic allowlist, never a dump of the host's environment.
 export const SOURCE_PATHS=Object.freeze(['app','components','lib','runtime','build','scripts','public',
  'package.json','package-lock.json','pnpm-lock.yaml','yarn.lock','vite.config.ts',
- 'next.config.ts','middleware.ts','server.js','tsconfig.json','.openai/hosting.json','.gitignore']);
+ 'tokens.css','next.config.ts','middleware.ts','server.js','tsconfig.json','.openai/hosting.json','.gitignore']);
 const SHA=/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/;
 
 const gitAt=root=>args=>execFileSync('git',args,{cwd:root,encoding:'utf8',stdio:['ignore','pipe','ignore'],timeout:10000,maxBuffer:8*1024*1024});

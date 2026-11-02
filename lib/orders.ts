@@ -20,8 +20,8 @@ export function editOrder(old:Order,v:Record<string,unknown>,pricing:Pricing=DEF
  if(!Number.isFinite(price)||price<0||price>100000||!Number.isInteger(revisions)||revisions<0||revisions>100)throw Error('מחיר או מספר סבבים לא תקינים.');
  if(price!==old.price&&price!==catalogPrice&&!priceNote)throw Error('יש לציין הסבר למחיר השונה ממחיר החבילה.');
  if(!STAGES.some(s=>s[0]===v.status)||!['lead','order','custom'].includes(String(v.mode)))throw Error('סטטוס או סוג פנייה לא תקינים.');
- const shirtDetailsStatus=v.mode==='lead'||v.shirtDetailsStatus==='pending'?'pending':'complete';
+ const shirtDetailsStatus=v.shirtDetailsStatus==='pending'||v.mode==='lead'&&v.shirtDetailsStatus!=='complete'?'pending':'complete';
  if(shirtDetailsStatus==='pending'){if(!Array.isArray(v.shirts)||v.shirts.length)throw Error('מידות שטרם אושרו צריכות להיות ריקות.');}
  else if(!validateShirts(v.shirts,quantity))throw Error('יש לבחור מידה וצבע לכל חולצה.');
- return {...old,shirtDetailsStatus,eventDate,name,phone,email,brief,notes,address,tracking,dueDate,priceNote,package:p,packageName:packs[p].name,quantity,price,revisions,status:String(v.status),mode:String(v.mode),shirts:v.mode==='lead'?[]:v.shirts as Order['shirts'],priceStatus:price!==old.price?'adjusted':old.priceStatus};
+ return {...old,shirtDetailsStatus,eventDate,name,phone,email,brief,notes,address,tracking,dueDate,priceNote,package:p,packageName:packs[p].name,quantity,price,revisions,status:String(v.status),mode:String(v.mode),shirts:shirtDetailsStatus==='pending'?[]:v.shirts as Order['shirts'],priceStatus:price!==old.price?'adjusted':old.priceStatus};
 }

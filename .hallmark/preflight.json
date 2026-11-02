@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-02",
+  "scope": "order request component and optional size follow-up",
+  "framework": "React19 / Vinext1.4",
+  "fonts": {
+    "display": "Rubik",
+    "body": "Assistant"
+  },
+  "brand": {
+    "paper": "existing warm off-white",
+    "ink": "existing near-black",
+    "accent": "existing orange",
+    "secondary": "existing acid-yellow"
+  },
+  "motion": "minimal; no new dependency; reduced motion respected",
+  "source": "main0471381",
+  "preserve": [
+    "routes",
+    "backend storage",
+    "server pricing and coupon constraints",
+    "consent and Lead contract",
+    "single-shirt180/group minimum4"
+  ],
+  "note": "Component scope: no macrostructure rotation; no new page-wide design system."
+}

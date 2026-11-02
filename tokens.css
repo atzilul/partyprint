@@ -1,0 +1,11 @@
+/* Hallmark · component: order request · genre: playful · theme: PARTYPRINT
+ * states: default · hover · focus · active · disabled · loading · error · success
+ * pre-emit critique: P4 H5 E4 S5 R5 V4
+ */
+:root{
+ --color-pp-backdrop:oklch(15% 0 0 / .55);--color-pp-clear:oklch(0% 0 0 / 0);--color-pp-paper:oklch(99.5% .006 85);--color-pp-canvas:oklch(97% .012 85);--color-pp-soft:oklch(97% .015 285);--color-pp-ink:oklch(20% .006 45);--color-pp-accent-ink:var(--color-pp-ink);--color-pp-muted:oklch(47% .012 275);--color-pp-rule:oklch(87% .008 275);--color-pp-accent:oklch(70% .20 38);--color-pp-accent-soft:oklch(97% .025 50);--color-pp-acid:oklch(97% .18 110);--color-pp-focus:oklch(43% .18 292);--color-pp-error:oklch(43% .17 26);--color-pp-error-soft:oklch(97% .018 26);--color-pp-success:oklch(39% .09 150);--color-pp-success-soft:oklch(96% .025 150);--color-pp-shirt-white:oklch(100% 0 0);--color-pp-shirt-black:oklch(23% 0 0);--color-pp-shirt-gray:oklch(70% 0 0);
+ --font-pp-display:'Rubik',Arial,sans-serif;--font-pp-body:'Assistant',Arial,sans-serif;
+ --space-pp-xs:4px;--space-pp-sm:8px;--space-pp-md:12px;--space-pp-lg:16px;--space-pp-xl:24px;--space-pp-2xl:32px;--space-pp-3xl:48px;
+ --text-pp-xs:.8125rem;--text-pp-sm:.9375rem;--text-pp-base:1rem;--text-pp-lg:1.125rem;--text-pp-title:clamp(23px,3vw,30px);
+ --radius-pp-input:10px;--radius-pp-card:20px;--radius-pp-pill:999px;--rule-pp-width:1px;--ease-pp-out:cubic-bezier(.16,1,.3,1);--ease-pp-in:cubic-bezier(.7,0,.84,0);--ease-pp-in-out:cubic-bezier(.65,0,.35,1);--dur-pp-short:140ms;
+}
