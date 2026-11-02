@@ -17,7 +17,7 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - name: Typecheck diagnostics
         run: npx tsc --noEmit
-      - run: node --test scripts/order-quantity.test.mjs
+      - run: node --test scripts/order-quantity.test.mjs scripts/quote-planning.test.mjs
       - run: node scripts/verify-orders.mjs
       - run: npm run build
       - run: npm install --prefix /tmp/partyprint-browser --no-save --package-lock=false --ignore-scripts playwright@1.64.1
