@@ -261,6 +261,8 @@ console.log('PASS: all packages support minimum four and arbitrary quantities; a
   resetRate();const legacyMissing=pendingForm();legacyMissing.delete('shirtDetailsStatus');assert.equal((await publicRoute.POST(post('/api/orders',legacyMissing))).status,400);
   resetRate();const mismatched=pendingForm();mismatched.set('shirts',JSON.stringify(shirts));assert.equal((await publicRoute.POST(post('/api/orders',mismatched))).status,400);
   assert.equal(external,0);
+  let optionalMail;globalThis.fetch=async(_url,options)=>{optionalMail=JSON.parse(options.body);return Response.json({id:'optional-email-test'});};
+  assert(await mail.notifyOrder({...globalThis.testEnv,RESEND_API_KEY:'re_test_optional',MAIL_FROM:'test@example.com'},pending,link));assert.equal(Object.hasOwn(optionalMail,'reply_to'),false);assert(optionalMail.html.includes('לא נמסר'));
  }finally{globalThis.fetch=beforeFetch;globalThis.testEnv.RESEND_API_KEY=priorKey;globalThis.testEnv.MAIL_FROM=priorFrom;}
  console.log('PASS: quote saved with optional email and explicit pending sizes; private capability-only, same-origin, bounded size PATCH with version/field/production locks; single shirt 180; group minimum four preserved; zero external requests.');
 }
