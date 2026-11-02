@@ -1,7 +1,7 @@
 import {createRequire} from 'node:module';
 const require=createRequire('/tmp/partyprint-browser/package.json'),{chromium}=require('playwright');
 const base='https://partyprint.co.il',browser=await chromium.launch({headless:true});
-const release=await fetch(base+'/api/release',{cache:'no-store'}).then(r=>r.json());const report={at:new Date().toISOString(),release,screens:[],writesForwarded:0};
+const release=await fetch(base+'/api/release',{cache:'no-store'}).then(r=>r.json());const report={at:new Date().toISOString(),release,screens:[],writesForwarded:0};if(release.sourceFingerprint!=='e5a285eb533c2fc3a54bee41fdd9c9a1199c759c18ececf514972eca565ccb79'){await browser.close();console.log('UX_BASELINE '+JSON.stringify({...report,status:'not_original_baseline_source'}));process.exit(0);}
 try{for(const width of [320,375,414,768,1366]){const context=await browser.newContext({viewport:{width,height:900},locale:'he-IL',timezoneId:'Asia/Jerusalem',reducedMotion:'reduce'});await context.addInitScript(()=>localStorage.setItem('partyprint-consent-v1',JSON.stringify({analytics:'denied',at:Date.now()})));
 let releaseCoupon;const gate=new Promise(resolve=>releaseCoupon=resolve);let writesBlocked=0;
 await context.route('**/*',async route=>{const r=route.request(),u=new URL(r.url());if(r.method()==='POST'&&u.pathname==='/api/pricing'){await gate;return route.fulfill({status:400,contentType:'application/json',body:JSON.stringify({error:'בדיקת ממשק בלבד'})});}if(r.method()!=='GET'){writesBlocked++;return route.abort();}return u.origin===base?route.continue():route.abort();});

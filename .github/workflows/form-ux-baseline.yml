@@ -1,7 +1,6 @@
 name: Form UX baseline
 on:
-  push:
-    branches: [codex/form-ux-2026-11-02]
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

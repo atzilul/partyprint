@@ -22,6 +22,7 @@ export default function OrderRequestForm({pack,quantities,pricing,mode,openSigna
  const touched=useRef(new Set<string>()),lastGroup=useRef(pack===SINGLE_PACK_INDEX?4:pack);
  const [manualCode,setManualCode]=useState(''),[code,setCode]=useState(''),[autoCode,setAutoCode]=useState(''),[autoOffer,setAutoOffer]=useState(false),[quote,setQuote]=useState<Quote|null>(null),[couponBusy,setCouponBusy]=useState(false),[couponError,setCouponError]=useState(''),[couponAttempt,setCouponAttempt]=useState(0);
  const started=useRef(false),lastStage=useRef(-1),fields=useRef(new Set<string>()),source=useRef('direct'),submitting=useRef(false),saved=useRef(false),signal=useRef(openSignal);
+ useEffect(()=>{if(pack!==SINGLE_PACK_INDEX)lastGroup.current=pack;},[pack]);
  const quantity=quantities[pack],subtotal=priceFor(pricing,pack,quantity),applied=quote&&quote.code===code&&quote.package===pack&&quote.quantity===quantity&&quote.subtotal===subtotal?quote:null,total=applied?.total??subtotal;
  function begin(){if(started.current)return;started.current=true;siteEvent('form_start');track('begin_order_request',{request_mode:requestMode(mode),package_type:packageType(pack)});report(step);}
  function report(n:number){if(!started.current||lastStage.current===n)return;lastStage.current=n;track('form_step',{step_number:n+1,step_name:n===0?'package':'details',request_mode:requestMode(mode)});}
