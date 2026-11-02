@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect, useRef, useState} from 'react';
+import {useEffect, useId, useRef, useState} from 'react';
 import {usePathname} from 'next/navigation';
 import {CONSENT_EVENT, getMetaMode, installInteractionTracking, isExcludedPath, readConsent, saveConsent, startAnalytics, type ConsentChoice, type MetaMode} from '@/lib/analytics';
 
@@ -20,6 +20,8 @@ export default function AnalyticsConsent() {
   const [choice, setChoice] = useState<ConsentChoice | null | undefined>(undefined);
   const [mode, setMode] = useState<MetaMode | undefined>(undefined);
   const [open, setOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const detailsId = useId();
   const firstButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -38,13 +40,15 @@ export default function AnalyticsConsent() {
 
   if (excluded || choice === undefined || mode === undefined) return null;
 
-  function decide(next: ConsentChoice) { saveConsent(next); setOpen(false); }
-  function reopen() { setOpen(true); requestAnimationFrame(() => firstButton.current?.focus()); }
+  function decide(next: ConsentChoice) { saveConsent(next); setOpen(false); setDetailsOpen(false); }
+  function reopen() { setDetailsOpen(false); setOpen(true); requestAnimationFrame(() => firstButton.current?.focus()); }
 
   return <>
     {open && <section className="consent-banner" role="region" aria-label="הגדרות פרטיות" dir="rtl">
       <div className="consent-copy">
-        <strong>עוגיות למדידה ולפרסום</strong>
+        <p>אנחנו משתמשים בעוגיות למדידה ולפרסום.</p>
+      </div>
+      <div className="consent-details" id={detailsId} hidden={!detailsOpen}>
         {mode === 'notice'
           ? <p>האתר משתמש ב־Google Analytics ובפיקסל של Meta כדי למדוד את השימוש באתר ואת הפרסום שלנו. הפיקסל של Meta עשוי לשלוח אירוע צפייה בעמוד כבר לפני שתבחרו. שאר אירועי Meta נשלחים רק אחרי ״אישור״. ״לא, תודה״ עוצר את אירועי Meta הבאים ואת Google Analytics בדפדפן הזה, והבחירה נשמרת. <a href={PRIVACY_POLICY_PATH}>מדיניות הפרטיות</a></p>
           : <p>האתר משתמש ב־Google Analytics כדי למדוד את השימוש באתר. הפיקסל של Meta (פרסום בפייסבוק ובאינסטגרם) יופעל רק אם תלחצו ״אישור״. ״לא, תודה״ משאיר את Meta כבוי ועוצר גם את Google Analytics בדפדפן הזה, והבחירה נשמרת. <a href={PRIVACY_POLICY_PATH}>מדיניות הפרטיות</a></p>}
@@ -53,6 +57,7 @@ export default function AnalyticsConsent() {
       <div className="consent-actions">
         <button ref={firstButton} type="button" className="consent-accept" onClick={() => decide('granted')}>אישור</button>
         <button type="button" className="consent-reject" onClick={() => decide('denied')}>לא, תודה</button>
+        <button type="button" className="consent-details-toggle" aria-expanded={detailsOpen} aria-controls={detailsId} onClick={() => setDetailsOpen(current => !current)}>{detailsOpen ? 'פחות פרטים' : 'פרטים'}</button>
       </div>
     </section>}
     <div className="consent-settings"><a href={PRIVACY_POLICY_PATH}>מדיניות פרטיות</a><span aria-hidden="true">·</span><button type="button" onClick={reopen}>הגדרות פרטיות ועוגיות</button></div>
