@@ -42,7 +42,7 @@ try{
     });
     page.on('response',async r=>{
      const u=new URL(r.url());
-     if(u.origin===origin&&(u.pathname==='/'||u.pathname.startsWith('/fonts/')||u.pathname.includes('party-crew')||u.pathname.includes('rubik'))){
+     if(u.origin===origin&&(u.pathname==='/'||u.pathname.startsWith('/fonts/')||u.pathname.includes('.woff2')||u.pathname.includes('party-crew')||u.pathname.includes('rubik'))){
       const h=await r.allHeaders();headers.push({url:safe(r.url()),status:r.status(),cacheControl:h['cache-control']||null,encoding:h['content-encoding']||null,contentType:h['content-type']||null,contentLength:h['content-length']||null});
      }
     });
@@ -77,7 +77,7 @@ try{
      });
      const lcp=measurements.lcp.at(-1);
      const resource=measurements.resources.find(x=>x.name===lcp?.url);
-     result={...result,status:response.status(),html:{bytes:Buffer.byteLength(html),hasInitialHero:html.includes('/party-crew.webp')||html.includes('/landing/party-crew-'),preloads:[...html.matchAll(/<link\b[^>]*rel="preload"[^>]*>/g)].map(x=>x[0].slice(0,500))},...measurements,lcpMs:lcp?.time||null,lcpPhases:resource?{ttfbMs:measurements.nav.ttfbMs,resourceDelayMs:resource.start-measurements.nav.ttfbMs,resourceDurationMs:resource.duration,renderDelayMs:lcp.time-resource.end}:null};
+     result={...result,status:response.status(),html:{bytes:Buffer.byteLength(html),hasInitialHero:html.includes('/party-crew.webp')||html.includes('party-crew-'),preloads:[...html.matchAll(/<link\b[^>]*rel="preload"[^>]*>/g)].map(x=>x[0].slice(0,500))},...measurements,lcpMs:lcp?.time||null,lcpPhases:resource?{ttfbMs:measurements.nav.ttfbMs,resourceDelayMs:resource.start-measurements.nav.ttfbMs,resourceDurationMs:resource.duration,renderDelayMs:lcp.time-resource.end}:null};
      result.resources=result.resources.map(x=>({...x,name:safe(x.name)}));
      result.lcp=result.lcp.map(x=>({...x,url:safe(x.url)}));
      result.heroSources=result.heroSources.map(x=>({...x,src:safe(x.src)}));
@@ -88,13 +88,14 @@ try{
      result.optimizedChecks=[];
      const check=(condition,message)=>{if(!condition)throw new Error(message);result.optimizedChecks.push(message)};
      try{
-      check(/\/landing\/party-crew-(640|960|1254)\.(avif|webp)$/.test(result.hero?.src||''),'Responsive hero selected');
+      check(/\/_next\/static\/.*party-crew-(640|960|1254).*\.(avif|webp)$/.test(result.hero?.src||''),'Responsive hero selected');
       check(result.hero?.complete&&result.hero.naturalWidth>0,'Hero decoded successfully');
       check(new Set(result.heroSources.map(x=>x.src)).size===1,'Opening audience stays stable for 12 seconds');
-      check(!result.resources.some(x=>/\/statement-family-fixed\.webp/.test(x.name)),'Distant statement artwork deferred');
+      check(!result.resources.some(x=>/statement-family-fixed/.test(x.name)),'Distant statement artwork deferred');
       check(!result.resources.some(x=>/\/fonts\/.*\.ttf$/.test(x.name)),'WOFF2 fonts used');
       if(sample===1){const jpeg=await page.screenshot({type:'jpeg',quality:55});console.log('LANDING_SCREENSHOT_'+profile.name.toUpperCase()+' '+jpeg.toString('base64'))}
       check(result.cls<=0.1,'Lab CLS within 0.1');
+      check(!result.resources.some(x=>/family-shared-v2|bride-shared-v2|groom-shared-v2|tech-team/.test(x.name)),'Other event artwork is deferred');
       if(sample===1){
        for(let i=0;i<5;i++){
         await page.locator('.hero .audience-options label').nth(i).click();
@@ -104,7 +105,7 @@ try{
        await cdp.send('Emulation.setDisabledImageTypes',{imageTypes:['avif']});
        await page.goto(origin+'/',{waitUntil:'domcontentloaded'});
        await page.waitForFunction(()=>{const image=document.querySelector('.hero-art img');return image?.complete&&image.naturalWidth>0&&image.currentSrc.endsWith('.webp')});
-       check((await page.locator('.hero-art img').getAttribute('src')).includes('/landing/'),'WebP fallback decodes when AVIF is disabled');
+       check((await page.locator('.hero-art img').getAttribute('src')).includes('/_next/static/'),'WebP fallback decodes when AVIF is disabled');
       }
       check(errors.length===0,'No client exceptions during hero selection and fallback');result.featureValidation='passed';
      }catch(e){result.error=e.message.slice(0,300);result.featureValidation='failed'}

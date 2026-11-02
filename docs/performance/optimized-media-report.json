@@ -1,0 +1,282 @@
+{
+  "sharp": {
+    "aom": "3.15.1",
+    "archive": "3.8.9",
+    "cairo": "1.18.6",
+    "cgif": "0.5.4",
+    "exif": "0.6.26",
+    "expat": "2.8.5",
+    "ffi": "3.8.0",
+    "fontconfig": "2.18.3",
+    "freetype": "2.14.3",
+    "fribidi": "1.0.17",
+    "glib": "2.90.0",
+    "harfbuzz": "14.5.0",
+    "heif": "1.23.5",
+    "highway": "1.4.0",
+    "imagequant": "2.4.1",
+    "lcms": "2.19.1",
+    "mozjpeg": "0826579",
+    "pango": "1.58.2",
+    "pixman": "0.46.4",
+    "png": "1.6.58",
+    "proxy-libintl": "0.5",
+    "rsvg": "2.63.2",
+    "tiff": "4.7.2",
+    "uhdr": "2.0.2",
+    "vips": "8.18.7",
+    "webp": "1.6.0",
+    "xml2": "2.15.4",
+    "zlib-ng": "2.3.3",
+    "sharp": "0.35.5"
+  },
+  "images": [
+    {
+      "source": "shirts",
+      "sourceBytes": 358950,
+      "format": "avif",
+      "width": 480,
+      "bytes": 18374,
+      "src": "/landing/shirts-480.c9daeee7e827a5e3.avif"
+    },
+    {
+      "source": "shirts",
+      "sourceBytes": 358950,
+      "format": "webp",
+      "width": 480,
+      "bytes": 32966,
+      "src": "/landing/shirts-480.00cbe48bead2e7ad.webp"
+    },
+    {
+      "source": "shirts",
+      "sourceBytes": 358950,
+      "format": "avif",
+      "width": 768,
+      "bytes": 36869,
+      "src": "/landing/shirts-768.4cbbf4a191a790f5.avif"
+    },
+    {
+      "source": "shirts",
+      "sourceBytes": 358950,
+      "format": "webp",
+      "width": 768,
+      "bytes": 67350,
+      "src": "/landing/shirts-768.1957d5f821e31467.webp"
+    },
+    {
+      "source": "shirts",
+      "sourceBytes": 358950,
+      "format": "avif",
+      "width": 1080,
+      "bytes": 63307,
+      "src": "/landing/shirts-1080.ba6b088f5c44f49c.avif"
+    },
+    {
+      "source": "shirts",
+      "sourceBytes": 358950,
+      "format": "webp",
+      "width": 1080,
+      "bytes": 109898,
+      "src": "/landing/shirts-1080.c652b4340955e24b.webp"
+    },
+    {
+      "source": "review-shirts-v1",
+      "sourceBytes": 247164,
+      "format": "avif",
+      "width": 480,
+      "bytes": 14507,
+      "src": "/landing/review-shirts-v1-480.69a173f4b086a27a.avif"
+    },
+    {
+      "source": "review-shirts-v1",
+      "sourceBytes": 247164,
+      "format": "webp",
+      "width": 480,
+      "bytes": 23372,
+      "src": "/landing/review-shirts-v1-480.7d897b7da33d7743.webp"
+    },
+    {
+      "source": "review-shirts-v1",
+      "sourceBytes": 247164,
+      "format": "avif",
+      "width": 768,
+      "bytes": 30242,
+      "src": "/landing/review-shirts-v1-768.f65ae1ab7da007c0.avif"
+    },
+    {
+      "source": "review-shirts-v1",
+      "sourceBytes": 247164,
+      "format": "webp",
+      "width": 768,
+      "bytes": 50816,
+      "src": "/landing/review-shirts-v1-768.a7375644fcf64411.webp"
+    },
+    {
+      "source": "review-shirts-v1",
+      "sourceBytes": 247164,
+      "format": "avif",
+      "width": 1080,
+      "bytes": 46013,
+      "src": "/landing/review-shirts-v1-1080.01ccbabdf38e31cb.avif"
+    },
+    {
+      "source": "review-shirts-v1",
+      "sourceBytes": 247164,
+      "format": "webp",
+      "width": 1080,
+      "bytes": 78382,
+      "src": "/landing/review-shirts-v1-1080.d6588d0f8eeb6abd.webp"
+    },
+    {
+      "source": "statement-family-fixed",
+      "sourceBytes": 165582,
+      "format": "avif",
+      "width": 480,
+      "bytes": 22727,
+      "src": "/landing/statement-family-fixed-480.26ba0a7b47b95e2c.avif"
+    },
+    {
+      "source": "statement-family-fixed",
+      "sourceBytes": 165582,
+      "format": "webp",
+      "width": 480,
+      "bytes": 38724,
+      "src": "/landing/statement-family-fixed-480.85d5f5163d429c92.webp"
+    },
+    {
+      "source": "statement-family-fixed",
+      "sourceBytes": 165582,
+      "format": "avif",
+      "width": 768,
+      "bytes": 45021,
+      "src": "/landing/statement-family-fixed-768.1a4c011f57b0797a.avif"
+    },
+    {
+      "source": "statement-family-fixed",
+      "sourceBytes": 165582,
+      "format": "webp",
+      "width": 768,
+      "bytes": 77408,
+      "src": "/landing/statement-family-fixed-768.1ebdf2453b735642.webp"
+    },
+    {
+      "source": "statement-family-fixed",
+      "sourceBytes": 165582,
+      "format": "avif",
+      "width": 1080,
+      "bytes": 69992,
+      "src": "/landing/statement-family-fixed-1080.bfde0f593dc36241.avif"
+    },
+    {
+      "source": "statement-family-fixed",
+      "sourceBytes": 165582,
+      "format": "webp",
+      "width": 1080,
+      "bytes": 119540,
+      "src": "/landing/statement-family-fixed-1080.1b389ec6705c2801.webp"
+    }
+  ],
+  "wow": [
+    {
+      "key": "reference",
+      "format": "avif",
+      "width": 256,
+      "bytes": 7048,
+      "src": "/landing/wow-reference-256.225f1614b845f170.avif"
+    },
+    {
+      "key": "reference",
+      "format": "webp",
+      "width": 256,
+      "bytes": 10600,
+      "src": "/landing/wow-reference-256.115e2e199f9d24c4.webp"
+    },
+    {
+      "key": "reference",
+      "format": "avif",
+      "width": 512,
+      "bytes": 21058,
+      "src": "/landing/wow-reference-512.bd89b15081bdf78f.avif"
+    },
+    {
+      "key": "reference",
+      "format": "webp",
+      "width": 512,
+      "bytes": 31466,
+      "src": "/landing/wow-reference-512.208d98a7bb2baa81.webp"
+    },
+    {
+      "key": "art",
+      "format": "avif",
+      "width": 256,
+      "bytes": 18704,
+      "src": "/landing/wow-art-256.3d2ebffe572500a4.avif"
+    },
+    {
+      "key": "art",
+      "format": "webp",
+      "width": 256,
+      "bytes": 33410,
+      "src": "/landing/wow-art-256.ec35bd6801e17d0a.webp"
+    },
+    {
+      "key": "art",
+      "format": "avif",
+      "width": 512,
+      "bytes": 55922,
+      "src": "/landing/wow-art-512.a3d7971c4ddc64f7.avif"
+    },
+    {
+      "key": "art",
+      "format": "webp",
+      "width": 512,
+      "bytes": 98014,
+      "src": "/landing/wow-art-512.f9cca0c6c40363c9.webp"
+    },
+    {
+      "key": "shirt",
+      "format": "avif",
+      "width": 256,
+      "bytes": 9648,
+      "src": "/landing/wow-shirt-256.a0eed4ec0883dd63.avif"
+    },
+    {
+      "key": "shirt",
+      "format": "webp",
+      "width": 256,
+      "bytes": 16278,
+      "src": "/landing/wow-shirt-256.d50413ccea04e533.webp"
+    },
+    {
+      "key": "shirt",
+      "format": "avif",
+      "width": 512,
+      "bytes": 28024,
+      "src": "/landing/wow-shirt-512.b6f870261d584129.avif"
+    },
+    {
+      "key": "shirt",
+      "format": "webp",
+      "width": 512,
+      "bytes": 47332,
+      "src": "/landing/wow-shirt-512.0e274afe8b177813.webp"
+    }
+  ],
+  "logos": [
+    {
+      "key": "header",
+      "src": "/landing/logo-header.8ddd3181804dd5ef.webp",
+      "bytes": 33182
+    },
+    {
+      "key": "footer",
+      "src": "/landing/logo.767eb3a3b25c09af.webp",
+      "bytes": 40032
+    }
+  ],
+  "triptych": {
+    "width": 1536,
+    "height": 1024,
+    "bytes": 345382
+  }
+}

@@ -21,6 +21,7 @@ try{
  if(process.env.PARTYPRINT_BROWSER_CHECK==='1'){
   await run('scripts/check-order-browser.mjs');
   await run('scripts/check-quantity-browser.mjs');
+  await run('scripts/check-media-browser.mjs');
   process.env.PARTYPRINT_EXPECT_STABLE_PROMO='1';
   await run('scripts/check-measurement-browser.mjs');
  }
