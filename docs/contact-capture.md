@@ -33,7 +33,7 @@ Primary references checked: https://www.gov.il/BlobFolder/generalpage/manager_du
 
 ## Status
 
-Draft PR33, based on main c90a082. Local executor unavailable; use the repository's existing CI. Candidate/public acceptance is pending. Hostinger's direct receipt, Sites 28 synchronization, external vendor configuration and Resend delivery are separate unresolved checks.
+Implemented in PR33/34 and publicly tested; see the acceptance record below. Hosting/account/legal-identity limits remain explicit.
 
 ## Continuation — visible sizing and lighter transitions
 
@@ -42,3 +42,15 @@ The sizing entry uses the existing acid-yellow brand surface, an ink outline, la
 Stage headers and fields enter briefly with transform/opacity; the progress fill uses scale rather than animating layout width. No extra screen, blocking delay, overlay, library or network operation was added. Reduced-motion users get instant state changes. Three-step contact capture, required email and manual owner-only follow-up remain unchanged.
 
 PR33 merged at 264039eb39bcddcee308ceba9982bd21b3010cee. Candidate checks passed TypeScript, 36 regression/contract tests, actual SQLite/API scenarios, production build, SEO, form/quantity/UX/media and consent browser checks. Public performance probe job 125327617551 observed clean 264039e with fingerprint 6b25481d90485c5b1c3872c375ee5bbebc6c7f4d13187226d1a7ac6e509a3fa1: mobile median 1696ms, desktop 440ms (3 lab samples/profile; not field data). The first public form check ran before deployment and reported waiting; it is not acceptance. The new visual continuation will receive the complete public mocked-write QA after deployment. Direct hPanel receipt, Sites28, real Resend delivery and business identity remain open.
+
+## Public acceptance — 2026-11-02
+
+PR34 merged at 0eec69daee0d124b53a4539ea063bad005ccb84a. [Public form acceptance](https://github.com/atzilul/partyprint/actions/runs/41490324258/job/125433486595) observed this exact clean application revision and source fingerprint da18ca54bff76d8e0a5b333d1d584538b411b00c3dd4ae27dab73f0c614bd6bb. All six reports passed, with zero client errors and zero forwarded synthetic writes.
+
+- Form: 27 checks at each of 320/375/414/768/1366 pixels.
+- Quantity: 28 checks at 375/1366, including the actual owner-managed promotion text/code and server quote; coupon redemption is mocked.
+- UX: 23/26/23/23/23 checks, including visible sizing, motion/reduced-motion, contact-save failure/recovery, field/file retention, price/version conflicts and late sizing.
+- Consent/measurement: early captured-contact Lead, completed request separately, no duplicate vendor event, refusal and region rules, no PII in our allowlisted payloads. Vendors are stubbed; this is not account-side delivery evidence.
+- Media and non-mutating quote/thanks checks passed. No contact/order was created, no real coupon was consumed and no real mail was sent by this QA.
+
+Implementation and public behavior are accepted within the scope above. A direct hPanel deployment receipt remains unavailable; public source identity is separate evidence. Sites get_site still reports version28, unsynchronized; the execution environment needed to prepare its matching source is unavailable. Resend domain/key/from-address validity and actual owner/customer delivery remain unverified. The operator's legal name, registration number and postal address still require the owner's facts. N01 remains open for pre-existing moderate dev-tool dependency findings; the production dependency audit had zero findings. No scheduled job or paid dependency was added.
