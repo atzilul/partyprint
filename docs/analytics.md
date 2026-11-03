@@ -15,54 +15,22 @@ Hosting environment (Hostinger): `GA_MEASUREMENT_ID=[account identifier omitted]
 `META_PIXEL_ID=[account identifier omitted]`. The browser reads only those public IDs from
 `GET /api/analytics-config`. The server-side Meta Conversions API uses `META_CAPI_TOKEN` as a secret for
 `PageView`, `FormStart`, `FormStep` and `Lead`; it is never returned by that endpoint
-and sends under the same permission as the browser pixel (see the region rule below). Optional
+and sends under the same permission as the browser pixel (see the consent mode below). Optional
 `META_TEST_EVENT_CODE` routes events to Events Manager Test Events during a controlled
 check and should be removed afterward. A missing or malformed public ID skips that tag;
 missing server credentials leave browser measurement unaffected.
 
-## Default-on measurement, opt-out and the Meta region rule
+## Consent choices, event queue and Meta modes
 
-- **No notice opens automatically** (owner's decision, Nov 2026). The privacy
-  settings panel (`components/analytics-consent.tsx`) opens only from
-  **הגדרות פרטיות ועוגיות** at the bottom of every public page, where a visitor
-  can choose **לא, תודה** or **אישור**. The privacy policy, linked beside it and
-  from the panel, is the notice.
-- **Google Analytics** and the first-party `/api/events` counter run on public
-  pages by default (owner's decision, Oct 2026: maximum data, with notice and
-  opt-out).
-- **Meta pixel, by region** (`metaModeFor` in `lib/analytics.ts`):
-  - **Israel, "notice" mode:** on by default, exactly like Google Analytics
-    (owner's decision, Nov 2026). The pixel loads on entry and every Meta event
-    (PageView, ViewContent, FormStart, FormStep, FormSubmitAttempt, Lead, Contact,
-    RequestComplete) is sent, in the browser and through server CAPI, unless the
-    visitor chose **לא, תודה**. Meta's automatic configuration stays off while no
-    explicit **אישור** was given.
-  - **Everywhere else, including the EU, and whenever the region cannot be
-    identified, "strict" mode:** the pixel is not loaded at all until the
-    visitor opens the settings and chooses **אישור**. Nothing prompts them.
-  - Our code sends `PageView` itself on each route change (`fbq.disablePushState`
-    stops Meta's own history-based PageView, which would duplicate it and could
-    fire on excluded paths). When the pixel loads before a choice, Meta's
-    automatic configuration (detected button clicks, page metadata) is switched
-    off with `fbq('set', 'autoConfig', false, id)` before `init`.
-  - Region signal: a country from `PARTYPRINT_TRUSTED_COUNTRY_HEADER` (only if the
-    hosting edge is confirmed to overwrite that header) wins; otherwise the
-    browser time zone, where only `Asia/Jerusalem` / `Asia/Tel_Aviv` count as
-    Israel. No signal or any other zone means strict.
-- The settings text differs per mode and links to `/privacy-policy`. It never
-  promises that already-sent events are deleted.
-- **לא, תודה** stops GA, further Meta events and `/api/events` in that browser,
-  revokes Meta consent, denies Google consent and deletes `_ga*`, `_gcl_*`,
-  `_fbp` and `_fbc` cookies. **הגדרות פרטיות ועוגיות** at the bottom of every
-  public page opens the settings. The choice is stored in `localStorage`
-  (`partyprint-consent-v1`) for 12 months.
-- Google consent mode: everything granted unless the visitor opts out.
-- Never measured: `/admin`, `/track/*`, `/design/*`, `/api/*` and the Sites
-  sign-in routes (no notice, no tags, no events).
-- **Privacy policy:** `/privacy-policy` (describes implemented processing; legal review and operator identity are not verified; the old
-  `/policies/privacy` URL permanently redirects there). Linked from the notice,
-  the footer of every public page and the sitemap.
-
+- **No notice opens automatically.** The footer's **הגדרות פרטיות ועוגיות** control opens the settings panel; the privacy policy describes processing.
+- **Default is CONSENT_MODE=strict.** A PageView is sent while the visitor is undecided. Up to 50 other allowlisted interactions are kept in memory only, in event-time order. **אישור** releases them to GA4 and Meta; **לא, תודה** discards the queue and stops future measurement. Nothing is persisted in the queue.
+- **Optional CONSENT_MODE=notice** sends these non-identifying Meta browser events before a choice: PageView, ViewContent, InitiateCheckout and FormStep. It does not send form fields or contact details, and does not send pre-choice server CAPI. Other events wait in the same in-memory queue. Notice mode is not enabled unless an operator sets the environment variable.
+- Both modes call fbq('set','autoConfig',false,pixelId) before Pixel init. fbq('consent','grant') is called only after approval. This prevents Meta automatic form-field collection by the site script; account-side Meta settings have not been audited.
+- When approved, browser Pixel and server CAPI use the same eventID for supported matching events. Buffered CAPI events retain their original event timestamp. A saved Lead uses the saved request UUID. CAPI is skipped unless consent is granted.
+- **לא, תודה** drops pending events, stops new GA and Meta events, revokes Meta consent, denies Google consent, and deletes supported _ga*, _gcl_*, _fbp, and _fbc cookies. A refusal is stored in partyprint-consent-v1 for 12 months. Already-sent events are not recalled.
+- Never measured: /admin, /track/*, /design/*, /api/* and the Sites sign-in routes.
+- The in-memory buffer is capped at 50 events; overflow events are dropped.
+- The settings text describes the selected mode and links to /privacy-policy. Amendment 13 is referenced as an implementation note, not as legal approval. The operator should obtain legal review before enabling notice mode.
 ## GA4 events
 
 | Event | When | Parameters |
@@ -106,36 +74,17 @@ CAPI Lead includes an estimated package value and currency, not a payment or tra
 
 ## Meta pixel events
 
-Meta browser events are \`PageView\` (each page), \`ViewContent\` (\`select_package\`), custom
-\`FormStart\` (\`begin_order_request\`), \`Lead\` (\`generate_lead\`), \`Contact\` (WhatsApp / email /
-phone), and custom \`FormStep\` / \`FormSubmitAttempt\` / \`RequestComplete\`.
+Browser mappings:
 
-Under the same permission as the browser pixel (Israel: unless refused; elsewhere: after
-\`אישור\`), the server forwards \`PageView\`, \`FormStart\`, \`FormStep\` and \`Lead\`
-through \`/api/events\`. For every event, the browser supplies a UUID used as Pixel
-\`eventID\` and CAPI \`event_id\`; the server stores event IDs for seven days to prevent
-repeat sends. The saved contact UUID is the shared Lead ID. The server supplies
-\`event_time\`, \`action_source=website\`, a same-site \`event_source_url\`, and the
-available trusted client IP, browser user agent and \`_fbp\` / \`_fbc\` cookies. For Lead
-only, it reads the saved contact through its private capability and sends SHA-256
-hashes of normalized email and Israeli phone. Lead custom data contains the current
-server-calculated estimate after an applicable discount, \`ILS\`, package name/type and
-quantity. It never sends the raw contact fields, coupon code or contact token to Meta.
-The access token is sent in the `Authorization` header, never in the request URL. When the `_fbc` cookie is not set yet, the server derives `fbc` from the `fbclid` on the reported page URL. CAPI uses the current Graph API version in \`lib/meta-capi-payload.ts\`; errors are logged
-as status and Meta's error message only.
+- begin_order_request sends standard InitiateCheckout with value, currency, quantity and package name, alongside custom FormStart.
+- generate_lead sends standard Lead with the discounted value, ILS, quantity, package content ID and existing package/request parameters.
+- complete_order_request sends standard SubmitApplication alongside custom RequestComplete.
+- form_step for the details screen includes content_name=details.
+- Every Pixel event has a unique eventID. Matching PageView, FormStart, FormStep and Lead events use the same ID in CAPI. The Lead ID is the saved request UUID.
 
-CAPI never sends after \`לא, תודה\`, and never in the strict mode without \`אישור\`. The
-browser decides the permission with the same rule as the pixel and sends
-\`metaConsent: granted\` to \`/api/events\` only when that rule allows the event; the
-server forwards nothing otherwise.
+Server CAPI supports PageView, FormStart, FormStep and Lead at /api/events. CAPI sends only after explicit approval in either mode. In notice mode, the three pre-choice Meta behavior events (ViewContent, InitiateCheckout and FormStep) are browser-only until approval; when approval occurs, the queued server events keep their original event_time and matching event IDs. The server supplies action_source=website, a same-site event_source_url, the available trusted client IP, browser user agent and _fbp / _fbc cookies. For Lead only, it reads the saved contact through its private capability and sends SHA-256 hashes of normalized email and Israeli phone. Lead custom data contains the current server-calculated estimate after an applicable discount, ILS, package name/type, package content ID and quantity. It never sends raw contact fields, coupon code or contact token to Meta. The access token is sent in the Authorization header, never in the request URL. When _fbc is not set yet, the server derives it from a valid landing fbclid. CAPI uses the current Graph API version in lib/meta-capi-payload.ts; errors are logged as status and Meta's error message only.
 
-**Advanced Matching:** not configured in code, but *Automatic advanced matching*
-was recorded as **on** in Events Manager for this dataset (enabled Oct 26, 2026, with email,
-phone, name, city/state/ZIP, country, date of birth and external ID). This is a historical account note; Q02 did not verify or change that dataset setting. The allowlist tests verify our code's event payloads with vendors stubbed, not Meta's account-side automatic collection. When the
-pixel is active, Meta's own script may hash contact fields it finds on the page
-and send them. The privacy policy says so. Traffic permissions: allow list
-`partyprint.co.il` and its subdomains.
-
+Meta automatic configuration is disabled before Pixel initialization. The site's code does not pass form field values to the browser event API. The historical Events Manager Advanced Matching setting was recorded as enabled in Oct 2026 but has not been rechecked; code and CI cannot confirm the account-side setting.
 ## Allowed values
 
 Anything else is dropped before sending.
