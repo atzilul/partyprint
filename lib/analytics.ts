@@ -1,17 +1,13 @@
 // Browser measurement for PARTYPRINT: Google Analytics 4 and Meta Pixel; approved events also use server CAPI.
 //
-// Google Analytics: on by default with opt-out (owner's decision, Oct 2026). It
-// loads on public pages unless the visitor chose "לא, תודה" in the privacy settings.
+// Before a choice, only the PageView is sent. In strict mode (the default), all
+// other events stay in an in-memory queue until approval. In notice mode, Meta
+// may also receive the non-identifying ViewContent, InitiateCheckout and
+// FormStep events; approval flushes everything else and refusal drops the queue.
+// A refusal is stored for 12 months. Events already sent are not recalled.
 //
-// Meta pixel, by region (see metaMode):
-//  - Israel ("notice"): on by default, like Google Analytics (owner's decision,
-//    Nov 2026). Every Meta event, browser and server, is sent unless the visitor
-//    chose "לא, תודה". No notice is shown automatically; the privacy settings at
-//    the bottom of every public page are the place to opt out.
-//  - Everywhere else, including the EU and any visitor whose region cannot be
-//    identified ("strict"): the pixel is not loaded at all until the visitor opens
-//    the privacy settings and chooses "אישור".
-// A choice is stored for 12 months. Events already sent are not recalled.
+// Under Israel's Privacy Protection Law Amendment 13, notice is a business/legal
+// decision. Keep strict as the default; do not enable notice without owner review.
 //
 // Every event name and parameter value is checked against a fixed allowlist.
 // Raw names, emails, phones, free text, request/order IDs, coupon codes, design
@@ -48,20 +44,9 @@ export function savedLeadEventId(name:string,contactId:string):string|null{
 }
 
 export type MetaMode = 'notice' | 'strict';
-const ISRAEL_TIME_ZONES = ['Asia/Jerusalem', 'Asia/Tel_Aviv'];
-
-/**
- * Israel gets the notice mode; anything else (EU, other countries, unknown) is
- * strict. A country from a trusted server header wins; without one, the
- * browser's time zone is the only signal, and a missing or non-Israeli zone is
- * treated as unknown, i.e. strict.
- */
-export function metaModeFor(country: string, timeZone: string): MetaMode {
-  if (/^[A-Z]{2}$/.test(country)) return country === 'IL' ? 'notice' : 'strict';
-  return ISRAEL_TIME_ZONES.includes(timeZone) ? 'notice' : 'strict';
-}
-function browserTimeZone() {
-  try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch { return ''; }
+/** Unknown or invalid configuration is strict; only an explicit server setting enables notice mode. */
+export function consentModeFromConfig(value: unknown): MetaMode {
+  return value === 'notice' ? 'notice' : 'strict';
 }
 
 // Staff, customer tracking and design-approval pages are never measured.
@@ -111,19 +96,21 @@ const VALUES: Record<string, readonly (string | number)[]> = {
   ],
   cta_location: ['header', 'hero', 'package', 'size_help', 'order_form', 'confirmation', 'contact', 'footer', 'policy', 'content', 'other'],
   faq_index: range(1, 60),
+  content_name: [...PACKAGE_TYPES, 'order', 'custom', 'lead', 'details'],
+  currency: ['ILS'],
 };
 const EVENTS: Record<string, readonly string[]> = {
   select_package: ['package_type', 'request_mode'],
-  begin_order_request: ['request_mode', 'package_type'],
-  form_step: ['step_number', 'step_name', 'request_mode'],
+  begin_order_request: ['request_mode', 'package_type', 'value', 'currency', 'num_items', 'content_name'],
+  form_step: ['step_number', 'step_name', 'request_mode', 'content_name'],
   form_field_complete: ['field_name', 'request_mode'],
   form_submit_attempt: ['request_mode', 'package_type'],
   coupon_apply: ['coupon_status'],
   form_validation_error: ['error_type'],
   form_submit_error: ['error_type'],
   faq_open: ['faq_index'],
-  generate_lead: ['request_mode', 'package_type', 'quantity_band', 'coupon_status'],
-  complete_order_request: ['request_mode', 'package_type', 'quantity_band', 'coupon_status'],
+  generate_lead: ['request_mode', 'package_type', 'quantity_band', 'coupon_status', 'value', 'currency', 'num_items'],
+  complete_order_request: ['request_mode', 'package_type', 'quantity_band', 'coupon_status', 'value', 'currency', 'num_items', 'content_name'],
   contact_save_attempt: ['request_mode', 'package_type'],
   contact_save_error: ['error_type'],
   // One named event per contact channel.
@@ -134,36 +121,103 @@ const EVENTS: Record<string, readonly string[]> = {
   contact_phone: ['cta_location'],
 };
 
+function allowedValue(key: string, value: string | number) {
+  if (key === 'value') return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 100000;
+  if (key === 'num_items') return typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 100;
+  return VALUES[key]?.includes(value) ?? false;
+}
+
 function clean(name: string, params: Record<string, string | number | undefined>): Params | null {
   const allowed = EVENTS[name];
   if (!allowed) return null;
   const out: Params = {};
   for (const key of allowed) {
     const value = params[key];
-    if (value !== undefined && VALUES[key].includes(value)) out[key] = value;
+    if (value !== undefined && allowedValue(key, value)) out[key] = value;
   }
   return out;
 }
 
-/** The Meta pixel receives standard events only, built from the already-cleaned GA parameters. */
-function metaEvent(name: string, p: Params): [method: 'track' | 'trackCustom', event: string, data: Params] | null {
+type MetaParams = Record<string, string | number | string[]>;
+type MetaEventSpec = {method: 'track' | 'trackCustom'; event: string; data: MetaParams};
+function standardMetaData(p: Params, contentName?: string): MetaParams {
+  const data: MetaParams = {};
+  for (const key of ['value', 'currency', 'num_items', 'content_category'] as const) {
+    const value = p[key];
+    if (value !== undefined) data[key] = value;
+  }
+  const name = contentName || p.content_name;
+  if (name) data.content_name = name;
+  if (p.package_type) data.content_ids = [p.package_type];
+  return data;
+}
+
+/** Maps internal events to browser Meta events. The CAPI subset uses the same event IDs. */
+export function metaEvents(name: string, p: Params): MetaEventSpec[] {
   switch (name) {
-    case 'select_package': return ['track', 'ViewContent', p.package_type ? {content_category: p.package_type} : {}];
-    case 'begin_order_request': return ['trackCustom', 'FormStart', p.package_type ? {content_category: p.package_type} : {}];
-    case 'complete_order_request': return ['trackCustom', 'RequestComplete', p];
-    case 'generate_lead': return ['track', 'Lead', {...(p.package_type ? {content_category: p.package_type} : {}), ...(p.request_mode ? {content_name: p.request_mode} : {})}];
-    case 'contact_whatsapp': return ['track', 'Contact', {content_name: 'whatsapp', ...(p.cta_location ? {content_category: p.cta_location} : {})}];
-    case 'contact_email': return ['track', 'Contact', {content_name: 'email', ...(p.cta_location ? {content_category: p.cta_location} : {})}];
-    case 'contact_phone': return ['track', 'Contact', {content_name: 'phone', ...(p.cta_location ? {content_category: p.cta_location} : {})}];
-    case 'form_step': return ['trackCustom', 'FormStep', p];
-    case 'form_submit_attempt': return ['trackCustom', 'FormSubmitAttempt', p];
-    default: return null;
+    case 'select_package':
+      return [{method: 'track', event: 'ViewContent', data: p.package_type ? {content_category: p.package_type} : {}}];
+    case 'begin_order_request': {
+      const checkout = standardMetaData(p, p.content_name || p.package_type);
+      const start = p.package_type ? {content_category: p.package_type} : {};
+      return [
+        {method: 'track', event: 'InitiateCheckout', data: checkout},
+        {method: 'trackCustom', event: 'FormStart', data: start},
+      ];
+    }
+    case 'complete_order_request':
+      return [
+        {method: 'trackCustom', event: 'RequestComplete', data: p},
+        {method: 'track', event: 'SubmitApplication', data: standardMetaData(p, p.content_name || p.package_type)},
+      ];
+    case 'generate_lead':
+      return [{method: 'track', event: 'Lead', data: {
+        ...standardMetaData(p, p.request_mode),
+        ...(p.package_type ? {content_category: p.package_type} : {}),
+      }}];
+    case 'contact_whatsapp':
+      return [{method: 'track', event: 'Contact', data: {content_name: 'whatsapp', ...(p.cta_location ? {content_category: p.cta_location} : {})}}];
+    case 'contact_email':
+      return [{method: 'track', event: 'Contact', data: {content_name: 'email', ...(p.cta_location ? {content_category: p.cta_location} : {})}}];
+    case 'contact_phone':
+      return [{method: 'track', event: 'Contact', data: {content_name: 'phone', ...(p.cta_location ? {content_category: p.cta_location} : {})}}];
+    case 'form_step':
+      return [{method: 'trackCustom', event: 'FormStep', data: {
+        ...p,
+        ...(p.step_name === 'details' ? {content_name: 'details'} : {}),
+      }}];
+    case 'form_submit_attempt':
+      return [{method: 'trackCustom', event: 'FormSubmitAttempt', data: p}];
+    case 'meta_page_view':
+      return [{method: 'track', event: 'PageView', data: {}}];
+    default:
+      return [];
   }
 }
 
-// ---- choice ----
+// ---- choice and buffered dispatch ----
 
 let choice: ConsentChoice | null = null, choiceLoaded = false;
+type PendingEvent = {
+  name: string;
+  params: Params;
+  occurredAt: number;
+  eventIds: Record<string, string>;
+  pixelSent: string[];
+  gaSent: boolean;
+  contact?: LeadCapability;
+  receiptKey?: string;
+  dedupeKey?: string;
+  firstPartyKind?: 'view' | 'form_start';
+  pagePath?: string;
+};
+type LeadCapability = {id: string; token: string};
+type ServerMetaName = 'PageView' | 'FormStart' | 'FormStep' | 'Lead';
+let pending: PendingEvent[] = [];
+export const MAX_PENDING_ANALYTICS_EVENTS = 50;
+export function hasPendingAnalyticsCapacity(queueSize:number):boolean{
+  return Number.isInteger(queueSize)&&queueSize>=0&&queueSize<MAX_PENDING_ANALYTICS_EVENTS;
+}
 
 export function readConsent(): ConsentChoice | null {
   if (choiceLoaded) return choice;
@@ -185,117 +239,153 @@ export function saveConsent(next: ConsentChoice) {
 function excludedNow() {
   return typeof location === 'undefined' || isExcludedPath(location.pathname);
 }
-/** Measurement runs on public pages unless the visitor opted out. */
 function enabled() {
   return typeof window !== 'undefined' && !excludedNow() && readConsent() !== 'denied';
 }
 
-// ---- dispatch ----
-
-type Pending = {name: string; params: Params};
-let pending: Pending[] = [];
-const MAX_PENDING = 30;
-type ServerMetaName='PageView'|'FormStart'|'FormStep'|'Lead';
-type LeadCapability={id:string;token:string};
-
-function serverMetaName(value:string):value is ServerMetaName{
- return value==='PageView'||value==='FormStart'||value==='FormStep'||value==='Lead';
+function serverMetaName(value: string): value is ServerMetaName {
+  return value === 'PageView' || value === 'FormStart' || value === 'FormStep' || value === 'Lead';
 }
-function sendServerMetaEvent(eventName:ServerMetaName,eventID:string,clientData:Record<string,unknown>,contact?:LeadCapability){
- // Same permission as the browser pixel: an explicit "אישור", or no choice in the
- // Israel notice mode. The server receives the resulting permission, not the raw choice.
- if(!metaAllowed())return;
- const body={
-  event_name:eventName,event_id:eventID,event_source_url:safeLocation(),metaConsent:'granted',
-  client_data:clientData,...(contact?{contact}:{}),
- };
- fetch('/api/events',{
-  method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),keepalive:true,
- }).catch(()=>{});
+function createPending(name: string, params: Params, options: {occurredAt?: number; leadId?: string; contact?: LeadCapability; receiptKey?: string; dedupeKey?: string; firstPartyKind?: 'view' | 'form_start'; pagePath?: string} = {}): PendingEvent {
+  const eventIds: Record<string, string> = {};
+  for (const spec of metaEvents(name, params)) {
+    eventIds[spec.event] = spec.event === 'Lead' && options.leadId ? options.leadId : crypto.randomUUID();
+  }
+  return {
+    name, params, occurredAt: options.occurredAt ?? Date.now(), eventIds, pixelSent: [], gaSent: false,
+    ...(options.contact ? {contact: options.contact} : {}),
+    ...(options.receiptKey ? {receiptKey: options.receiptKey} : {}),
+    ...(options.dedupeKey ? {dedupeKey: options.dedupeKey} : {}),
+    ...(options.firstPartyKind ? {firstPartyKind: options.firstPartyKind} : {}),
+    ...(options.pagePath ? {pagePath: options.pagePath} : {}),
+  };
 }
-function dispatchMeta(name:string,params:Params){
- const meta=metaEvent(name,params);
- if(!meta)return;
- const [method,eventName,data]=meta;
- if(serverMetaName(eventName)){
-  const eventID=crypto.randomUUID();
-  window.fbq?.(method,eventName,data,{eventID});
-  sendServerMetaEvent(eventName,eventID,data);
-  return;
- }
- window.fbq?.(method,eventName,data);
+function enqueue(item: PendingEvent): PendingEvent | null {
+  if (item.dedupeKey) {
+    const existing = pending.find(entry => entry.dedupeKey === item.dedupeKey);
+    if (existing) {
+      if (item.contact) existing.contact = item.contact;
+      return existing;
+    }
+  }
+  if (!hasPendingAnalyticsCapacity(pending.length)) return null;
+  pending.push(item);
+  pending.sort((left, right) => left.occurredAt - right.occurredAt);
+  return item;
+}
+function metaReady() {
+  return metaLoaded && typeof window.fbq === 'function';
+}
+function metaAllowed() {
+  return !!pixelId && enabled() && readConsent() === 'granted';
+}
+function sendServerMetaEvent(eventName: ServerMetaName, eventID: string, occurredAt: number, clientData: MetaParams, contact?: LeadCapability) {
+  if (readConsent() !== 'granted') return;
+  const body = {
+    event_name: eventName, event_id: eventID, event_time: Math.floor(occurredAt / 1000),
+    event_source_url: safeLocation(), metaConsent: 'granted', client_data: clientData,
+    ...(contact ? {contact} : {}),
+  };
+  fetch('/api/events', {
+    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body), keepalive: true,
+  }).catch(() => {});
+}
+function dispatchMeta(item: PendingEvent, preChoice = false) {
+  const specs = metaEvents(item.name, item.params);
+  const allowedBeforeChoice = new Set(['PageView', 'ViewContent', 'InitiateCheckout', 'FormStep']);
+  for (const spec of specs) {
+    if (preChoice && !(spec.event === 'PageView' || (metaMode === 'notice' && allowedBeforeChoice.has(spec.event)))) continue;
+    const eventID = item.eventIds[spec.event];
+    if (!item.pixelSent.includes(spec.event)) {
+      window.fbq?.(spec.method, spec.event, spec.data, ...(eventID ? [{eventID}] : []));
+      item.pixelSent.push(spec.event);
+    }
+    if (!preChoice && serverMetaName(spec.event) && eventID) {
+      sendServerMetaEvent(spec.event, eventID, item.occurredAt, spec.data, item.contact);
+    }
+  }
+}
+function dispatchFirstParty(item: PendingEvent) {
+  if (!item.firstPartyKind || readConsent() !== 'granted') return;
+  fetch('/api/events', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({kind: item.firstPartyKind}), keepalive: true,
+  }).catch(() => {});
+}
+function markSavedReceipt(item: PendingEvent) {
+  if (!item.receiptKey) return;
+  const specs = metaEvents(item.name, item.params);
+  const sent = {ga: item.gaSent, meta: specs.length > 0 && specs.every(spec => item.pixelSent.includes(spec.event))};
+  receiptEvents.set(item.receiptKey, sent);
+  try { sessionStorage.setItem(item.receiptKey, JSON.stringify(sent)); } catch { /* private-tab storage can be unavailable */ }
+}
+function sendItem(item: PendingEvent) {
+  if (item.firstPartyKind) { dispatchFirstParty(item); return; }
+  if (item.name !== 'meta_page_view' && !item.gaSent && measurementId && window.gtag) {
+    window.gtag('event', item.name, {...item.params, event_time: Math.floor(item.occurredAt / 1000)});
+    item.gaSent = true;
+  }
+  if (metaReady() && metaAllowed()) dispatchMeta(item);
+  markSavedReceipt(item);
 }
 
-/** Records an allowlisted event in GA4 (and its Meta equivalent). */
+/** Records an allowlisted interaction. Undecided visitors get an in-memory queue, never persistent storage. */
 export function track(name: string, params: Record<string, string | number | undefined> = {}) {
- if(!enabled())return;
- const safe=clean(name,params);
- if(!safe)return;
- if(tagsState==='ready')send(name,safe);
- else if(pending.length<MAX_PENDING)pending.push({name,params:safe});
-}
-function send(name:string,params:Params){
- if(measurementId)window.gtag?.('event',name,params);
- if(metaReady()&&metaAllowed())dispatchMeta(name,params);
+  if (!enabled()) return;
+  const safe = clean(name, params);
+  if (!safe) return;
+  const item = createPending(name, safe);
+  if (readConsent() === 'granted' && tagsState === 'ready' && pending.length === 0) { sendItem(item); return; }
+  const queued = enqueue(item);
+  if (queued && readConsent() === null && metaMode === 'notice' && tagsState === 'ready' && metaReady()) dispatchMeta(queued, true);
 }
 
-/** Aggregate first-party counter (/api/events), same opt-out rule. */
-export function siteEvent(kind:'view'|'form_start'){
- if(!enabled())return;
- fetch('/api/events',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind})}).catch(()=>{});
+/** First-party counters follow the same consent queue and are dropped on refusal. */
+export function siteEvent(kind: 'view' | 'form_start') {
+  if (!enabled()) return;
+  const item = createPending('__first_party', {}, {firstPartyKind: kind});
+  if (readConsent() === 'granted' && tagsState === 'ready' && pending.length === 0) dispatchFirstParty(item);
+  else enqueue(item);
 }
 
 function flush() {
+  if (readConsent() === 'denied') { pending = []; return; }
+  if (readConsent() === null) {
+    if (metaMode === 'notice' && metaReady()) for (const item of pending) dispatchMeta(item, true);
+    return;
+  }
   const items = pending; pending = [];
-  for (const item of items) send(item.name, item.params);
+  for (const item of items) sendItem(item);
 }
 
 // ---- tags ----
 
 let tagsState: 'idle' | 'loading' | 'ready' = 'idle';
 let loading: Promise<void> | null = null;
-let measurementId = '', pixelId = '', country = '';
+let measurementId = '', pixelId = '';
 let lastLocation = '', lastPath = '', lastMetaPath = '';
 let metaLoaded = false, metaMode: MetaMode = 'strict';
-
 let configLoading: Promise<void> | null = null;
 function loadConfig() {
   configLoading ??= (async () => {
     try {
       const response = await fetch('/api/analytics-config', {headers: {Accept: 'application/json'}});
-      const config = response.ok ? await response.json() as {measurementId?: string; metaPixelId?: string; country?: string} : {};
+      const config = response.ok ? await response.json() as {measurementId?: string; metaPixelId?: string; consentMode?: string} : {};
       measurementId = MEASUREMENT_ID.test(config.measurementId || '') ? config.measurementId as string : '';
       pixelId = PIXEL_ID.test(config.metaPixelId || '') ? config.metaPixelId as string : '';
-      country = /^[A-Z]{2}$/.test(config.country || '') ? config.country as string : '';
-    } catch { measurementId = ''; pixelId = ''; country = ''; }
+      metaMode = consentModeFromConfig(config.consentMode);
+    } catch { measurementId = ''; pixelId = ''; metaMode = 'strict'; }
   })();
   return configLoading;
 }
 
-/** This visitor's Meta mode; the notice text depends on it. */
+/** This is a server-controlled setting; an absent or invalid value is strict. */
 export async function getMetaMode(): Promise<MetaMode> {
   await loadConfig();
-  return metaModeFor(country, browserTimeZone());
-}
-
-/**
- * Meta may run when the visitor chose "אישור", or, in the Israel notice mode,
- * whenever no choice was made (measurement on by default). Never after "לא, תודה",
- * and never without an explicit "אישור" in the strict mode.
- */
-function metaAllowed() {
-  if (!pixelId || !enabled()) return false;
-  const current = readConsent();
-  if (current === 'granted') return true;
-  return current === null && metaMode === 'notice';
-}
-function metaReady() {
-  return metaLoaded && typeof window.fbq === 'function';
+  return metaMode;
 }
 
 const CAMPAIGN_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'utm_id', 'utm_source_platform', 'utm_creative_format', 'utm_marketing_tactic', 'gclid', 'gbraid', 'wbraid', 'dclid', 'fbclid'];
-
-/** Page URL without hash or query, keeping only campaign attribution parameters. */
 function safeLocation() {
   const url = new URL(location.href), out = new URL(url.origin + url.pathname);
   for (const key of CAMPAIGN_KEYS) {
@@ -304,8 +394,6 @@ function safeLocation() {
   }
   return out.toString();
 }
-
-/** Same-site referrers keep only a non-excluded path; other sites only their origin. */
 function safeReferrer() {
   try {
     if (!document.referrer) return '';
@@ -314,62 +402,47 @@ function safeReferrer() {
     return isExcludedPath(ref.pathname) ? ref.origin + '/' : ref.origin + ref.pathname;
   } catch { return ''; }
 }
-
 function debugRequested() {
   try {
     if (new URL(location.href).searchParams.get('ga_debug') === '1') sessionStorage.setItem('partyprint-ga-debug', '1');
     return sessionStorage.getItem('partyprint-ga-debug') === '1';
   } catch { return false; }
 }
-
 function deleteCookies(match: (name: string) => boolean) {
   const host = location.hostname, parent = host.replace(/^www\./, '');
   for (const entry of document.cookie.split(';')) {
     const name = entry.split('=')[0].trim();
     if (!match(name)) continue;
-    for (const domain of ['', `; domain=${host}`, `; domain=.${parent}`]) document.cookie = `${name}=; Max-Age=0; path=/${domain}`;
+    for (const domain of ['', '; domain=' + host, '; domain=.' + parent]) document.cookie = name + '=; Max-Age=0; path=/' + domain;
   }
 }
-
 function disableMeasurement() {
-  if (measurementId) window[`ga-disable-${measurementId}`] = true;
+  if (measurementId) window['ga-disable-' + measurementId] = true;
   window.gtag?.('consent', 'update', {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'});
   window.fbq?.('consent', 'revoke');
   deleteCookies(name => name === '_ga' || name.startsWith('_ga_') || name === '_fbp' || name === '_fbc' || name.startsWith('_gcl_'));
   lastPath = ''; lastMetaPath = '';
 }
-
 function loadGoogle(id: string) {
   window.dataLayer = window.dataLayer || [];
-  // gtag.js reads the Arguments object, so this must not become a rest parameter.
   window.gtag = function gtag() { window.dataLayer!.push(arguments); }; // eslint-disable-line prefer-rest-params
-  window[`ga-disable-${id}`] = false;
-  window.gtag('consent', 'default', {analytics_storage: 'granted', ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted'});
+  const consent = readConsent() === 'granted' ? 'granted' : 'denied';
+  window['ga-disable-' + id] = false;
+  window.gtag('consent', 'default', {analytics_storage: consent, ad_storage: consent, ad_user_data: consent, ad_personalization: consent});
   window.gtag('js', new Date());
   window.gtag('config', id, {send_page_view: false, ...(debugRequested() ? {debug_mode: true} : {})});
   const script = document.createElement('script');
   script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
+  script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(id);
   document.head.appendChild(script);
 }
-
-/**
- * `automatic` = Meta's automatic configuration (button clicks and page metadata
- * detected by Meta's script). It stays off unless the visitor gave an explicit
- * "אישור": our own allowlisted events are the measurement, not Meta's guesses.
- * It is decided once, before init, so it stays off until the next page load.
- */
-function loadMeta(id: string, automatic: boolean) {
+function loadMeta(id: string, grantConsent: boolean) {
   if (!window.fbq) {
     type FbqStub = ((...args: unknown[]) => void) & {queue: unknown[]; loaded: boolean; version: string; push: unknown; callMethod?: (...args: unknown[]) => void; disablePushState?: boolean};
-    // Same contract as Meta's base snippet: queue calls until fbevents.js installs callMethod.
     const fbq = function fbqStub(...args: unknown[]) {
       if (fbq.callMethod) fbq.callMethod.call(fbq, ...args); else fbq.queue.push(args);
     } as FbqStub;
     fbq.queue = []; fbq.loaded = true; fbq.version = '2.0'; fbq.push = fbq;
-    // sendPageView() sends PageView itself on every route change, gated by the
-    // visitor's choice and the excluded paths; Meta's own history-based PageView
-    // would duplicate it and could fire on /admin, /track or /design.
     fbq.disablePushState = true;
     window.fbq = fbq; window._fbq = fbq;
     const script = document.createElement('script');
@@ -377,27 +450,25 @@ function loadMeta(id: string, automatic: boolean) {
     script.src = 'https://connect.facebook.net/en_US/fbevents.js';
     document.head.appendChild(script);
   }
-  if (!automatic) window.fbq!('set', 'autoConfig', false, id);
-  window.fbq!('consent', 'grant');
+  window.fbq!('set', 'autoConfig', false, id);
+  if (grantConsent) window.fbq!('consent', 'grant');
   window.fbq!('init', id);
+  metaLoaded = true;
 }
-
 async function loadTags() {
   tagsState = 'loading';
   await loadConfig();
-  metaMode = metaModeFor(country, browserTimeZone());
   if (!enabled()) { tagsState = 'idle'; return; }
   if (measurementId) loadGoogle(measurementId);
   tagsState = 'ready';
 }
-
-/** Loads (or re-grants) the Meta pixel only when this visitor's mode and choice allow it. */
-function ensureMeta() {
-  if (!metaAllowed()) return;
-  if (!metaLoaded) { loadMeta(pixelId, readConsent() === 'granted'); metaLoaded = true; }
-  else window.fbq?.('consent', 'grant');
+function ensureMeta(forPageView = false) {
+  const current = readConsent();
+  if (!pixelId || !enabled() || current === 'denied') return;
+  if (current === null && metaMode !== 'notice' && !forPageView) return;
+  if (!metaLoaded) loadMeta(pixelId, current === 'granted');
+  else if (current === 'granted') window.fbq?.('consent', 'grant');
 }
-
 function sendPageView() {
   if (tagsState !== 'ready' || excludedNow()) return;
   const path = location.pathname + location.search;
@@ -410,13 +481,18 @@ function sendPageView() {
       window.gtag?.('event', 'page_view', page);
     }
   }
-  // Tracked separately: in the strict mode the pixel may load only after "אישור", on a page GA already counted.
-  if (path !== lastMetaPath && metaReady() && metaAllowed()) {
+  if (!pixelId || path === lastMetaPath || readConsent() === 'denied') return;
+  const item = createPending('meta_page_view', {}, {pagePath: path, dedupeKey: 'meta-page:' + path});
+  item.gaSent = true;
+  if (readConsent() === 'granted' && metaReady() && pending.length === 0) {
     lastMetaPath = path;
-    const eventID=crypto.randomUUID();
-    window.fbq?.('track','PageView',{}, {eventID});
-    sendServerMetaEvent('PageView',eventID,{});
+    sendItem(item);
+    return;
   }
+  const queued = enqueue(item);
+  if (!queued) return;
+  lastMetaPath = path;
+  if (readConsent() === null && metaReady()) dispatchMeta(queued, true);
 }
 
 /** Called by the consent manager on load, after a choice and on every route change. */
@@ -425,11 +501,11 @@ export async function startAnalytics() {
   if (tagsState === 'idle') loading = loadTags();
   if (loading) await loading;
   if (!enabled() || tagsState !== 'ready') return;
-  if (measurementId) {
-    window[`ga-disable-${measurementId}`] = false;
+  if (measurementId && readConsent() === 'granted') {
+    window['ga-disable-' + measurementId] = false;
     window.gtag?.('consent', 'update', {analytics_storage: 'granted', ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted'});
   }
-  ensureMeta();
+  ensureMeta(readConsent() === null);
   sendPageView();
   flush();
 }
@@ -480,29 +556,48 @@ export function installInteractionTracking() {
   }, true);
 }
 
-// A saved receipt is a local deduplication key only; its id never leaves the tab
-// through measurement. Consent can be granted after the confirmation appears.
-const receiptEvents=new Map<string,{ga:boolean;meta:boolean}>();
-async function trackSavedRequestEvent(name:'generate_lead'|'complete_order_request',localReceiptId:string,params:Record<string,string|number|undefined>,contactToken?:string){
- if(!/^[a-f0-9-]{36}$/.test(localReceiptId)||!enabled())return;
- const safe=clean(name,params);if(!safe)return;
- await startAnalytics();if(!enabled()||tagsState!=='ready')return;
- const storageKey=(name==='generate_lead'?'partyprint-lead-':'partyprint-complete-')+localReceiptId;
- let sent=receiptEvents.get(storageKey);if(!sent){try{const stored=JSON.parse(sessionStorage.getItem(storageKey)||'null');sent={ga:stored?.ga===true,meta:stored?.meta===true};}catch{sent={ga:false,meta:false};}receiptEvents.set(storageKey,sent);}
- if(!sent.ga&&measurementId&&window.gtag){window.gtag('event',name,safe);sent.ga=true;}
- if(!sent.meta&&metaReady()&&metaAllowed()){
-  const event=metaEvent(name,safe);
-  if(event&&window.fbq){
-   const eventID=savedLeadEventId(name,localReceiptId);
-   if(eventID){
-    window.fbq(event[0],event[1],event[2],{eventID});
-    if(name==='generate_lead'&&contactToken)sendServerMetaEvent('Lead',eventID,event[2],{id:localReceiptId,token:contactToken});
-   }else window.fbq(event[0],event[1],event[2]);
-   sent.meta=true;
+// A saved receipt deduplicates its Lead and completion in this tab only.
+const receiptEvents = new Map<string, {ga: boolean; meta: boolean}>();
+function receiptStatus(key: string) {
+  let sent = receiptEvents.get(key);
+  if (!sent) {
+    try {
+      const stored = JSON.parse(sessionStorage.getItem(key) || 'null');
+      sent = {ga: stored?.ga === true, meta: stored?.meta === true};
+    } catch { sent = {ga: false, meta: false}; }
+    receiptEvents.set(key, sent);
   }
- }
- try{sessionStorage.setItem(storageKey,JSON.stringify(sent));}catch{}
+  return sent;
+}
+async function trackSavedRequestEvent(name: 'generate_lead' | 'complete_order_request', localReceiptId: string, params: Record<string, string | number | undefined>, contactToken?: string) {
+  if (!/^[a-f0-9-]{36}$/i.test(localReceiptId) || !enabled()) return;
+  const safe = clean(name, params);
+  if (!safe) return;
+  const storageKey = (name === 'generate_lead' ? 'partyprint-lead-' : 'partyprint-complete-') + localReceiptId;
+  const sent = receiptStatus(storageKey);
+  if (sent.ga && sent.meta) return;
+  const leadId = savedLeadEventId(name, localReceiptId) || undefined;
+  const contact = name === 'generate_lead' && contactToken ? {id: localReceiptId, token: contactToken} : undefined;
+  if (readConsent() === null) {
+    const item = createPending(name, safe, {
+      leadId, contact, receiptKey: storageKey, dedupeKey: 'receipt:' + storageKey,
+    });
+    item.gaSent = sent.ga;
+    if (sent.meta) item.pixelSent = metaEvents(name, safe).map(spec => spec.event);
+    enqueue(item);
+    return;
+  }
+  await startAnalytics();
+  if (!enabled() || tagsState !== 'ready') return;
+  const current = receiptStatus(storageKey);
+  if (current.ga && current.meta) return;
+  const item = createPending(name, safe, {
+    leadId, contact, receiptKey: storageKey, dedupeKey: 'receipt:' + storageKey,
+  });
+  item.gaSent = current.ga;
+  if (current.meta) item.pixelSent = metaEvents(name, safe).map(spec => spec.event);
+  sendItem(item);
 }
 
-export const trackSavedLead=(id:string,params:Record<string,string|number|undefined>,token?:string)=>trackSavedRequestEvent('generate_lead',id,params,token);
-export const trackSavedCompletion=(id:string,params:Record<string,string|number|undefined>)=>trackSavedRequestEvent('complete_order_request',id,params);
+export const trackSavedLead = (id: string, params: Record<string, string | number | undefined>, token?: string) => trackSavedRequestEvent('generate_lead', id, params, token);
+export const trackSavedCompletion = (id: string, params: Record<string, string | number | undefined>) => trackSavedRequestEvent('complete_order_request', id, params);
