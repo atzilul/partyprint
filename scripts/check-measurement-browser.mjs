@@ -34,7 +34,7 @@ try{
      const v=req.postDataJSON();
      if(v.action==='read')return route.fulfill({status:capturedContact?200:404,contentType:'application/json',body:JSON.stringify(capturedContact?{saved:true,id:capturedContact.id,version:1,details:capturedContact.details}:{error:'not found'})});
      counts.mockContacts++;
-     if(counts.mockContacts<3)return route.fulfill({status:counts.mockContacts===1?503:200,contentType:'application/json',body:JSON.stringify(counts.mockContacts===1?{error:'כשל שמירה מדומה'}:{ok:true})});
+     if(!scenario.late&&counts.mockContacts<3)return route.fulfill({status:counts.mockContacts===1?503:200,contentType:'application/json',body:JSON.stringify(counts.mockContacts===1?{error:'כשל שמירה מדומה'}:{ok:true})});
      capturedContact={id:v.id,details:{name:v.name,phone:v.phone,email:v.email,package:v.package,quantity:v.quantity,mode:v.mode,eventDate:v.eventDate,source:v.source}};
      return route.fulfill({status:201,contentType:'application/json',body:JSON.stringify({saved:true,id:v.id,version:1,details:capturedContact.details,mailStatus:'accepted'})});
     }
@@ -161,8 +161,14 @@ try{
     await form.locator('input[name="name"]').fill('בדיקת פרטיות סינתטית');
     await form.locator('input[name="phone"]').fill('0500000000');
     await form.locator('input[name="email"]').fill('qa-measurement@example.invalid');
-    for(let attempt=1;attempt<=3;attempt++){
+    for(let attempt=1;attempt<=(scenario.late?1:3);attempt++){
      await form.getByRole('button',{name:'שומרים פרטים וממשיכים לרעיון',exact:true}).click();
+     if(scenario.late){
+      await form.locator('.pp-contact-saved').waitFor({state:'visible'});
+      s=await snapshot();
+      check('Saved contact Lead remains buffered before approval',eventCount(s,'generate_lead')===0&&metaEvents(s).filter(x=>x[1]==='Lead').length===0&&counts.serverMetaEvents.every(x=>x.event_name!=='Lead'));
+      continue;
+     }
      await page.waitForFunction(n=>window.dataLayer?.filter(x=>Array.from(x)[0]==='event'&&Array.from(x)[1]===(n<3?'contact_save_error':'generate_lead')).length>=(n<3?n:1),attempt);
      s=await snapshot();
      check(attempt===1?'Failed contact save emits no lead':attempt===2?'Missing contact confirmation emits no lead':'Confirmed contact save emits exactly one lead',eventCount(s,'generate_lead')===(attempt===3?1:0));
@@ -173,6 +179,7 @@ try{
     let approvalAt=0;
     if(scenario.late){check('No Meta lead before explicit consent',metaEvents(s).filter(x=>x[1]==='Lead').length===0);await page.waitForTimeout(2100);approvalAt=Date.now();await page.getByRole('button',{name:'הגדרות פרטיות ועוגיות',exact:true}).click();await page.getByRole('button',{name:'אישור',exact:true}).click();await page.waitForFunction(()=>window.fbq?.queue?.some(x=>x[1]==='Lead'));s=await snapshot();}
     check('Captured contact emits one Meta Lead when consent permits',metaEvents(s).filter(x=>x[1]==='Lead').length===1);
+    if(scenario.late)check('Late approval flushes the saved GA Lead once',eventCount(s,'generate_lead')===1);
      const leadData=metaEvents(s).find(x=>x[1]==='Lead')?.[2];
      const expectedPack=['family_birthday','bride_squad','groom_crew','team','custom','single'][capturedContact.details.package];
      check('Lead carries discounted quote value, currency, quantity and package content ID',typeof leadData?.value==='number'&&leadData?.currency==='ILS'&&leadData?.num_items===capturedContact.details.quantity&&Array.isArray(leadData?.content_ids)&&leadData.content_ids[0]===expectedPack);
