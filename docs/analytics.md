@@ -136,10 +136,12 @@ Anything else is dropped before sending.
 
 These parameters are registered as event-scoped custom dimensions in GA4.
 
-Never sent by our code: names, emails, phones, free text (brief), order or request
-IDs, tracking links, coupon codes, design text, uploaded file names, User-ID or
-user properties. Same-site referrers are reduced to a non-excluded path; external
-referrers to their origin.
+Never sent as GA4 or custom event parameters by our code: names, emails, phones, free text
+(brief), order IDs, tracking links, coupon codes, design text, uploaded file names,
+User-ID or user properties. The opaque contact UUID is sent only in Meta's Lead
+eventID option and the matching CAPI event_id for deduplication; it is not a GA4
+parameter. Same-site referrers are reduced to a non-excluded path; external referrers
+to their origin.
 
 ## GA4 property settings
 

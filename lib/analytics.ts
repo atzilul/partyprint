@@ -10,9 +10,11 @@
 //    identified ("strict"): the pixel is not loaded at all until "אישור".
 // A refusal is stored for 12 months. Events already sent are not recalled.
 //
-// Every event name and every parameter value we send is checked against a fixed
-// allowlist; anything else is dropped. Names, emails, phones, free text, order
-// IDs, coupon codes, design text and file names are never passed in here.
+// Every event name and parameter value is checked against a fixed allowlist.
+// Raw names, emails, phones, free text, request/order IDs, coupon codes, design
+// text and file names never enter event parameters. The opaque contact UUID is
+// used only as Meta's Lead eventID option for browser/server deduplication; it is
+// never a GA4 parameter.
 // (Meta's automatic advanced matching is a dataset setting in Events Manager,
 // not code: when enabled, Meta's own script may hash contact fields it finds.)
 // See docs/analytics.md for the measurement plan.

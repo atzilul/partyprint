@@ -141,7 +141,7 @@ try{
     }
     s=await snapshot();
     check('Final completion does not duplicate the contact Lead',metaEvents(s).filter(x=>x[1]==='Lead').length===1&&metaEvents(s).filter(x=>x[1]==='RequestComplete').length===1);
-    check('Contact data and local receipt key never reach measurement',!JSON.stringify(s).includes('qa-measurement@example.invalid')&&!JSON.stringify(s).includes('0500000000')&&!JSON.stringify(s).includes(capturedContact.id));
+    const leadEvents=metaEvents(s).filter(x=>x[1]==='Lead');const measuredData=JSON.stringify({ga:s.ga,meta:metaEvents(s).map(x=>x[2])});check('Raw contact fields stay out of event parameters; opaque UUID is used only as Meta eventID',!measuredData.includes('qa-measurement@example.invalid')&&!measuredData.includes('0500000000')&&!measuredData.includes(capturedContact.id)&&leadEvents.length===1&&leadEvents[0][3]?.eventID===capturedContact.id);
     check('Quote start uses custom FormStart rather than checkout',metaEvents(s).every(x=>x[1]!=='InitiateCheckout')&&(scenario.late||metaEvents(s).some(x=>x[1]==='FormStart')));
     await page.reload({waitUntil:'networkidle'});await page.waitForFunction(()=>window.dataLayer?.some(x=>Array.from(x)[1]==='page_view'));
     s=await snapshot();check('Reload emits no duplicate lead or completion',eventCount(s,'generate_lead')===0&&eventCount(s,'complete_order_request')===0&&metaEvents(s).filter(x=>x[1]==='Lead'||x[1]==='RequestComplete').length===0);
