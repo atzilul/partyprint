@@ -1,3 +1,4 @@
+import OrderFormLink from '@/components/order-form-link';
 import type {Metadata} from 'next';
 import Link from '@/components/safe-link';
 import {SeoFooter,SeoNav} from '@/components/seo-layout';
@@ -22,9 +23,9 @@ export default function OrderingGuide(){
  ]};
  return <main className="seo-page" dir="rtl"><SeoNav/><article className="seo-article">
  <header className="seo-article-header"><span className="seo-kicker">PARTYPRINT / לפני שמזמינים</span><h1>איך מזמינים חולצות<br/>בעיצוב אישי לקבוצה?</h1><p>{description}</p><p className="seo-editorial-note">בעריכת צוות PARTYPRINT · עודכן ב־2 בנובמבר 2026. המחיר והזמינות הקובעים נבדקים בטופס ובתיאום עם הסטודיו.</p></header>
- <div className="seo-quick-answer"><div><strong>מה צריך להכין?</strong><p>מספר חולצות, שם, טלפון ומייל. רעיון, תמונות ותאריך אירוע עוזרים; מידות וצבעים אפשר לבחור בטופס או להשלים אחרי השליחה. ממלאים בקשה ללא חיוב, מתאמים פרטים ומאשרים עיצוב לפני שמדפיסים.</p></div><Link className="seo-primary-cta" href="/#order">מתחילים בבקשה ←</Link></div>
+ <div className="seo-quick-answer"><div><strong>מה צריך להכין?</strong><p>מספר חולצות, שם, טלפון ומייל. רעיון, תמונות ותאריך אירוע עוזרים; מידות וצבעים אפשר לבחור בטופס או להשלים אחרי השליחה. ממלאים בקשה ללא חיוב, מתאמים פרטים ומאשרים עיצוב לפני שמדפיסים.</p></div><OrderFormLink className="seo-primary-cta" href="/#order">מתחילים בבקשה ←</OrderFormLink></div>
  <nav aria-label="תוכן המדריך"><ul>{sections.map(section=><li key={section.id}><a href={'#'+section.id}>{section.question}</a></li>)}</ul></nav>
  <div className="seo-content">{sections.map((section,index)=><section id={section.id} className="seo-content-section" key={section.id}><span className="seo-section-number">0{index+1}</span><div><h2>{section.question}</h2><p>{section.answer}</p><ul>{section.tips.map(tip=><li key={tip}>{tip}</li>)}</ul></div></section>)}</div>
- <section className="seo-offer"><div><h2>מוכנים לרכז את כולם?</h2><p>עברו לטופס לבחירת החבילה, הכמות ותאריך האירוע. משאירים שם, טלפון ומייל; מידות אפשר להשלים אחר כך. אפשר גם להתחיל בהתייעצות.</p><p><Link href="/policies/shipping">תנאי המשלוח</Link> · <Link href="/policies/returns">שינויים וביטולים</Link> · <Link href="/faq">עוד שאלות ותשובות</Link></p></div><Link className="seo-primary-cta" href="/#order">לטופס ההזמנה ←</Link></section>
+ <section className="seo-offer"><div><h2>מוכנים לרכז את כולם?</h2><p>עברו לטופס לבחירת החבילה, הכמות ותאריך האירוע. משאירים שם, טלפון ומייל; מידות אפשר להשלים אחר כך. אפשר גם להתחיל בהתייעצות.</p><p><Link href="/policies/shipping">תנאי המשלוח</Link> · <Link href="/policies/returns">שינויים וביטולים</Link> · <Link href="/faq">עוד שאלות ותשובות</Link></p></div><OrderFormLink className="seo-primary-cta" href="/#order">לטופס ההזמנה ←</OrderFormLink></section>
  </article><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(schema).replace(/</g,'\\u003c')}}/><SeoFooter/></main>;
 }

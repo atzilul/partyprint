@@ -1,11 +1,10 @@
+import {BUSINESS_DETAILS} from '@/lib/business-details';
 import type {Metadata} from 'next';
 import {PolicyHero,PolicyLayout,PolicyRibbon,PolicySection,policyIcons} from '../policies/policy-ui';
 import '../policies/policies.css';
 
-// This page describes implemented processing. It does not assert legal review.
-// The operator's legal name, registration number and postal address still require owner-supplied facts; see project memory.
 export const metadata:Metadata={title:'מדיניות פרטיות | PARTYPRINT',description:'איך PARTYPRINT שומרת פרטי פניות ותמונות, מתי פרטי קשר נשמרים, מי מקבל אותם ואיך מנהלים את המדידה והפרסום.',alternates:{canonical:'/privacy-policy'}};
-const EMAIL='atzilul@gmail.com',WHATSAPP='https://wa.me/972552896236';
+const EMAIL=BUSINESS_DETAILS.email,WHATSAPP='https://wa.me/972552896236';
 export default function PrivacyPolicyPage(){const {shield,alert}=policyIcons;return <PolicyLayout><PolicyHero eyebrow="הפרטים שלכם. בשקיפות." title="מדיניות" highlight="פרטיות." intro="מה נשמר כשמשאירים פרטים או שולחים רעיון, למה משתמשים במידע, עם מי הוא משותף ואיך מנהלים את המדידה והפרסום." icon={shield}/><div className="policy-content">
 <p className="policy-small-note">עודכן: 3 בנובמבר 2026</p>
 <PolicyRibbon icon={alert} title="אתם בוחרים אם להשאיר פנייה" text="אין חובה חוקית למסור פרטים. כדי לשמור פנייה בטופס נדרשים שם, טלפון ומייל תקינים. אפשר גם לפנות אלינו ישירות ב־WhatsApp."/>

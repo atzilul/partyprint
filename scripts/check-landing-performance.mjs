@@ -88,14 +88,14 @@ try{
      result.optimizedChecks=[];
      const check=(condition,message)=>{if(!condition)throw new Error(message);result.optimizedChecks.push(message)};
      try{
-      check(/\/_next\/static\/.*party-crew-(640|960|1254).*\.(avif|webp)$/.test(result.hero?.src||''),'Responsive hero selected');
+      check(/\/_next\/static\/.*family-shared-v2-(640|960|1254).*\.(avif|webp)$/.test(result.hero?.src||''),'Family is the default responsive hero');
       check(result.hero?.complete&&result.hero.naturalWidth>0,'Hero decoded successfully');
       check(new Set(result.heroSources.map(x=>x.src)).size===1,'Opening audience stays stable for 12 seconds');
       check(!result.resources.some(x=>/statement-family-fixed/.test(x.name)),'Distant statement artwork deferred');
       check(!result.resources.some(x=>/\/fonts\/.*\.ttf$/.test(x.name)),'WOFF2 fonts used');
       if(sample===1){const jpeg=await page.screenshot({type:'jpeg',quality:55});console.log('LANDING_SCREENSHOT_'+profile.name.toUpperCase()+' '+jpeg.toString('base64'))}
       check(result.cls<=0.1,'Lab CLS within 0.1');
-      check(!result.resources.some(x=>/family-shared-v2|bride-shared-v2|groom-shared-v2|tech-team/.test(x.name)),'Other event artwork is deferred');
+      check(!result.resources.some(x=>/bride-shared-v2|groom-shared-v2|tech-team|party-crew/.test(x.name)),'Other event artwork is deferred');
       if(sample===1){
        for(let i=0;i<5;i++){
         await page.locator('.hero .audience-options label').nth(i).click();
@@ -106,6 +106,14 @@ try{
        await page.goto(origin+'/',{waitUntil:'domcontentloaded'});
        await page.waitForFunction(()=>{const image=document.querySelector('.hero-art img');return image?.complete&&image.naturalWidth>0&&image.currentSrc.endsWith('.webp')});
        check((await page.locator('.hero-art img').getAttribute('src')).includes('/_next/static/'),'WebP fallback decodes when AVIF is disabled');
+        const brideResponse=await context.request.get(origin+'/?v=bride');
+        const brideHtml=await brideResponse.text();
+        const selectedBridePack=(brideHtml.match(/<option[^>]*>/g)||[]).some(tag=>tag.includes('value="1"')&&tag.includes('selected'));
+        check(brideResponse.ok()&&brideHtml.includes('מסיבת רווקות | PARTYPRINT')&&brideHtml.includes('הכלה והחברות')&&brideHtml.includes('og-bride.jpg')&&selectedBridePack,'Bride variant is server-rendered in title, hero, share image and form pack');
+        await page.goto(origin+'/?v=bride',{waitUntil:'domcontentloaded'});
+        await page.waitForFunction(()=>document.querySelector('.hero')?.classList.contains('audience-bride')&&document.querySelector('.hero-art img')?.complete&&document.querySelector('.hero-art img')?.naturalWidth>0);
+        const brideClientState=await page.evaluate(()=>{const select=document.querySelector('select[aria-label="בחירת חבילה"]');return {heading:document.querySelector('.hero h1')?.textContent||'',pack:select?.value,image:document.querySelector('.hero-art img')?.currentSrc||''}});
+        check(brideClientState.heading.includes('הכלה והחברות')&&brideClientState.pack==='1'&&brideClientState.image.includes('bride-shared-v2'),'Hydrated bride variant keeps the matching hero and form pack');
       }
       check(errors.length===0,'No client exceptions during hero selection and fallback');result.featureValidation='passed';
      }catch(e){result.error=e.message.slice(0,300);result.featureValidation='failed'}
