@@ -22,7 +22,7 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - run: npx tsc --noEmit
       - run: node --test scripts/search-utils.test.mjs scripts/search-metrics.test.mjs scripts/build-identity.test.mjs scripts/order-quantity.test.mjs scripts/quote-planning.test.mjs
-      - run: node --experimental-strip-types --test scripts/search-content.test.mjs scripts/analytics-contract.test.mjs
+      - run: node --experimental-strip-types --test scripts/search-content.test.mjs scripts/analytics-contract.test.mjs scripts/meta-capi.test.mjs
       - name: Isolated order API regression; synthetic storage and no external mail
         run: node scripts/verify-orders.mjs
       - run: node scripts/verify-immutable-media.mjs

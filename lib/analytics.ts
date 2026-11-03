@@ -35,6 +35,12 @@ export const CONSENT_EVENT = 'partyprint-consent';
 const CONSENT_MAX_AGE = 365 * 86400000;
 const MEASUREMENT_ID = /^G-[A-Z0-9]{4,20}$/;
 const PIXEL_ID = /^\d{8,20}$/;
+const EVENT_UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
+
+/** The saved contact UUID is the matching identifier for browser and server Lead events. */
+export function savedLeadEventId(name:string,contactId:string):string|null{
+  return name==='generate_lead'&&EVENT_UUID.test(contactId)?contactId:null;
+}
 
 export type MetaMode = 'notice' | 'strict';
 const ISRAEL_TIME_ZONES = ['Asia/Jerusalem', 'Asia/Tel_Aviv'];
@@ -449,7 +455,7 @@ async function trackSavedRequestEvent(name:'generate_lead'|'complete_order_reque
  const storageKey=(name==='generate_lead'?'partyprint-lead-':'partyprint-complete-')+localReceiptId;
  let sent=receiptEvents.get(storageKey);if(!sent){try{const stored=JSON.parse(sessionStorage.getItem(storageKey)||'null');sent={ga:stored?.ga===true,meta:stored?.meta===true};}catch{sent={ga:false,meta:false};}receiptEvents.set(storageKey,sent);}
  if(!sent.ga&&measurementId&&window.gtag){window.gtag('event',name,safe);sent.ga=true;}
- if(!sent.meta&&metaReady()&&metaAllowed('event')){const event=metaEvent(name,safe);if(event&&window.fbq){window.fbq(event[0],event[1],event[2]);sent.meta=true;}}
+ if(!sent.meta&&metaReady()&&metaAllowed('event')){const event=metaEvent(name,safe);if(event&&window.fbq){const eventID=savedLeadEventId(name,localReceiptId);if(eventID)window.fbq(event[0],event[1],event[2],{eventID});else window.fbq(event[0],event[1],event[2]);sent.meta=true;}}
  try{sessionStorage.setItem(storageKey,JSON.stringify(sent));}catch{}
 }
 

@@ -9,12 +9,12 @@ import type {Pricing} from '@/lib/pricing';
 import {validPhone,validCalendarDate} from '@/lib/contact-validation';
 import {eventPlanning} from '@/lib/event-planning';
 import {paidCampaignOffer} from '@/lib/campaign-offer';
-import {track,siteEvent,packageType,quantityBand,requestMode,submitErrorType,trackSavedLead,CONSENT_EVENT} from '@/lib/analytics';
+import {track,siteEvent,packageType,quantityBand,requestMode,submitErrorType,trackSavedLead,CONSENT_EVENT,readConsent} from '@/lib/analytics';
 import {saveReceipt,safeTrackingUrl} from '@/lib/request-receipt';
 import './order-flow.css';
 import OrderSizePicker from './order-size-picker';
 import RequestProgress from './request-progress';
-import {readContactKey,storeContactKey,clearContactKey,createContactKey,contactRequest,CaptureError} from './contact-capture';
+import {readContactKey,storeContactKey,clearContactKey,createContactKey,contactRequest,reportSavedLeadToMeta,CaptureError} from './contact-capture';
 import type {ContactKey} from './contact-capture';
 import {defaultShirts} from './shirt-options';
 import type {ShirtSelection} from '@/lib/catalog';
@@ -26,7 +26,7 @@ export default function OrderRequestForm({pack,quantities,pricing,mode,openSigna
  const router=useRouter();const [step,setStep]=useState(0),[name,setName]=useState(''),[phone,setPhone]=useState(''),[email,setEmail]=useState(''),[brief,setBrief]=useState(''),[eventDate,setEventDate]=useState(''),[files,setFiles]=useState<File[]>([]),[busy,setBusy]=useState(false),[error,setError]=useState(''),[errors,setErrors]=useState<Record<string,string>>({}),[draftNotice,setDraftNotice]=useState(''),[ready,setReady]=useState(false),[quantityDraft,setQuantityDraft]=useState<string|null>(null);
  const [confirmedShirts,setConfirmedShirts]=useState<ShirtSelection[]|null>(null),[shirtDraft,setShirtDraft]=useState<ShirtSelection[]>([]),[sizingOpen,setSizingOpen]=useState(false);
  const [quantityNotice,setQuantityNotice]=useState(''),[contactSaved,setContactSaved]=useState(false);
- const contactKey=useRef<ContactKey|null>(null),contactEdited=useRef(false);
+ const contactKey=useRef<ContactKey|null>(null),contactEdited=useRef(false),metaCapiAttempted=useRef('');
  const touched=useRef(new Set<string>());
  const [manualCode,setManualCode]=useState(''),[code,setCode]=useState(''),[autoCode,setAutoCode]=useState(''),[autoOffer,setAutoOffer]=useState(false),[quote,setQuote]=useState<Quote|null>(null),[couponBusy,setCouponBusy]=useState(false),[couponError,setCouponError]=useState(''),[couponAttempt,setCouponAttempt]=useState(0);
  const started=useRef(false),lastStage=useRef(-1),fields=useRef(new Set<string>()),source=useRef('direct'),submitting=useRef(false),saved=useRef(false),signal=useRef(openSignal);
@@ -52,7 +52,7 @@ export default function OrderRequestForm({pack,quantities,pricing,mode,openSigna
  function changeQuantity(n:number){if(busy)return;const normalized=Math.max(MIN_SHIRT_QUANTITY,Math.min(MAX_SHIRT_QUANTITY,Math.floor(n)||MIN_SHIRT_QUANTITY));onQuantity(pack,normalized);setQuantityDraft(null);setQuantityNotice(n<1?'אפשר להזמין החל מחולצה אחת.':n>100?'אפשר להזמין עד 100 חולצות בטופס.':'');}
  function selectPackage(next:number){if(busy)return;begin();onQuantity(next,quantity);onPack(next);setQuantityDraft(null);setQuantityNotice('');track('select_package',{package_type:packageType(next),request_mode:requestMode(mode)});}
  useEffect(()=>{const key=readContactKey();if(!key)return;contactKey.current=key;let active=true;void contactRequest(key,'read').then(v=>{if(!active)return;const updated={...key,version:v.version};contactKey.current=updated;storeContactKey(updated);setContactSaved(true);if(!contactEdited.current){setName(v.details.name);setPhone(v.details.phone);setEmail(v.details.email);}}).catch(e=>{if(e instanceof CaptureError&&e.status===404){contactKey.current=null;clearContactKey();}});return()=>{active=false;};},[]);
- useEffect(()=>{if(!contactSaved||!contactKey.current)return;const emit=()=>void trackSavedLead(contactKey.current!.id,{request_mode:requestMode(mode),package_type:packageType(pack),quantity_band:quantityBand(quantity),coupon_status:applied?'accepted':'none'});emit();window.addEventListener(CONSENT_EVENT,emit);return()=>window.removeEventListener(CONSENT_EVENT,emit);},[contactSaved,mode,pack,quantity,!!applied]);
+ useEffect(()=>{if(!contactSaved||!contactKey.current)return;const emit=()=>{const key=contactKey.current;if(!key)return;void trackSavedLead(key.id,{request_mode:requestMode(mode),package_type:packageType(pack),quantity_band:quantityBand(quantity),coupon_status:applied?'accepted':'none'});if(readConsent()==='granted'&&metaCapiAttempted.current!==key.id){metaCapiAttempted.current=key.id;void reportSavedLeadToMeta(key).catch(()=>{});}};emit();window.addEventListener(CONSENT_EVENT,emit);return()=>window.removeEventListener(CONSENT_EVENT,emit);},[contactSaved,mode,pack,quantity,!!applied]);
  function fieldError(field:string,value:string){return field==='name'?(!value.trim()?'מלאו שם כדי שנדע למי לחזור.':''):field==='phone'?(!validPhone(value)?'מלאו מספר טלפון תקין לחזרה אליכם.':''):field==='email'?(!value.trim()?'מלאו כתובת מייל כדי שנוכל לחזור אליכם.':!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())?'בדקו את כתובת המייל.':''):'';}
  function blur(field:string,value:string){touched.current.add(field);setErrors(v=>({...v,[field]:fieldError(field,value)}));fieldDone(field,!fieldError(field,value)&&!!value.trim());}
  function edit(field:string,value:string){contactEdited.current=true;if(field==='name')setName(value);if(field==='phone')setPhone(value);if(field==='email')setEmail(value);if(touched.current.has(field))setErrors(v=>({...v,[field]:fieldError(field,value)}));}
@@ -61,8 +61,8 @@ export default function OrderRequestForm({pack,quantities,pricing,mode,openSigna
  function showContactErrors(missing:Record<string,string>){setErrors(missing);if(!Object.keys(missing).length)return false;const types:Record<string,string>={name:'missing_name',phone:'invalid_phone',email:'invalid_email',eventDate:'invalid_event_date'};Object.keys(missing).forEach(k=>{touched.current.add(k);track('form_validation_error',{error_type:types[k]});});setStep(missing.eventDate?0:1);requestAnimationFrame(()=>document.getElementById('request-'+(Object.keys(missing)[0]==='eventDate'?'event-date':Object.keys(missing)[0]))?.focus());return true;}
  async function captureContact(formElement:HTMLFormElement){
   begin();if(showContactErrors(contactErrors()))return;submitting.current=true;setBusy(true);onBusy(true);setError('');track('contact_save_attempt',{request_mode:requestMode(mode),package_type:packageType(pack)});
-  const key=contactKey.current||createContactKey();contactKey.current=key;
-  try{const v=await contactRequest(key,'save',{name,phone,email:email.trim(),package:pack,quantity,mode,eventDate,source:source.current,shirts:validateShirts(confirmedShirts,quantity)?confirmedShirts:[]},String(new FormData(formElement).get('website')||''));const next={...key,version:v.version};contactKey.current=next;storeContactKey(next);setContactSaved(true);void trackSavedLead(key.id,{request_mode:requestMode(mode),package_type:packageType(pack),quantity_band:quantityBand(quantity),coupon_status:applied?'accepted':'none'});setStep(2);report(2);focusTitle();}
+  const key=contactKey.current||createContactKey();contactKey.current=key;const metaConsent=readConsent();
+  try{const v=await contactRequest(key,'save',{name,phone,email:email.trim(),package:pack,quantity,mode,eventDate,source:source.current,shirts:validateShirts(confirmedShirts,quantity)?confirmedShirts:[],couponCode:applied?.code||''},String(new FormData(formElement).get('website')||''),metaConsent);const next={...key,version:v.version};contactKey.current=next;storeContactKey(next);setContactSaved(true);if(metaConsent==='granted'){metaCapiAttempted.current=key.id;if(v.metaCapiStatus==='failed')void reportSavedLeadToMeta(next).catch(()=>{});}void trackSavedLead(key.id,{request_mode:requestMode(mode),package_type:packageType(pack),quantity_band:quantityBand(quantity),coupon_status:applied?'accepted':'none'});setStep(2);report(2);focusTitle();}
   catch(e){if(e instanceof CaptureError&&e.status===404){contactKey.current=null;clearContactKey();setContactSaved(false);}if(e instanceof CaptureError&&e.status===409){try{const v=await contactRequest(key,'read');contactKey.current={...key,version:v.version};storeContactKey(contactKey.current);}catch{}}track('contact_save_error',{error_type:submitErrorType(e instanceof CaptureError?(e.status===0?'no_confirmation':e.status):'network')});setError(e instanceof Error?e.message:'לא הצלחנו לשמור. נסו שוב.');}
   finally{submitting.current=false;setBusy(false);onBusy(false);}
  }
