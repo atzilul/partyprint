@@ -146,9 +146,10 @@ function standardMetaData(p: Params, contentName?: string): MetaParams {
     const value = p[key];
     if (value !== undefined) data[key] = value;
   }
-  const name = contentName || p.content_name;
+  const name = contentName || (typeof p.content_name === 'string' ? p.content_name : undefined);
+  const packageType = typeof p.package_type === 'string' ? p.package_type : undefined;
   if (name) data.content_name = name;
-  if (p.package_type) data.content_ids = [p.package_type];
+  if (packageType) data.content_ids = [packageType];
   return data;
 }
 
@@ -158,8 +159,9 @@ export function metaEvents(name: string, p: Params): MetaEventSpec[] {
     case 'select_package':
       return [{method: 'track', event: 'ViewContent', data: p.package_type ? {content_category: p.package_type} : {}}];
     case 'begin_order_request': {
-      const checkout = standardMetaData(p, p.content_name || p.package_type);
-      const start = p.package_type ? {content_category: p.package_type} : {};
+      const checkoutName = typeof p.content_name === 'string' ? p.content_name : typeof p.package_type === 'string' ? p.package_type : undefined;
+      const checkout = standardMetaData(p, checkoutName);
+      const start: MetaParams = typeof p.package_type === 'string' ? {content_category: p.package_type} : {};
       return [
         {method: 'track', event: 'InitiateCheckout', data: checkout},
         {method: 'trackCustom', event: 'FormStart', data: start},
@@ -168,11 +170,11 @@ export function metaEvents(name: string, p: Params): MetaEventSpec[] {
     case 'complete_order_request':
       return [
         {method: 'trackCustom', event: 'RequestComplete', data: p},
-        {method: 'track', event: 'SubmitApplication', data: standardMetaData(p, p.content_name || p.package_type)},
+        {method: 'track', event: 'SubmitApplication', data: standardMetaData(p, typeof p.content_name === 'string' ? p.content_name : typeof p.package_type === 'string' ? p.package_type : undefined)},
       ];
     case 'generate_lead':
       return [{method: 'track', event: 'Lead', data: {
-        ...standardMetaData(p, p.request_mode),
+        ...standardMetaData(p, typeof p.request_mode === 'string' ? p.request_mode : undefined),
         ...(p.package_type ? {content_category: p.package_type} : {}),
       }}];
     case 'contact_whatsapp':
@@ -416,8 +418,12 @@ function deleteCookies(match: (name: string) => boolean) {
     for (const domain of ['', '; domain=' + host, '; domain=.' + parent]) document.cookie = name + '=; Max-Age=0; path=/' + domain;
   }
 }
+function setGaDisabled(id: string, disabled: boolean) {
+  const key = `ga-disable-${id}` as `ga-disable-${string}`;
+  window[key] = disabled;
+}
 function disableMeasurement() {
-  if (measurementId) window['ga-disable-' + measurementId] = true;
+  if (measurementId) setGaDisabled(measurementId, true);
   window.gtag?.('consent', 'update', {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'});
   window.fbq?.('consent', 'revoke');
   deleteCookies(name => name === '_ga' || name.startsWith('_ga_') || name === '_fbp' || name === '_fbc' || name.startsWith('_gcl_'));
@@ -427,7 +433,7 @@ function loadGoogle(id: string) {
   window.dataLayer = window.dataLayer || [];
   window.gtag = function gtag() { window.dataLayer!.push(arguments); }; // eslint-disable-line prefer-rest-params
   const consent = readConsent() === 'granted' ? 'granted' : 'denied';
-  window['ga-disable-' + id] = false;
+  setGaDisabled(id, false);
   window.gtag('consent', 'default', {analytics_storage: consent, ad_storage: consent, ad_user_data: consent, ad_personalization: consent});
   window.gtag('js', new Date());
   window.gtag('config', id, {send_page_view: false, ...(debugRequested() ? {debug_mode: true} : {})});
@@ -502,7 +508,7 @@ export async function startAnalytics() {
   if (loading) await loading;
   if (!enabled() || tagsState !== 'ready') return;
   if (measurementId && readConsent() === 'granted') {
-    window['ga-disable-' + measurementId] = false;
+    setGaDisabled(measurementId, false);
     window.gtag?.('consent', 'update', {analytics_storage: 'granted', ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted'});
   }
   ensureMeta(readConsent() === null);
