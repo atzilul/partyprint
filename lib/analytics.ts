@@ -498,5 +498,5 @@ async function trackSavedRequestEvent(name:'generate_lead'|'complete_order_reque
  try{sessionStorage.setItem(storageKey,JSON.stringify(sent));}catch{}
 }
 
-export const trackSavedLead=(id:string,token:string,params:Record<string,string|number|undefined>)=>trackSavedRequestEvent('generate_lead',id,params,token);
+export const trackSavedLead=(id:string,params:Record<string,string|number|undefined>,token?:string)=>trackSavedRequestEvent('generate_lead',id,params,token);
 export const trackSavedCompletion=(id:string,params:Record<string,string|number|undefined>)=>trackSavedRequestEvent('complete_order_request',id,params);
