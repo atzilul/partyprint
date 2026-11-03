@@ -107,6 +107,9 @@ Configure these in the hosting environment, never GitHub source or client code:
 | `META_CAPI_TOKEN` | Server-only Meta Conversions API access token for PageView, FormStart, FormStep and Lead; set as a secret and never expose it through `/api/analytics-config` or client code |
 | `META_TEST_EVENT_CODE` | Optional temporary Events Manager test code. Remove it after validation so later events are not sent in test mode |
 | `PARTYPRINT_TRUSTED_IP_HEADER` | Hostinger proxy header containing the visitor IP. User reports `x-real-ip`; the server validates the value before including it in Meta events |
+| `PARTYPRINT_LEGAL_NAME`, `PARTYPRINT_BUSINESS_ID`, `PARTYPRINT_BUSINESS_ADDRESS` | Public business details shown in the footer of every public page and in the terms. Until each one is set, its row is hidden; a value left at its `TODO_` placeholder is never shown |
+| `PARTYPRINT_TERMS_LAWYER`, `PARTYPRINT_TERMS_REVIEW_DATE` | Lawyer name and review date shown on `/terms` once legal review is done; until both are set the page shows only a pending note |
+| `PARTYPRINT_PAYMENT_TERMS` | Optional payment-terms sentence for the form and terms; a default sentence is used until set |
 | `PARTYPRINT_TRUSTED_COUNTRY_HEADER` | Optional. A header that Hostinger confirms its edge **overwrites** with the visitor's ISO country code. Leave unset until confirmed: the Meta pixel then decides by browser time zone and falls back to strict (no pixel before consent). See [docs/analytics.md](docs/analytics.md) |
 
 The reverse proxy must overwrite forwarded protocol/host headers and block direct
