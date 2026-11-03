@@ -4,7 +4,7 @@ import {contactGrant,validContactKey,type ContactDetails,type ContactRow} from '
 import {packs} from './catalog';
 import {packageType} from './analytics';
 import {
- buildMetaEvent,claimMetaEventId,fbcFromClickId,postMetaEvent,type MetaCapiEventName,type MetaCapiStatus,
+ buildMetaEvent,claimMetaEventId,fbcFromClickId,postMetaEvent,validMetaEventTime,type MetaCapiEventName,type MetaCapiStatus,
 } from './meta-capi-payload';
 
 const clean=(value:string|undefined)=>String(value||'').trim().replace(/^[\"']|[\"']$/g,'');
@@ -38,13 +38,14 @@ function clickId(value:unknown,origin:string){
 export type MetaEventRequest={
  event_name:MetaCapiEventName;
  event_id:string;
+ event_time:number;
  event_source_url:string;
  metaConsent:'granted'|'denied'|null;
  client_data?:Record<string,unknown>;
  contact?:{id:string;token:string};
 };
 export async function attemptMetaEvent(request:Request,input:MetaEventRequest):Promise<MetaCapiStatus>{
- if(input.metaConsent!=='granted'||!configured())return 'skipped';
+ if(input.metaConsent!=='granted'||!configured()||!validMetaEventTime(input.event_time))return 'skipped';
  const origin=new URL(publicOrigin()).origin;
  if(!['https://partyprint.co.il','https://www.partyprint.co.il'].includes(origin))return 'skipped';
  const url=sourceUrl(input.event_source_url,origin);
@@ -65,7 +66,7 @@ export async function attemptMetaEvent(request:Request,input:MetaEventRequest):P
  const event=await buildMetaEvent({
   eventName:input.event_name,
   eventId:input.event_id,
-  eventTime:Math.floor(now/1000),
+  eventTime:input.event_time,
   eventSourceUrl:url,
   clientIpAddress:trustedClientIp(request),
   clientUserAgent:request.headers.get('user-agent')||undefined,
