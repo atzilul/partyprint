@@ -299,7 +299,9 @@ function dispatchMeta(item: PendingEvent, preChoice = false) {
     if (preChoice && !(spec.event === 'PageView' || (metaMode === 'notice' && allowedBeforeChoice.has(spec.event)))) continue;
     const eventID = item.eventIds[spec.event];
     if (!item.pixelSent.includes(spec.event)) {
-      window.fbq?.(spec.method, spec.event, spec.data, ...(eventID ? [{eventID}] : []));
+      // Pixel cannot backdate its receive timestamp; retain the original occurrence time as an event parameter.
+      const pixelData = {...spec.data, event_time: Math.floor(item.occurredAt / 1000)};
+      window.fbq?.(spec.method, spec.event, pixelData, ...(eventID ? [{eventID}] : []));
       item.pixelSent.push(spec.event);
     }
     if (!preChoice && serverMetaName(spec.event) && eventID) {
