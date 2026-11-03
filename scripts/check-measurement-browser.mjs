@@ -90,13 +90,13 @@ try{
      await banner.getByRole('button',{name:'פחות פרטים',exact:true}).click();
      check(`Details collapse at ${width}px`,await banner.locator('.consent-details').isHidden());
      consentLayouts.push({width,compactHeight:compact.height,expandedHeight:expanded.height});
+     if(width===1366)console.log('CONSENT_COMPACT_SCREENSHOT '+(await page.screenshot({type:'jpeg',quality:65})).toString('base64'));
      // Reopen from the footer after a reload to verify the undecided choice is not persisted.
      counts.serverMetaEvents.length=0;counts.firstPartyEvents=0;
      await page.reload({waitUntil:'domcontentloaded'});await page.locator('.hero').waitFor();await page.evaluate(()=>document.fonts.ready);
     }
     check('Reading details does not change consent',await page.evaluate(()=>localStorage.getItem('partyprint-consent-v1'))===savedBefore);
     await page.setViewportSize({width:scenario.width,height:900});
-    if(scenario.name==='Strict buffered approval')console.log('CONSENT_COMPACT_SCREENSHOT '+(await page.screenshot({type:'jpeg',quality:65})).toString('base64'));
    }
    if(scenario.denied){
     const s=await snapshot();
