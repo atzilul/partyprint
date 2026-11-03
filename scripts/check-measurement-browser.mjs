@@ -18,7 +18,7 @@ try{
    if(denied)localStorage.setItem('partyprint-consent-v1',JSON.stringify({analytics:'denied',at:Date.now()}));
   },{denied:!!scenario.denied});
   const page=await context.newPage(),checks=[],clientErrors=[];
-  let capturedContact=null;const counts={mockContacts:0,mockOrders:0,firstPartyEvents:0,googleScripts:0,metaScripts:0,blockedWrites:0,networkWrites:0};
+  let capturedContact=null;const counts={mockContacts:0,mockOrders:0,firstPartyEvents:0,serverMetaEvents:[],googleScripts:0,metaScripts:0,blockedWrites:0,networkWrites:0};
   let releasePromo;
   const promoGate=new Promise(resolve=>{releasePromo=resolve;});
   page.on('pageerror',e=>clientErrors.push(e.message.slice(0,200)));
@@ -29,7 +29,7 @@ try{
    if(url.hostname==='www.googletagmanager.com'&&method==='GET'){counts.googleScripts++;return route.fulfill({status:200,contentType:'application/javascript',body:'/* vendor intentionally stubbed */'});}
    if(url.hostname==='connect.facebook.net'&&method==='GET'){counts.metaScripts++;return route.fulfill({status:200,contentType:'application/javascript',body:'/* vendor intentionally stubbed */'});}
    if(!['GET','HEAD','OPTIONS'].includes(method)){
-    if(url.origin===base&&url.pathname==='/api/events'){counts.firstPartyEvents++;return route.fulfill({status:204,body:''});}
+    if(url.origin===base&&url.pathname==='/api/events'){counts.firstPartyEvents++;const payload=req.postDataJSON();if(payload.event_name)counts.serverMetaEvents.push({event_name:payload.event_name,event_id:payload.event_id,event_source_url:payload.event_source_url,metaConsent:payload.metaConsent,client_data:payload.client_data});return route.fulfill({status:204,body:''});}
     if(url.origin===base&&url.pathname==='/api/contacts'){
      const v=req.postDataJSON();
      if(v.action==='read')return route.fulfill({status:capturedContact?200:404,contentType:'application/json',body:JSON.stringify(capturedContact?{saved:true,id:capturedContact.id,version:1,details:capturedContact.details}:{error:'not found'})});
@@ -96,7 +96,7 @@ try{
    if(scenario.denied){
     const s=await snapshot();
     check('Stored refusal loads no Google or Meta tag',counts.googleScripts===0&&counts.metaScripts===0);
-    check('Stored refusal emits no page event',eventCount(s,'page_view')===0&&metaEvents(s).length===0&&counts.firstPartyEvents===0);
+    check('Stored refusal emits no page event or server CAPI',eventCount(s,'page_view')===0&&metaEvents(s).length===0&&counts.firstPartyEvents===0&&counts.serverMetaEvents.length===0);
     check('Stored refusal does not reopen notice',await page.locator('.consent-banner').count()===0);
     await page.goto(base+'/privacy-policy',{waitUntil:'networkidle'});
     await page.getByRole('button',{name:'הגדרות פרטיות ועוגיות',exact:true}).click();
@@ -111,6 +111,7 @@ try{
     check('Campaign retained and personal query fields removed',loc.includes('utm_source=measurement_qa')&&!/email=|phone=|order_id=|example.invalid/.test(loc));
     if(scenario.country==='IL'){
      check('Israel notice sends PageView only before choice',metaEvents(s).length===1&&metaEvents(s)[0][1]==='PageView');
+      check('Israeli pre-choice PageView is not sent by server CAPI',counts.serverMetaEvents.filter(e=>e.event_name==='PageView').length===0);
      const off=s.meta.findIndex(x=>x[0]==='set'&&x[1]==='autoConfig'&&x[2]===false),init=s.meta.findIndex(x=>x[0]==='init');
      check('Automatic Meta configuration is off before init',off>=0&&off<init);
     }else check('Strict Meta region loads no pixel before approval',counts.metaScripts===0&&s.meta.length===0);
@@ -133,6 +134,11 @@ try{
     s=await snapshot();
     if(scenario.late){check('No Meta lead before explicit consent',metaEvents(s).filter(x=>x[1]==='Lead').length===0);await page.getByRole('button',{name:'אישור',exact:true}).click();await page.waitForFunction(()=>window.fbq?.queue?.some(x=>x[1]==='Lead'));s=await snapshot();}
     check('Captured contact emits one Meta Lead when consent permits',metaEvents(s).filter(x=>x[1]==='Lead').length===1);
+     for(let i=0;i<20&&!counts.serverMetaEvents.some(x=>x.event_name==='Lead');i++)await page.waitForTimeout(25);
+     const leadServer=counts.serverMetaEvents.filter(x=>x.event_name==='Lead');
+     const leadPixel=metaEvents(s).filter(x=>x[1]==='Lead');
+     check('Server Lead shares browser eventID',leadServer.length===1&&leadPixel.length===1&&leadServer[0]?.event_id===leadPixel[0]?.[3]?.eventID);
+     check('Server Lead payload excludes raw contact details',leadServer.length===1&&!JSON.stringify(leadServer[0]).includes('qa-measurement@example.invalid')&&!JSON.stringify(leadServer[0]).includes('0500000000'));
     for(let attempt=1;attempt<=3;attempt++){
      await form.getByRole('button',{name:'יאללה, הופכים את הרעיון לחולצה!',exact:true}).click();
      await page.waitForFunction(n=>window.dataLayer?.filter(x=>Array.from(x)[0]==='event'&&Array.from(x)[1]===(n<3?'form_submit_error':'complete_order_request')).length>=(n<3?n:1),attempt);
@@ -141,8 +147,10 @@ try{
     }
     s=await snapshot();
     check('Final completion does not duplicate the contact Lead',metaEvents(s).filter(x=>x[1]==='Lead').length===1&&metaEvents(s).filter(x=>x[1]==='RequestComplete').length===1);
-    check('Contact data and local receipt key never reach measurement',!JSON.stringify(s).includes('qa-measurement@example.invalid')&&!JSON.stringify(s).includes('0500000000')&&!JSON.stringify(s).includes(capturedContact.id));
+    const leadEvents=metaEvents(s).filter(x=>x[1]==='Lead');const measuredData=JSON.stringify({ga:s.ga,meta:metaEvents(s).map(x=>x[2])});check('Raw contact fields stay out of browser event parameters; opaque UUID is used only as Meta eventID',!measuredData.includes('qa-measurement@example.invalid')&&!measuredData.includes('0500000000')&&!measuredData.includes(capturedContact.id)&&leadEvents.length===1&&leadEvents[0][3]?.eventID===capturedContact.id);
     check('Quote start uses custom FormStart rather than checkout',metaEvents(s).every(x=>x[1]!=='InitiateCheckout')&&(scenario.late||metaEvents(s).some(x=>x[1]==='FormStart')));
+     check('Every server event has a matching browser eventID',counts.serverMetaEvents.every(e=>metaEvents(s).some(x=>x[1]===e.event_name&&x[3]?.eventID===e.event_id)));
+     check('Consent refusal blocks server CAPI events',!scenario.denied||counts.serverMetaEvents.length===0);
     await page.reload({waitUntil:'networkidle'});await page.waitForFunction(()=>window.dataLayer?.some(x=>Array.from(x)[1]==='page_view'));
     s=await snapshot();check('Reload emits no duplicate lead or completion',eventCount(s,'generate_lead')===0&&eventCount(s,'complete_order_request')===0&&metaEvents(s).filter(x=>x[1]==='Lead'||x[1]==='RequestComplete').length===0);
     check('Contact values are absent from analytics payloads',!/[א-ת]{2,}\sפרטיות|0500000000|qa-measurement|example.invalid/.test(JSON.stringify(s)));
@@ -150,12 +158,12 @@ try{
     await page.evaluate(()=>{document.cookie='_ga=qa; path=/';document.cookie='_fbp=qa; path=/';});
     await page.getByRole('button',{name:'הגדרות פרטיות ועוגיות',exact:true}).click();
     await page.getByRole('button',{name:'לא, תודה',exact:true}).click();
-    s=await snapshot();const beforeGA=s.ga.filter(x=>x[0]==='event').length,beforeMeta=metaEvents(s).length,beforeCounter=counts.firstPartyEvents;
+    s=await snapshot();const beforeGA=s.ga.filter(x=>x[0]==='event').length,beforeMeta=metaEvents(s).length,beforeCounter=counts.firstPartyEvents,beforeCapi=counts.serverMetaEvents.length;
     check('Refusal disables GA and revokes Meta consent',s.disabled&&s.meta.some(x=>x[0]==='consent'&&x[1]==='revoke'));
     check('Refusal clears measurement cookies',await page.evaluate(()=>!document.cookie.split(';').some(x=>/^\s*_(?:ga|fbp)=/.test(x))));
     await page.evaluate(()=>{const link=document.createElement('a');link.href='mailto:qa@example.invalid';link.addEventListener('click',event=>event.preventDefault());document.body.append(link);link.click();link.remove();});
     s=await snapshot();
-    check('Refusal stops further measurement events',s.ga.filter(x=>x[0]==='event').length===beforeGA&&metaEvents(s).length===beforeMeta&&counts.firstPartyEvents===beforeCounter);
+    check('Refusal stops further measurement events',s.ga.filter(x=>x[0]==='event').length===beforeGA&&metaEvents(s).length===beforeMeta&&counts.firstPartyEvents===beforeCounter&&counts.serverMetaEvents.length===beforeCapi);
     const oldGoogle=counts.googleScripts,oldMeta=counts.metaScripts;
     await page.reload({waitUntil:'networkidle'});
     check('Refusal persists on reload',counts.googleScripts===oldGoogle&&counts.metaScripts===oldMeta);

@@ -10,9 +10,9 @@ export async function POST(request:Request){
  if(!request.headers.get('content-type')?.startsWith('application/json'))return fail('פורמט הבקשה אינו תקין.',415);
  try{
  const raw=await readLimitedJson(request,16000);if(!raw||typeof raw!=='object'||Array.isArray(raw))return fail('בדקו את פרטי הקשר.');
- const v=raw as Record<string,unknown>;if(!validContactKey(v.id,v.token)||v.website||!['save','read'].includes(String(v.action)))return fail('בדקו את פרטי הקשר.');
+ const v=raw as Record<string,unknown>,action=String(v.action);if(!validContactKey(v.id,v.token)||!['save','read'].includes(action)||(action==='save'&&v.website))return fail('בדקו את פרטי הקשר.');
  const id=v.id as string,token=v.token as string;
- if(v.action==='read'){const row=await contactGrant(id,token);return row?Response.json({saved:true,...contactView(row),completed:!!await getOrder(id)},{headers}):fail('השמירה אינה זמינה בכרטיסייה הזו. מלאו שוב את הפרטים.',404);}
+ if(action==='read'){const row=await contactGrant(id,token);return row?Response.json({saved:true,...contactView(row),completed:!!await getOrder(id)},{headers}):fail('השמירה אינה זמינה בכרטיסייה הזו. מלאו שוב את הפרטים.',404);}
  const {DB}=bindings(),now=Date.now(),hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(clientKey(request))),key='contact:'+Math.floor(now/3600000)+':'+Array.from(new Uint8Array(hash)).map(n=>n.toString(16).padStart(2,'0')).join('');
  const count=await DB.prepare('INSERT INTO form_rate_limits (key,count,expires_at) VALUES (?,1,?) ON CONFLICT(key) DO UPDATE SET count=count+1 WHERE count<8 RETURNING count').bind(key,now+7200000).first();
  if(!count)return fail('נשלחו יותר מדי בקשות. נסו שוב מאוחר יותר או פנו ב־WhatsApp.',429);

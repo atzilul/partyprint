@@ -1,6 +1,6 @@
 import type {ShirtSelection} from '@/lib/catalog';
 export type ContactKey={id:string;token:string;version:number;at:number};
-export type CapturedDetails={name:string;phone:string;email:string;package:number;quantity:number;mode:string;eventDate:string;source:string;shirts?:ShirtSelection[]};
+export type CapturedDetails={name:string;phone:string;email:string;package:number;quantity:number;mode:string;eventDate:string;source:string;shirts?:ShirtSelection[];couponCode?:string};
 export type ContactReply={saved:true;id:string;version:number;completed?:boolean;details:CapturedDetails;mailStatus?:string};
 export class CaptureError extends Error{constructor(message:string,public status:number){super(message);}}
 const KEY='partyprint-contact-v1';
@@ -14,3 +14,4 @@ export async function contactRequest(key:ContactKey,action:'save'|'read',details
  if(v.saved!==true||v.id!==key.id||!Number.isInteger(v.version)||v.version<1)throw new CaptureError('לא התקבל אישור שמירת פרטים. נסו שוב.',0);
  return v;
 }
+

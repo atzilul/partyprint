@@ -3,12 +3,12 @@ import {fileURLToPath} from 'node:url';
 import {tmpdir} from 'node:os';
 import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';import {DatabaseSync} from 'node:sqlite';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');const output=fs.mkdtempSync(path.join(tmpdir(),'partyprint-tests-'));const cache=new Map();const dataUrl=s=>'data:text/javascript;base64,'+Buffer.from(s).toString('base64');
-function resolve(file){if(cache.has(file))return cache.get(file);let code=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;code=code.replace(/from ["']([^"']+)["']/g,(m,s)=>{if(s==='#partyprint-runtime')return 'from '+JSON.stringify(dataUrl("export const runtimeKind='cloudflare';export async function hashStaffPassword(){throw Error('not_available')}export const env=globalThis.testEnv;export function clientKey(r){return r.headers.get('CF-Connecting-IP')||'anonymous'}export function publicOrigin(){return 'https://partyprint-ai.atzilul.chatgpt.site'}"));if(s===["cloudflare:","workers"].join(""))return 'from '+JSON.stringify(dataUrl('export const env=globalThis.testEnv;'));if(s==='@/app/chatgpt-auth')return 'from '+JSON.stringify(dataUrl('export async function getChatGPTUser(){return globalThis.testUser}'));const p=s.startsWith('@/')?path.join(root,s.slice(2)):path.resolve(path.dirname(file),s);return 'from '+JSON.stringify(resolve(path.extname(p)?p:p+'.ts'))});const u=dataUrl(code);cache.set(file,u);return u}
+function resolve(file){if(cache.has(file))return cache.get(file);let code=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;code=code.replace(/from ["']([^"']+)["']/g,(m,s)=>{if(s==='#partyprint-runtime')return 'from '+JSON.stringify(dataUrl("export const runtimeKind='cloudflare';export async function hashStaffPassword(){throw Error('not_available')}export const env=globalThis.testEnv;export function clientKey(r){return r.headers.get(globalThis.testIpHeader||'CF-Connecting-IP')||'anonymous'}export function publicOrigin(){return globalThis.testPublicOrigin||'https://partyprint-ai.atzilul.chatgpt.site'}"));if(s===["cloudflare:","workers"].join(""))return 'from '+JSON.stringify(dataUrl('export const env=globalThis.testEnv;'));if(s==='@/app/chatgpt-auth')return 'from '+JSON.stringify(dataUrl('export async function getChatGPTUser(){return globalThis.testUser}'));const p=s.startsWith('@/')?path.join(root,s.slice(2)):path.resolve(path.dirname(file),s);return 'from '+JSON.stringify(resolve(path.extname(p)?p:p+'.ts'))});const u=dataUrl(code);cache.set(file,u);return u}
 const sql=new DatabaseSync(':memory:');for(const file of fs.readdirSync(root+'/drizzle').filter(x=>x.endsWith('.sql')))sql.exec(fs.readFileSync(root+'/drizzle/'+file,'utf8'));
 const db={prepare(query){let vals=[];return{bind(...args){vals=args;return this},async first(){return sql.prepare(query).get(...vals)||null},async all(){return{results:sql.prepare(query).all(...vals)}},async run(){return sql.prepare(query).run(...vals)}}}};
 const objects=new Map();const enc=new TextEncoder();const bucket={async put(k,v,opts){objects.set(k,{bytes:typeof v==='string'?enc.encode(v):new Uint8Array(v),opts})},async get(k){const o=objects.get(k);return o?{async json(){return JSON.parse(new TextDecoder().decode(o.bytes))},async text(){return new TextDecoder().decode(o.bytes)},async arrayBuffer(){return o.bytes.slice().buffer},httpMetadata:o.opts?.httpMetadata,body:o.bytes}:null},async delete(k){objects.delete(k)},async head(k){return objects.has(k)?{size:objects.get(k).bytes.length}:null},async list(){return{objects:[...objects.keys()].map(key=>({key})),truncated:false}}};
 globalThis.testEnv={DB:db,BUCKET:bucket};globalThis.testUser=null;
-const load=f=>import(resolve(root+'/'+f));const publicRoute=await load('app/api/orders/route.ts'),admin=await load('app/api/admin/orders/route.ts'),detail=await load('app/api/admin/orders/[id]/route.ts'),img=await load('app/api/admin/orders/[id]/image/route.ts'),bundle=await load('app/api/order-bundle/[id]/route.ts'),adminZip=await load('app/api/admin/orders/[id]/bundle/route.ts'),mail=await load('lib/order-mail.ts'),store=await load('lib/order-store.ts'),access=await load('lib/order-access.ts');
+const load=f=>import(resolve(root+'/'+f));const publicRoute=await load('app/api/orders/route.ts'),contactRoute=await load('app/api/contacts/route.ts'),eventRoute=await load('app/api/events/route.ts'),admin=await load('app/api/admin/orders/route.ts'),detail=await load('app/api/admin/orders/[id]/route.ts'),img=await load('app/api/admin/orders/[id]/image/route.ts'),bundle=await load('app/api/order-bundle/[id]/route.ts'),adminZip=await load('app/api/admin/orders/[id]/bundle/route.ts'),mail=await load('lib/order-mail.ts'),store=await load('lib/order-store.ts'),access=await load('lib/order-access.ts');
 const base='https://example.test';const get=(p)=>new Request(base+p);const post=(p,body,origin=base)=>new Request(base+p,{method:'POST',headers:{origin},body});
 assert.equal((await admin.GET(get('/api/admin/orders'))).status,403);
 globalThis.testUser={userId:'other',email:'other@example.com'};assert.equal((await admin.GET(get('/api/admin/orders'))).status,403);
@@ -42,6 +42,43 @@ const config={...business.DEFAULT_PRICING,tiers:[{quantity:4,price:125}],version
 assert.equal((await settings.POST(jsonRequest({action:'pricing',pricing:config}))).status,409);
 assert.equal((await settings.POST(jsonRequest({action:'pricing',pricing:{...configured.pricing,tiers:[{quantity:4,price:-1}]}}))).status,400);
 const c={code:'PARTY10',title:'Test',kind:'percent',value:10,minQuantity:4,minSubtotal:400,maxUses:1,starts:'',ends:'',enabled:true,package:0,used:0,version:0};assert.equal((await settings.POST(jsonRequest({action:'coupon',coupon:c}))).status,200);
+// Server CAPI contract through the generic event route and SQLite; Graph fetch is intercepted.
+globalThis.testPublicOrigin='https://partyprint.co.il';globalThis.testIpHeader='x-real-ip';globalThis.testEnv.META_CAPI_TOKEN='fake-server-only-token';globalThis.testEnv.META_PIXEL_ID='2241332043403463';globalThis.testEnv.META_TEST_EVENT_CODE='TEST987';
+const metaCalls=[],realFetch=globalThis.fetch;globalThis.fetch=async(url,options)=>{if(String(url).startsWith('https://graph.facebook.com/')){metaCalls.push({url:String(url),options});return Response.json({events_received:1});}return realFetch(url,options)};
+const leadHeaders={origin:base,'content-type':'application/json','x-real-ip':'203.0.113.7','user-agent':'PARTYPRINT-CAPI-QA','cookie':'_fbp=fb.1.1791300000000.12345; _fbc=fb.1.1791300000000.test-click'};
+const contactPost=(data)=>new Request(base+'/api/contacts',{method:'POST',headers:leadHeaders,body:JSON.stringify(data)});
+const leadId=crypto.randomUUID(),leadToken='a'.repeat(64);const lead=await contactRoute.POST(contactPost({action:'save',id:leadId,token:leadToken,version:0,name:'מיקה כהן',phone:'054-123-4567',email:'capi-qa@example.com',package:0,quantity:4,mode:'order',eventDate:'',source:'test',shirts:[],couponCode:'PARTY10'}));
+assert.equal(lead.status,201);assert.equal(metaCalls.length,0);
+const eventHeaders={...leadHeaders,origin:base};
+const makeEvent=(event_name,event_id,data={})=>new Request(base+'/api/events',{method:'POST',headers:eventHeaders,body:JSON.stringify({event_name,event_id,event_source_url:'https://partyprint.co.il/order?utm_source=qa&email=private#form',metaConsent:'granted',client_data:data,...(event_name==='Lead'?{contact:{id:leadId,token:leadToken}}:{})})});
+const ids={PageView:crypto.randomUUID(),FormStart:crypto.randomUUID(),FormStep:crypto.randomUUID(),Lead:leadId};
+for(const name of Object.keys(ids)){
+ const response=await eventRoute.POST(makeEvent(name,ids[name],name==='FormStart'?{content_category:'family_birthday'}:name==='FormStep'?{step_number:2,step_name:'details',request_mode:'order',phone:'0501234567'}:{content_category:'family_birthday',content_name:'order'}));
+ assert.equal(response.status,204);
+}
+const pause=()=>new Promise(resolve=>setTimeout(resolve,30));
+for(let i=0;i<50&&metaCalls.length<4;i++)await pause();
+assert.equal(metaCalls.length,4);
+const byEvent=new Map(metaCalls.map(call=>{const event=JSON.parse(call.options.body).data[0];return[event.event_name,{call,event}]}));
+for(const name of Object.keys(ids)){
+ const entry=byEvent.get(name);assert(entry,name);
+ assert.equal(entry.event.event_id,ids[name]);
+ assert.equal(entry.event.event_source_url,'https://partyprint.co.il/order');
+ assert.equal(entry.event.user_data.client_ip_address,'203.0.113.7');
+ assert.equal(entry.event.user_data.client_user_agent,'PARTYPRINT-CAPI-QA');
+ assert.equal(entry.event.user_data.fbp,'fb.1.1791300000000.12345');
+ const url=new URL(entry.call.url);assert.equal(url.pathname,'/v26.0/2241332043403463/events');
+ assert.equal(url.searchParams.get('access_token'),'fake-server-only-token');
+ assert.equal(entry.call.options.body.includes('fake-server-only-token'),false);
+  assert.equal(JSON.stringify(entry.event).includes('capi-qa@example.com'),false);
+}
+const leadBody=JSON.parse(byEvent.get('Lead').call.options.body),leadEvent=byEvent.get('Lead').event;
+assert.equal(leadEvent.custom_data.value,450);assert.equal(leadEvent.custom_data.currency,'ILS');assert.equal(leadEvent.custom_data.content_name,'יומולדת משפחתי');assert.equal(leadEvent.custom_data.content_category,'family_birthday');assert.equal(leadEvent.custom_data.num_items,4);assert.equal(leadBody.test_event_code,'TEST987');
+assert.equal(leadEvent.user_data.fbc,'fb.1.1791300000000.test-click');assert(!JSON.stringify(leadEvent).includes('054-123-4567'));assert(!JSON.stringify(leadEvent).includes('PARTY10'));
+const duplicate=await eventRoute.POST(makeEvent('Lead',leadId,{content_category:'family_birthday',content_name:'order'}));assert.equal(duplicate.status,204);await pause();assert.equal(metaCalls.length,4);
+const denied=await eventRoute.POST(new Request(base+'/api/events',{method:'POST',headers:eventHeaders,body:JSON.stringify({event_name:'PageView',event_id:crypto.randomUUID(),event_source_url:'https://partyprint.co.il/',metaConsent:'denied'})}));assert.equal(denied.status,204);await pause();assert.equal(metaCalls.length,4);
+globalThis.fetch=realFetch;delete globalThis.testPublicOrigin;delete globalThis.testIpHeader;delete globalThis.testEnv.META_CAPI_TOKEN;delete globalThis.testEnv.META_PIXEL_ID;delete globalThis.testEnv.META_TEST_EVENT_CODE;
+console.log('PASS: generic /api/events forwards PageView, FormStart, FormStep and Lead with shared IDs; consent, seven-day dedup, x-real-ip, cookies, hashed Lead data and server-only token are covered. Meta fetch was mocked.');
 const preview=await prices.POST(post('/api/pricing',JSON.stringify({code:'PARTY10',package:0,quantity:4,price:1})));assert.equal(preview.status,200);assert.equal((await preview.json()).total,450);
 const discountForm=form();discountForm.set('coupon','PARTY10');discountForm.set('expectedPrice','450');const discounted=await publicRoute.POST(post('/api/orders',discountForm));assert.equal(discounted.status,201);const discountedId=(await discounted.json()).id;assert.equal((await store.getOrder(discountedId)).price,450);assert.equal((await settingsStore.getCoupon('PARTY10')).used,1);
 const stale={...(await settingsStore.getCoupon('PARTY10')),used:0};await assert.rejects(()=>store.insertOrder({...saved,id:crypto.randomUUID()},stale),/coupon_unavailable/);assert.equal((await settingsStore.getCoupon('PARTY10')).used,1);

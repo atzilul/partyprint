@@ -56,3 +56,35 @@ PR34 merged at 0eec69daee0d124b53a4539ea063bad005ccb84a. [Public form acceptance
 Implementation and public behavior are accepted within the scope above. A direct hPanel deployment receipt remains unavailable; public source identity is separate evidence. Sites get_site still reports version28, unsynchronized; the execution environment needed to prepare its matching source is unavailable. Resend domain/key/from-address validity and actual owner/customer delivery remain unverified. The operator's legal name, registration number and postal address still require the owner's facts. N01 remains open for pre-existing moderate dev-tool dependency findings; the production dependency audit had zero findings. No scheduled job or paid dependency was added.
 
 [Public performance laboratory](https://github.com/atzilul/partyprint/actions/runs/41490324251/job/125435267854) also passed against clean 0eec69d and the same fingerprint: median LCP 1584ms mobile (1572–1672) and 396ms desktop (388–600), three fresh-context samples per profile, no client errors. These are laboratory observations, not field Core Web Vitals.
+
+
+## Meta Conversions API
+
+After explicit measurement approval, /api/events sends PageView, FormStart, FormStep and
+Lead to Meta's Conversions API without waiting for that call before responding to the
+visitor. The browser generates a UUID for each event and passes the same ID as Pixel
+eventID and server event_id. The server records an event ID for seven days so retries
+do not create another send.
+
+Lead is sent only after /api/contacts confirms that the contact was saved. The server
+reads the saved email and phone through the contact capability; the browser sends
+only the capability with the event, not the contact fields again. The server normalizes
+the email and Israeli phone, hashes both with SHA-256 and sends the hashes only. It
+also sends available browser user agent and _fbp / _fbc cookies, plus the client IP
+only when PARTYPRINT_TRUSTED_IP_HEADER identifies a valid Hostinger proxy header.
+Lead custom data uses the current server-side estimate after any applicable discount,
+ILS, package name/type and quantity; it excludes raw contact fields and the coupon
+code. Other event parameters are allowlisted.
+
+CAPI is skipped for denied or unset consent. A Graph API request has a three-second
+timeout and runs fire-and-forget from /api/events; a Meta rejection logs only the HTTP
+status and error message. META_CAPI_TOKEN is server-only and is sent only in the
+server-to-Meta request; it is never returned to the browser or written to app logs.
+The current implementation uses Meta's access_token query parameter, as required by
+the integration contract. META_TEST_EVENT_CODE is optional and should be removed
+after the controlled Test Events check.
+
+CI uses synthetic contact values, in-memory SQLite and an intercepted Meta fetch; it
+does not contact Meta or send real leads. Events Manager deduplication,
+server_last_fired_time, EMQ, and Hostinger's deployment receipt still require separate
+verification after the code is deployed with the reported server environment variables.

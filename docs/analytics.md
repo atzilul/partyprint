@@ -12,8 +12,13 @@ assigned to the PartyPrint Meta ad account (`[account identifier omitted]`, busi
 ## Configuration
 
 Hosting environment (Hostinger): `GA_MEASUREMENT_ID=[account identifier omitted]` and
-`META_PIXEL_ID=[account identifier omitted]`. The browser reads both from
-`GET /api/analytics-config`. A missing or malformed ID simply skips that tag.
+`META_PIXEL_ID=[account identifier omitted]`. The browser reads only those public IDs from
+`GET /api/analytics-config`. The server-side Meta Conversions API uses `META_CAPI_TOKEN` as a secret for
+`PageView`, `FormStart`, `FormStep` and `Lead`; it is never returned by that endpoint
+and sends only after explicit `אישור`. Optional
+`META_TEST_EVENT_CODE` routes events to Events Manager Test Events during a controlled
+check and should be removed afterward. A missing or malformed public ID skips that tag;
+missing server credentials leave browser measurement unaffected.
 
 ## Notice, opt-out and the Meta region rule
 
@@ -74,7 +79,7 @@ Order requests use three screens: 1 `package` (shirts, quantity and optional eve
 
 The contact is a separate record, not an order. Saving it does not redeem a coupon or send a customer reminder. Optional sizes remain available throughout and in the private post-save editor (`shirts_optional`); explicit confirmation emits `form_field_complete shirts`. All visible occasions start at four; the same quantity control can reduce to one. One uses the configured unit price; two/three use the first tier; all other quantities use the reached tier.
 
-`trackSavedLead` and `trackSavedCompletion` deduplicate GA and Meta separately using distinct local-tab receipt keys (never transmitted). Completion reuses the contact ID, preventing another Lead. Late consent may emit the previously unsent Meta event without duplicating GA. Failed/unacknowledged contact saves emit no Lead; failed final saves emit no completion. An internal email failure does not invalidate a persisted contact. Reloading an acknowledged contact can recover its receipt within the private capability's 24-hour life.
+`trackSavedLead` and `trackSavedCompletion` deduplicate GA and Meta separately using distinct local-tab receipt keys (never transmitted). Meta Pixel and server CAPI share an `eventID` / `event_id` for each `PageView`, `FormStart` and `FormStep`. For Lead, the saved contact UUID is shared between browser and server. The server also suppresses repeat CAPI event IDs for seven days. Late consent may emit the previously unsent Meta browser event and its matching server event without duplicating GA. Failed/unacknowledged contact saves emit no Lead; failed final saves emit no completion. An internal email failure does not invalidate a persisted contact. Reloading an acknowledged contact can recover its receipt within the private capability's 24-hour life.
 
 ### Contact events (one name per channel)
 
@@ -86,17 +91,32 @@ The contact is a separate record, not an order. Saving it does not redeem a coup
 | `contact_email` | Any `mailto:` link | yes |
 | `contact_phone` | Any `tel:` link (none on the site today) | — |
 
-Key events: `generate_lead`, `contact_whatsapp`, `contact_email`. No value,
-currency or transaction ID is sent.
+Key events: `generate_lead`, `contact_whatsapp`, `contact_email`. GA4 and the Meta
+browser pixel do not receive contact identifiers, order IDs or coupon codes. The server
+CAPI Lead includes an estimated package value and currency, not a payment or transaction ID.
 
 ## Meta pixel events
 
-`PageView` (each page), `ViewContent` (`select_package`), custom `FormStart`
-(`begin_order_request`; a quote request is not a checkout), `Lead` (`generate_lead`), `Contact` (WhatsApp / email /
-phone, `content_name` = channel), and custom `FormStep` / `FormSubmitAttempt` / `RequestComplete` (`complete_order_request`).
-Parameters are the same allowlisted values as GA (`content_category` = package
-type or CTA location). Before a choice, only `PageView` and only in the Israel
-notice mode (see above).
+Meta browser events are \`PageView\` (each page), \`ViewContent\` (\`select_package\`), custom
+\`FormStart\` (\`begin_order_request\`), \`Lead\` (\`generate_lead\`), \`Contact\` (WhatsApp / email /
+phone), and custom \`FormStep\` / \`FormSubmitAttempt\` / \`RequestComplete\`.
+
+After explicit \`אישור\`, the server forwards \`PageView\`, \`FormStart\`, \`FormStep\` and \`Lead\`
+through \`/api/events\`. For every event, the browser supplies a UUID used as Pixel
+\`eventID\` and CAPI \`event_id\`; the server stores event IDs for seven days to prevent
+repeat sends. The saved contact UUID is the shared Lead ID. The server supplies
+\`event_time\`, \`action_source=website\`, a same-site \`event_source_url\`, and the
+available trusted client IP, browser user agent and \`_fbp\` / \`_fbc\` cookies. For Lead
+only, it reads the saved contact through its private capability and sends SHA-256
+hashes of normalized email and Israeli phone. Lead custom data contains the current
+server-calculated estimate after an applicable discount, \`ILS\`, package name/type and
+quantity. It never sends the raw contact fields, coupon code or contact token to Meta.
+CAPI uses the current Graph API version in \`lib/meta-capi-payload.ts\`; errors are logged
+as status and Meta's error message only.
+
+CAPI never sends while consent is denied or undecided. In the existing Israel notice
+mode, the browser pixel may send an initial PageView before a choice; server CAPI waits
+until explicit approval, so that first browser-only PageView is not forwarded.
 
 **Advanced Matching:** not configured in code, but *Automatic advanced matching*
 was recorded as **on** in Events Manager for this dataset (enabled Oct 26, 2026, with email,
@@ -125,10 +145,12 @@ Anything else is dropped before sending.
 
 These parameters are registered as event-scoped custom dimensions in GA4.
 
-Never sent by our code: names, emails, phones, free text (brief), order or request
-IDs, tracking links, coupon codes, design text, uploaded file names, User-ID or
-user properties. Same-site referrers are reduced to a non-excluded path; external
-referrers to their origin.
+Never sent as GA4 or custom event parameters by our code: names, emails, phones, free text
+(brief), order IDs, tracking links, coupon codes, design text, uploaded file names,
+User-ID or user properties. The opaque contact UUID is sent only in Meta's Lead
+eventID option and the matching CAPI event_id for deduplication; it is not a GA4
+parameter. Same-site referrers are reduced to a non-excluded path; external referrers
+to their origin.
 
 ## GA4 property settings
 
