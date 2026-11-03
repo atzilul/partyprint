@@ -7,12 +7,10 @@ import {CONSENT_EVENT, getMetaMode, installInteractionTracking, isExcludedPath, 
 const PRIVACY_POLICY_PATH = '/privacy-policy';
 
 /**
- * Measurement notice. Google Analytics runs on public pages unless the visitor
- * clicks "לא, תודה". The Meta pixel depends on the visitor's region (see
- * lib/analytics.ts): in Israel it may send PageView before a choice; elsewhere,
- * or when the region is unknown, it does not load until "אישור". The text below
- * says exactly that for each mode and never promises that data already sent is
- * deleted. "הגדרות פרטיות ועוגיות" at the bottom of every public page reopens it.
+ * Measurement notice. PageView is sent before a choice. In strict mode all
+ * other events are buffered in memory until approval; notice mode also sends
+ * Meta behavior events that contain no form fields or contact details. Refusal drops the
+ * unsent queue. "הגדרות פרטיות ועוגיות" reopens the settings.
  */
 export default function AnalyticsConsent() {
   const pathname = usePathname() || '/';
@@ -50,8 +48,8 @@ export default function AnalyticsConsent() {
       </div>
       <div className="consent-details" id={detailsId} hidden={!detailsOpen}>
         {mode === 'notice'
-          ? <p>האתר משתמש ב־Google Analytics ובפיקסל של Meta כדי למדוד את השימוש באתר ואת הפרסום שלנו. הפיקסל של Meta עשוי לשלוח אירוע צפייה בעמוד כבר לפני שתבחרו. שאר אירועי Meta נשלחים רק אחרי ״אישור״. ״לא, תודה״ עוצר את אירועי Meta הבאים ואת Google Analytics בדפדפן הזה, והבחירה נשמרת. <a href={PRIVACY_POLICY_PATH}>מדיניות הפרטיות</a></p>
-          : <p>האתר משתמש ב־Google Analytics כדי למדוד את השימוש באתר. הפיקסל של Meta (פרסום בפייסבוק ובאינסטגרם) יופעל רק אם תלחצו ״אישור״. ״לא, תודה״ משאיר את Meta כבוי ועוצר גם את Google Analytics בדפדפן הזה, והבחירה נשמרת. <a href={PRIVACY_POLICY_PATH}>מדיניות הפרטיות</a></p>}
+          ? <p>לפני הבחירה Meta מקבלת צפייה בעמוד, צפייה במוצר, התחלת בקשה והתקדמות בין שלבים. לא נשלחים שדות טופס, פרטי קשר או תמונות. אירועי שימוש אחרים ו־Google Analytics נשמרים זמנית בזיכרון ונשלחים רק אחרי ״אישור״. ״לא, תודה״ מונע את שליחתם. <a href={PRIVACY_POLICY_PATH}>מדיניות הפרטיות</a></p>
+          : <p>לפני הבחירה נשלחת צפייה בעמוד בלבד. יתר אירועי השימוש נשמרים זמנית בזיכרון ונשלחים ל־Google Analytics ול־Meta רק אחרי ״אישור״. ״לא, תודה״ מוחק אותם. <a href={PRIVACY_POLICY_PATH}>מדיניות הפרטיות</a></p>}
         {choice && <small>הבחירה הנוכחית: {choice === 'granted' ? 'מאושר' : 'המדידה כבויה'}. אפשר לשנות בכל עת.</small>}
       </div>
       <div className="consent-actions">
