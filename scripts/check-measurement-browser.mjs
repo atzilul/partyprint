@@ -148,8 +148,8 @@ try{
      check('Approval grants Meta consent',s.meta.some(x=>x[0]==='consent'&&x[1]==='grant'));
      check('Approval flushes InitiateCheckout and FormStart once each',checkouts.length===1&&starts.length===1);
      const beginGa=s.ga.find(x=>x[0]==='event'&&x[1]==='begin_order_request');
-     check('InitiateCheckout carries numeric quote value and a unique eventID',typeof checkouts[0]?.[2]?.value==='number'&&checkouts[0]?.[2]?.currency==='ILS'&&Number.isInteger(checkouts[0]?.[2]?.num_items)&&!!checkouts[0]?.[3]?.eventID);
-     check('Buffered GA event preserves its original event_time value',Number.isInteger(beginGa?.[2]?.event_time));
+     check('InitiateCheckout carries numeric quote value, original event_time and unique eventID',typeof checkouts[0]?.[2]?.value==='number'&&checkouts[0]?.[2]?.currency==='ILS'&&Number.isInteger(checkouts[0]?.[2]?.num_items)&&Number.isInteger(checkouts[0]?.[2]?.event_time)&&!!checkouts[0]?.[3]?.eventID);
+     check('GA and Pixel event parameters preserve the same original event_time',Number.isInteger(beginGa?.[2]?.event_time)&&checkouts[0]?.[2]?.event_time===beginGa?.[2]?.event_time);
      check('Standard checkout and custom FormStart use different eventIDs',checkouts[0]?.[3]?.eventID!==starts[0]?.[3]?.eventID);
     }
     await page.waitForFunction(()=>window.fbq?.queue?.some(x=>x[0]==='track'&&x[1]==='PageView'));
