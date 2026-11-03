@@ -1,4 +1,5 @@
 import Link from '@/components/safe-link';
+import OrderFormLink from '@/components/order-form-link';
 import {AlertCircle,Check,Clock3,HeartHandshake,LucideIcon,MapPin,MessageCircle,PackageCheck,Palette,RefreshCw,ShieldCheck,Truck} from 'lucide-react';
 import type {ReactNode,CSSProperties} from 'react';
 import {SeoFooter,SeoNav} from '@/components/seo-layout';
@@ -11,7 +12,7 @@ export function PolicyLayout({children}:{children:ReactNode}) {
 }
 
 export function PolicyHero({eyebrow,title,highlight,intro,icon:Icon}:{eyebrow:string;title:string;highlight:string;intro:string;icon:LucideIcon}) {
-  return <section className="policy-hero"><div className="policy-hero-copy"><span className="seo-kicker">{eyebrow}</span><h1>{title}<br/><span>{highlight}</span></h1><p>{intro}</p><Link className="seo-primary-cta" href="/#order">יש לי רעיון · מתחילים בלי חיוב <span aria-hidden="true">←</span></Link></div><div className="policy-hero-icon" aria-hidden="true"><Icon size={72}/><i>✳</i></div></section>;
+  return <section className="policy-hero"><div className="policy-hero-copy"><span className="seo-kicker">{eyebrow}</span><h1>{title}<br/><span>{highlight}</span></h1><p>{intro}</p><OrderFormLink className="seo-primary-cta" href="/#order">יש לי רעיון · מתחילים בלי חיוב <span aria-hidden="true">←</span></OrderFormLink></div><div className="policy-hero-icon" aria-hidden="true"><Icon size={72}/><i>✳</i></div></section>;
 }
 
 export function PolicyFlow({steps}:{steps:PolicyFlowStep[]}) {
@@ -31,7 +32,7 @@ export function PolicyFAQ({items}:{items:PolicyFaqItem[]}) {
 }
 
 export function PolicyCTA({title,text}:{title:string;text:string}) {
-  return <section className="policy-cta"><div><span className="seo-kicker">READY WHEN YOU ARE</span><h2>{title}</h2><p>{text}</p></div><div className="policy-cta-actions"><Link className="seo-primary-cta" href="/#order">מתחילים בלי חיוב <span aria-hidden="true">←</span></Link><a className="policy-whatsapp" href="https://wa.me/972552896236" target="_blank" rel="noopener noreferrer"><MessageCircle size={18}/> שאלה? דברו איתנו</a></div></section>;
+  return <section className="policy-cta"><div><span className="seo-kicker">READY WHEN YOU ARE</span><h2>{title}</h2><p>{text}</p></div><div className="policy-cta-actions"><OrderFormLink className="seo-primary-cta" href="/#order">מתחילים בלי חיוב <span aria-hidden="true">←</span></OrderFormLink><a className="policy-whatsapp" href="https://wa.me/972552896236" target="_blank" rel="noopener noreferrer"><MessageCircle size={18}/> שאלה? דברו איתנו</a></div></section>;
 }
 
 export const policyIcons = {check:Check,clock:Clock3,heart:HeartHandshake,map:MapPin,message:MessageCircle,package:PackageCheck,palette:Palette,refresh:RefreshCw,shield:ShieldCheck,truck:Truck,alert:AlertCircle};
