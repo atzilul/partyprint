@@ -2,7 +2,7 @@ import {clientKey} from '#partyprint-runtime';
 import {bindings} from '@/lib/order-store';
 import {tokenHash} from '@/lib/order-access';
 import {attemptMetaEvent,type MetaEventRequest} from '@/lib/meta-capi';
-import {validMetaEventId} from '@/lib/meta-capi-payload';
+import {validMetaEventId,validMetaEventTime} from '@/lib/meta-capi-payload';
 import {validContactKey} from '@/lib/contact-leads';
 
 const META_EVENTS=new Set(['PageView','FormStart','FormStep','Lead']);
@@ -15,7 +15,7 @@ export async function POST(request:Request){
   const v=JSON.parse(text) as Record<string,unknown>;
   if(!v||typeof v!=='object'||Array.isArray(v))return new Response(null,{status:400});
   if(v.event_name!==undefined){
-   if(!META_EVENTS.has(String(v.event_name))||!validMetaEventId(v.event_id)||typeof v.event_source_url!=='string')return new Response(null,{status:400});
+   if(!META_EVENTS.has(String(v.event_name))||!validMetaEventId(v.event_id)||!validMetaEventTime(v.event_time)||typeof v.event_source_url!=='string')return new Response(null,{status:400});
    if(v.metaConsent!=='granted')return new Response(null,{status:204,headers:{'Cache-Control':'no-store'}});
    const eventName=v.event_name as MetaEventRequest['event_name'];
    let contact:MetaEventRequest['contact'];
@@ -33,6 +33,7 @@ export async function POST(request:Request){
    const input:MetaEventRequest={
     event_name:eventName,
     event_id:v.event_id,
+    event_time:v.event_time,
     event_source_url:v.event_source_url,
     metaConsent:'granted',
     client_data:v.client_data&&typeof v.client_data==='object'&&!Array.isArray(v.client_data)?v.client_data as Record<string,unknown>:undefined,

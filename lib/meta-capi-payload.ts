@@ -9,7 +9,7 @@ export type MetaCapiEvent = {
  action_source: 'website';
  event_source_url: string;
  user_data: Record<string,unknown>;
- custom_data?: Record<string,string|number>;
+ custom_data?: Record<string,string|number|string[]>;
 };
 export type MetaCapiInput = {
  eventName: MetaCapiEventName;
@@ -30,6 +30,9 @@ const COOKIE_VALUE=/^[A-Za-z0-9._-]{1,256}$/;
 const PACKAGE_TYPES=new Set(['family_birthday','bride_squad','groom_crew','team','custom','single']);
 const REQUEST_MODES=new Set(['order','custom','lead']);
 const STEP_NAMES=new Set(['package','details','idea','shirts_optional']);
+export function validMetaEventTime(value:unknown,nowSeconds=Math.floor(Date.now()/1000)):value is number{
+ return Number.isInteger(value)&&Number(value)>=nowSeconds-7*86400&&Number(value)<=nowSeconds+60;
+}
 
 export function normalizeMetaEmail(value:string){return value.normalize('NFKC').trim().toLowerCase();}
 export function normalizeMetaPhone(value:string){
@@ -50,15 +53,16 @@ export function fbcFromClickId(fbclid:string|null|undefined,now=Date.now()){
 }
 function safeUserAgent(value:string|undefined){return value?.replace(/[\u0000-\u001f\u007f]/g,' ').trim().slice(0,500)||undefined;}
 function safeIp(value:string|undefined){return value&&value.length<=45&&/^[0-9a-f:.]+$/i.test(value)?value:undefined;}
-export function normalizeMetaClientData(eventName:MetaCapiEventName,value:unknown):Record<string,string|number>{
+export function normalizeMetaClientData(eventName:MetaCapiEventName,value:unknown):Record<string,string|number|string[]>{
  if(!value||typeof value!=='object'||Array.isArray(value))return {};
- const raw=value as Record<string,unknown>,out:Record<string,string|number>={};
+ const raw=value as Record<string,unknown>,out:Record<string,string|number|string[]>={};
  if(eventName==='FormStart'){
   if(typeof raw.content_category==='string'&&PACKAGE_TYPES.has(raw.content_category))out.content_category=raw.content_category;
  }else if(eventName==='FormStep'){
   if(Number.isInteger(raw.step_number)&&Number(raw.step_number)>=1&&Number(raw.step_number)<=3)out.step_number=Number(raw.step_number);
   if(typeof raw.step_name==='string'&&STEP_NAMES.has(raw.step_name))out.step_name=raw.step_name;
   if(typeof raw.request_mode==='string'&&REQUEST_MODES.has(raw.request_mode))out.request_mode=raw.request_mode;
+  if(raw.content_name==='details')out.content_name='details';
  }else if(eventName==='Lead'){
   if(typeof raw.content_category==='string'&&PACKAGE_TYPES.has(raw.content_category))out.content_category=raw.content_category;
   if(typeof raw.content_name==='string'&&REQUEST_MODES.has(raw.content_name))out.content_name=raw.content_name;
@@ -92,6 +96,7 @@ export async function buildMetaEvent(input:MetaCapiInput):Promise<MetaCapiEvent>
    content_name:input.lead.packageName.slice(0,100),
    content_category:input.lead.eventType,
    num_items:input.lead.quantity,
+   content_ids:[input.lead.eventType],
   });
  }
  return {
