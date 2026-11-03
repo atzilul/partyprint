@@ -19,7 +19,7 @@ export default function TermsPage(){
  return <PolicyLayout>
   <PolicyHero eyebrow="CLEAR TERMS. GOOD VIBES." title="תקנון" highlight="PARTYPRINT." intro="כאן מסבירים בפשטות מה קורה מהרגע ששולחים רעיון ועד שהחולצות מגיעות. הצעת המחיר והתנאים שאושרו להזמנה הספציפית הם חלק מתנאי ההתקשרות." icon={ShieldCheck}/>
   <div className="policy-content">
-   <aside className="terms-review-box" aria-label="פרטי בדיקת עורך דין"><ShieldCheck size={28}/><div><strong>{TERMS_REVIEW_COMPLETE?'התקנון נבדק על ידי עו״ד':'מידע על בדיקה משפטית'}</strong><p>{TERMS_REVIEW_COMPLETE?`${TERMS_REVIEW.lawyerName} · ${TERMS_REVIEW.reviewDate}`:'התקנון ייבדק ויאושר על ידי עו״ד לפני השלמת הפרטים כאן.'}</p>{!TERMS_REVIEW_COMPLETE&&<small>להשלמה לאחר הבדיקה: שם עורך הדין ותאריך הבדיקה בקובץ פרטי העסק.</small>}</div></aside>
+   <aside className="terms-review-box" aria-label="פרטי בדיקת עורך דין"><ShieldCheck size={28}/><div><strong>{TERMS_REVIEW_COMPLETE?'התקנון נבדק על ידי עו״ד':'פרטי בדיקה משפטית להשלמה'}</strong><p>{TERMS_REVIEW_COMPLETE?<>{TERMS_REVIEW.lawyerName} · {TERMS_REVIEW.reviewDate}</>:<>עו״ד: <span className="policy-missing">{TERMS_REVIEW.lawyerName}</span> · תאריך: <span className="policy-missing">{TERMS_REVIEW.reviewDate}</span></>}</p>{!TERMS_REVIEW_COMPLETE&&<small>התקנון ייבדק ויאושר על ידי עו״ד; יש למלא את הפרטים בקובץ פרטי העסק לאחר הבדיקה.</small>}</div></aside>
    <PolicyFlow steps={[
     {icon:Palette,title:'שולחים בקשה',text:'הרעיון, הכמות והפרטים עוזרים לנו להבין מה תרצו ליצור.'},
     {icon:Clock3,title:'מקבלים הצעת מחיר',text:'מסכמים מחיר, פרטי הזמנה ומועד אספקה לפני שמתקדמים.'},
