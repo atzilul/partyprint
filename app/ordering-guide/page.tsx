@@ -1,4 +1,5 @@
 import OrderFormLink from '@/components/order-form-link';
+import '../seo/seo.css';
 import type {Metadata} from 'next';
 import Link from '@/components/safe-link';
 import {SeoFooter,SeoNav} from '@/components/seo-layout';

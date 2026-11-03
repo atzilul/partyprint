@@ -3,6 +3,7 @@ import OrderFormLink from '@/components/order-form-link';
 import {useEffect,useRef,useState} from 'react';
 import {Check,MessageCircle,ArrowUpLeft,LoaderCircle,Copy} from 'lucide-react';
 import RequestProgress from '@/components/request-progress';
+import ResponsePromise from '@/components/response-promise';
 import {ShirtOptions,defaultShirts} from '@/components/shirt-options';
 import {SizeGuide} from '@/app/order-experience';
 import {readReceipt,customerApi,safeTrackingUrl} from '@/lib/request-receipt';
@@ -32,9 +33,10 @@ export default function Confirmation(){
  <section className="pp-confirm-card"><RequestProgress stage={2} complete/><div className="pp-confirm-icon"><Check size={24}/></div><h1>הרעיון שלכם בפנים.</h1><p className="pp-confirm-lead">הפנייה נשמרה בסטודיו. נחזור אליכם ב־WhatsApp כדי לתאם את ההמשך.</p>
  <div className="pp-receipt wa-reference"><span>מספר פנייה</span><b dir="ltr">{reference}</b><button type="button" className="pp-text-button" onClick={()=>void copyReference()} aria-label="העתקת מספר הפנייה"><Copy size={17}/></button></div>{copyNotice&&<p className="pp-help" role="status">{copyNotice}</p>}
  <div className="pp-receipt-details"><span>{count===1?'חולצה אחת':count+' חולצות'}</span><span>{price.toLocaleString('he-IL')} ₪</span><span>{receipt.imagesCount} תמונות צורפו</span></div>
- <a className="pp-primary" target="_blank" rel="noopener noreferrer" href={'https://wa.me/972552896236?text='+encodeURIComponent('היי PARTYPRINT, שלחתי פנייה '+receipt.id+' ואשמח להמשיך בתיאום.')}><MessageCircle size={19}/> ממשיכים ב־WhatsApp</a>
+ <a className="pp-primary" target="_blank" rel="noopener noreferrer" href={'https://wa.me/972552896236?text='+encodeURIComponent('היי PARTYPRINT, שלחתי פנייה '+reference+' ואשמח להמשיך בתיאום.')}><MessageCircle size={19}/> ממשיכים ב־WhatsApp</a>
+ <ResponsePromise/>
  <p className="pp-help pp-no-charge">אין חיוב בשליחה. מועד האספקה יתואם איתכם.</p>
- <details className="pp-next-details"><summary>מה קורה עכשיו?</summary><ol><li>נדייק יחד את הרעיון, הכמות והמועד.</li><li>נשלח לכם עיצוב לאישור ונשלים מידות וצבעים.</li><li>נדפיס ונשלח אחרי אישור העיצוב, ההזמנה והתשלום.</li></ol>{receipt.emailRequested&&<p className="pp-help">{receipt.customerEmailSent?'אישור הפנייה הועבר לשירות המייל.':'הפנייה נשמרה גם אם המייל טרם נשלח. אין צורך לשלוח שוב.'}</p>}</details>
+ <section className="pp-next-details"><h2>מה קורה עכשיו?</h2><ol><li>נדייק יחד את הרעיון, הכמות והמועד.</li><li>נשלח לכם עיצוב לאישור ונשלים מידות וצבעים.</li><li>נדפיס ונשלח אחרי אישור העיצוב, ההזמנה והתשלום.</li></ol>{receipt.emailRequested&&<p className="pp-help">{receipt.customerEmailSent?'אישור הפנייה הועבר לשירות המייל.':'הפנייה נשמרה גם אם המייל טרם נשלח. אין צורך לשלוח שוב.'}</p>}</section>
  {tracking&&<a className="pp-text-button pp-tracking-link" href={tracking}>מעקב אחר הפנייה שלכם ↗</a>}
  </section>
  <section className="pp-confirm-card pp-optional-sizes"><div className="pp-optional-heading"><div><span className="pp-optional-tag">אופציונלי · הפנייה כבר נשמרה</span><h2 id="pp-sizes-heading" tabIndex={-1}>{saved?'המידות נשמרו עם הפנייה':'רוצים לסגור גם מידות?'}</h2></div>{saved&&<Check size={22}/>}</div>

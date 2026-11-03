@@ -6,6 +6,7 @@ import {bundleLinkDays,customerLinkDays} from './security';
 import {safeMailSubject} from './text';
 import {getTeam,getOwnerEmail} from './team';
 import {renderOrderMail,renderCustomerConfirmation,renderContactNotice,renderManagerMailTest,managerMailRecipients} from './order-mail-template.mjs';
+import {responsePromiseMessage} from './response-promise';
 
 import {bindings} from './order-store';
 import {mailConfiguration,mailFailure,sendResendMail} from './mail-delivery';
@@ -52,14 +53,14 @@ export async function testOrderMail(env:MailEnv):Promise<MailResult>{
 export async function notifyCustomer(env:MailEnv,order:Order,url:string,attempt='initial'){
  if(!order.email||mailConfiguration(env).issue)return false;
  const customerDays=customerLinkDays();
- const {html,text}=renderCustomerConfirmation(order,{origin:publicOrigin(),url,days:customerDays});
+ const {html,text}=renderCustomerConfirmation(order,{origin:publicOrigin(),url,days:customerDays,responsePromise:responsePromiseMessage()});
  try{
-  const result=await sendResendMail(env,{to:[order.email],reply_to:getOwnerEmail(),subject:'PARTYPRINT · קיבלנו את הרעיון שלכם',text,html},'partyprint/customer/'+order.id+'/'+attempt);
+  const result=await sendResendMail(env,{to:[order.email],reply_to:getOwnerEmail(),subject:'PARTYPRINT · קיבלנו את הרעיון שלכם · פנייה '+order.id.slice(0,8).toUpperCase(),text,html},'partyprint/customer/'+order.id+'/'+attempt);
   return result.accepted;
  }catch{return false}
 }
 
-export async function sendContactMail(env:MailEnv,contact:{id:string;version:number;createdAt:string;updatedAt:string;packageName:string;details:{name:string;phone:string;email:string;quantity:number;eventDate:string;pricePreview:number}},attempt='initial'):Promise<MailResult>{
+export async function sendContactMail(env:MailEnv,contact:{id:string;version:number;createdAt:string;updatedAt:string;packageName:string;details:{name:string;phone:string;email:string;quantity:number;eventDate:string;pricePreview:number;attribution?:import('./attribution').Attribution}},attempt='initial'):Promise<MailResult>{
  let result:MailResult;
  try{
   const to=managerMailRecipients(getOwnerEmail(),[]),origin=publicOrigin(),url=origin+'/admin?contact='+encodeURIComponent(contact.id);
