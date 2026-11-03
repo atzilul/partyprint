@@ -1,10 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {
- buildMetaEvent,claimMetaEventId,META_GRAPH_API_VERSION,normalizeMetaClientData,
- normalizeMetaEmail,normalizeMetaPhone,postMetaEvent,validMetaEventId,
-} from '../lib/meta-capi-payload.ts';
+import {buildMetaEvent,claimMetaEventId,META_GRAPH_API_VERSION,normalizeMetaClientData,
+ normalizeMetaEmail,normalizeMetaPhone,postMetaEvent,validMetaEventId,fbcFromClickId} from '../lib/meta-capi-payload.ts';
 import {savedLeadEventId} from '../lib/analytics.ts';
 
 const contactId='79b44e8f-64da-4c5b-92e1-3c59d6e197a8';
@@ -91,8 +89,9 @@ test('posts to current Graph API with server token, optional test code and redac
  }), 'sent');
  const requestUrl=new URL(captured.url);
  assert.equal(requestUrl.pathname,'/'+META_GRAPH_API_VERSION+'/2241332043403463/events');
- assert.equal(requestUrl.searchParams.get('access_token'),token);
- assert.equal(new Headers(captured.init.headers).get('authorization'),null);
+ assert.equal(requestUrl.searchParams.get('access_token'),null);
+ assert.equal(captured.url.includes(token),false);
+ assert.equal(new Headers(captured.init.headers).get('authorization'),'Bearer '+token);
  const body=JSON.parse(captured.init.body);
  assert.equal(body.test_event_code,'TEST987');
  assert.equal(body.data[0].event_id,contactId);
@@ -108,4 +107,11 @@ test('posts to current Graph API with server token, optional test code and redac
  assert.deepEqual(logged[0].slice(0,1),[400]);
  assert.equal(logged[0].length,2);
  assert.equal(JSON.stringify(logged).includes(token),false);
+});
+test('fbc falls back to the landing fbclid only when it is a plausible click id',()=>{
+ assert.equal(fbcFromClickId('IwAR2abc_DEF-123',1791300000000),'fb.1.1791300000000.IwAR2abc_DEF-123');
+ assert.equal(fbcFromClickId('',1791300000000),undefined);
+ assert.equal(fbcFromClickId(null,1791300000000),undefined);
+ assert.equal(fbcFromClickId('bad value with spaces',1791300000000),undefined);
+ assert.equal(fbcFromClickId('x'.repeat(201),1791300000000),undefined);
 });

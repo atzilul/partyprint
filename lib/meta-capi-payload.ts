@@ -43,6 +43,11 @@ export async function sha256Hex(value:string){
  return Array.from(new Uint8Array(digest),byte=>byte.toString(16).padStart(2,'0')).join('');
 }
 function safeCookie(value:string|undefined){return value&&COOKIE_VALUE.test(value)?value:undefined;}
+const CLICK_ID=/^[A-Za-z0-9._-]{1,200}$/;
+/** Builds Meta's fbc value from a landing-page fbclid when the _fbc cookie is not present yet. */
+export function fbcFromClickId(fbclid:string|null|undefined,now=Date.now()){
+ return fbclid&&CLICK_ID.test(fbclid)?'fb.1.'+now+'.'+fbclid:undefined;
+}
 function safeUserAgent(value:string|undefined){return value?.replace(/[\u0000-\u001f\u007f]/g,' ').trim().slice(0,500)||undefined;}
 function safeIp(value:string|undefined){return value&&value.length<=45&&/^[0-9a-f:.]+$/i.test(value)?value:undefined;}
 export function normalizeMetaClientData(eventName:MetaCapiEventName,value:unknown):Record<string,string|number>{
@@ -117,13 +122,14 @@ export async function postMetaEvent(args:{
  logger?:Pick<Console,'warn'>;
 }):Promise<MetaCapiStatus>{
  if(args.consent!=='granted'||!args.token.trim()||!/^\d{8,20}$/.test(args.pixelId))return 'skipped';
+ // The token travels in the Authorization header, never in the URL, so it cannot
+ // end up in proxy or hosting request logs.
  const url=new URL('https://graph.facebook.com/'+META_GRAPH_API_VERSION+'/'+args.pixelId+'/events');
- url.searchParams.set('access_token',args.token.trim());
  const body={data:[args.event],...(args.testEventCode?.trim()?{test_event_code:args.testEventCode.trim().slice(0,100)}:{})};
  try{
   const response=await (args.fetcher||fetch)(url.toString(),{
    method:'POST',
-   headers:{'Content-Type':'application/json'},
+   headers:{'Content-Type':'application/json','Authorization':'Bearer '+args.token.trim()},
    body:JSON.stringify(body),
    cache:'no-store',
    signal:AbortSignal.timeout(3000),
