@@ -1,5 +1,5 @@
 export type MailEnv = {RESEND_API_KEY?:string;MAIL_FROM?:string};
-export type MailFailureCode = 'missing_api_key'|'missing_sender'|'invalid_sender'|'no_recipients'|'invalid_api_key'|'restricted_api_key'|'domain_not_verified'|'testing_restriction'|'quota_exceeded'|'rate_limited'|'provider_unavailable'|'provider_rejected'|'invalid_response'|'network_error'|'preparation_failed';
+export type MailFailureCode = 'missing_api_key'|'missing_sender'|'invalid_sender'|'no_recipients'|'invalid_api_key'|'restricted_api_key'|'domain_not_verified'|'testing_restriction'|'quota_exceeded'|'rate_limited'|'provider_unavailable'|'provider_rejected'|'unbranded_html'|'invalid_response'|'network_error'|'preparation_failed';
 export type MailResult = {accepted:boolean;recipients:string[];messageId?:string;code?:MailFailureCode;message:string;httpStatus?:number};
 export function cleanMailValue(value?:string){const s=(value||'').trim();return s.length>=2&&((s.startsWith('"')&&s.endsWith('"'))||(s.startsWith("'")&&s.endsWith("'")))?s.slice(1,-1).trim():s}
 const messages:Record<MailFailureCode,string>={
@@ -15,6 +15,7 @@ const messages:Record<MailFailureCode,string>={
  rate_limited:'Resend הגביל זמנית את קצב הבקשות. נסו שוב בעוד דקה.',
  provider_unavailable:'שירות Resend אינו זמין כרגע. ההזמנה שמורה; אפשר לשלוח שוב בהמשך.',
  provider_rejected:'Resend דחה את ההודעה. בדקו את יומן השליחה בחשבון Resend.',
+ unbranded_html:'ההתראה לא נשלחה כי חסרה תבנית המייל המעוצבת של PARTYPRINT. ההודעה נשמרה; נסו שוב אחרי תיקון התבנית.',
  invalid_response:'לא התקבל מזהה הודעה תקין מ־Resend. בדקו את יומן השליחה לפני ניסיון נוסף.',
  network_error:'לא התקבל אישור מ־Resend בזמן. בדקו את החיבור מהשרת ואת יומן השליחה לפני ניסיון נוסף.',
  preparation_failed:'לא ניתן להכין את ההתראה או לקרוא את רשימת המנהלים. ההזמנה נשמרה; בדקו את יומן השרת.',
@@ -41,10 +42,11 @@ function providerFailure(status:number,body:unknown,recipients:string[]){
  // Never store or expose raw provider text, request bodies, or credentials.
  return mailFailure(code,recipients,status);
 }
-export async function sendResendMail(env:MailEnv,payload:{to:string[];subject:string;html?:string;text:string;reply_to?:string},idempotencyKey:string,timeoutMs=15000):Promise<MailResult>{
+export async function sendResendMail(env:MailEnv,payload:{to:string[];subject:string;html:string;text:string;reply_to?:string},idempotencyKey:string,timeoutMs=15000):Promise<MailResult>{
  const config=mailConfiguration(env);
  if(config.issue)return {...config.issue,recipients:payload.to};
  if(!payload.to.length)return mailFailure('no_recipients');
+ if(typeof payload.html!=='string'||!payload.html.includes('<html lang="he" dir="rtl" data-partyprint-email="v1">'))return mailFailure('unbranded_html',payload.to);
  try{
   const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+config.apiKey,'Content-Type':'application/json','Idempotency-Key':idempotencyKey},body:JSON.stringify({from:config.sender,...payload}),signal:AbortSignal.timeout(timeoutMs)});
   const body:unknown=await response.json().catch(()=>null);

@@ -5,14 +5,17 @@ const code=ts.transpileModule(fs.readFileSync(new URL('../lib/mail-delivery.ts',
 const {sendResendMail,mailConfiguration}=await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
 const originalFetch=globalThis.fetch;
 const env={RESEND_API_KEY:' "re_unit_test" ',MAIL_FROM:" 'PARTYPRINT <orders@example.com>' "};
-const payload={to:['owner@example.com','manager@example.com'],subject:'בדיקה',html:'<p dir="rtl">בדיקה</p>',text:'בדיקה'};
+const payload={to:['owner@example.com','manager@example.com'],subject:'בדיקה',html:'<!doctype html><html lang="he" dir="rtl" data-partyprint-email="v1"><body>בדיקה</body></html>',text:'בדיקה'};
 let calls=0;
 try{
- globalThis.fetch=async(_url,options)=>{calls++;assert.equal(options.headers.Authorization,'Bearer re_unit_test');assert.equal(options.headers['Idempotency-Key'],'test/stable');const body=JSON.parse(options.body);assert.equal(body.from,'PARTYPRINT <orders@example.com>');assert.deepEqual(body.to,payload.to);return Response.json({id:'email-123'})};
+ globalThis.fetch=async(_url,options)=>{calls++;assert.equal(options.headers.Authorization,'Bearer re_unit_test');assert.equal(options.headers['Idempotency-Key'],'test/stable');const body=JSON.parse(options.body);assert.equal(body.from,'PARTYPRINT <orders@example.com>');assert.deepEqual(body.to,payload.to);assert.equal(body.html,payload.html);return Response.json({id:'email-123'})};
  assert.equal((await sendResendMail({},payload,'test/stable')).code,'missing_api_key');assert.equal(calls,0);
  assert.equal(mailConfiguration({RESEND_API_KEY:'x'}).issue.code,'missing_sender');
  assert.equal(mailConfiguration({RESEND_API_KEY:'x',MAIL_FROM:'broken'}).issue.code,'invalid_sender');
  assert.equal(mailConfiguration({RESEND_API_KEY:'x',MAIL_FROM:'x@example.com\r\nBcc: other@example.com'}).issue.code,'invalid_sender');
+
+ assert.equal((await sendResendMail(env,{...payload,html:'<p dir="rtl">plain HTML</p>'},'test/stable')).code,'unbranded_html');assert.equal(calls,0);
+ assert.equal((await sendResendMail(env,{...payload,html:''},'test/stable')).code,'unbranded_html');assert.equal(calls,0);
  const success=await sendResendMail(env,payload,'test/stable');assert.equal(success.accepted,true);assert.equal(success.messageId,'email-123');assert.equal(calls,1);
  for(const [status,name,message,expected] of [
   [401,'validation_error','API key is invalid','invalid_api_key'],
