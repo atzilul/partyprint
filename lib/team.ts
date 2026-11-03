@@ -1,6 +1,5 @@
 import {bindings} from './order-store';
-import {BUSINESS_DETAILS} from './business-details';
-export const DEFAULT_OWNER_EMAIL=BUSINESS_DETAILS.email;
+export const DEFAULT_OWNER_EMAIL='atzilul@gmail.com';
 export function getOwnerEmail(){const raw=(process.env.PARTYPRINT_ADMIN_EMAIL||'').trim();const email=(raw.length>=2&&((raw.startsWith('"')&&raw.endsWith('"'))||(raw.startsWith("'")&&raw.endsWith("'")))?raw.slice(1,-1).trim():raw).toLowerCase();return email||DEFAULT_OWNER_EMAIL}
 export type TeamRole='manager'|'designer'|'printer';
 export type TeamProfile={name:string;avatarKey?:string};
