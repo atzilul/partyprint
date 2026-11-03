@@ -93,7 +93,7 @@ try{
      if(width===1366)console.log('CONSENT_COMPACT_SCREENSHOT '+(await page.screenshot({type:'jpeg',quality:65})).toString('base64'));
      // The panel has no close control; a reload leaves the stored choice untouched.
      counts.serverMetaEvents.length=0;counts.firstPartyEvents=0;
-     await page.reload({waitUntil:'domcontentloaded'});await page.locator('.hero').waitFor();await page.waitForLoadState('networkidle',{timeout:20000});
+     await page.reload({waitUntil:'domcontentloaded'});await page.locator('.hero').waitFor();await page.evaluate(()=>document.fonts.ready);
     }
     check('Reading settings does not change consent',await page.evaluate(()=>localStorage.getItem('partyprint-consent-v1'))===savedBefore);
     await page.setViewportSize({width:scenario.width,height:900});
