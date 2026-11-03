@@ -50,7 +50,7 @@ const contactPost=(data)=>new Request(base+'/api/contacts',{method:'POST',header
 const leadId=crypto.randomUUID(),leadToken='a'.repeat(64);const lead=await contactRoute.POST(contactPost({action:'save',id:leadId,token:leadToken,version:0,name:'מיקה כהן',phone:'054-123-4567',email:'capi-qa@example.com',package:0,quantity:4,mode:'order',eventDate:'',source:'test',shirts:[],couponCode:'PARTY10'}));
 assert.equal(lead.status,201);assert.equal(metaCalls.length,0);
 const eventHeaders={...leadHeaders,origin:base};
-const makeEvent=(event_name,event_id,data={})=>new Request(base+'/api/events',{method:'POST',headers:eventHeaders,body:JSON.stringify({event_name,event_id,event_source_url:'https://partyprint.co.il/order?utm_source=qa&email=private#form',metaConsent:'granted',client_data:data,...(event_name==='Lead'?{contact:{id:leadId,token:leadToken}}:{})})});
+const eventTime=Math.floor(Date.now()/1000);const makeEvent=(event_name,event_id,data={})=>new Request(base+'/api/events',{method:'POST',headers:eventHeaders,body:JSON.stringify({event_name,event_id,event_time:eventTime,event_source_url:'https://partyprint.co.il/order?utm_source=qa&email=private#form',metaConsent:'granted',client_data:data,...(event_name==='Lead'?{contact:{id:leadId,token:leadToken}}:{})})});
 const ids={PageView:crypto.randomUUID(),FormStart:crypto.randomUUID(),FormStep:crypto.randomUUID(),Lead:leadId};
 for(const name of Object.keys(ids)){
  const response=await eventRoute.POST(makeEvent(name,ids[name],name==='FormStart'?{content_category:'family_birthday'}:name==='FormStep'?{step_number:2,step_name:'details',request_mode:'order',phone:'0501234567'}:{content_category:'family_birthday',content_name:'order'}));
@@ -63,6 +63,7 @@ const byEvent=new Map(metaCalls.map(call=>{const event=JSON.parse(call.options.b
 for(const name of Object.keys(ids)){
  const entry=byEvent.get(name);assert(entry,name);
  assert.equal(entry.event.event_id,ids[name]);
+ assert.equal(entry.event.event_time,eventTime);
  assert.equal(entry.event.event_source_url,'https://partyprint.co.il/order');
  assert.equal(entry.event.user_data.client_ip_address,'203.0.113.7');
  assert.equal(entry.event.user_data.client_user_agent,'PARTYPRINT-CAPI-QA');
@@ -74,10 +75,10 @@ for(const name of Object.keys(ids)){
   assert.equal(JSON.stringify(entry.event).includes('capi-qa@example.com'),false);
 }
 const leadBody=JSON.parse(byEvent.get('Lead').call.options.body),leadEvent=byEvent.get('Lead').event;
-assert.equal(leadEvent.custom_data.value,450);assert.equal(leadEvent.custom_data.currency,'ILS');assert.equal(leadEvent.custom_data.content_name,'יומולדת משפחתי');assert.equal(leadEvent.custom_data.content_category,'family_birthday');assert.equal(leadEvent.custom_data.num_items,4);assert.equal(leadBody.test_event_code,'TEST987');
+assert.equal(leadEvent.custom_data.value,450);assert.equal(leadEvent.custom_data.currency,'ILS');assert.equal(leadEvent.custom_data.content_name,'יומולדת משפחתי');assert.equal(leadEvent.custom_data.content_category,'family_birthday');assert.equal(leadEvent.custom_data.num_items,4);assert.deepEqual(leadEvent.custom_data.content_ids,['family_birthday']);assert.equal(leadBody.test_event_code,'TEST987');
 assert.equal(leadEvent.user_data.fbc,'fb.1.1791300000000.test-click');assert(!JSON.stringify(leadEvent).includes('054-123-4567'));assert(!JSON.stringify(leadEvent).includes('PARTY10'));
 const duplicate=await eventRoute.POST(makeEvent('Lead',leadId,{content_category:'family_birthday',content_name:'order'}));assert.equal(duplicate.status,204);await pause();assert.equal(metaCalls.length,4);
-const denied=await eventRoute.POST(new Request(base+'/api/events',{method:'POST',headers:eventHeaders,body:JSON.stringify({event_name:'PageView',event_id:crypto.randomUUID(),event_source_url:'https://partyprint.co.il/',metaConsent:'denied'})}));assert.equal(denied.status,204);await pause();assert.equal(metaCalls.length,4);
+const denied=await eventRoute.POST(new Request(base+'/api/events',{method:'POST',headers:eventHeaders,body:JSON.stringify({event_name:'PageView',event_id:crypto.randomUUID(),event_time:Math.floor(Date.now()/1000),event_source_url:'https://partyprint.co.il/',metaConsent:'denied'})}));assert.equal(denied.status,204);await pause();assert.equal(metaCalls.length,4);
 globalThis.fetch=realFetch;delete globalThis.testPublicOrigin;delete globalThis.testIpHeader;delete globalThis.testEnv.META_CAPI_TOKEN;delete globalThis.testEnv.META_PIXEL_ID;delete globalThis.testEnv.META_TEST_EVENT_CODE;
 console.log('PASS: generic /api/events forwards PageView, FormStart, FormStep and Lead with shared IDs; consent, seven-day dedup, x-real-ip, cookies, hashed Lead data and server-only token are covered. Meta fetch was mocked.');
 const preview=await prices.POST(post('/api/pricing',JSON.stringify({code:'PARTY10',package:0,quantity:4,price:1})));assert.equal(preview.status,200);assert.equal((await preview.json()).total,450);
