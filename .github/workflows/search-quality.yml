@@ -23,6 +23,7 @@ jobs:
       - run: npx tsc --noEmit
       - run: node --test scripts/search-utils.test.mjs scripts/search-metrics.test.mjs scripts/build-identity.test.mjs scripts/order-quantity.test.mjs scripts/quote-planning.test.mjs
       - run: node --experimental-strip-types --test scripts/search-content.test.mjs scripts/analytics-contract.test.mjs scripts/meta-capi.test.mjs
+      - run: node --experimental-strip-types --test scripts/attribution-response-schema.test.mjs
       - name: PartyPrint branded email templates and Resend delivery guard
         run: node scripts/verify-order-mail.mjs
       - name: Resend payload and delivery failure contract; fetch mocked, no real emails

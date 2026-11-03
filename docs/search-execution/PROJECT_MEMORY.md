@@ -315,3 +315,16 @@ Graph רצות fire-and-forget עם timeout של 3 שניות; הודעות שג
 כבוי בלי אישור מפורש. הנוסח במדיניות הפרטיות (סעיף 05) ובמסמך המדידה עודכן;
 תרחישי `check-measurement-browser.mjs` הותאמו. הרשומה: [measurement-default-on-2026-11-03.md](measurement-default-on-2026-11-03.md).
 ראיות CI, פריסה ו-Events Manager עדיין חסרות; בדיקה משפטית של הנוסח באחריות הבעלים.
++### Q07–Q10 — source attribution, response promise, mobile budgets, and schema (2026-11-03)
+
+Candidate implementation was prepared from main 7772a763a9b401cf3d3d94f90f90ddf48d251f13. The implementation note is [lead-attribution-response-performance-schema-2026-11-03.md](lead-attribution-response-performance-schema-2026-11-03.md). Four new persistent backlog rows Q07–Q10 track the briefs separately.
+
+**Q07 — first-touch attribution.** Campaign values, click ID, first landing path, timestamp and safe referrer now travel from the initial browser visit through contacts and orders to the owner email/admin. fbc/fbp are attached only under the current regional Meta policy: Israel notice mode permits them unless denied; strict mode requires approval. SQLite/API regression tests passed locally with synthetic contacts; no real inquiry was sent. CI and live deployment remain pending.
+
+**Q08 — response promise.** One shared schedule drives the form, confirmation, customer email and manual reply template: Sunday–Thursday 09:00–19:00 Israel time, reply within two hours during business hours, next working morning otherwise. The confirmation includes the request reference and three visible next steps. The admin offers a prefilled WhatsApp reply, which a human must send. No WhatsApp or Resend delivery test was sent. The owner approved this stated schedule for the site.
+
+**Q09 — mobile Lighthouse.** GitHub Actions now has three mobile samples each for / and /lp/bride, with LCP ≤2.5 s, total transfer ≤800 KiB, initial CSS transfer ≤60 KiB, and HTML/JSON artifacts. Typecheck/build passed. Local Lighthouse could not launch Chromium because the environment rejected the debugging socket (Operation not permitted); no local performance result is claimed. The workflow is the intended measurement. The integration returned 403 when asked to read branch protection, so required-check enforcement cannot be confirmed. Do not close this criterion until CI reports pass and the required-check rule is verified.
+
+**Q10 — structured data.** The homepage renders 13 FAQ items from the same source as the visible accordion, a single-shirt Product/Offer at configured 180 ILS with InStock, the configured group AggregateOffer range, and Organization with partyprint.co.il/hello@partyprint.co.il. Legal name/ID/address remain omitted while TODO. Unit checks passed. Google Search removed its FAQ rich-result feature in May 2026, so FAQPage can help structured interpretation but cannot produce the requested Google FAQ result; Product validation remains outstanding.
+
+The actual ad offer and ad creative, payment terms, legal business identifiers/address, and 3–4 real printed-shirt sample photos remain owner inputs. No value, legal identity, consent mode, or real customer photo was invented. The existing consent mode remains unchanged. At this checkpoint, PR, CI, merge and production release verification are outstanding; no row is marked live-complete.

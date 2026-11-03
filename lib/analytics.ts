@@ -60,6 +60,9 @@ export function metaModeFor(country: string, timeZone: string): MetaMode {
   if (/^[A-Z]{2}$/.test(country)) return country === 'IL' ? 'notice' : 'strict';
   return ISRAEL_TIME_ZONES.includes(timeZone) ? 'notice' : 'strict';
 }
+export function marketingIdentifiersAllowedFor(choice: ConsentChoice | null, mode: MetaMode): boolean {
+  return choice === 'granted' || (choice === null && mode === 'notice');
+}
 function browserTimeZone() {
   try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch { return ''; }
 }
@@ -278,6 +281,13 @@ export async function getMetaMode(): Promise<MetaMode> {
   return metaModeFor(country, browserTimeZone());
 }
 
+/** Whether attribution may include Meta's browser cookies under the active regional policy. */
+export async function marketingAttributionAllowed(): Promise<boolean> {
+  await loadConfig();
+  metaMode = metaModeFor(country, browserTimeZone());
+  return Boolean(pixelId) && enabled() && marketingIdentifiersAllowedFor(readConsent(), metaMode);
+}
+
 /**
  * Meta may run when the visitor chose "אישור", or, in the Israel notice mode,
  * whenever no choice was made (measurement on by default). Never after "לא, תודה",
@@ -285,9 +295,7 @@ export async function getMetaMode(): Promise<MetaMode> {
  */
 function metaAllowed() {
   if (!pixelId || !enabled()) return false;
-  const current = readConsent();
-  if (current === 'granted') return true;
-  return current === null && metaMode === 'notice';
+  return marketingIdentifiersAllowedFor(readConsent(), metaMode);
 }
 function metaReady() {
   return metaLoaded && typeof window.fbq === 'function';

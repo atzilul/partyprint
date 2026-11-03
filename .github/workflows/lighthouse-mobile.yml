@@ -1,0 +1,36 @@
+name: Mobile Lighthouse budget
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lighthouse-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.1'
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - name: Install pinned Lighthouse CI
+        run: npm install --prefix /tmp/partyprint-lhci --no-save --package-lock=false --ignore-scripts @lhci/cli@0.15.1
+      - name: Measure mobile routes, enforce LCP and transfer budgets, save HTML/JSON reports
+        run: /tmp/partyprint-lhci/node_modules/.bin/lhci autorun --config=./lighthouserc.cjs
+      - name: Enforce first-load CSS transfer budget
+        run: node scripts/assert-lighthouse-css.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobile-lighthouse-reports
+          path: |
+            artifacts/lighthouse-ci/**
+            artifacts/lighthouse-summary.json
+          if-no-files-found: error
