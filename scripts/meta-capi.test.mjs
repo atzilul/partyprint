@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {buildMetaEvent,claimMetaEventId,META_GRAPH_API_VERSION,normalizeMetaClientData,
- normalizeMetaEmail,normalizeMetaPhone,postMetaEvent,validMetaEventId,fbcFromClickId} from '../lib/meta-capi-payload.ts';
+ normalizeMetaEmail,normalizeMetaPhone,postMetaEvent,validMetaEventId,validMetaEventTime,fbcFromClickId} from '../lib/meta-capi-payload.ts';
 import {savedLeadEventId} from '../lib/analytics.ts';
 
 const contactId='79b44e8f-64da-4c5b-92e1-3c59d6e197a8';
@@ -29,6 +29,7 @@ test('builds safe payloads for all four server event names',async()=>{
   if(custom)assert.deepEqual(event.custom_data,custom);else assert.equal(event.custom_data,undefined);
   assert.equal(JSON.stringify(event).includes('private@example.com'),false);
  }
+ assert.deepEqual(normalizeMetaClientData('FormStep',{step_number:2,step_name:'details',request_mode:'order',content_name:'details'}),{step_number:2,step_name:'details',request_mode:'order',content_name:'details'});
  assert.deepEqual(normalizeMetaClientData('FormStep',{step_number:99,step_name:'bad',request_mode:'order',phone:'0501234567'}),{request_mode:'order'});
 });
 
@@ -40,7 +41,7 @@ test('normalizes and hashes only email and Israeli phone for Lead',async()=>{
  assert.equal(normalizeMetaPhone('+972 54-123-4567'),'972541234567');
  assert.deepEqual(event.user_data.em,[hash('maya.test@example.com')]);
  assert.deepEqual(event.user_data.ph,[hash('972541234567')]);
- assert.deepEqual(event.custom_data,{content_category:'family_birthday',content_name:'יומולדת משפחתי',value:418.5,currency:'ILS',num_items:4});
+ assert.deepEqual(event.custom_data,{content_category:'family_birthday',content_name:'יומולדת משפחתי',value:418.5,currency:'ILS',num_items:4,content_ids:['family_birthday']});
  const json=JSON.stringify(event);
  for(const raw of [lead.email.trim(),lead.phone])assert.equal(json.includes(raw),false);
  assert.equal(json.includes('click-id'),true);
@@ -114,4 +115,14 @@ test('fbc falls back to the landing fbclid only when it is a plausible click id'
  assert.equal(fbcFromClickId(null,1791300000000),undefined);
  assert.equal(fbcFromClickId('bad value with spaces',1791300000000),undefined);
  assert.equal(fbcFromClickId('x'.repeat(201),1791300000000),undefined);
+});
+
+test('validates queued event timestamps at the API boundary',()=>{
+ const now=1791300000;
+ assert.equal(validMetaEventTime(now,now),true);
+ assert.equal(validMetaEventTime(now-7*86400,now),true);
+ assert.equal(validMetaEventTime(now-7*86400-1,now),false);
+ assert.equal(validMetaEventTime(now+60,now),true);
+ assert.equal(validMetaEventTime(now+61,now),false);
+ assert.equal(validMetaEventTime('1791300000',now),false);
 });
