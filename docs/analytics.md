@@ -111,7 +111,7 @@ only, it reads the saved contact through its private capability and sends SHA-25
 hashes of normalized email and Israeli phone. Lead custom data contains the current
 server-calculated estimate after an applicable discount, \`ILS\`, package name/type and
 quantity. It never sends the raw contact fields, coupon code or contact token to Meta.
-CAPI uses the current Graph API version in \`lib/meta-capi-payload.ts\`; errors are logged
+The access token is sent in the `Authorization` header, never in the request URL. When the `_fbc` cookie is not set yet, the server derives `fbc` from the `fbclid` on the reported page URL. CAPI uses the current Graph API version in \`lib/meta-capi-payload.ts\`; errors are logged
 as status and Meta's error message only.
 
 CAPI never sends while consent is denied or undecided. In the existing Israel notice

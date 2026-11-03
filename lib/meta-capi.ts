@@ -4,7 +4,7 @@ import {contactGrant,validContactKey,type ContactDetails,type ContactRow} from '
 import {packs} from './catalog';
 import {packageType} from './analytics';
 import {
- buildMetaEvent,claimMetaEventId,postMetaEvent,type MetaCapiEventName,type MetaCapiStatus,
+ buildMetaEvent,claimMetaEventId,fbcFromClickId,postMetaEvent,type MetaCapiEventName,type MetaCapiStatus,
 } from './meta-capi-payload';
 
 const clean=(value:string|undefined)=>String(value||'').trim().replace(/^[\"']|[\"']$/g,'');
@@ -28,6 +28,12 @@ function sourceUrl(value:unknown,origin:string){
   if(url.origin!==origin||url.protocol!=='https:')return null;
   return url.origin+url.pathname;
  }catch{return null;}
+}
+// The browser keeps fbclid on the reported page URL; it is the click id of the
+// ad that brought the visitor, so it stands in for _fbc until the pixel sets it.
+function clickId(value:unknown,origin:string){
+ if(typeof value!=='string'||value.length>2000)return undefined;
+ try{return new URL(value,origin).searchParams.get('fbclid')||undefined;}catch{return undefined;}
 }
 export type MetaEventRequest={
  event_name:MetaCapiEventName;
@@ -64,7 +70,7 @@ export async function attemptMetaEvent(request:Request,input:MetaEventRequest):P
   clientIpAddress:trustedClientIp(request),
   clientUserAgent:request.headers.get('user-agent')||undefined,
   fbp:cookieValue(request.headers.get('cookie')||undefined,'_fbp'),
-  fbc:cookieValue(request.headers.get('cookie')||undefined,'_fbc'),
+  fbc:cookieValue(request.headers.get('cookie')||undefined,'_fbc')||fbcFromClickId(clickId(input.event_source_url,origin),now),
   clientData:input.client_data,
   lead,
  });

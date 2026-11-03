@@ -68,7 +68,8 @@ for(const name of Object.keys(ids)){
  assert.equal(entry.event.user_data.client_user_agent,'PARTYPRINT-CAPI-QA');
  assert.equal(entry.event.user_data.fbp,'fb.1.1791300000000.12345');
  const url=new URL(entry.call.url);assert.equal(url.pathname,'/v26.0/2241332043403463/events');
- assert.equal(url.searchParams.get('access_token'),'fake-server-only-token');
+ assert.equal(url.searchParams.get('access_token'),null);
+ assert.equal(new Headers(entry.call.options.headers).get('authorization'),'Bearer fake-server-only-token');
  assert.equal(entry.call.options.body.includes('fake-server-only-token'),false);
   assert.equal(JSON.stringify(entry.event).includes('capi-qa@example.com'),false);
 }
