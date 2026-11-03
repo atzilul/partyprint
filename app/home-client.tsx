@@ -41,12 +41,12 @@ export default function HomeClient({initialVariant,businessEmail,paymentDisclosu
    window.history.replaceState(window.history.state,'',url.toString());
    let draft:Record<string,unknown>={};
    try{const raw=localStorage.getItem('partyprint-draft-v2');const parsed=raw?JSON.parse(raw):null;if(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))draft=parsed;}catch{}
-   localStorage.setItem('partyprint-draft-v2',JSON.stringify({...draft,at:Date.now(),variant,pack:packValue,quantities}));
+   localStorage.setItem('partyprint-draft-v2',JSON.stringify({...draft,at:Date.now(),variant,pack:packValue}));
   }catch{}
  }
  useEffect(()=>{const node=document.getElementById('order');const observer=new IntersectionObserver(([entry])=>setOrderVisible(entry.isIntersecting),{threshold:0});if(node)observer.observe(node);return()=>observer.disconnect();},[]);
  useEffect(()=>{fetch('/api/pricing').then(r=>{if(!r.ok)throw Error();return r.json();}).then(v=>setPricing(v as Pricing)).catch(()=>{});siteEvent('view');
- try{const d=JSON.parse(localStorage.getItem('partyprint-draft-v2')||localStorage.getItem('partyprint-draft-v1')||'null');if(d&&Date.now()-d.at<7*86400000){if(Array.isArray(d.quantities)){const next=packs.map((p,i)=>isPackageQuantity(i,d.quantities[i])?d.quantities[i]:(i===4?4:p.n));if(d.pack===SINGLE_PACK_INDEX)next[4]=1;setQuantities(next);}if(!initialVariant&&Number.isInteger(d.pack)&&d.pack>=0&&d.pack<packs.length){const restoredPack=d.pack;const restoredVariant=typeof d.variant==='string'?d.variant:landingVariantForPack(restoredPack);const safeVariant=['family','bride','groom','team','custom'].includes(restoredVariant)?restoredVariant as LandingVariantKey:landingVariantForPack(restoredPack);setPack(restoredPack);setAudience(landingVariantIndex(safeVariant));rememberVariant(safeVariant,restoredPack);}}}catch{}
+ try{const d=JSON.parse(localStorage.getItem('partyprint-draft-v2')||localStorage.getItem('partyprint-draft-v1')||'null');if(d&&Date.now()-d.at<7*86400000){if(Array.isArray(d.quantities)){const next=packs.map((p,i)=>isPackageQuantity(i,d.quantities[i])?d.quantities[i]:(i===4?4:p.n));if(d.pack===SINGLE_PACK_INDEX)next[SINGLE_PACK_INDEX]=1;setQuantities(next);}if(!initialVariant&&Number.isInteger(d.pack)&&d.pack>=0&&d.pack<packs.length){const restoredPack=d.pack;const restoredVariant=typeof d.variant==='string'?d.variant:landingVariantForPack(restoredPack);const safeVariant=['family','bride','groom','team','custom'].includes(restoredVariant)?restoredVariant as LandingVariantKey:landingVariantForPack(restoredPack);setPack(restoredPack);setAudience(landingVariantIndex(safeVariant));rememberVariant(safeVariant,restoredPack);}}}catch{}
  if(initialVariant)rememberVariant(initialVariant,landingVariantIndex(initialVariant));
  },[]);
  const calculatePrice=(p:number,q:number)=>priceFor(pricing,p,q),unitPrice=(q:number)=>unitPriceFor(pricing,q);
