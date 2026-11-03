@@ -106,7 +106,7 @@ try{
        await page.goto(origin+'/',{waitUntil:'domcontentloaded'});
        await page.waitForFunction(()=>{const image=document.querySelector('.hero-art img');return image?.complete&&image.naturalWidth>0&&image.currentSrc.endsWith('.webp')});
        check((await page.locator('.hero-art img').getAttribute('src')).includes('/_next/static/'),'WebP fallback decodes when AVIF is disabled');
-        const brideResponse=await page.request.get(origin+'/?v=bride');
+        const brideResponse=await context.request.get(origin+'/?v=bride');
         const brideHtml=await brideResponse.text();
         const selectedBridePack=(brideHtml.match(/<option[^>]*>/g)||[]).some(tag=>tag.includes('value="1"')&&tag.includes('selected'));
         check(brideResponse.ok()&&brideHtml.includes('מסיבת רווקות | PARTYPRINT')&&brideHtml.includes('הכלה והחברות')&&brideHtml.includes('og-bride.jpg')&&selectedBridePack,'Bride variant is server-rendered in title, hero, share image and form pack');
