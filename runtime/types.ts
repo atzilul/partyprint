@@ -13,5 +13,6 @@ export type RuntimeEnv = {
     META_PIXEL_ID?: string;
     META_CAPI_TOKEN?: string;
     META_TEST_EVENT_CODE?: string;
+    CONSENT_MODE?: string;
     PARTYPRINT_TRUSTED_COUNTRY_HEADER?: string;
 };
