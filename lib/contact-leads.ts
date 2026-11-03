@@ -26,19 +26,19 @@ export async function contactDetails(value:Record<string,unknown>):Promise<Conta
  return {name,phone,email,package:pack,quantity,mode,eventDate,source,pricePreview,shirtDetailsStatus:shirts.length?'complete':'pending',shirts:shirts as ShirtSelection[]};
 }
 async function deliver(row:ContactRow,attempt:string){const result=await sendContactMail(bindings(),{...contactView(row),packageName:packs[(JSON.parse(row.data) as ContactDetails).package].name},attempt);await bindings().DB.prepare('UPDATE contact_leads SET mail_status=? WHERE id=? AND version=?').bind(result.accepted?'accepted':result.code||'failed',row.id,row.version).run();return result;}
-export async function saveContact(id:string,token:string,details:ContactDetails,version:number,afterPersist?:(row:ContactRow)=>Promise<void>){
+export async function saveContact(id:string,token:string,details:ContactDetails,version:number){
  const {DB}=bindings(),now=new Date().toISOString(),hash=await tokenHash(token),json=JSON.stringify(details);
  if(!await contactGrant(id,token)&&await getOrder(id))throw Error('not_found');
  const inserted=await DB.prepare('INSERT OR IGNORE INTO contact_leads (id,token_hash,token_expires_at,created_at,updated_at,version,mail_status,data) VALUES (?,?,?,?,?,1,?,?) RETURNING id').bind(id,hash,Date.now()+86400000,now,now,'pending',json).first<{id:string}>();
  let row=await contactGrant(id,token);if(!row)throw Error('not_found');
- if(inserted){const jobs:Promise<unknown>[]=[deliver(row,'initial').catch(()=>console.error('Contact notification unavailable'))];if(afterPersist)jobs.push(afterPersist(row).catch(()=>console.warn('Meta CAPI Lead delivery unavailable')));await Promise.all(jobs);row=(await contactGrant(id,token))!;return {created:true,...contactView(row)};}
+ if(inserted){await deliver(row,'initial').catch(()=>console.error('Contact notification unavailable'));row=(await contactGrant(id,token))!;return {created:true,...contactView(row)};}
  if(await getOrder(id))return {created:false,...contactView(row),completed:true};
- if(row.data===json){if(afterPersist)try{await afterPersist(row);}catch{console.warn('Meta CAPI Lead delivery unavailable');}return {created:false,...contactView(row)};}
+ if(row.data===json)return {created:false,...contactView(row)};
  if(!Number.isInteger(version)||version!==row.version)throw Error('conflict');
  const changed=await DB.prepare('UPDATE contact_leads SET data=?,updated_at=?,version=version+1,mail_status=? WHERE id=? AND version=? RETURNING id').bind(json,now,'pending',id,version).first<{id:string}>();
  if(!changed)throw Error('conflict');
  row=(await contactGrant(id,token))!;
- const jobs:Promise<unknown>[]=[deliver(row,'revision-'+row.version).catch(()=>console.error('Contact update notification unavailable'))];if(afterPersist)jobs.push(afterPersist(row).catch(()=>console.warn('Meta CAPI Lead delivery unavailable')));await Promise.all(jobs);
+ await deliver(row,'revision-'+row.version).catch(()=>console.error('Contact update notification unavailable'));
  return {created:false,...contactView((await contactGrant(id,token))!)};
 }
 export async function retryContactMail(id:string){const row=await bindings().DB.prepare('SELECT * FROM contact_leads WHERE id=?').bind(id).first<ContactRow>();if(!row)throw Error('not_found');return deliver(row,'manual-'+crypto.randomUUID());}

@@ -104,8 +104,9 @@ Configure these in the hosting environment, never GitHub source or client code:
 | `RESEND_API_KEY`, `MAIL_FROM` | Existing mail provider credentials and verified sender |
 | `GA_MEASUREMENT_ID` | Public GA4 Measurement ID (`G-V3QDR0W4WK`). See [docs/analytics.md](docs/analytics.md) |
 | `META_PIXEL_ID` | Public Meta pixel (dataset) ID (`2241332043403463`). GA loads on public pages unless the visitor opts out; the Meta pixel follows the region rule in docs/analytics.md |
-| `META_CAPI_TOKEN` | Server-only Meta Conversions API access token for Lead events; set as a secret and never expose it through `/api/analytics-config` or client code |
+| `META_CAPI_TOKEN` | Server-only Meta Conversions API access token for PageView, FormStart, FormStep and Lead; set as a secret and never expose it through `/api/analytics-config` or client code |
 | `META_TEST_EVENT_CODE` | Optional temporary Events Manager test code. Remove it after validation so later events are not sent in test mode |
+| `PARTYPRINT_TRUSTED_IP_HEADER` | Hostinger proxy header containing the visitor IP. User reports `x-real-ip`; the server validates the value before including it in Meta events |
 | `PARTYPRINT_TRUSTED_COUNTRY_HEADER` | Optional. A header that Hostinger confirms its edge **overwrites** with the visitor's ISO country code. Leave unset until confirmed: the Meta pixel then decides by browser time zone and falls back to strict (no pixel before consent). See [docs/analytics.md](docs/analytics.md) |
 
 The reverse proxy must overwrite forwarded protocol/host headers and block direct

@@ -1,4 +1,4 @@
-// Measurement for PARTYPRINT (browser only): Google Analytics 4 and the Meta pixel.
+// Browser measurement for PARTYPRINT: Google Analytics 4 and Meta Pixel; approved events also use server CAPI.
 //
 // Google Analytics: notice + opt-out (owner's decision, Oct 2026). It loads on
 // public pages unless the visitor clicks "לא, תודה".
@@ -192,27 +192,52 @@ function enabled() {
 type Pending = {name: string; params: Params};
 let pending: Pending[] = [];
 const MAX_PENDING = 30;
+type ServerMetaName='PageView'|'FormStart'|'FormStep'|'Lead';
+type LeadCapability={id:string;token:string};
+
+function serverMetaName(value:string):value is ServerMetaName{
+ return value==='PageView'||value==='FormStart'||value==='FormStep'||value==='Lead';
+}
+function sendServerMetaEvent(eventName:ServerMetaName,eventID:string,clientData:Record<string,unknown>,contact?:LeadCapability){
+ if(readConsent()!=='granted')return;
+ const body={
+  event_name:eventName,event_id:eventID,event_source_url:safeLocation(),metaConsent:'granted',
+  client_data:clientData,...(contact?{contact}:{}),
+ };
+ fetch('/api/events',{
+  method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),keepalive:true,
+ }).catch(()=>{});
+}
+function dispatchMeta(name:string,params:Params){
+ const meta=metaEvent(name,params);
+ if(!meta)return;
+ const [method,eventName,data]=meta;
+ if(serverMetaName(eventName)){
+  const eventID=crypto.randomUUID();
+  window.fbq?.(method,eventName,data,{eventID});
+  sendServerMetaEvent(eventName,eventID,data);
+  return;
+ }
+ window.fbq?.(method,eventName,data);
+}
 
 /** Records an allowlisted event in GA4 (and its Meta equivalent). */
 export function track(name: string, params: Record<string, string | number | undefined> = {}) {
-  if (!enabled()) return;
-  const safe = clean(name, params);
-  if (!safe) return;
-  if (tagsState === 'ready') send(name, safe);
-  else if (pending.length < MAX_PENDING) pending.push({name, params: safe});
+ if(!enabled())return;
+ const safe=clean(name,params);
+ if(!safe)return;
+ if(tagsState==='ready')send(name,safe);
+ else if(pending.length<MAX_PENDING)pending.push({name,params:safe});
 }
-
-function send(name: string, params: Params) {
-  if (measurementId) window.gtag?.('event', name, params);
-  // Meta events other than PageView need an explicit "אישור" in every region.
-  const meta = metaReady() && metaAllowed('event') ? metaEvent(name, params) : null;
-  if (meta) window.fbq?.(meta[0], meta[1], meta[2]);
+function send(name:string,params:Params){
+ if(measurementId)window.gtag?.('event',name,params);
+ if(metaReady()&&metaAllowed('event'))dispatchMeta(name,params);
 }
 
 /** Aggregate first-party counter (/api/events), same opt-out rule. */
-export function siteEvent(kind: 'view' | 'form_start') {
-  if (!enabled()) return;
-  fetch('/api/events', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({kind})}).catch(() => {});
+export function siteEvent(kind:'view'|'form_start'){
+ if(!enabled())return;
+ fetch('/api/events',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind})}).catch(()=>{});
 }
 
 function flush() {
@@ -382,7 +407,9 @@ function sendPageView() {
   // Tracked separately: in the strict mode the pixel may load only after "אישור", on a page GA already counted.
   if (path !== lastMetaPath && metaReady() && metaAllowed('pageview')) {
     lastMetaPath = path;
-    window.fbq?.('track', 'PageView');
+    const eventID=crypto.randomUUID();
+    window.fbq?.('track','PageView',{}, {eventID});
+    sendServerMetaEvent('PageView',eventID,{});
   }
 }
 
@@ -450,16 +477,26 @@ export function installInteractionTracking() {
 // A saved receipt is a local deduplication key only; its id never leaves the tab
 // through measurement. Consent can be granted after the confirmation appears.
 const receiptEvents=new Map<string,{ga:boolean;meta:boolean}>();
-async function trackSavedRequestEvent(name:'generate_lead'|'complete_order_request',localReceiptId:string,params:Record<string,string|number|undefined>){
+async function trackSavedRequestEvent(name:'generate_lead'|'complete_order_request',localReceiptId:string,params:Record<string,string|number|undefined>,contactToken?:string){
  if(!/^[a-f0-9-]{36}$/.test(localReceiptId)||!enabled())return;
  const safe=clean(name,params);if(!safe)return;
  await startAnalytics();if(!enabled()||tagsState!=='ready')return;
  const storageKey=(name==='generate_lead'?'partyprint-lead-':'partyprint-complete-')+localReceiptId;
  let sent=receiptEvents.get(storageKey);if(!sent){try{const stored=JSON.parse(sessionStorage.getItem(storageKey)||'null');sent={ga:stored?.ga===true,meta:stored?.meta===true};}catch{sent={ga:false,meta:false};}receiptEvents.set(storageKey,sent);}
  if(!sent.ga&&measurementId&&window.gtag){window.gtag('event',name,safe);sent.ga=true;}
- if(!sent.meta&&metaReady()&&metaAllowed('event')){const event=metaEvent(name,safe);if(event&&window.fbq){const eventID=savedLeadEventId(name,localReceiptId);if(eventID)window.fbq(event[0],event[1],event[2],{eventID});else window.fbq(event[0],event[1],event[2]);sent.meta=true;}}
+ if(!sent.meta&&metaReady()&&metaAllowed('event')){
+  const event=metaEvent(name,safe);
+  if(event&&window.fbq){
+   const eventID=savedLeadEventId(name,localReceiptId);
+   if(eventID){
+    window.fbq(event[0],event[1],event[2],{eventID});
+    if(name==='generate_lead'&&contactToken)sendServerMetaEvent('Lead',eventID,event[2],{id:localReceiptId,token:contactToken});
+   }else window.fbq(event[0],event[1],event[2]);
+   sent.meta=true;
+  }
+ }
  try{sessionStorage.setItem(storageKey,JSON.stringify(sent));}catch{}
 }
 
-export const trackSavedLead=(id:string,params:Record<string,string|number|undefined>)=>trackSavedRequestEvent('generate_lead',id,params);
+export const trackSavedLead=(id:string,token:string,params:Record<string,string|number|undefined>)=>trackSavedRequestEvent('generate_lead',id,params,token);
 export const trackSavedCompletion=(id:string,params:Record<string,string|number|undefined>)=>trackSavedRequestEvent('complete_order_request',id,params);
