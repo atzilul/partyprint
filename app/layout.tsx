@@ -3,7 +3,7 @@ import rubikHeroFont from "./assets/static/rubik-900-hebrew.00d230e36d451b8f.wof
 import assistantTextFont from "./assets/static/assistant-400-hebrew.b531fd61c8afa524.woff2?url&no-inline";
 import "./globals.css";
 import "./fonts.css";
-import "./seo/seo.css";
+import "./seo-footer.css";
 import "./policy-overrides.css";
 import "./consent.css";
 import SiteSeoFooter from "@/components/site-seo-footer";

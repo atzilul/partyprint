@@ -1,12 +1,21 @@
 module.exports = {
   ci: {
     collect: {
-      startServerCommand: 'PORT=3000 npm start',
-      startServerReadyPattern: 'Production server running at',
+      startServerCommand: 'node scripts/serve-lighthouse-proxy.mjs',
+      startServerReadyPattern: 'PARTYPRINT Lighthouse proxy ready',
       startServerReadyTimeout: 120000,
-      url: ['http://localhost:3000/', 'http://localhost:3000/lp/bride'],
+      url: ['http://127.0.0.1:3333/', 'http://127.0.0.1:3333/lp/bride'],
       numberOfRuns: 3,
-      settings: {formFactor: 'mobile'},
+      settings: {
+        formFactor: 'mobile',
+        throttlingMethod: 'devtools',
+        throttling: {
+          requestLatencyMs: 150,
+          downloadThroughputKbps: 1600,
+          uploadThroughputKbps: 750,
+          cpuSlowdownMultiplier: 4,
+        },
+      },
     },
     assert: {
       assertions: {

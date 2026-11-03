@@ -70,6 +70,12 @@ export function sanitizeAttribution(value: unknown): Attribution {
   return out;
 }
 
+export function applyMarketingAttributionConsent(value: unknown, allowed: boolean): Attribution {
+  const out = sanitizeAttribution(value);
+  if (!allowed) { out.fbc = ''; out.fbp = ''; }
+  return out;
+}
+
 export function createFirstTouch(input: {
   href: string;
   referrer?: string;
@@ -130,7 +136,9 @@ export function readFirstTouchAttribution(marketingConsent = false): Attribution
   try {
     const existing = localStorage.getItem(FIRST_TOUCH_KEY);
     if (existing) {
-      const saved = sanitizeAttribution(JSON.parse(existing));
+      const prior = sanitizeAttribution(JSON.parse(existing));
+      const saved = applyMarketingAttributionConsent(prior, marketingConsent);
+      let changed = saved.fbc !== prior.fbc || saved.fbp !== prior.fbp;
       if (marketingConsent && (!saved.fbc || !saved.fbp)) {
         const refreshed = createFirstTouch({
           href: location.href,
@@ -141,8 +149,9 @@ export function readFirstTouchAttribution(marketingConsent = false): Attribution
         });
         saved.fbc ||= refreshed.fbc;
         saved.fbp ||= refreshed.fbp;
-        localStorage.setItem(FIRST_TOUCH_KEY, JSON.stringify(saved));
+        changed = true;
       }
+      if (changed) localStorage.setItem(FIRST_TOUCH_KEY, JSON.stringify(saved));
       removeLandingHint();
       return saved;
     }

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createFirstTouch, sanitizeAttribution, attributionSummary} from '../lib/attribution.ts';
+import {applyMarketingAttributionConsent, createFirstTouch, readFirstTouchAttribution, FIRST_TOUCH_KEY, sanitizeAttribution, attributionSummary} from '../lib/attribution.ts';
 import {firstReplyDeadline, responsePromiseMessage} from '../lib/response-promise.ts';
 import {homeFaqItems} from '../lib/home-faq.ts';
 import {homeStructuredData} from '../lib/home-schema.ts';
@@ -53,6 +53,33 @@ test('Meta attribution cookies follow the selected regional consent mode', () =>
   assert.equal(marketingIdentifiersAllowedFor(null, 'strict'), false);
   assert.equal(marketingIdentifiersAllowedFor('granted', 'strict'), true);
   assert.equal(marketingIdentifiersAllowedFor('denied', 'notice'), false);
+  assert.deepEqual(applyMarketingAttributionConsent({utm_source:'facebook',fbc:'fb.1.1.id',fbp:'fb.1.1.2'},false),{
+    utm_source:'facebook',utm_medium:'',utm_campaign:'',utm_content:'',utm_term:'',fbclid:'',fbc:'',fbp:'',landing_path:'/',first_seen_at:'',referrer:''
+  });
+});
+
+test('revoking consent clears stored Meta cookies from the first-touch record', () => {
+  const original = Object.fromEntries(['window','localStorage','location','history','document'].map(key => [key,Object.getOwnPropertyDescriptor(globalThis,key)]));
+  const values=new Map();
+  globalThis.window={};
+  globalThis.localStorage={getItem:key=>values.get(key)||null,setItem:(key,value)=>values.set(key,value)};
+  globalThis.location=new URL('https://partyprint.co.il/?utm_source=facebook');
+  globalThis.history={state:null,replaceState(){}};
+  globalThis.document={referrer:'',cookie:'_fbp=fb.1.1.2; _fbc=fb.1.1.click'};
+  try{
+    const allowed=readFirstTouchAttribution(true);
+    assert.equal(allowed.fbc,'fb.1.1.click');
+    assert.equal(allowed.fbp,'fb.1.1.2');
+    const denied=readFirstTouchAttribution(false);
+    assert.equal(denied.fbc,'');
+    assert.equal(denied.fbp,'');
+    assert.equal(JSON.parse(values.get(FIRST_TOUCH_KEY)).fbc,'');
+    assert.equal(JSON.parse(values.get(FIRST_TOUCH_KEY)).fbp,'');
+  }finally{
+    for(const [key,descriptor] of Object.entries(original)){
+      if(descriptor)Object.defineProperty(globalThis,key,descriptor);else delete globalThis[key];
+    }
+  }
 });
 
 test('response promise and manually prepared first reply use the shared Israel work schedule', () => {
