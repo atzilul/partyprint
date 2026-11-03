@@ -111,6 +111,7 @@ try{
     check('Campaign retained and personal query fields removed',loc.includes('utm_source=measurement_qa')&&!/email=|phone=|order_id=|example.invalid/.test(loc));
     if(scenario.country==='IL'){
      check('Israel notice sends PageView only before choice',metaEvents(s).length===1&&metaEvents(s)[0][1]==='PageView');
+      check('Israeli pre-choice PageView is not sent by server CAPI',counts.serverMetaEvents.filter(e=>e.event_name==='PageView').length===0);
      const off=s.meta.findIndex(x=>x[0]==='set'&&x[1]==='autoConfig'&&x[2]===false),init=s.meta.findIndex(x=>x[0]==='init');
      check('Automatic Meta configuration is off before init',off>=0&&off<init);
     }else check('Strict Meta region loads no pixel before approval',counts.metaScripts===0&&s.meta.length===0);
@@ -150,7 +151,6 @@ try{
     check('Quote start uses custom FormStart rather than checkout',metaEvents(s).every(x=>x[1]!=='InitiateCheckout')&&(scenario.late||metaEvents(s).some(x=>x[1]==='FormStart')));
      check('Every server event has a matching browser eventID',counts.serverMetaEvents.every(e=>metaEvents(s).some(x=>x[1]===e.event_name&&x[3]?.eventID===e.event_id)));
      check('Consent refusal blocks server CAPI events',!scenario.denied||counts.serverMetaEvents.length===0);
-     if(scenario.country==='IL')check('Israeli pre-choice PageView is browser-only',counts.serverMetaEvents.filter(e=>e.event_name==='PageView').length===0);
     await page.reload({waitUntil:'networkidle'});await page.waitForFunction(()=>window.dataLayer?.some(x=>Array.from(x)[1]==='page_view'));
     s=await snapshot();check('Reload emits no duplicate lead or completion',eventCount(s,'generate_lead')===0&&eventCount(s,'complete_order_request')===0&&metaEvents(s).filter(x=>x[1]==='Lead'||x[1]==='RequestComplete').length===0);
     check('Contact values are absent from analytics payloads',!/[א-ת]{2,}\sפרטיות|0500000000|qa-measurement|example.invalid/.test(JSON.stringify(s)));
