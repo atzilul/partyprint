@@ -2,8 +2,9 @@ function setting(name:string,fallback:string):string {
  const value=typeof process!=='undefined'?process.env[name]?.trim():'';
  return value||fallback;
 }
-export type BusinessDetailsData={legalName:string;businessId:string;address:string;phone:string;email:string};
+export type BusinessDetailsData={businessName:string;legalName:string;businessId:string;address:string;phone:string;email:string};
 export const BUSINESS_DETAILS:BusinessDetailsData={
+ businessName:'partyprint.co.il',
  legalName:setting('PARTYPRINT_LEGAL_NAME','TODO_LEGAL_NAME'),
  businessId:setting('PARTYPRINT_BUSINESS_ID','TODO_BUSINESS_ID'),
  address:setting('PARTYPRINT_BUSINESS_ADDRESS','TODO_ADDRESS'),
