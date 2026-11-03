@@ -93,7 +93,7 @@ try{
      if(width===1366)console.log('CONSENT_COMPACT_SCREENSHOT '+(await page.screenshot({type:'jpeg',quality:65})).toString('base64'));
      // Reopen from the footer after a reload to verify the undecided choice is not persisted.
      counts.serverMetaEvents.length=0;counts.firstPartyEvents=0;
-     await page.reload({waitUntil:'domcontentloaded'});await page.locator('.hero').waitFor();await page.evaluate(()=>document.fonts.ready);
+     await page.reload({waitUntil:'domcontentloaded'});await page.locator('.hero').waitFor();await page.evaluate(()=>document.fonts.ready);if(scenario.name==='Strict buffered approval'&&width!==1366){await page.getByRole('button',{name:'הגדרות פרטיות ועוגיות',exact:true}).click();await banner.waitFor({state:'visible'});}
     }
     check('Reading details does not change consent',await page.evaluate(()=>localStorage.getItem('partyprint-consent-v1'))===savedBefore);
     await page.setViewportSize({width:scenario.width,height:900});
