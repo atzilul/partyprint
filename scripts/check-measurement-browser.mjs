@@ -90,6 +90,9 @@ try{
      await banner.getByRole('button',{name:'פחות פרטים',exact:true}).click();
      check(`Details collapse at ${width}px`,await banner.locator('.consent-details').isHidden());
      consentLayouts.push({width,compactHeight:compact.height,expandedHeight:expanded.height});
+     // Reopen from the footer after a reload to verify the undecided choice is not persisted.
+     counts.serverMetaEvents.length=0;counts.firstPartyEvents=0;
+     await page.reload({waitUntil:'domcontentloaded'});await page.locator('.hero').waitFor();await page.evaluate(()=>document.fonts.ready);
     }
     check('Reading details does not change consent',await page.evaluate(()=>localStorage.getItem('partyprint-consent-v1'))===savedBefore);
     await page.setViewportSize({width:scenario.width,height:900});
