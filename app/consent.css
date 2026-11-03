@@ -21,4 +21,6 @@
 .consent-settings a:hover,.consent-settings button:hover{color:var(--color-pp-ink)}
 @media (max-width:700px){
  body:has(.mobile-sticky:not([hidden])):not(:has(.pp-request:focus-within)):not(:has(.pp-size-dialog[open])) .consent-banner{bottom:calc(94px + env(safe-area-inset-bottom))}
+ /* The footer settings row is the only way to opt out, so it must clear the sticky action bar. */
+ body:has(.mobile-sticky:not([hidden])) .consent-settings{padding-bottom:calc(94px + env(safe-area-inset-bottom))}
 }
