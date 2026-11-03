@@ -31,7 +31,7 @@ The previous CAPI hardening was merged as PR #37 (`c269a52`): the access token n
 
 ## Important limits and follow-up
 
-- The Pixel API cannot backdate the browser event's receive time. After consent, the buffered Pixel event is dispatched then; CAPI carries the event's original `event_time`. GA receives `event_time` as a custom event parameter, not as a timestamp override. This limitation is documented.
+- The Pixel API cannot backdate its receive time. The original `event_time` is also included as an event parameter for audit, while CAPI receives it as the actual event timestamp. GA receives it as a custom event parameter, not as a timestamp override. The Pixel's native receive time remains the approval time.
 - `CONSENT_MODE` remains strict by default and notice is not enabled. A production owner/legal decision is needed before setting notice.
 - Code sets Pixel `autoConfig=false` before each init and does not pass form contact data to the Pixel. Meta account-side Event Setup Tool rules/settings were not changed or verified.
 - Hostinger environment, deployed `/api/analytics-config`, live `/api/release`, and Meta Events Manager receipt/dedup remain unverified. Code merge and production event receipt are separate checks.
