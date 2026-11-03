@@ -11,7 +11,7 @@ const report={base,at:new Date().toISOString(),scope:'Isolated client contract: 
 if(!base.includes('127.0.0.1')){const expected=createBuildIdentity(),live=await fetch(base+'/api/release').then(r=>r.json());report.release={expectedFingerprint:expected.sourceFingerprint,publicFingerprint:live.sourceFingerprint,publicCommit:live.sourceCommit};if(expected.sourceState!=='clean'||live.sourceState!=='clean'||expected.sourceFingerprint!==live.sourceFingerprint){report.status='waiting_for_matching_deployment';await mkdir('artifacts',{recursive:true});await writeFile('artifacts/measurement-contract-production.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));process.exit(0);}}
 const browser=await chromium.launch({headless:true});
 try{
- for(const scenario of [{name:'Israel notice',country:'IL',timezone:'Asia/Jerusalem',width:390},{name:'Strict Meta region',country:'DE',timezone:'Europe/Berlin',width:1366},{name:'Late approval after saved receipt',country:'IL',timezone:'Asia/Jerusalem',width:390,late:true},{name:'Stored refusal',country:'IL',timezone:'Asia/Jerusalem',width:320,denied:true}]){
+ for(const scenario of [{name:'Israel default',country:'IL',timezone:'Asia/Jerusalem',width:390},{name:'Strict Meta region',country:'DE',timezone:'Europe/Berlin',width:1366},{name:'Strict late approval after saved receipt',country:'DE',timezone:'Europe/Berlin',width:390,late:true},{name:'Stored refusal',country:'IL',timezone:'Asia/Jerusalem',width:320,denied:true}]){
   const context=await browser.newContext({viewport:{width:scenario.width,height:900},locale:'he-IL',timezoneId:scenario.timezone,reducedMotion:'reduce'});
   await context.addInitScript(({denied})=>{
    if(location.pathname==='/')history.replaceState(null,'','/?utm_source=measurement_qa&email=qa%40example.invalid&phone=0500000000&order_id=private-fixture');
@@ -66,14 +66,16 @@ try{
    promoLayout={heroTopBefore:before.y,heroTopAfter:after.y,deltaPixels:Math.abs(after.y-before.y),note:'Fonts settled; delayed synthetic promo isolates banner-induced movement'};
    if(process.env.PARTYPRINT_EXPECT_STABLE_PROMO==='1')check('Loading promotion does not move hero',promoLayout.deltaPixels<=1);
    if(!scenario.denied){
+    check('No notice opens automatically',await page.locator('.consent-banner').count()===0);
     const banner=page.getByRole('region',{name:'הגדרות פרטיות',exact:true});
-    await banner.waitFor({state:'visible'});
     const savedBefore=await page.evaluate(()=>localStorage.getItem('partyprint-consent-v1'));
-    for(const width of scenario.name==='Israel notice'?[320,375,414,768,1366]:[scenario.width]){
+    for(const width of scenario.name==='Israel default'?[320,375,414,768,1366]:[]){
      await page.setViewportSize({width,height:600});
      await page.evaluate(()=>document.fonts.ready);
+     await page.getByRole('button',{name:'הגדרות פרטיות ועוגיות',exact:true}).click();
+     await banner.waitFor({state:'visible'});
      const compact=await banner.boundingBox();
-     check(`Compact notice fits viewport at ${width}px`,compact&&compact.height<=132&&compact.x>=0&&compact.x+compact.width<=width&&compact.y>=0&&compact.y+compact.height<=600);
+     check(`Compact settings fit viewport at ${width}px`,compact&&compact.height<=132&&compact.x>=0&&compact.x+compact.width<=width&&compact.y>=0&&compact.y+compact.height<=600);
      for(const name of ['אישור','לא, תודה','פרטים']){
       const box=await banner.getByRole('button',{name,exact:true}).boundingBox();
       check(`Accessible ${name} target at ${width}px`,box&&box.height>=44&&box.width>=44&&box.y>=compact.y&&box.y+box.height<=compact.y+compact.height);
@@ -88,10 +90,13 @@ try{
      await banner.getByRole('button',{name:'פחות פרטים',exact:true}).click();
      check(`Details collapse at ${width}px`,await banner.locator('.consent-details').isHidden());
      consentLayouts.push({width,compactHeight:compact.height,expandedHeight:expanded.height});
+     if(width===1366)console.log('CONSENT_COMPACT_SCREENSHOT '+(await page.screenshot({type:'jpeg',quality:65})).toString('base64'));
+     // The panel has no close control; a reload leaves the stored choice untouched.
+     counts.serverMetaEvents.length=0;counts.firstPartyEvents=0;
+     await page.reload({waitUntil:'domcontentloaded'});await page.locator('.hero').waitFor();await page.waitForLoadState('networkidle',{timeout:20000});
     }
-    check('Reading details does not change consent',await page.evaluate(()=>localStorage.getItem('partyprint-consent-v1'))===savedBefore);
+    check('Reading settings does not change consent',await page.evaluate(()=>localStorage.getItem('partyprint-consent-v1'))===savedBefore);
     await page.setViewportSize({width:scenario.width,height:900});
-    if(scenario.name==='Israel notice')console.log('CONSENT_COMPACT_SCREENSHOT '+(await page.screenshot({type:'jpeg',quality:65})).toString('base64'));
    }
    if(scenario.denied){
     const s=await snapshot();
@@ -110,15 +115,18 @@ try{
     const loc=s.ga.find(x=>x[0]==='event'&&x[1]==='page_view')?.[2]?.page_location||'';
     check('Campaign retained and personal query fields removed',loc.includes('utm_source=measurement_qa')&&!/email=|phone=|order_id=|example.invalid/.test(loc));
     if(scenario.country==='IL'){
-     check('Israel notice sends PageView only before choice',metaEvents(s).length===1&&metaEvents(s)[0][1]==='PageView');
-      check('Israeli pre-choice PageView is not sent by server CAPI',counts.serverMetaEvents.filter(e=>e.event_name==='PageView').length===0);
+     check('Israel default sends Meta PageView without any choice',metaEvents(s).some(x=>x[1]==='PageView'));
+     for(let i=0;i<40&&!counts.serverMetaEvents.some(x=>x.event_name==='PageView');i++)await page.waitForTimeout(25);
+     check('Israel default forwards PageView through server CAPI',counts.serverMetaEvents.filter(e=>e.event_name==='PageView').length===1);
      const off=s.meta.findIndex(x=>x[0]==='set'&&x[1]==='autoConfig'&&x[2]===false),init=s.meta.findIndex(x=>x[0]==='init');
-     check('Automatic Meta configuration is off before init',off>=0&&off<init);
+     check('Automatic Meta configuration is off without explicit approval',off>=0&&off<init);
     }else check('Strict Meta region loads no pixel before approval',counts.metaScripts===0&&s.meta.length===0);
-    if(!scenario.late)await page.getByRole('button',{name:'אישור',exact:true}).click();
-    await page.waitForFunction(()=>window.fbq?.queue?.some(x=>x[0]==='track'&&x[1]==='PageView'));
-    s=await snapshot();
-    check('Approval does not duplicate GA or Meta PageView',eventCount(s,'page_view')===1&&metaEvents(s).filter(x=>x[1]==='PageView').length===1);
+    if(scenario.country!=='IL'&&!scenario.late){await page.getByRole('button',{name:'הגדרות פרטיות ועוגיות',exact:true}).click();await page.getByRole('button',{name:'אישור',exact:true}).click();}
+    if(!scenario.late){
+     await page.waitForFunction(()=>window.fbq?.queue?.some(x=>x[0]==='track'&&x[1]==='PageView'));
+     s=await snapshot();
+     check('Approval does not duplicate GA or Meta PageView',eventCount(s,'page_view')===1&&metaEvents(s).filter(x=>x[1]==='PageView').length===1);
+    }
     const form=page.locator('#order-form');await form.scrollIntoViewIfNeeded();
     await form.getByRole('button',{name:'מגניב, ממשיכים לפרטים!',exact:true}).click();
     await form.locator('input[name="name"]').fill('בדיקת פרטיות סינתטית');
@@ -132,7 +140,7 @@ try{
     }
     check('No complete order is created before optional idea step',counts.mockOrders===0&&await form.locator('.pp-contact-saved').isVisible());
     s=await snapshot();
-    if(scenario.late){check('No Meta lead before explicit consent',metaEvents(s).filter(x=>x[1]==='Lead').length===0);await page.getByRole('button',{name:'אישור',exact:true}).click();await page.waitForFunction(()=>window.fbq?.queue?.some(x=>x[1]==='Lead'));s=await snapshot();}
+    if(scenario.late){check('Strict region sends no Meta event before explicit consent',metaEvents(s).length===0&&counts.serverMetaEvents.length===0);await page.getByRole('button',{name:'הגדרות פרטיות ועוגיות',exact:true}).click();await page.getByRole('button',{name:'אישור',exact:true}).click();await page.waitForFunction(()=>window.fbq?.queue?.some(x=>x[1]==='Lead'));s=await snapshot();}
     check('Captured contact emits one Meta Lead when consent permits',metaEvents(s).filter(x=>x[1]==='Lead').length===1);
      for(let i=0;i<20&&!counts.serverMetaEvents.some(x=>x.event_name==='Lead');i++)await page.waitForTimeout(25);
      const leadServer=counts.serverMetaEvents.filter(x=>x.event_name==='Lead');

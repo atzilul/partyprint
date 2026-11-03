@@ -1,14 +1,17 @@
 // Browser measurement for PARTYPRINT: Google Analytics 4 and Meta Pixel; approved events also use server CAPI.
 //
-// Google Analytics: notice + opt-out (owner's decision, Oct 2026). It loads on
-// public pages unless the visitor clicks "לא, תודה".
+// Google Analytics: on by default with opt-out (owner's decision, Oct 2026). It
+// loads on public pages unless the visitor chose "לא, תודה" in the privacy settings.
 //
 // Meta pixel, by region (see metaMode):
-//  - Israel ("notice"): before a choice the pixel may send PageView only; other
-//    Meta events wait for "אישור"; "לא, תודה" stops every further Meta event.
+//  - Israel ("notice"): on by default, like Google Analytics (owner's decision,
+//    Nov 2026). Every Meta event, browser and server, is sent unless the visitor
+//    chose "לא, תודה". No notice is shown automatically; the privacy settings at
+//    the bottom of every public page are the place to opt out.
 //  - Everywhere else, including the EU and any visitor whose region cannot be
-//    identified ("strict"): the pixel is not loaded at all until "אישור".
-// A refusal is stored for 12 months. Events already sent are not recalled.
+//    identified ("strict"): the pixel is not loaded at all until the visitor opens
+//    the privacy settings and chooses "אישור".
+// A choice is stored for 12 months. Events already sent are not recalled.
 //
 // Every event name and parameter value is checked against a fixed allowlist.
 // Raw names, emails, phones, free text, request/order IDs, coupon codes, design
@@ -199,7 +202,9 @@ function serverMetaName(value:string):value is ServerMetaName{
  return value==='PageView'||value==='FormStart'||value==='FormStep'||value==='Lead';
 }
 function sendServerMetaEvent(eventName:ServerMetaName,eventID:string,clientData:Record<string,unknown>,contact?:LeadCapability){
- if(readConsent()!=='granted')return;
+ // Same permission as the browser pixel: an explicit "אישור", or no choice in the
+ // Israel notice mode. The server receives the resulting permission, not the raw choice.
+ if(!metaAllowed())return;
  const body={
   event_name:eventName,event_id:eventID,event_source_url:safeLocation(),metaConsent:'granted',
   client_data:clientData,...(contact?{contact}:{}),
@@ -231,7 +236,7 @@ export function track(name: string, params: Record<string, string | number | und
 }
 function send(name:string,params:Params){
  if(measurementId)window.gtag?.('event',name,params);
- if(metaReady()&&metaAllowed('event'))dispatchMeta(name,params);
+ if(metaReady()&&metaAllowed())dispatchMeta(name,params);
 }
 
 /** Aggregate first-party counter (/api/events), same opt-out rule. */
@@ -274,14 +279,15 @@ export async function getMetaMode(): Promise<MetaMode> {
 }
 
 /**
- * Meta may run when the visitor chose "אישור"; before any choice only PageView,
- * and only in the Israel notice mode. Never after "לא, תודה".
+ * Meta may run when the visitor chose "אישור", or, in the Israel notice mode,
+ * whenever no choice was made (measurement on by default). Never after "לא, תודה",
+ * and never without an explicit "אישור" in the strict mode.
  */
-function metaAllowed(kind: 'pageview' | 'event') {
+function metaAllowed() {
   if (!pixelId || !enabled()) return false;
   const current = readConsent();
   if (current === 'granted') return true;
-  return current === null && kind === 'pageview' && metaMode === 'notice';
+  return current === null && metaMode === 'notice';
 }
 function metaReady() {
   return metaLoaded && typeof window.fbq === 'function';
@@ -349,9 +355,9 @@ function loadGoogle(id: string) {
 
 /**
  * `automatic` = Meta's automatic configuration (button clicks and page metadata
- * detected by Meta's script). It is switched off when the pixel loads before a
- * choice (Israel notice mode), because the notice promises PageView only until
- * "אישור". It is decided once, before init, so it stays off until the next page load.
+ * detected by Meta's script). It stays off unless the visitor gave an explicit
+ * "אישור": our own allowlisted events are the measurement, not Meta's guesses.
+ * It is decided once, before init, so it stays off until the next page load.
  */
 function loadMeta(id: string, automatic: boolean) {
   if (!window.fbq) {
@@ -387,8 +393,8 @@ async function loadTags() {
 
 /** Loads (or re-grants) the Meta pixel only when this visitor's mode and choice allow it. */
 function ensureMeta() {
-  if (!metaAllowed('pageview') && !metaAllowed('event')) return;
-  if (!metaLoaded) { loadMeta(pixelId, metaAllowed('event')); metaLoaded = true; }
+  if (!metaAllowed()) return;
+  if (!metaLoaded) { loadMeta(pixelId, readConsent() === 'granted'); metaLoaded = true; }
   else window.fbq?.('consent', 'grant');
 }
 
@@ -405,7 +411,7 @@ function sendPageView() {
     }
   }
   // Tracked separately: in the strict mode the pixel may load only after "אישור", on a page GA already counted.
-  if (path !== lastMetaPath && metaReady() && metaAllowed('pageview')) {
+  if (path !== lastMetaPath && metaReady() && metaAllowed()) {
     lastMetaPath = path;
     const eventID=crypto.randomUUID();
     window.fbq?.('track','PageView',{}, {eventID});
@@ -484,7 +490,7 @@ async function trackSavedRequestEvent(name:'generate_lead'|'complete_order_reque
  const storageKey=(name==='generate_lead'?'partyprint-lead-':'partyprint-complete-')+localReceiptId;
  let sent=receiptEvents.get(storageKey);if(!sent){try{const stored=JSON.parse(sessionStorage.getItem(storageKey)||'null');sent={ga:stored?.ga===true,meta:stored?.meta===true};}catch{sent={ga:false,meta:false};}receiptEvents.set(storageKey,sent);}
  if(!sent.ga&&measurementId&&window.gtag){window.gtag('event',name,safe);sent.ga=true;}
- if(!sent.meta&&metaReady()&&metaAllowed('event')){
+ if(!sent.meta&&metaReady()&&metaAllowed()){
   const event=metaEvent(name,safe);
   if(event&&window.fbq){
    const eventID=savedLeadEventId(name,localReceiptId);

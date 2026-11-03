@@ -15,22 +15,31 @@ Hosting environment (Hostinger): `GA_MEASUREMENT_ID=[account identifier omitted]
 `META_PIXEL_ID=[account identifier omitted]`. The browser reads only those public IDs from
 `GET /api/analytics-config`. The server-side Meta Conversions API uses `META_CAPI_TOKEN` as a secret for
 `PageView`, `FormStart`, `FormStep` and `Lead`; it is never returned by that endpoint
-and sends only after explicit `אישור`. Optional
+and sends under the same permission as the browser pixel (see the region rule below). Optional
 `META_TEST_EVENT_CODE` routes events to Events Manager Test Events during a controlled
 check and should be removed afterward. A missing or malformed public ID skips that tag;
 missing server credentials leave browser measurement unaffected.
 
-## Notice, opt-out and the Meta region rule
+## Default-on measurement, opt-out and the Meta region rule
 
+- **No notice opens automatically** (owner's decision, Nov 2026). The privacy
+  settings panel (`components/analytics-consent.tsx`) opens only from
+  **הגדרות פרטיות ועוגיות** at the bottom of every public page, where a visitor
+  can choose **לא, תודה** or **אישור**. The privacy policy, linked beside it and
+  from the panel, is the notice.
 - **Google Analytics** and the first-party `/api/events` counter run on public
   pages by default (owner's decision, Oct 2026: maximum data, with notice and
-  opt-out). Unchanged by the Meta rule below.
+  opt-out).
 - **Meta pixel, by region** (`metaModeFor` in `lib/analytics.ts`):
-  - **Israel, "notice" mode:** the pixel loads on entry and may send `PageView`
-    before any choice. Every other Meta event (ViewContent, FormStart,
-    Lead, Contact, FormStep, FormSubmitAttempt) is sent only after **אישור**.
+  - **Israel, "notice" mode:** on by default, exactly like Google Analytics
+    (owner's decision, Nov 2026). The pixel loads on entry and every Meta event
+    (PageView, ViewContent, FormStart, FormStep, FormSubmitAttempt, Lead, Contact,
+    RequestComplete) is sent, in the browser and through server CAPI, unless the
+    visitor chose **לא, תודה**. Meta's automatic configuration stays off while no
+    explicit **אישור** was given.
   - **Everywhere else, including the EU, and whenever the region cannot be
-    identified, "strict" mode:** the pixel is not loaded at all until **אישור**.
+    identified, "strict" mode:** the pixel is not loaded at all until the
+    visitor opens the settings and chooses **אישור**. Nothing prompts them.
   - Our code sends `PageView` itself on each route change (`fbq.disablePushState`
     stops Meta's own history-based PageView, which would duplicate it and could
     fire on excluded paths). When the pixel loads before a choice, Meta's
@@ -40,12 +49,12 @@ missing server credentials leave browser measurement unaffected.
     hosting edge is confirmed to overwrite that header) wins; otherwise the
     browser time zone, where only `Asia/Jerusalem` / `Asia/Tel_Aviv` count as
     Israel. No signal or any other zone means strict.
-- The notice text differs per mode and links to `/privacy-policy`. It never
+- The settings text differs per mode and links to `/privacy-policy`. It never
   promises that already-sent events are deleted.
 - **לא, תודה** stops GA, further Meta events and `/api/events` in that browser,
   revokes Meta consent, denies Google consent and deletes `_ga*`, `_gcl_*`,
   `_fbp` and `_fbc` cookies. **הגדרות פרטיות ועוגיות** at the bottom of every
-  public page reopens the notice. The choice is stored in `localStorage`
+  public page opens the settings. The choice is stored in `localStorage`
   (`partyprint-consent-v1`) for 12 months.
 - Google consent mode: everything granted unless the visitor opts out.
 - Never measured: `/admin`, `/track/*`, `/design/*`, `/api/*` and the Sites
@@ -101,7 +110,8 @@ Meta browser events are \`PageView\` (each page), \`ViewContent\` (\`select_pack
 \`FormStart\` (\`begin_order_request\`), \`Lead\` (\`generate_lead\`), \`Contact\` (WhatsApp / email /
 phone), and custom \`FormStep\` / \`FormSubmitAttempt\` / \`RequestComplete\`.
 
-After explicit \`אישור\`, the server forwards \`PageView\`, \`FormStart\`, \`FormStep\` and \`Lead\`
+Under the same permission as the browser pixel (Israel: unless refused; elsewhere: after
+\`אישור\`), the server forwards \`PageView\`, \`FormStart\`, \`FormStep\` and \`Lead\`
 through \`/api/events\`. For every event, the browser supplies a UUID used as Pixel
 \`eventID\` and CAPI \`event_id\`; the server stores event IDs for seven days to prevent
 repeat sends. The saved contact UUID is the shared Lead ID. The server supplies
@@ -114,9 +124,10 @@ quantity. It never sends the raw contact fields, coupon code or contact token to
 The access token is sent in the `Authorization` header, never in the request URL. When the `_fbc` cookie is not set yet, the server derives `fbc` from the `fbclid` on the reported page URL. CAPI uses the current Graph API version in \`lib/meta-capi-payload.ts\`; errors are logged
 as status and Meta's error message only.
 
-CAPI never sends while consent is denied or undecided. In the existing Israel notice
-mode, the browser pixel may send an initial PageView before a choice; server CAPI waits
-until explicit approval, so that first browser-only PageView is not forwarded.
+CAPI never sends after \`לא, תודה\`, and never in the strict mode without \`אישור\`. The
+browser decides the permission with the same rule as the pixel and sends
+\`metaConsent: granted\` to \`/api/events\` only when that rule allows the event; the
+server forwards nothing otherwise.
 
 **Advanced Matching:** not configured in code, but *Automatic advanced matching*
 was recorded as **on** in Events Manager for this dataset (enabled Oct 26, 2026, with email,
