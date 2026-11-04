@@ -197,3 +197,23 @@ Both request screens now expose an optional size/color dialog. Explicit confirma
 ## Q04 — contact captured before optional idea (2026-11-02)
 
 The new flow supersedes Q02/Q03 screen-order descriptions above. Required email is validated on both contact and final endpoints. Early Lead and completed-request metrics are separate; external GA4 key-event/account changes and real Meta/Resend delivery have not been verified. Isolated API/browser fixtures block actual recipients and production writes. See [contact-capture.md](contact-capture.md).
+
+## Traffic source on every enquiry
+
+The browser remembers the first visit's campaign parameters (`utm_*`, `fbclid`,
+`gclid`, landing path, external referrer origin, first-seen time) under one
+localStorage key, upgraded once if an organic first visit is followed by a
+campaign click. When contact details are saved and when a request is sent, the
+browser attaches that record plus Meta's `_fbp` / `_fbc` cookies as
+`attribution`. The server allowlists the keys and lengths (`lib/attribution.ts`),
+stores the object with the contact and the order, prints one line in the
+manager emails and the order summary ("facebook / paid / bride_nov / video_01"),
+and shows it in the admin contact list. The legacy `source` field (utm_source
+only) is kept for the existing analytics view.
+
+## Response promise
+
+`lib/response-promise.ts` holds the studio's response promise once (Sunday to
+Thursday, 9:00 to 19:00, answer within two hours). The form's contact and idea
+steps, the confirmation page and the customer email read from it; outside the
+hours the browser shows when the next answer comes.

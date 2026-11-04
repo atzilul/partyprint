@@ -3,6 +3,10 @@ import {cookies} from 'next/headers';
 import HomeClient from './home-client';
 import {BUSINESS_DETAILS,PAYMENT_DISCLOSURE} from '@/lib/business-details';
 import {LANDING_VARIANTS,LANDING_VARIANT_COOKIE,resolveLandingVariant,type LandingVariantKey} from '@/lib/landing-variants';
+import {homeFaq} from '@/lib/home-faq';
+import {homeStructuredData} from '@/lib/home-schema';
+import {getPricing} from '@/lib/studio-settings';
+import {DEFAULT_PRICING} from '@/lib/pricing';
 
 type PageProps={searchParams:Promise<{v?:string|string[]}>};
 async function selectedVariant(searchParams:PageProps['searchParams']):Promise<LandingVariantKey|null>{
@@ -27,5 +31,7 @@ export async function generateMetadata({searchParams}:PageProps):Promise<Metadat
 }
 export default async function HomePage({searchParams}:PageProps){
  const variant=await selectedVariant(searchParams);
- return <HomeClient initialVariant={variant||undefined} businessEmail={BUSINESS_DETAILS.email} paymentDisclosure={PAYMENT_DISCLOSURE}/>;
+ let pricing=DEFAULT_PRICING;try{pricing=await getPricing();}catch{/* structured data falls back to the advertised defaults */}
+ const schema=homeStructuredData(homeFaq(PAYMENT_DISCLOSURE),pricing);
+ return <><HomeClient initialVariant={variant||undefined} businessEmail={BUSINESS_DETAILS.email} paymentDisclosure={PAYMENT_DISCLOSURE}/><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(schema).replace(/</g,'\\u003c')}}/></>;
 }

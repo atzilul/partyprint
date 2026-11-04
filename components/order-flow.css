@@ -86,3 +86,8 @@ main:has(.pp-request:focus-within)>.mobile-sticky,body:has(.pp-size-dialog[open]
 .pp-request .pp-stage-heading,.pp-request .pp-stage-fields:not([hidden]){animation:pp-stage-reveal var(--dur-pp-stage) var(--ease-pp-out) both}.pp-request .pp-stage-fields:not([hidden]){animation-delay:40ms}
 .pp-request .pp-progress-fill{width:100%;transform-origin:right center;transition:transform var(--dur-pp-stage) var(--ease-pp-in-out);border:0}.pp-request .pp-progress-fill-0{transform:scaleX(.333333)}.pp-request .pp-progress-fill-1{transform:scaleX(.666667)}.pp-request .pp-progress-fill-2{transform:scaleX(1)}
 @media(prefers-reduced-motion:reduce){.pp-request .pp-stage-heading,.pp-request .pp-stage-fields:not([hidden]){animation:none}.pp-request .pp-progress-fill,.pp-request .pp-size-entry{transition:none}.pp-request .pp-size-entry:hover:not(:disabled){transform:none}}
+
+/* Response promise: one sentence from lib/response-promise.ts, shown under the form actions and on the confirmation. */
+.pp-response-promise{display:flex;align-items:flex-start;gap:7px;margin:12px 0 0;font-size:13px;line-height:1.55;color:#3d422d;font-weight:600}
+.pp-response-promise svg{flex-shrink:0;margin-top:2px}
+.pp-confirmation .pp-confirm-promise{justify-content:center;font-size:15px;margin:4px 0 14px}

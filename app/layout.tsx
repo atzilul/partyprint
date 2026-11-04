@@ -9,6 +9,7 @@ import "./consent.css";
 import SiteSeoFooter from "@/components/site-seo-footer";
 import LaunchOffer from "@/components/launch-offer";
 import AnalyticsConsent from "@/components/analytics-consent";
+import AttributionCapture from "@/components/attribution-capture";
 import {BUSINESS_DETAILS} from "@/lib/business-details";
 
 export const metadata: Metadata = {
@@ -55,7 +56,7 @@ export default function RootLayout({
   return (
     <html lang="he" dir="rtl">
       <head><link rel="preload" href={rubikHeroFont} as="font" type="font/woff2" crossOrigin="anonymous"/><link rel="preload" href={assistantTextFont} as="font" type="font/woff2" crossOrigin="anonymous"/></head>
-      <body className="antialiased">{children}<LaunchOffer/><SiteSeoFooter details={BUSINESS_DETAILS}/><AnalyticsConsent/><script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(structuredData).replace(/</g, "\\u003c")}}/></body>
+      <body className="antialiased">{children}<LaunchOffer/><AttributionCapture/><SiteSeoFooter details={BUSINESS_DETAILS}/><AnalyticsConsent/><script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(structuredData).replace(/</g, "\\u003c")}}/></body>
     </html>
   );
 }

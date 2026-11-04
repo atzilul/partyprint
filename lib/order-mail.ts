@@ -10,6 +10,9 @@ import {renderOrderMail,renderCustomerConfirmation,renderContactNotice,renderMan
 import {bindings} from './order-store';
 import {mailConfiguration,mailFailure,sendResendMail} from './mail-delivery';
 import type {MailEnv,MailResult} from './mail-delivery';
+import {describeAttribution} from './attribution';
+import type {Attribution} from './attribution';
+import {RESPONSE_PROMISE_STATIC} from './response-promise';
 type MailAttempt=MailResult & {at:string;kind:'order'|'test'|'contact';orderId?:string};
 async function recipients(){return managerMailRecipients(getOwnerEmail(),(await getTeam()).members)}
 async function recordAttempt(result:MailResult,kind:'order'|'test'|'contact',orderId?:string){
@@ -33,7 +36,7 @@ export async function sendOrderMail(env:MailEnv,order:Order,bundleUrl:string,att
   if(config.issue)return recordAttempt({...config.issue,recipients:to},'order',order.id);
   const origin=publicOrigin();
   const wa=whatsappLink(order.phone,'היי '+order.name+', כאן PARTYPRINT. אנחנו מטפלים בהזמנה '+order.id.slice(0,8).toUpperCase()+' ונשמח להמשיך איתך כאן.');
-  const {html,text}=renderOrderMail(order,{origin,adminUrl:origin+'/admin?order='+encodeURIComponent(order.id),whatsappUrl:wa,bundleUrl,bundleDays:bundleLinkDays(),summary:orderSummary(order),statusLabel:stageLabel(order.status)});
+  const {html,text}=renderOrderMail(order,{origin,adminUrl:origin+'/admin?order='+encodeURIComponent(order.id),whatsappUrl:wa,bundleUrl,bundleDays:bundleLinkDays(),summary:orderSummary(order),statusLabel:stageLabel(order.status),sourceLine:order.attribution?describeAttribution(order.attribution):(order.source||'direct')});
   result=await sendResendMail(env,{to,...(order.email?{reply_to:order.email}:{}),subject:safeMailSubject('PARTYPRINT · '+(order.mode==='lead'?'רעיון חדש':'הזמנה חדשה')+' מ'+order.name+' · '+order.id.slice(0,8).toUpperCase()),text,html},'partyprint/'+order.id+'/'+attempt);
  }catch{result=mailFailure('preparation_failed')}
  return recordAttempt(result,'order',order.id);
@@ -52,18 +55,20 @@ export async function testOrderMail(env:MailEnv):Promise<MailResult>{
 export async function notifyCustomer(env:MailEnv,order:Order,url:string,attempt='initial'){
  if(!order.email||mailConfiguration(env).issue)return false;
  const customerDays=customerLinkDays();
- const {html,text}=renderCustomerConfirmation(order,{origin:publicOrigin(),url,days:customerDays});
+ const {html,text}=renderCustomerConfirmation(order,{origin:publicOrigin(),url,days:customerDays,promise:RESPONSE_PROMISE_STATIC});
  try{
   const result=await sendResendMail(env,{to:[order.email],reply_to:getOwnerEmail(),subject:'PARTYPRINT · קיבלנו את הרעיון שלכם',text,html},'partyprint/customer/'+order.id+'/'+attempt);
   return result.accepted;
  }catch{return false}
 }
 
-export async function sendContactMail(env:MailEnv,contact:{id:string;version:number;createdAt:string;updatedAt:string;packageName:string;details:{name:string;phone:string;email:string;quantity:number;eventDate:string;pricePreview:number}},attempt='initial'):Promise<MailResult>{
+export async function sendContactMail(env:MailEnv,contact:{id:string;version:number;createdAt:string;updatedAt:string;packageName:string;details:{name:string;phone:string;email:string;quantity:number;eventDate:string;pricePreview:number;source?:string;attribution?:Attribution}},attempt='initial'):Promise<MailResult>{
  let result:MailResult;
  try{
   const to=managerMailRecipients(getOwnerEmail(),[]),origin=publicOrigin(),url=origin+'/admin?contact='+encodeURIComponent(contact.id);
-  const {html,text}=renderContactNotice(contact,{origin,adminUrl:url,attempt});
+  const d=contact.details,reference=contact.id.slice(0,8).toUpperCase();
+  const whatsappUrl=whatsappLink(d.phone,'היי '+d.name+', כאן PARTYPRINT. קיבלנו את הפנייה '+reference+' ל־'+d.quantity+' חולצות ('+contact.packageName+') וחוזרים אליך עם כיוון ראשון בהקדם. בינתיים, יש תמונה שאתם הכי אוהבים?');
+  const {html,text}=renderContactNotice(contact,{origin,adminUrl:url,attempt,sourceLine:d.attribution?describeAttribution(d.attribution):(d.source||'direct'),whatsappUrl,promise:RESPONSE_PROMISE_STATIC});
   result=await sendResendMail(env,{to,reply_to:contact.details.email,subject:safeMailSubject('PARTYPRINT · פרטי קשר '+(attempt==='initial'?'חדשים':'עודכנו')+' מ'+contact.details.name+' · '+contact.id.slice(0,8).toUpperCase()),text,html},'partyprint/contact/'+contact.id+'/'+attempt,3000);
  }catch{result=mailFailure('preparation_failed')}
  return recordAttempt(result,'contact',contact.id);

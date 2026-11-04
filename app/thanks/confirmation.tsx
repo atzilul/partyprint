@@ -11,6 +11,7 @@ import type {ShirtSelection} from '@/lib/catalog';
 import {validateShirts} from '@/lib/catalog';
 import {trackSavedLead,trackSavedCompletion,CONSENT_EVENT,packageType,quantityBand,track} from '@/lib/analytics';
 import {readContactKey} from '@/components/contact-capture';
+import ResponsePromise from '@/components/response-promise';
 import '@/components/order-flow.css';
 type OrderView={error?:string;version:number;canEditShirts:boolean;shirts:ShirtSelection[];shirtDetailsStatus?:string;quantity:number;price:number};
 export default function Confirmation(){
@@ -29,12 +30,12 @@ export default function Confirmation(){
  if(!receipt)return <main className="pp-order-flow pp-confirmation wrap"><a className="logo pp-confirmation-logo" href="/">PARTYPRINT</a><section className="pp-confirm-card"><h1>מחפשים את הפנייה שלכם?</h1><p>האישור מופיע בכרטיסייה שממנה נשלח הטופס. אם כבר שלחתם, אפשר להשתמש בקישור המעקב שקיבלתם או לפנות אלינו.</p><OrderFormLink className="pp-primary">לטופס הפנייה<ArrowUpLeft size={18}/></OrderFormLink><a className="pp-text-button" href="https://wa.me/972552896236">שיחה ב־WhatsApp</a></section></main>;
  const reference=receipt.id.slice(0,8).toUpperCase(),tracking=safeTrackingUrl(receipt.trackingUrl,receipt.id),count=orderView?.quantity??receipt.quantity,price=orderView?.price??receipt.price;
  return <main className="pp-order-flow pp-confirmation wrap whatsapp-handoff" data-cta-location="confirmation"><a className="logo pp-confirmation-logo" href="/">PARTYPRINT</a>
- <section className="pp-confirm-card"><RequestProgress stage={2} complete/><div className="pp-confirm-icon"><Check size={24}/></div><h1>הרעיון שלכם בפנים.</h1><p className="pp-confirm-lead">הפנייה נשמרה בסטודיו. נחזור אליכם ב־WhatsApp כדי לתאם את ההמשך.</p>
+ <section className="pp-confirm-card"><RequestProgress stage={2} complete/><div className="pp-confirm-icon"><Check size={24}/></div><h1>הרעיון שלכם בפנים.</h1><p className="pp-confirm-lead">הפנייה נשמרה בסטודיו.</p><ResponsePromise className="pp-confirm-promise"/>
  <div className="pp-receipt wa-reference"><span>מספר פנייה</span><b dir="ltr">{reference}</b><button type="button" className="pp-text-button" onClick={()=>void copyReference()} aria-label="העתקת מספר הפנייה"><Copy size={17}/></button></div>{copyNotice&&<p className="pp-help" role="status">{copyNotice}</p>}
  <div className="pp-receipt-details"><span>{count===1?'חולצה אחת':count+' חולצות'}</span><span>{price.toLocaleString('he-IL')} ₪</span><span>{receipt.imagesCount} תמונות צורפו</span></div>
  <a className="pp-primary" target="_blank" rel="noopener noreferrer" href={'https://wa.me/972552896236?text='+encodeURIComponent('היי PARTYPRINT, שלחתי פנייה '+receipt.id+' ואשמח להמשיך בתיאום.')}><MessageCircle size={19}/> ממשיכים ב־WhatsApp</a>
  <p className="pp-help pp-no-charge">אין חיוב בשליחה. מועד האספקה יתואם איתכם.</p>
- <details className="pp-next-details"><summary>מה קורה עכשיו?</summary><ol><li>נדייק יחד את הרעיון, הכמות והמועד.</li><li>נשלח לכם עיצוב לאישור ונשלים מידות וצבעים.</li><li>נדפיס ונשלח אחרי אישור העיצוב, ההזמנה והתשלום.</li></ol>{receipt.emailRequested&&<p className="pp-help">{receipt.customerEmailSent?'אישור הפנייה הועבר לשירות המייל.':'הפנייה נשמרה גם אם המייל טרם נשלח. אין צורך לשלוח שוב.'}</p>}</details>
+ <details className="pp-next-details" open><summary>מה קורה עכשיו?</summary><ol><li>נדייק יחד את הרעיון, הכמות והמועד.</li><li>נשלח לכם עיצוב לאישור ונשלים מידות וצבעים.</li><li>נדפיס ונשלח אחרי אישור העיצוב, ההזמנה והתשלום.</li></ol>{receipt.emailRequested&&<p className="pp-help">{receipt.customerEmailSent?'אישור הפנייה הועבר לשירות המייל.':'הפנייה נשמרה גם אם המייל טרם נשלח. אין צורך לשלוח שוב.'}</p>}</details>
  {tracking&&<a className="pp-text-button pp-tracking-link" href={tracking}>מעקב אחר הפנייה שלכם ↗</a>}
  </section>
  <section className="pp-confirm-card pp-optional-sizes"><div className="pp-optional-heading"><div><span className="pp-optional-tag">אופציונלי · הפנייה כבר נשמרה</span><h2 id="pp-sizes-heading" tabIndex={-1}>{saved?'המידות נשמרו עם הפנייה':'רוצים לסגור גם מידות?'}</h2></div>{saved&&<Check size={22}/>}</div>
