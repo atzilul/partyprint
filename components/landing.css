@@ -10,10 +10,11 @@
 /* Reveal on scroll. Only once JavaScript tagged the page (.lp-js); before that everything shows. */
 .lp-js [data-reveal]{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0ms)}
 .lp-js [data-reveal].is-in{opacity:1;transform:none}
-/* Hero entrance runs in CSS, so it never waits for hydration. */
+/* Hero entrance is a short rise only: the copy and art are fully visible from the first frame,
+   whatever happens to the animation timeline. */
 .lp-hero-copy{animation:lpRise .8s cubic-bezier(.2,.7,.2,1) both}
 .lp-hero-art{animation:lpRise .8s .15s cubic-bezier(.2,.7,.2,1) both}
-@keyframes lpRise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes lpRise{from{transform:translateY(16px)}to{transform:none}}
 
 /* Nav */
 .lp-nav{background:var(--lp-ink);color:#fff;position:sticky;top:0;z-index:40;border-bottom:1px solid #333}
