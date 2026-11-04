@@ -47,49 +47,34 @@
       "sha256Prefix": "949e3c3cd2edac2d"
     },
     {
-      "source": "app/assets/static/rubik-400-hebrew.1c914738c30d81a4.woff2",
-      "bytes": 4356,
-      "sha256Prefix": "1c914738c30d81a4"
+      "source": "app/assets/static/bride-city-1254.2ab84b4dff3e436e.avif",
+      "bytes": 108411,
+      "sha256Prefix": "2ab84b4dff3e436e"
     },
     {
-      "source": "app/assets/static/rubik-400-latin.551d6b10a1e44973.woff2",
-      "bytes": 20864,
-      "sha256Prefix": "551d6b10a1e44973"
+      "source": "app/assets/static/bride-city-1254.c10f032d86c9a0ab.webp",
+      "bytes": 176084,
+      "sha256Prefix": "c10f032d86c9a0ab"
     },
     {
-      "source": "app/assets/static/rubik-400-other.166576d3dbd033e8.woff2",
-      "bytes": 35844,
-      "sha256Prefix": "166576d3dbd033e8"
+      "source": "app/assets/static/bride-city-640.824d59c6a3814eb7.webp",
+      "bytes": 68676,
+      "sha256Prefix": "824d59c6a3814eb7"
     },
     {
-      "source": "app/assets/static/rubik-600-hebrew.667566c1f5cec35f.woff2",
-      "bytes": 4532,
-      "sha256Prefix": "667566c1f5cec35f"
+      "source": "app/assets/static/bride-city-640.ae800159b5f480f9.avif",
+      "bytes": 39891,
+      "sha256Prefix": "ae800159b5f480f9"
     },
     {
-      "source": "app/assets/static/rubik-600-latin.658ac80b0bcbaba6.woff2",
-      "bytes": 21052,
-      "sha256Prefix": "658ac80b0bcbaba6"
+      "source": "app/assets/static/bride-city-960.b06d03bd701c7d30.webp",
+      "bytes": 115010,
+      "sha256Prefix": "b06d03bd701c7d30"
     },
     {
-      "source": "app/assets/static/rubik-600-other.ec54b9da1ebbeac7.woff2",
-      "bytes": 35940,
-      "sha256Prefix": "ec54b9da1ebbeac7"
-    },
-    {
-      "source": "app/assets/static/rubik-900-hebrew.00d230e36d451b8f.woff2",
-      "bytes": 4296,
-      "sha256Prefix": "00d230e36d451b8f"
-    },
-    {
-      "source": "app/assets/static/rubik-900-latin.871f2d2056412769.woff2",
-      "bytes": 19772,
-      "sha256Prefix": "871f2d2056412769"
-    },
-    {
-      "source": "app/assets/static/rubik-900-other.123154a6a98714a5.woff2",
-      "bytes": 32948,
-      "sha256Prefix": "123154a6a98714a5"
+      "source": "app/assets/static/bride-city-960.e4762afa5ef3bc72.avif",
+      "bytes": 70254,
+      "sha256Prefix": "e4762afa5ef3bc72"
     },
     {
       "source": "app/assets/static/bride-shared-v2-1254.93f3672ab85de48a.webp",
@@ -122,6 +107,36 @@
       "sha256Prefix": "711077fd05a70304"
     },
     {
+      "source": "app/assets/static/family-heroes-1254.288a9d8d33ecb1bc.avif",
+      "bytes": 93363,
+      "sha256Prefix": "288a9d8d33ecb1bc"
+    },
+    {
+      "source": "app/assets/static/family-heroes-1254.ff96c034e9c0a5f6.webp",
+      "bytes": 149654,
+      "sha256Prefix": "ff96c034e9c0a5f6"
+    },
+    {
+      "source": "app/assets/static/family-heroes-640.382d565a29f703c3.avif",
+      "bytes": 30263,
+      "sha256Prefix": "382d565a29f703c3"
+    },
+    {
+      "source": "app/assets/static/family-heroes-640.b7068f3fc73629b5.webp",
+      "bytes": 49934,
+      "sha256Prefix": "b7068f3fc73629b5"
+    },
+    {
+      "source": "app/assets/static/family-heroes-960.43b741244c78dbdc.avif",
+      "bytes": 56439,
+      "sha256Prefix": "43b741244c78dbdc"
+    },
+    {
+      "source": "app/assets/static/family-heroes-960.57476d5d18a16efa.webp",
+      "bytes": 87814,
+      "sha256Prefix": "57476d5d18a16efa"
+    },
+    {
       "source": "app/assets/static/family-shared-v2-1254.0d6f48bd3e358363.webp",
       "bytes": 161564,
       "sha256Prefix": "0d6f48bd3e358363"
@@ -150,6 +165,36 @@
       "source": "app/assets/static/family-shared-v2-960.97374dff17bdaf61.webp",
       "bytes": 104150,
       "sha256Prefix": "97374dff17bdaf61"
+    },
+    {
+      "source": "app/assets/static/groom-crew-1254.0b8dbc2a72ea7c41.webp",
+      "bytes": 135018,
+      "sha256Prefix": "0b8dbc2a72ea7c41"
+    },
+    {
+      "source": "app/assets/static/groom-crew-1254.fafbb044e792268a.avif",
+      "bytes": 88669,
+      "sha256Prefix": "fafbb044e792268a"
+    },
+    {
+      "source": "app/assets/static/groom-crew-640.8335f9e3c7e2b56d.avif",
+      "bytes": 33291,
+      "sha256Prefix": "8335f9e3c7e2b56d"
+    },
+    {
+      "source": "app/assets/static/groom-crew-640.bfed8ebcc6dacbf7.webp",
+      "bytes": 52466,
+      "sha256Prefix": "bfed8ebcc6dacbf7"
+    },
+    {
+      "source": "app/assets/static/groom-crew-960.0a2efa57129fc568.avif",
+      "bytes": 56584,
+      "sha256Prefix": "0a2efa57129fc568"
+    },
+    {
+      "source": "app/assets/static/groom-crew-960.b2d381a0ad6e88c1.webp",
+      "bytes": 87774,
+      "sha256Prefix": "b2d381a0ad6e88c1"
     },
     {
       "source": "app/assets/static/groom-shared-v2-1254.2d23acfa9f725bea.webp",
@@ -250,6 +295,51 @@
       "source": "app/assets/static/review-shirts-v1-768.f65ae1ab7da007c0.avif",
       "bytes": 30242,
       "sha256Prefix": "f65ae1ab7da007c0"
+    },
+    {
+      "source": "app/assets/static/rubik-400-hebrew.1c914738c30d81a4.woff2",
+      "bytes": 4356,
+      "sha256Prefix": "1c914738c30d81a4"
+    },
+    {
+      "source": "app/assets/static/rubik-400-latin.551d6b10a1e44973.woff2",
+      "bytes": 20864,
+      "sha256Prefix": "551d6b10a1e44973"
+    },
+    {
+      "source": "app/assets/static/rubik-400-other.166576d3dbd033e8.woff2",
+      "bytes": 35844,
+      "sha256Prefix": "166576d3dbd033e8"
+    },
+    {
+      "source": "app/assets/static/rubik-600-hebrew.667566c1f5cec35f.woff2",
+      "bytes": 4532,
+      "sha256Prefix": "667566c1f5cec35f"
+    },
+    {
+      "source": "app/assets/static/rubik-600-latin.658ac80b0bcbaba6.woff2",
+      "bytes": 21052,
+      "sha256Prefix": "658ac80b0bcbaba6"
+    },
+    {
+      "source": "app/assets/static/rubik-600-other.ec54b9da1ebbeac7.woff2",
+      "bytes": 35940,
+      "sha256Prefix": "ec54b9da1ebbeac7"
+    },
+    {
+      "source": "app/assets/static/rubik-900-hebrew.00d230e36d451b8f.woff2",
+      "bytes": 4296,
+      "sha256Prefix": "00d230e36d451b8f"
+    },
+    {
+      "source": "app/assets/static/rubik-900-latin.871f2d2056412769.woff2",
+      "bytes": 19772,
+      "sha256Prefix": "871f2d2056412769"
+    },
+    {
+      "source": "app/assets/static/rubik-900-other.123154a6a98714a5.woff2",
+      "bytes": 32948,
+      "sha256Prefix": "123154a6a98714a5"
     },
     {
       "source": "app/assets/static/shirts-1080.ba6b088f5c44f49c.avif",

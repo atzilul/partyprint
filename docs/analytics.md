@@ -222,7 +222,10 @@ hours the browser shows when the next answer comes.
 
 `/lp/family`, `/lp/bride`, `/lp/groom`, `/lp/team` and `/lp/custom` render the home
 page component in landing mode: hero locked to that audience with three audience
-points, the request form directly under it, "how it works", five FAQ items,
-contact and footer. The catalogue, gallery and statement sections are left out.
+points, the request form directly under it, three audience design examples with
+idea chips (`lib/landing-content.ts`), "how it works", the trust section, that
+audience's package card, five common FAQ items plus audience questions, contact
+and footer. The ticker, inspiration, gallery, testimonials and statement sections
+are left out.
 They are `noindex`, not in the sitemap, and send the same GA4 and Meta events as
 the home page, so campaign reports split by page path.

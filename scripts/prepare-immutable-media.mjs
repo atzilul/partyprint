@@ -6,7 +6,7 @@ mkdirSync('app/assets/static',{recursive:true});
 const manifest={schemaVersion:1,images:{},wow:{},logos:{}};const report={sharp:sharp.versions,images:[],wow:[],logos:[]};
 const sha=data=>createHash('sha256').update(data).digest('hex').slice(0,16);
 function save(data,stem,format){const path='app/assets/static/'+stem+'.'+sha(data)+'.'+format;writeFileSync(path,data);return path}
-for(const name of ['party-crew','family-shared-v2','bride-shared-v2','groom-shared-v2','tech-team']){
+for(const name of ['party-crew','family-shared-v2','bride-shared-v2','groom-shared-v2','tech-team','family-heroes','bride-city','groom-crew']){
  const source='/'+name+'.webp',meta=await sharp('public'+source).metadata(),item={width:meta.width,height:meta.height,avif:[],webp:[]};
  for(const width of [640,960,1254])for(const format of ['avif','webp']){const data=readFileSync('public/landing/'+name+'-'+width+'.'+format);item[format].push({src:save(data,name+'-'+width,format),width,bytes:data.length})}
  manifest.images[source]=item;

@@ -4,7 +4,7 @@ import {mkdirSync,readFileSync,writeFileSync,statSync,rmSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 const require=createRequire('/tmp/partyprint-assets/package.json');
 const sharp=require('sharp');
-const names=['party-crew','family-shared-v2','bride-shared-v2','groom-shared-v2','tech-team'];
+const names=['party-crew','family-shared-v2','bride-shared-v2','groom-shared-v2','tech-team','family-heroes','bride-city','groom-crew'];
 const widths=[640,960,1254];
 mkdirSync('public/landing',{recursive:true});
 const report={tool:sharp.versions,webpQuality:78,avifQuality:50,widths,images:[],logos:[]};

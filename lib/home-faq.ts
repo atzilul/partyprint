@@ -5,7 +5,8 @@ export function homeFaq(paymentDisclosure:string):HomeFaqItem[]{
 }
 /** Five questions a paid visitor asks before leaving details; same answers as the home page. */
 const LANDING_QUESTIONS=['איך מגישים הזמנה?','מה בדיוק כלול בחבילה?','אפשר לשנות את העיצוב?','מתי החולצות מגיעות?','משלמים כבר עכשיו?'];
-export function landingFaq(paymentDisclosure:string):HomeFaqItem[]{
+export function landingFaq(paymentDisclosure:string,extra:HomeFaqItem[]=[]):HomeFaqItem[]{
  const all=homeFaq(paymentDisclosure);
- return LANDING_QUESTIONS.map(question=>all.find(item=>item[0]===question)).filter((item):item is HomeFaqItem=>!!item);
+ const common=LANDING_QUESTIONS.map(question=>all.find(item=>item[0]===question)).filter((item):item is HomeFaqItem=>!!item);
+ return [...extra,...common];
 }

@@ -274,3 +274,16 @@ button,a,input,select,textarea,summary{touch-action:manipulation}
 .landing-page .hero .cta{margin-top:22px}
 .landing-page .order{padding-top:70px}
 @media(max-width:680px){.landing-points{gap:7px 12px;font-size:13px;justify-content:center}.landing-page .order{padding-top:48px}}
+
+/* Landing pages: audience examples, idea chips and a single package card. */
+.landing-examples .audience-gallery{grid-template-columns:repeat(3,1fr);gap:34px 26px}
+.landing-examples .gallery-caption{margin:18px 0 8px}
+.landing-examples .gallery-caption h3{font-size:24px}
+.landing-ideas{margin-top:36px}
+.landing-ideas .small-tag{color:#555;border-color:#b5b5ad}
+.landing-idea-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.landing-idea-chips span{padding:9px 13px;font-size:14px;font-weight:600;border:1px solid var(--ink);border-radius:2px;background:#fff}
+.landing-examples-cta{margin-top:30px}
+.landing-page .package-grid{grid-template-columns:minmax(0,600px);justify-content:center}
+.landing-page .package{border-left:0}
+@media(max-width:680px){.landing-examples .audience-gallery{grid-template-columns:1fr;gap:28px}.landing-idea-chips span{font-size:13px;padding:8px 11px}.landing-page .package-grid{grid-template-columns:1fr}}
