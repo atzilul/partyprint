@@ -111,10 +111,18 @@ const VALUES: Record<string, readonly (string | number)[]> = {
   ],
   cta_location: ['header', 'hero', 'package', 'size_help', 'order_form', 'confirmation', 'contact', 'footer', 'policy', 'content', 'other'],
   faq_index: range(1, 60),
+  currency: ['ILS'],
 };
+// Range-checked numbers (not enumerable): the displayed package estimate in ILS and the shirt count.
+// They are not personal data; Meta needs them as value/currency/num_items to optimise on larger requests.
+const NUMERIC: Record<string, (value: string | number) => boolean> = {
+  value: v => typeof v === 'number' && Number.isFinite(v) && v >= 0 && v <= 100000,
+  num_items: v => typeof v === 'number' && Number.isInteger(v) && v >= 1 && v <= 100,
+};
+const MONEY = ['value', 'currency', 'num_items'] as const;
 const EVENTS: Record<string, readonly string[]> = {
-  select_package: ['package_type', 'request_mode'],
-  begin_order_request: ['request_mode', 'package_type'],
+  select_package: ['package_type', 'request_mode', ...MONEY],
+  begin_order_request: ['request_mode', 'package_type', ...MONEY],
   form_step: ['step_number', 'step_name', 'request_mode'],
   form_field_complete: ['field_name', 'request_mode'],
   form_submit_attempt: ['request_mode', 'package_type'],
@@ -122,8 +130,8 @@ const EVENTS: Record<string, readonly string[]> = {
   form_validation_error: ['error_type'],
   form_submit_error: ['error_type'],
   faq_open: ['faq_index'],
-  generate_lead: ['request_mode', 'package_type', 'quantity_band', 'coupon_status'],
-  complete_order_request: ['request_mode', 'package_type', 'quantity_band', 'coupon_status'],
+  generate_lead: ['request_mode', 'package_type', 'quantity_band', 'coupon_status', ...MONEY],
+  complete_order_request: ['request_mode', 'package_type', 'quantity_band', 'coupon_status', ...MONEY],
   contact_save_attempt: ['request_mode', 'package_type'],
   contact_save_error: ['error_type'],
   // One named event per contact channel.
@@ -140,25 +148,47 @@ function clean(name: string, params: Record<string, string | number | undefined>
   const out: Params = {};
   for (const key of allowed) {
     const value = params[key];
-    if (value !== undefined && VALUES[key].includes(value)) out[key] = value;
+    if (value === undefined) continue;
+    const check = NUMERIC[key];
+    if (check ? check(value) : VALUES[key].includes(value)) out[key] = key === 'value' ? Math.round((value as number) * 100) / 100 : value;
   }
   return out;
 }
 
-/** The Meta pixel receives standard events only, built from the already-cleaned GA parameters. */
-function metaEvent(name: string, p: Params): [method: 'track' | 'trackCustom', event: string, data: Params] | null {
+type MetaCall = [method: 'track' | 'trackCustom', event: string, data: Params];
+/** value/currency/num_items, when the cleaned parameters carry them. */
+function metaMoney(p: Params): Params {
+  const out: Params = {};
+  if (typeof p.value === 'number') { out.value = p.value; out.currency = 'ILS'; }
+  if (typeof p.num_items === 'number') out.num_items = p.num_items;
+  return out;
+}
+/**
+ * Meta events built from the already-cleaned GA parameters. Each funnel stage sends
+ * a standard event (ViewContent, InitiateCheckout, Lead, SubmitApplication) that
+ * campaigns can optimise on, with value/currency/num_items; the custom names
+ * (FormStart, RequestComplete, FormStep, FormSubmitAttempt) stay for reporting.
+ */
+function metaEvents(name: string, p: Params): MetaCall[] {
+  const category: Params = p.package_type ? {content_category: p.package_type} : {};
   switch (name) {
-    case 'select_package': return ['track', 'ViewContent', p.package_type ? {content_category: p.package_type} : {}];
-    case 'begin_order_request': return ['trackCustom', 'FormStart', p.package_type ? {content_category: p.package_type} : {}];
-    case 'complete_order_request': return ['trackCustom', 'RequestComplete', p];
-    case 'generate_lead': return ['track', 'Lead', {...(p.package_type ? {content_category: p.package_type} : {}), ...(p.request_mode ? {content_name: p.request_mode} : {})}];
-    case 'contact_whatsapp': return ['track', 'Contact', {content_name: 'whatsapp', ...(p.cta_location ? {content_category: p.cta_location} : {})}];
-    case 'contact_email': return ['track', 'Contact', {content_name: 'email', ...(p.cta_location ? {content_category: p.cta_location} : {})}];
-    case 'contact_phone': return ['track', 'Contact', {content_name: 'phone', ...(p.cta_location ? {content_category: p.cta_location} : {})}];
-    case 'form_step': return ['trackCustom', 'FormStep', p];
-    case 'form_submit_attempt': return ['trackCustom', 'FormSubmitAttempt', p];
-    default: return null;
+    case 'select_package': return [['track', 'ViewContent', {...category, ...metaMoney(p)}]];
+    case 'begin_order_request': return [['track', 'InitiateCheckout', {...category, ...metaMoney(p)}], ['trackCustom', 'FormStart', {...category, ...metaMoney(p)}]];
+    case 'complete_order_request': return [['track', 'SubmitApplication', {...category, ...metaMoney(p)}], ['trackCustom', 'RequestComplete', p]];
+    case 'generate_lead': return [['track', 'Lead', {...category, ...(p.request_mode ? {content_name: p.request_mode} : {}), ...metaMoney(p)}]];
+    case 'contact_whatsapp': return [['track', 'Contact', {content_name: 'whatsapp', ...(p.cta_location ? {content_category: p.cta_location} : {})}]];
+    case 'contact_email': return [['track', 'Contact', {content_name: 'email', ...(p.cta_location ? {content_category: p.cta_location} : {})}]];
+    case 'contact_phone': return [['track', 'Contact', {content_name: 'phone', ...(p.cta_location ? {content_category: p.cta_location} : {})}]];
+    // content_name repeats the step so a custom conversion ("reached details") needs one simple rule.
+    case 'form_step': return [['trackCustom', 'FormStep', {...p, ...(p.step_name ? {content_name: p.step_name} : {})}]];
+    case 'form_submit_attempt': return [['trackCustom', 'FormSubmitAttempt', p]];
+    default: return [];
   }
+}
+/** Pure view of what Meta would receive for an internal event (allowlist, then mapping); for tests and audits. */
+export function metaEventsFor(name: string, params: Record<string, string | number | undefined>): MetaCall[] | null {
+  const safe = clean(name, params);
+  return safe ? metaEvents(name, safe) : null;
 }
 
 // ---- choice ----
@@ -195,11 +225,11 @@ function enabled() {
 type Pending = {name: string; params: Params};
 let pending: Pending[] = [];
 const MAX_PENDING = 30;
-type ServerMetaName='PageView'|'FormStart'|'FormStep'|'Lead';
+type ServerMetaName='PageView'|'InitiateCheckout'|'FormStart'|'FormStep'|'Lead';
 type LeadCapability={id:string;token:string};
 
 function serverMetaName(value:string):value is ServerMetaName{
- return value==='PageView'||value==='FormStart'||value==='FormStep'||value==='Lead';
+ return value==='PageView'||value==='InitiateCheckout'||value==='FormStart'||value==='FormStep'||value==='Lead';
 }
 function sendServerMetaEvent(eventName:ServerMetaName,eventID:string,clientData:Record<string,unknown>,contact?:LeadCapability){
  // Same permission as the browser pixel: an explicit "אישור", or no choice in the
@@ -214,16 +244,13 @@ function sendServerMetaEvent(eventName:ServerMetaName,eventID:string,clientData:
  }).catch(()=>{});
 }
 function dispatchMeta(name:string,params:Params){
- const meta=metaEvent(name,params);
- if(!meta)return;
- const [method,eventName,data]=meta;
- if(serverMetaName(eventName)){
-  const eventID=crypto.randomUUID();
-  window.fbq?.(method,eventName,data,{eventID});
-  sendServerMetaEvent(eventName,eventID,data);
-  return;
+ for(const [method,eventName,data] of metaEvents(name,params)){
+  if(serverMetaName(eventName)){
+   const eventID=crypto.randomUUID();
+   window.fbq?.(method,eventName,data,{eventID});
+   sendServerMetaEvent(eventName,eventID,data);
+  }else window.fbq?.(method,eventName,data);
  }
- window.fbq?.(method,eventName,data);
 }
 
 /** Records an allowlisted event in GA4 (and its Meta equivalent). */
@@ -490,16 +517,15 @@ async function trackSavedRequestEvent(name:'generate_lead'|'complete_order_reque
  const storageKey=(name==='generate_lead'?'partyprint-lead-':'partyprint-complete-')+localReceiptId;
  let sent=receiptEvents.get(storageKey);if(!sent){try{const stored=JSON.parse(sessionStorage.getItem(storageKey)||'null');sent={ga:stored?.ga===true,meta:stored?.meta===true};}catch{sent={ga:false,meta:false};}receiptEvents.set(storageKey,sent);}
  if(!sent.ga&&measurementId&&window.gtag){window.gtag('event',name,safe);sent.ga=true;}
- if(!sent.meta&&metaReady()&&metaAllowed()){
-  const event=metaEvent(name,safe);
-  if(event&&window.fbq){
-   const eventID=savedLeadEventId(name,localReceiptId);
+ if(!sent.meta&&metaReady()&&metaAllowed()&&window.fbq){
+  const eventID=savedLeadEventId(name,localReceiptId);
+  for(const [method,eventName,data] of metaEvents(name,safe)){
    if(eventID){
-    window.fbq(event[0],event[1],event[2],{eventID});
-    if(name==='generate_lead'&&contactToken)sendServerMetaEvent('Lead',eventID,event[2],{id:localReceiptId,token:contactToken});
-   }else window.fbq(event[0],event[1],event[2]);
-   sent.meta=true;
+    window.fbq(method,eventName,data,{eventID});
+    if(eventName==='Lead'&&contactToken)sendServerMetaEvent('Lead',eventID,data,{id:localReceiptId,token:contactToken});
+   }else window.fbq(method,eventName,data);
   }
+  sent.meta=true;
  }
  try{sessionStorage.setItem(storageKey,JSON.stringify(sent));}catch{}
 }

@@ -104,7 +104,7 @@ Configure these in the hosting environment, never GitHub source or client code:
 | `RESEND_API_KEY`, `MAIL_FROM` | Existing mail provider credentials and verified sender |
 | `GA_MEASUREMENT_ID` | Public GA4 Measurement ID (`G-V3QDR0W4WK`). See [docs/analytics.md](docs/analytics.md) |
 | `META_PIXEL_ID` | Public Meta pixel (dataset) ID (`2241332043403463`). GA loads on public pages unless the visitor opts out; the Meta pixel follows the region rule in docs/analytics.md |
-| `META_CAPI_TOKEN` | Server-only Meta Conversions API access token for PageView, FormStart, FormStep and Lead; set as a secret and never expose it through `/api/analytics-config` or client code |
+| `META_CAPI_TOKEN` | Server-only Meta Conversions API access token for PageView, InitiateCheckout, FormStart, FormStep and Lead; set as a secret and never expose it through `/api/analytics-config` or client code. Without it the browser pixel still works but Events Manager shows no server events |
 | `META_TEST_EVENT_CODE` | Optional temporary Events Manager test code. Remove it after validation so later events are not sent in test mode |
 | `PARTYPRINT_TRUSTED_IP_HEADER` | Hostinger proxy header containing the visitor IP. User reports `x-real-ip`; the server validates the value before including it in Meta events |
 | `PARTYPRINT_LEGAL_NAME`, `PARTYPRINT_BUSINESS_ID`, `PARTYPRINT_BUSINESS_ADDRESS` | Public business details shown in the footer of every public page and in the terms. Until each one is set, its row is hidden; a value left at its `TODO_` placeholder is never shown |

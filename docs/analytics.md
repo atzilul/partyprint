@@ -33,8 +33,9 @@ missing server credentials leave browser measurement unaffected.
 - **Meta pixel, by region** (`metaModeFor` in `lib/analytics.ts`):
   - **Israel, "notice" mode:** on by default, exactly like Google Analytics
     (owner's decision, Nov 2026). The pixel loads on entry and every Meta event
-    (PageView, ViewContent, FormStart, FormStep, FormSubmitAttempt, Lead, Contact,
-    RequestComplete) is sent, in the browser and through server CAPI, unless the
+    (PageView, ViewContent, InitiateCheckout, FormStart, FormStep, FormSubmitAttempt,
+    Lead, SubmitApplication, Contact, RequestComplete) is sent, in the browser and
+    through server CAPI, unless the
     visitor chose **לא, תודה**. Meta's automatic configuration stays off while no
     explicit **אישור** was given.
   - **Everywhere else, including the EU, and whenever the region cannot be
@@ -68,8 +69,8 @@ missing server credentials leave browser measurement unaffected.
 | Event | When | Parameters |
 | --- | --- | --- |
 | `page_view` | Each page/route | standard; `page_location` keeps only `utm_*`, `gclid`, `gbraid`, `wbraid`, `dclid`, `fbclid` |
-| `select_package` | A package is chosen (card/CTA or form selector) | `package_type`, `request_mode` |
-| `begin_order_request` | First start of the request flow (CTA, form focus or first field) | `request_mode`, `package_type` |
+| `select_package` | A package is chosen (card/CTA or form selector) | `package_type`, `request_mode`, `value`, `currency`, `num_items` |
+| `begin_order_request` | First start of the request flow (CTA, form focus or first field) | `request_mode`, `package_type`, `value`, `currency`, `num_items` |
 | `form_step` | Each time a form screen is shown | `step_number`, `step_name`, `request_mode` |
 | `form_field_complete` | First time a part of the form is completed | `field_name`, `request_mode` |
 | `form_submit_attempt` | Final submit button clicked (before validation) | `request_mode`, `package_type` |
@@ -79,8 +80,10 @@ missing server credentials leave browser measurement unaffected.
 | `faq_open` | An FAQ answer is opened | `faq_index` |
 | `contact_save_attempt` | Explicit contact-save button after field validation | `request_mode`, `package_type` |
 | `contact_save_error` | Contact API failed or did not confirm save | `error_type` |
-| `complete_order_request` | Only after the complete request is confirmed by `/api/orders` | `request_mode`, `package_type`, `quantity_band`, `coupon_status` |
-| **`generate_lead`** | Only after `/api/contacts` confirms saved contact details (legacy completed requests also qualify) | `request_mode`, `package_type`, `quantity_band`, `coupon_status` |
+| `complete_order_request` | Only after the complete request is confirmed by `/api/orders` | `request_mode`, `package_type`, `quantity_band`, `coupon_status`, `value`, `currency`, `num_items` |
+| **`generate_lead`** | Only after `/api/contacts` confirms saved contact details (legacy completed requests also qualify) | `request_mode`, `package_type`, `quantity_band`, `coupon_status`, `value`, `currency`, `num_items` |
+
+`value` is the package estimate shown to the visitor at that moment (after an applied discount), `currency` is always `ILS`, `num_items` the shirt count. They are range-checked numbers, not identifiers, and exist so that Meta can optimise toward larger requests.
 
 ### Form stages
 
@@ -88,7 +91,7 @@ Order requests use three screens: 1 `package` (shirts, quantity and optional eve
 
 The contact is a separate record, not an order. Saving it does not redeem a coupon or send a customer reminder. Optional sizes remain available throughout and in the private post-save editor (`shirts_optional`); explicit confirmation emits `form_field_complete shirts`. All visible occasions start at four; the same quantity control can reduce to one. One uses the configured unit price; two/three use the first tier; all other quantities use the reached tier.
 
-`trackSavedLead` and `trackSavedCompletion` deduplicate GA and Meta separately using distinct local-tab receipt keys (never transmitted). Meta Pixel and server CAPI share an `eventID` / `event_id` for each `PageView`, `FormStart` and `FormStep`. For Lead, the saved contact UUID is shared between browser and server. The server also suppresses repeat CAPI event IDs for seven days. Late consent may emit the previously unsent Meta browser event and its matching server event without duplicating GA. Failed/unacknowledged contact saves emit no Lead; failed final saves emit no completion. An internal email failure does not invalidate a persisted contact. Reloading an acknowledged contact can recover its receipt within the private capability's 24-hour life.
+`trackSavedLead` and `trackSavedCompletion` deduplicate GA and Meta separately using distinct local-tab receipt keys (never transmitted). Meta Pixel and server CAPI share an `eventID` / `event_id` for each `PageView`, `InitiateCheckout`, `FormStart` and `FormStep`. For Lead, the saved contact UUID is shared between browser and server. The server also suppresses repeat CAPI event IDs for seven days. Late consent may emit the previously unsent Meta browser event and its matching server event without duplicating GA. Failed/unacknowledged contact saves emit no Lead; failed final saves emit no completion. An internal email failure does not invalidate a persisted contact. Reloading an acknowledged contact can recover its receipt within the private capability's 24-hour life.
 
 ### Contact events (one name per channel)
 
@@ -106,12 +109,17 @@ CAPI Lead includes an estimated package value and currency, not a payment or tra
 
 ## Meta pixel events
 
-Meta browser events are \`PageView\` (each page), \`ViewContent\` (\`select_package\`), custom
-\`FormStart\` (\`begin_order_request\`), \`Lead\` (\`generate_lead\`), \`Contact\` (WhatsApp / email /
-phone), and custom \`FormStep\` / \`FormSubmitAttempt\` / \`RequestComplete\`.
+Meta browser events are \`PageView\` (each page), \`ViewContent\` (\`select_package\`),
+\`InitiateCheckout\` plus custom \`FormStart\` (both from \`begin_order_request\`), \`Lead\`
+(\`generate_lead\`), \`SubmitApplication\` plus custom \`RequestComplete\` (both from
+\`complete_order_request\`), \`Contact\` (WhatsApp / email / phone), and custom \`FormStep\`
+(with \`content_name\` = step name) / \`FormSubmitAttempt\`. Each funnel stage therefore has
+one standard event a campaign can optimise on, carrying \`value\` / \`currency\` /
+\`num_items\`, next to the custom name kept for reporting. The mapping is a pure
+function (\`metaEventsFor\`) covered by \`scripts/analytics-contract.test.mjs\`.
 
 Under the same permission as the browser pixel (Israel: unless refused; elsewhere: after
-\`אישור\`), the server forwards \`PageView\`, \`FormStart\`, \`FormStep\` and \`Lead\`
+\`אישור\`), the server forwards \`PageView\`, \`InitiateCheckout\`, \`FormStart\`, \`FormStep\` and \`Lead\`
 through \`/api/events\`. For every event, the browser supplies a UUID used as Pixel
 \`eventID\` and CAPI \`event_id\`; the server stores event IDs for seven days to prevent
 repeat sends. The saved contact UUID is the shared Lead ID. The server supplies
@@ -153,8 +161,9 @@ Anything else is dropped before sending.
 - `cta_location`: `header`, `hero`, `package`, `size_help`, `order_form`,
   `confirmation`, `contact`, `footer`, `policy`, `content`, `other`
 - `faq_index`: 1–60 (position of the FAQ item on the page)
+- `value`: number 0–100000 (rounded to 2 decimals); `currency`: `ILS`; `num_items`: integer 1–100
 
-These parameters are registered as event-scoped custom dimensions in GA4.
+These parameters are registered as event-scoped custom dimensions in GA4 (`value` and `currency` are GA4 standard parameters; `num_items` needs a custom dimension or metric).
 
 Never sent as GA4 or custom event parameters by our code: names, emails, phones, free text
 (brief), order IDs, tracking links, coupon codes, design text, uploaded file names,

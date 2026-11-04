@@ -9,11 +9,14 @@ const contactId='79b44e8f-64da-4c5b-92e1-3c59d6e197a8';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const common={eventId:contactId,eventTime:1791300000,eventSourceUrl:'https://partyprint.co.il/order?utm_source=meta&fbclid=private#form',clientIpAddress:'203.0.113.7',clientUserAgent:'Mozilla/5.0',fbp:'fb.1.1791300000000.12345',fbc:'fb.1.1791300000000.click-id'};
 
-test('builds safe payloads for all four server event names',async()=>{
+test('builds safe payloads for all server event names',async()=>{
  const cases=[
   ['PageView',{},undefined],
   ['FormStart',{content_category:'family_birthday'}, {content_category:'family_birthday'}],
-  ['FormStep',{step_number:2,step_name:'details',request_mode:'order',email:'private@example.com'}, {step_number:2,step_name:'details',request_mode:'order'}],
+  ['FormStart',{content_category:'family_birthday',value:396,currency:'ILS',num_items:4}, {content_category:'family_birthday',value:396,currency:'ILS',num_items:4}],
+  ['InitiateCheckout',{content_category:'team',value:950.004,currency:'USD',num_items:10,email:'private@example.com'}, {content_category:'team',value:950,currency:'ILS',num_items:10}],
+  ['InitiateCheckout',{content_category:'team',value:-5,num_items:101}, {content_category:'team'}],
+  ['FormStep',{step_number:2,step_name:'details',request_mode:'order',email:'private@example.com'}, {step_number:2,step_name:'details',content_name:'details',request_mode:'order'}],
  ];
  for(const [eventName,clientData,custom] of cases){
   const event=await buildMetaEvent({...common,eventName,clientData});

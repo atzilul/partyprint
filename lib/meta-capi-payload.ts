@@ -1,6 +1,6 @@
 export const META_GRAPH_API_VERSION = 'v26.0';
 
-export type MetaCapiEventName = 'PageView' | 'FormStart' | 'FormStep' | 'Lead';
+export type MetaCapiEventName = 'PageView' | 'InitiateCheckout' | 'FormStart' | 'FormStep' | 'Lead';
 export type MetaCapiStatus = 'sent' | 'failed' | 'skipped';
 export type MetaCapiEvent = {
  event_name: MetaCapiEventName;
@@ -53,11 +53,17 @@ function safeIp(value:string|undefined){return value&&value.length<=45&&/^[0-9a-
 export function normalizeMetaClientData(eventName:MetaCapiEventName,value:unknown):Record<string,string|number>{
  if(!value||typeof value!=='object'||Array.isArray(value))return {};
  const raw=value as Record<string,unknown>,out:Record<string,string|number>={};
- if(eventName==='FormStart'){
+ // The browser's displayed estimate and shirt count; range-checked, never trusted beyond that.
+ const money=()=>{
+  if(typeof raw.value==='number'&&Number.isFinite(raw.value)&&raw.value>=0&&raw.value<=100000){out.value=Math.round(raw.value*100)/100;out.currency='ILS';}
+  if(typeof raw.num_items==='number'&&Number.isInteger(raw.num_items)&&raw.num_items>=1&&raw.num_items<=100)out.num_items=raw.num_items;
+ };
+ if(eventName==='FormStart'||eventName==='InitiateCheckout'){
   if(typeof raw.content_category==='string'&&PACKAGE_TYPES.has(raw.content_category))out.content_category=raw.content_category;
+  money();
  }else if(eventName==='FormStep'){
   if(Number.isInteger(raw.step_number)&&Number(raw.step_number)>=1&&Number(raw.step_number)<=3)out.step_number=Number(raw.step_number);
-  if(typeof raw.step_name==='string'&&STEP_NAMES.has(raw.step_name))out.step_name=raw.step_name;
+  if(typeof raw.step_name==='string'&&STEP_NAMES.has(raw.step_name)){out.step_name=raw.step_name;out.content_name=raw.step_name;}
   if(typeof raw.request_mode==='string'&&REQUEST_MODES.has(raw.request_mode))out.request_mode=raw.request_mode;
  }else if(eventName==='Lead'){
   if(typeof raw.content_category==='string'&&PACKAGE_TYPES.has(raw.content_category))out.content_category=raw.content_category;
