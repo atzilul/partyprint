@@ -119,7 +119,7 @@ one standard event a campaign can optimise on, carrying \`value\` / \`currency\`
 function (\`metaEventsFor\`) covered by \`scripts/analytics-contract.test.mjs\`.
 
 Under the same permission as the browser pixel (Israel: unless refused; elsewhere: after
-\`אישור\`), the server forwards \`PageView\`, \`InitiateCheckout\`, \`FormStart\`, \`FormStep\` and \`Lead\`
+\`אישור\`), the server forwards \`PageView\`, \`ViewContent\`, \`InitiateCheckout\`, \`FormStart\`, \`FormStep\` and \`Lead\`
 through \`/api/events\`. For every event, the browser supplies a UUID used as Pixel
 \`eventID\` and CAPI \`event_id\`; the server stores event IDs for seven days to prevent
 repeat sends. The saved contact UUID is the shared Lead ID. The server supplies

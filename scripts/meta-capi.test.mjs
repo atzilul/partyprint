@@ -13,6 +13,8 @@ test('builds safe payloads for all server event names',async()=>{
  const cases=[
   ['PageView',{},undefined],
   ['FormStart',{content_category:'family_birthday'}, {content_category:'family_birthday'}],
+  ['ViewContent',{content_category:'bride_squad',value:630,currency:'ILS',num_items:6,name:'private'}, {content_category:'bride_squad',value:630,currency:'ILS',num_items:6}],
+  ['ViewContent',{content_category:'nope',value:'630'}, undefined],
   ['FormStart',{content_category:'family_birthday',value:396,currency:'ILS',num_items:4}, {content_category:'family_birthday',value:396,currency:'ILS',num_items:4}],
   ['InitiateCheckout',{content_category:'team',value:950.004,currency:'USD',num_items:10,email:'private@example.com'}, {content_category:'team',value:950,currency:'ILS',num_items:10}],
   ['InitiateCheckout',{content_category:'team',value:-5,num_items:101}, {content_category:'team'}],

@@ -225,11 +225,11 @@ function enabled() {
 type Pending = {name: string; params: Params};
 let pending: Pending[] = [];
 const MAX_PENDING = 30;
-type ServerMetaName='PageView'|'InitiateCheckout'|'FormStart'|'FormStep'|'Lead';
+type ServerMetaName='PageView'|'ViewContent'|'InitiateCheckout'|'FormStart'|'FormStep'|'Lead';
 type LeadCapability={id:string;token:string};
 
 function serverMetaName(value:string):value is ServerMetaName{
- return value==='PageView'||value==='InitiateCheckout'||value==='FormStart'||value==='FormStep'||value==='Lead';
+ return value==='PageView'||value==='ViewContent'||value==='InitiateCheckout'||value==='FormStart'||value==='FormStep'||value==='Lead';
 }
 function sendServerMetaEvent(eventName:ServerMetaName,eventID:string,clientData:Record<string,unknown>,contact?:LeadCapability){
  // Same permission as the browser pixel: an explicit "אישור", or no choice in the

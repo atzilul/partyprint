@@ -1,6 +1,6 @@
 export const META_GRAPH_API_VERSION = 'v26.0';
 
-export type MetaCapiEventName = 'PageView' | 'InitiateCheckout' | 'FormStart' | 'FormStep' | 'Lead';
+export type MetaCapiEventName = 'PageView' | 'ViewContent' | 'InitiateCheckout' | 'FormStart' | 'FormStep' | 'Lead';
 export type MetaCapiStatus = 'sent' | 'failed' | 'skipped';
 export type MetaCapiEvent = {
  event_name: MetaCapiEventName;
@@ -58,7 +58,7 @@ export function normalizeMetaClientData(eventName:MetaCapiEventName,value:unknow
   if(typeof raw.value==='number'&&Number.isFinite(raw.value)&&raw.value>=0&&raw.value<=100000){out.value=Math.round(raw.value*100)/100;out.currency='ILS';}
   if(typeof raw.num_items==='number'&&Number.isInteger(raw.num_items)&&raw.num_items>=1&&raw.num_items<=100)out.num_items=raw.num_items;
  };
- if(eventName==='FormStart'||eventName==='InitiateCheckout'){
+ if(eventName==='ViewContent'||eventName==='FormStart'||eventName==='InitiateCheckout'){
   if(typeof raw.content_category==='string'&&PACKAGE_TYPES.has(raw.content_category))out.content_category=raw.content_category;
   money();
  }else if(eventName==='FormStep'){

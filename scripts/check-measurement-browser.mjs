@@ -156,7 +156,7 @@ try{
     s=await snapshot();
     check('Final completion does not duplicate the contact Lead',metaEvents(s).filter(x=>x[1]==='Lead').length===1&&metaEvents(s).filter(x=>x[1]==='RequestComplete').length===1);
     const leadEvents=metaEvents(s).filter(x=>x[1]==='Lead');const measuredData=JSON.stringify({ga:s.ga,meta:metaEvents(s).map(x=>x[2])});check('Raw contact fields stay out of browser event parameters; opaque UUID is used only as Meta eventID',!measuredData.includes('qa-measurement@example.invalid')&&!measuredData.includes('0500000000')&&!measuredData.includes(capturedContact.id)&&leadEvents.length===1&&leadEvents[0][3]?.eventID===capturedContact.id);
-    check('Quote start uses custom FormStart rather than checkout',metaEvents(s).every(x=>x[1]!=='InitiateCheckout')&&(scenario.late||metaEvents(s).some(x=>x[1]==='FormStart')));
+    check('Quote start sends standard InitiateCheckout next to custom FormStart',scenario.late||(metaEvents(s).some(x=>x[1]==='InitiateCheckout')&&metaEvents(s).some(x=>x[1]==='FormStart')));
      check('Every server event has a matching browser eventID',counts.serverMetaEvents.every(e=>metaEvents(s).some(x=>x[1]===e.event_name&&x[3]?.eventID===e.event_id)));
      check('Consent refusal blocks server CAPI events',!scenario.denied||counts.serverMetaEvents.length===0);
     await page.reload({waitUntil:'networkidle'});await page.waitForFunction(()=>window.dataLayer?.some(x=>Array.from(x)[1]==='page_view'));

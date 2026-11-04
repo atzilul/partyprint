@@ -5,7 +5,7 @@ import {attemptMetaEvent,type MetaEventRequest} from '@/lib/meta-capi';
 import {validMetaEventId} from '@/lib/meta-capi-payload';
 import {validContactKey} from '@/lib/contact-leads';
 
-const META_EVENTS=new Set(['PageView','InitiateCheckout','FormStart','FormStep','Lead']);
+const META_EVENTS=new Set(['PageView','ViewContent','InitiateCheckout','FormStart','FormStep','Lead']);
 export async function POST(request:Request){
  if(request.headers.get('origin')!==new URL(request.url).origin)return new Response(null,{status:403});
  if(!request.headers.get('content-type')?.startsWith('application/json'))return new Response(null,{status:415});
