@@ -217,3 +217,12 @@ only) is kept for the existing analytics view.
 Thursday, 9:00 to 19:00, answer within two hours). The form's contact and idea
 steps, the confirmation page and the customer email read from it; outside the
 hours the browser shows when the next answer comes.
+
+## Paid landing pages
+
+`/lp/family`, `/lp/bride`, `/lp/groom`, `/lp/team` and `/lp/custom` render the home
+page component in landing mode: hero locked to that audience with three audience
+points, the request form directly under it, "how it works", five FAQ items,
+contact and footer. The catalogue, gallery and statement sections are left out.
+They are `noindex`, not in the sitemap, and send the same GA4 and Meta events as
+the home page, so campaign reports split by page path.
