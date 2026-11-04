@@ -1,12 +1,12 @@
 import type {Metadata} from 'next';
 import {notFound} from 'next/navigation';
-import HomeClient from '@/app/home-client';
+import LandingPage from '@/components/landing-page';
 import {BUSINESS_DETAILS,PAYMENT_DISCLOSURE} from '@/lib/business-details';
 import {LANDING_VARIANTS,LANDING_VARIANT_KEYS,isLandingVariant} from '@/lib/landing-variants';
 
 /**
- * Paid landing pages: one per vertical, same components and events as the home
- * page, but locked to the ad's audience with the form right under the hero.
+ * Paid landing pages: one purpose-built page per audience (components/landing-page.tsx,
+ * copy in lib/landing-content.ts). Same request form and events as the home page.
  * Not indexed: campaigns link here, search visitors land on the home page.
  */
 type PageProps={params:Promise<{slug:string}>};
@@ -23,8 +23,8 @@ export async function generateMetadata({params}:PageProps):Promise<Metadata>{
   twitter:{card:'summary_large_image',title:content.title,description:content.description,images:[{url:content.ogImage,alt:content.ogAlt}]},
  };
 }
-export default async function LandingPage({params}:PageProps){
+export default async function Landing({params}:PageProps){
  const {slug}=await params;
  if(!isLandingVariant(slug))notFound();
- return <HomeClient landing initialVariant={slug} businessEmail={BUSINESS_DETAILS.email} paymentDisclosure={PAYMENT_DISCLOSURE}/>;
+ return <LandingPage variant={slug} businessEmail={BUSINESS_DETAILS.email} paymentDisclosure={PAYMENT_DISCLOSURE}/>;
 }

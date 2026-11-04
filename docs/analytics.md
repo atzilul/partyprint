@@ -220,12 +220,12 @@ hours the browser shows when the next answer comes.
 
 ## Paid landing pages
 
-`/lp/family`, `/lp/bride`, `/lp/groom`, `/lp/team` and `/lp/custom` render the home
-page component in landing mode: hero locked to that audience with three audience
-points, the request form directly under it, three audience design examples with
-idea chips (`lib/landing-content.ts`), "how it works", the trust section, that
-audience's package card, five common FAQ items plus audience questions, contact
-and footer. The ticker, inspiration, gallery, testimonials and statement sections
-are left out.
-They are `noindex`, not in the sitemap, and send the same GA4 and Meta events as
-the home page, so campaign reports split by page path.
+`/lp/family`, `/lp/bride`, `/lp/groom`, `/lp/team` and `/lp/custom` are purpose-built
+pages (`components/landing-page.tsx`, copy and examples per audience in
+`lib/landing-content.ts`, styles and animations in `components/landing.css`). Each
+page: audience hero with its own palette and motion, marquee, four promises, the
+shared request form, three audience design examples with idea chips, the four-step
+story and the Wow machine, a price calculator for that audience's package, audience
+questions ahead of the common FAQ, and a final call to action. They are `noindex`,
+not in the sitemap, and send the same GA4 and Meta events as the home page, so
+campaign reports split by page path. The home page is untouched.
