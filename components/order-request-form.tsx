@@ -21,6 +21,7 @@ import {defaultShirts} from './shirt-options';
 import {landingVariantForPack} from '@/lib/landing-variants';
 import {readAttribution} from './attribution-capture';
 import ResponsePromise from './response-promise';
+import WhatsAppLogo from './whatsapp-logo';
 import type {ShirtSelection} from '@/lib/catalog';
 type Quote={code:string;discount:number;total:number;subtotal:number;package:number;quantity:number};
 type Props={pack:number;quantities:number[];pricing:Pricing;mode:string;openSignal:number;onPack:(p:number)=>void;onQuantity:(p:number,n:number)=>void;onMode:(m:string)=>void;onPricing:(p:Pricing)=>void;onBusy:(b:boolean)=>void;
@@ -28,6 +29,7 @@ type Props={pack:number;quantities:number[];pricing:Pricing;mode:string;openSign
  designMode?:DesignMode;onDesignMode?:(m:DesignMode)=>void};
 const today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jerusalem'});
 const displayDate=(v:string)=>new Date(v+'T12:00:00Z').toLocaleDateString('he-IL');
+const TEAM_QUESTIONS_URL='https://wa.me/972552896236?text='+encodeURIComponent('היי, יש לי שאלה על חולצות לצוות');
 export default function OrderRequestForm({pack,quantities,pricing,mode,openSignal,onPack,onQuantity,onPricing,onBusy,designMode,onDesignMode}:Props){
  const router=useRouter();const [step,setStep]=useState(0),[name,setName]=useState(''),[phone,setPhone]=useState(''),[email,setEmail]=useState(''),[brief,setBrief]=useState(''),[eventDate,setEventDate]=useState(''),[files,setFiles]=useState<File[]>([]),[busy,setBusy]=useState(false),[error,setError]=useState(''),[errors,setErrors]=useState<Record<string,string>>({}),[draftNotice,setDraftNotice]=useState(''),[ready,setReady]=useState(false),[quantityDraft,setQuantityDraft]=useState<string|null>(null);
  const [confirmedShirts,setConfirmedShirts]=useState<ShirtSelection[]|null>(null),[shirtDraft,setShirtDraft]=useState<ShirtSelection[]>([]),[sizingOpen,setSizingOpen]=useState(false);
@@ -121,6 +123,7 @@ export default function OrderRequestForm({pack,quantities,pricing,mode,openSigna
  {error&&<div id="request-save-error" className="pp-error error" role="alert" tabIndex={-1}><b>לא התקבל אישור שליחה</b><p>{error}</p></div>}
  {step===1&&<p className="pp-contact-notice">בלחיצה על המשך, השם, הטלפון, המייל ופרטי החולצות יישמרו ב־PARTYPRINT גם אם לא תשלימו את הרעיון. נחזור אליכם ידנית לצורך הטיפול בבקשה בלבד. אין חובה חוקית למסור פרטים; בלי פרטים תקינים לא ניתן לשמור בקשה בטופס. אפשר לפנות אלינו ב־WhatsApp. <a href="/privacy-policy">מדיניות פרטיות</a></p>}
  <div className="pp-actions wizard-actions"><button type="submit" className="pp-primary form-submit" disabled={busy||(step===2&&couponBusy)}>{busy?<><LoaderCircle size={19} className="pp-spinner"/>{step===1?'שומרים את פרטי הקשר…':'הרעיון שלכם בדרך לסטודיו…'}</>:step===0?<>מגניב, ממשיכים לפרטים!<ArrowUpLeft size={19}/></>:step===1?<>שומרים פרטים וממשיכים לרעיון<ArrowUpLeft size={19}/></>:<>יאללה, הופכים את הרעיון לחולצה!<Sparkles size={19}/></>}</button></div>
+ {pack===INDIVIDUAL_DESIGN_PACK&&<a className="pp-whatsapp-help" href={TEAM_QUESTIONS_URL} target="_blank" rel="noopener noreferrer" data-cta-location="order_form"><WhatsAppLogo size={21}/>שאלות? דברו איתנו</a>}
  {step>0&&<ResponsePromise/>}
  {step===2&&<p className="pp-terms-acceptance">בשליחה אתם מאשרים את <a href="/terms">התקנון</a> ומדיניות <a href="/privacy-policy">הפרטיות</a>.</p>}
  <p className="pp-assurance"><ShieldCheck size={16}/>אין חיוב בשליחה · אין צורך בפרטי אשראי · קודם רואים ומאשרים</p>

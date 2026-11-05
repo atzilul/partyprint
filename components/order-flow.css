@@ -103,3 +103,8 @@ main:has(.pp-request:focus-within)>.mobile-sticky,body:has(.pp-size-dialog[open]
 .pp-design-choice [aria-checked=true]{background:var(--color-pp-soft);border-color:var(--color-pp-ink);box-shadow:inset 0 0 0 1px var(--color-pp-ink)}
 .pp-design-choice [aria-checked=true] span{color:var(--color-pp-ink)}
 @media(max-width:360px){.pp-design-choice>div{grid-template-columns:minmax(0,1fr)}}
+/* "Questions? Talk to us": a WhatsApp chat from inside the form (team package). */
+.pp-order-flow .pp-whatsapp-help{display:flex;align-items:center;justify-content:center;gap:var(--space-pp-sm);width:100%;min-height:50px;margin-top:var(--space-pp-md);padding:var(--space-pp-sm) var(--space-pp-lg);background:#25d366;color:#0b2416;border:1px solid var(--color-pp-ink);border-radius:var(--radius-pp-input);font-weight:700;font-size:var(--text-pp-base);text-decoration:none;transition:background .2s,transform .2s}
+.pp-order-flow .pp-whatsapp-help:hover{background:#1fc45c}
+.pp-order-flow .pp-whatsapp-help:active{transform:translateY(1px)}
+.pp-order-flow .pp-whatsapp-help svg{flex-shrink:0}
