@@ -57,3 +57,18 @@ total that does not match its own (HTTP 409). An order with a design for every s
 tracking and exports show it without their own logic. The choice appears in the form for the
 team package and as a selector on `/lp/team`; no other page offers it.
 
+
+## One price list for every page
+
+The price list saved in the admin panel (`studio_settings`, key `pricing`: quantity tiers
+and the single-shirt price) is the only source of shirt prices. Server pages read it through
+`currentPricing()` in `lib/current-pricing.ts` and pass it to the client components as
+`initialPricing`, so the first HTML, the structured data and the page description already
+carry the prices in force; the code defaults in `lib/pricing.ts` are only the fallback when
+the database cannot be reached. This covers the home page, `/lp/*`, `/bundle-sale` and its
+answer pages, `/prices/*`, `/buyers-guide`, `/en`, `/faq`, `/ordering-guide` and the price
+block on guides, work pages and blog posts. `/llms.txt` and `/llms-full.txt` are route
+handlers (`lib/llms-text.ts`), not static files, for the same reason. Do not write a shirt
+price as text in a page: take it from the price list. The fee for an extra revision round
+(ILS 100) and `INDIVIDUAL_DESIGN_SURCHARGE` (ILS 50) are fixed in code and are not part of
+the admin price list.

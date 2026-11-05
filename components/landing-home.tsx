@@ -101,12 +101,13 @@ const CONFIDENCE_ICONS=[CreditCard,Palette,Check,Truck];
 const TRUST_ICONS=[Truck,Palette,ShieldCheck];
 const lines=(items:string[])=>items.map((line,i)=><span key={line}>{i>0&&<br/>}{line}</span>);
 
-type Props={variant:LandingVariantKey;businessEmail:string;paymentDisclosure:string};
-export default function LandingHome({variant,businessEmail,paymentDisclosure}:Props){
+/** `initialPricing` is the admin price list read on the server, so the first HTML already carries the prices in force. */
+type Props={variant:LandingVariantKey;initialPricing?:Pricing;businessEmail:string;paymentDisclosure:string};
+export default function LandingHome({variant,initialPricing,businessEmail,paymentDisclosure}:Props){
  const c=LANDING_HOME_CONTENT[variant],packIndex=c.packIndex,pack=packs[packIndex];
  // The open-ended package starts at four shirts, as on the home page.
  const startQuantity=packIndex===4?4:pack.n;
- const [mobileNavOpen,setMobileNavOpen]=useState(false),[quantities,setQuantities]=useState(()=>packs.map((p,i)=>i===4?4:p.n)),[selectedPack,setSelectedPack]=useState(packIndex),[mode,setMode]=useState<string>(c.mode),[busy,setBusy]=useState(false),[openSignal,setOpenSignal]=useState(0),[pricing,setPricing]=useState<Pricing>(DEFAULT_PRICING),[orderVisible,setOrderVisible]=useState(false),[designMode,setDesignMode]=useState<DesignMode>('shared');
+ const [mobileNavOpen,setMobileNavOpen]=useState(false),[quantities,setQuantities]=useState(()=>packs.map((p,i)=>i===4?4:p.n)),[selectedPack,setSelectedPack]=useState(packIndex),[mode,setMode]=useState<string>(c.mode),[busy,setBusy]=useState(false),[openSignal,setOpenSignal]=useState(0),[pricing,setPricing]=useState<Pricing>(initialPricing??DEFAULT_PRICING),[orderVisible,setOrderVisible]=useState(false),[designMode,setDesignMode]=useState<DesignMode>('shared');
  useEffect(()=>{
   fetch('/api/pricing').then(r=>{if(!r.ok)throw Error();return r.json();}).then(v=>setPricing(v as Pricing)).catch(()=>{});
   siteEvent('view');

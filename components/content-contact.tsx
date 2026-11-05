@@ -12,11 +12,11 @@ import './content-contact.css';
 /**
  * "Price, minimum and timing" block with a WhatsApp button for guides, blog
  * posts and work pages: visitors arriving from search can see what it costs and
- * write to the studio without going back to the home page. The server renders
- * the advertised default prices; the browser refreshes them from the live price list.
+ * write to the studio without going back to the home page. The page passes the
+ * admin price list it read on the server; the browser refreshes it once more.
  */
-export default function ContentContact({title}:{title:string}){
- const [pricing,setPricing]=useState<Pricing>(DEFAULT_PRICING);
+export default function ContentContact({title,initialPricing}:{title:string;initialPricing?:Pricing}){
+ const [pricing,setPricing]=useState<Pricing>(initialPricing??DEFAULT_PRICING);
  useEffect(()=>{
   let active=true;
   fetch('/api/pricing').then(response=>response.ok?response.json() as Promise<Pricing>:null).then(value=>{if(active&&value&&Array.isArray(value.tiers)&&value.tiers.length)setPricing(value);}).catch(()=>{});

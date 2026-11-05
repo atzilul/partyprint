@@ -2,11 +2,11 @@ import type {Metadata} from 'next';
 import {cookies} from 'next/headers';
 import HomeClient from './home-client';
 import {BUSINESS_DETAILS,PAYMENT_DISCLOSURE} from '@/lib/business-details';
-import {HOME_DEFAULT_COPY,LANDING_VARIANTS,LANDING_VARIANT_COOKIE,resolveLandingVariant,type LandingVariantKey} from '@/lib/landing-variants';
+import {homeDefaultCopy,LANDING_VARIANTS,LANDING_VARIANT_COOKIE,resolveLandingVariant,type LandingVariantKey} from '@/lib/landing-variants';
 import {homeFaq} from '@/lib/home-faq';
 import {homeStructuredData} from '@/lib/home-schema';
-import {getPricing} from '@/lib/studio-settings';
-import {DEFAULT_PRICING} from '@/lib/pricing';
+import {currentPricing} from '@/lib/current-pricing';
+import {SINGLE_SHIRT_PRICE} from '@/lib/catalog';
 
 type PageProps={searchParams:Promise<{v?:string|string[]}>};
 async function selectedVariant(searchParams:PageProps['searchParams']):Promise<LandingVariantKey|null>{
@@ -21,7 +21,7 @@ export async function generateMetadata({searchParams}:PageProps):Promise<Metadat
  const variant=resolveLandingVariant(params.v,jar.get(LANDING_VARIANT_COOKIE)?.value);
  const socialUrl=queryVariant?'https://partyprint.co.il/?v='+queryVariant:'https://partyprint.co.il/';
  // No audience chosen (a first visit, or a crawler): describe the whole studio, not the family variant.
- const content=variant?LANDING_VARIANTS[variant]:HOME_DEFAULT_COPY;
+ const content=variant?LANDING_VARIANTS[variant]:homeDefaultCopy(Math.min(...(await currentPricing()).tiers.map(tier=>tier.price)));
  return {
   title:content.title,
   description:content.description,
@@ -32,7 +32,7 @@ export async function generateMetadata({searchParams}:PageProps):Promise<Metadat
 }
 export default async function HomePage({searchParams}:PageProps){
  const variant=await selectedVariant(searchParams);
- let pricing=DEFAULT_PRICING;try{pricing=await getPricing();}catch{/* structured data falls back to the advertised defaults */}
- const schema=homeStructuredData(homeFaq(PAYMENT_DISCLOSURE),pricing);
- return <><HomeClient initialVariant={variant||undefined} businessEmail={BUSINESS_DETAILS.email} paymentDisclosure={PAYMENT_DISCLOSURE}/><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(schema).replace(/</g,'\\u003c')}}/></>;
+ const pricing=await currentPricing();
+ const schema=homeStructuredData(homeFaq(PAYMENT_DISCLOSURE,pricing.singleShirtPrice??SINGLE_SHIRT_PRICE),pricing);
+ return <><HomeClient initialVariant={variant||undefined} initialPricing={pricing} businessEmail={BUSINESS_DETAILS.email} paymentDisclosure={PAYMENT_DISCLOSURE}/><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(schema).replace(/</g,'\\u003c')}}/></>;
 }

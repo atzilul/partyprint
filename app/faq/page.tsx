@@ -5,6 +5,8 @@ import OrderFormLink from '@/components/order-form-link';
 import {SEO_PAGES,SEO_PAGE_URL} from '@/lib/seo-pages';
 import type {SeoFaq} from '@/lib/seo-pages';
 import {SeoFooter,SeoNav} from '@/components/seo-layout';
+import {currentPricing} from '@/lib/current-pricing';
+import {SINGLE_SHIRT_PRICE} from '@/lib/catalog';
 import '../seo/seo.css';
 
 export const metadata: Metadata = {
@@ -15,11 +17,14 @@ export const metadata: Metadata = {
   openGraph: {title: 'שאלות ותשובות על הדפסה על חולצות | PARTYPRINT', description: 'תשובות על הדפסה על חולצה, הדפסה בעיצוב אישי, חולצות לימי הולדת, מסיבות, צוותים, עסקים, לוגו, מחירים, תמונות ומשלוח.', url: 'https://partyprint.co.il/faq', type: 'website', images: [{url: '/shirts.webp', alt: 'חולצות בעיצוב אישי של PARTYPRINT'}]},
 };
 
-const faqGroups: {title: string; items: SeoFaq[]}[] = [
+// Rendered per request: the single-shirt price is the one in the admin price list.
+export const dynamic='force-dynamic';
+
+const faqGroupsFor = (singleShirtPrice: string): {title: string; items: SeoFaq[]}[] => [
   {title: 'מתנה בעיצוב אישי', items: [
     {question: 'מה כוללת מתנה בעיצוב אישי ב־PARTYPRINT?', answer: 'בוחרים רעיון, מצרפים תמונות, ואנחנו מפתחים עיצוב אישי בעזרת AI ומגע אנושי. החבילות כוללות עיצוב משותף, הדפסה ומשלוח עד הבית, והעיצוב נשלח לאישור לפני ההדפסה.'},
     {question: 'איזו תמונה מתאימה לעיצוב על חולצה?', answer: 'תמונה חדה וברורה עם דמות או רגע שקל לזהות. אפשר לצרף כמה תמונות השראה ולכתוב מה חשוב לכם שהעיצוב ישדר. אין צורך בתמונה מקצועית.'},
-    {question: 'אפשר להזמין מתנה לאדם אחד וגם לקבוצה?', answer: 'כן. חולצה אחת עולה 180 ₪ כולל עיצוב אישי, הדפסה ומשלוח עד הבית. הטופס מתחיל ב־4 חולצות ואפשר להוסיף או להפחית עד חולצה אחת, עד 100 חולצות בהזמנה; המחיר לחולצה נקבע לפי מדרגת הכמות. מידות וצבעים אפשר לבחור כבר בטופס, או להשלים אחרי שליחת הפנייה וב־WhatsApp.'},
+    {question: 'אפשר להזמין מתנה לאדם אחד וגם לקבוצה?', answer: 'כן. חולצה אחת עולה '+singleShirtPrice+' ₪ כולל עיצוב אישי, הדפסה ומשלוח עד הבית. הטופס מתחיל ב־4 חולצות ואפשר להוסיף או להפחית עד חולצה אחת, עד 100 חולצות בהזמנה; המחיר לחולצה נקבע לפי מדרגת הכמות. מידות וצבעים אפשר לבחור כבר בטופס, או להשלים אחרי שליחת הפנייה וב־WhatsApp.'},
   ]},
   {title: 'אירועים וחגיגות', items: [
     {question: 'איזו מתנה מתאימה למסיבת רווקים?', answer: 'רעיון מרכזי סביב החתן והחבורה עובד טוב יותר מאוסף בדיחות. החבילות מציעות עיצוב משותף לקבוצה; אם רוצים גרסה נפרדת לחתן, בודקים מראש עם הסטודיו את האפשרות ואת התמחור.'},
@@ -51,7 +56,9 @@ function pageLink(keyword: string) {
   return page ? SEO_PAGE_URL(page.slug) : '/guides';
 }
 
-export default function FaqPage() {
+export default async function FaqPage() {
+  const pricing = await currentPricing();
+  const faqGroups = faqGroupsFor((pricing.singleShirtPrice ?? SINGLE_SHIRT_PRICE).toLocaleString('he-IL'));
   const allItems = faqGroups.flatMap(group => group.items);
   const canonical='https://partyprint.co.il/faq';
   const schema = {'@context': 'https://schema.org', '@graph': [
