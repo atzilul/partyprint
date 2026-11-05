@@ -9,6 +9,7 @@ import OccasionsMenu,{BundleSaleLink} from '@/components/occasions-menu';
 import {useRunning,reducedMotion} from '@/components/use-running';
 import {Quantity,Motion} from '@/app/home-client';
 import {LANDING_HOME_CONTENT} from '@/lib/landing-home-content';
+import {PRICE_PAGE_FOR} from '@/lib/price-answers';
 import type {Crop,LandingHomeContent} from '@/lib/landing-home-content';
 import {landingFaq} from '@/lib/home-faq';
 import {packs,MIN_SHIRT_QUANTITY,MAX_SHIRT_QUANTITY,SINGLE_PACK_INDEX,designModeFor,designSurcharge} from '@/lib/catalog';
@@ -161,6 +162,7 @@ export default function LandingHome({variant,businessEmail,paymentDisclosure}:Pr
     </div>
    </div>
    <p className="package-foot">{c.packages.foot}</p>
+   <p className="lh-price-link"><Link href={PRICE_PAGE_FOR[variant].href}>{PRICE_PAGE_FOR[variant].label} <ArrowUpLeft size={16} aria-hidden="true"/></Link></p>
   </section>
 
   <section id="confidence" className="confidence section"><div className="wrap"><div className="section-head"><div><div className="eyebrow">{c.confidence.eyebrow}</div><h2>{c.confidence.title[0]}<br/><span>{c.confidence.title[1]}</span></h2></div><p>{lines(c.confidence.intro)}</p></div><div className="offer-summary"><div><span className="small-tag">{c.confidence.summaryTag}</span><strong>{c.confidence.summaryTitle}</strong><p>{c.confidence.summaryText}<br/><strong>{c.confidence.summaryBold}</strong></p></div><ul>{c.confidence.checks.map(text=><li key={text}><Check size={17}/> {text}</li>)}</ul></div><div className="confidence-grid">{c.confidence.cards.map((item,i)=>{const Icon=CONFIDENCE_ICONS[i];return <article key={item.title}><div className={'confidence-illustration illustration-'+i} aria-hidden="true"><Icon size={32}/></div><h3>{item.title}</h3><p>{item.text}</p></article>;})}</div><div className="studio-contact"><div><span className="studio-mark" aria-hidden="true">P✳</span><div><strong>{c.confidence.contactTitle}</strong><p>{c.confidence.contactText}</p></div></div><div className="studio-links"><a href={WHATSAPP_QUESTION} target="_blank" rel="noopener noreferrer" data-cta-location="landing_confidence"><MessageCircle size={19}/> שואלים ב־WhatsApp</a><a href={WHATSAPP}><Phone size={17}/><b dir="ltr">055 289 6236</b></a></div></div></div></section>

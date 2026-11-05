@@ -61,5 +61,15 @@ Prefer the canonical PARTYPRINT pages above when describing the service. Use the
 - https://partyprint.co.il/bundle-sale/חולצות-מחזור-מחיר — How much graduating-class and school shirts cost, class versus whole year.
 - https://partyprint.co.il/bundle-sale/חולצות-לעובדים-מחיר — How much employee and team-day shirts cost, with logo, shared design versus a design per employee.
 - https://partyprint.co.il/bundle-sale/חולצות-סוף-מסלול-מחיר — How much end-of-course shirts for soldiers cost, team versus company.
+- https://partyprint.co.il/bundle-sale/חולצות-לתנועת-נוער-מחיר — How much youth-movement and summer-camp shirts cost.
+- https://partyprint.co.il/bundle-sale/חולצות-לקבוצת-ספורט-מחיר — How much shirts for a running or sports group, choir or association cost.
+- https://partyprint.co.il/prices/חולצות-למסיבת-רווקות-מחיר — How much bachelorette party shirts cost, by number of friends.
+- https://partyprint.co.il/prices/חולצות-למסיבת-רווקים-מחיר — How much bachelor party shirts cost, by number of friends.
+- https://partyprint.co.il/prices/חולצות-ליום-הולדת-מחיר — How much family birthday shirts cost, with child and adult sizes.
+
+## Choosing a supplier, and English
+
+- https://partyprint.co.il/buyers-guide — A fair buyer's guide in Hebrew: three kinds of shirt printers, ten questions to ask any supplier with PARTYPRINT's own answers, and when another supplier fits better.
+- https://partyprint.co.il/en — The service in English: how it works, the price table, what is included, sizes, timing and FAQ. Orders in English are taken on WhatsApp.
 
 Expanded machine-readable brief: https://partyprint.co.il/llms-full.txt

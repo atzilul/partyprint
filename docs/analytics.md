@@ -230,6 +230,26 @@ calculator that drives the request form, the audiences, four steps, the shared f
 questions ahead of the common FAQ, and contact. It is indexable, in the sitemap, linked from
 the navigation (`components/occasions-menu.tsx`) and sends the same events as the home page.
 
+## Answer pages, buyer's guide and English
+
+Pages written to answer one search or assistant question each, all indexable, in the
+sitemap and in `llms.txt`:
+
+- `/bundle-sale/<slug>` and `/prices/<slug>` are price answers (kindergarten, graduating
+  class, employees, end-of-course, youth movement, sports group; bachelorette, bachelor,
+  family birthday). Content lives in `lib/bundle-answers.ts` and `lib/price-answers.ts`,
+  one renderer in `components/answer-page.tsx`. Each answer names its parent page and
+  where its reader orders; every number is computed from the prices in force.
+- `/buyers-guide` is a fair guide to choosing a shirt printer: three kinds of suppliers,
+  ten questions with our own answers, and when another supplier fits better. It names no
+  competitor and states no one's prices but ours.
+- `/en` presents the service in English with the same prices. Orders in English go through
+  WhatsApp; the home page and `/en` declare each other as language alternates.
+- Every guide links to the audience page and the price answer for its topic
+  (`lib/guide-destinations.ts`); audience pages link to their price answer.
+- The organization data in `app/layout.tsx` lists the social profiles and adds the legal
+  name and address only once they are configured (no placeholder is ever published).
+
 ## Paid landing pages
 
 `/lp/family`, `/lp/bride`, `/lp/groom`, `/lp/team` and `/lp/custom` are the home

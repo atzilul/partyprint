@@ -6,7 +6,8 @@ import {SEO_PAGES,SEO_PAGE_URL} from '@/lib/seo-pages';
 import {STUDIO_PAGES,STUDIO_PAGE_URL} from '@/lib/studio-pages';
 import {LANDING_VARIANT_KEYS} from '@/lib/landing-variants';
 import {LANDING_HOME_CONTENT} from '@/lib/landing-home-content';
-import {BUNDLE_ANSWERS,BUNDLE_ANSWER_URL} from '@/lib/bundle-answers';
+import {BUNDLE_ANSWERS,answerUrl} from '@/lib/bundle-answers';
+import {PRICE_ANSWERS} from '@/lib/price-answers';
 
 export const dynamic='force-dynamic';
 const base='https://partyprint.co.il';
@@ -35,7 +36,9 @@ export default async function sitemap():Promise<MetadataRoute.Sitemap>{
   {url:base+'/blog',lastModified:blogUpdatedAt},
   {url:base+'/ordering-guide',lastModified:new Date('2026-11-01T00:00:00.000Z')},
   {url:base+'/bundle-sale',lastModified:occasionsUpdatedAt,images:imageList('/og-team.jpg')},
-  ...BUNDLE_ANSWERS.map(item=>({url:base+BUNDLE_ANSWER_URL(item.slug),lastModified:new Date(item.updatedAt),images:imageList(item.heroImage?.src)})),
+  ...[...BUNDLE_ANSWERS,...PRICE_ANSWERS].map(item=>({url:base+answerUrl(item),lastModified:new Date(item.updatedAt),images:imageList(item.heroImage?.src)})),
+  {url:base+'/buyers-guide',lastModified:occasionsUpdatedAt},
+  {url:base+'/en',lastModified:occasionsUpdatedAt},
   ...LANDING_VARIANT_KEYS.map(key=>({url:base+'/lp/'+key,lastModified:occasionsUpdatedAt,images:imageList(LANDING_HOME_CONTENT[key].story.asset)})),
   ...paths.map(path=>({url:base+path,lastModified:path==='/faq'||path==='/terms'?editorialUpdatedAt:contentUpdatedAt})),
   ...SEO_PAGES.map(page=>({url:base+SEO_PAGE_URL(page.slug),lastModified:validDate(page.updatedAt),images:imageList(page.heroImage)})),

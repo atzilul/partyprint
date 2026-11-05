@@ -10,6 +10,25 @@ import {BUNDLE_MAX,bundleOffers,shekels} from './bundles';
  */
 export type AnswerSection={title:string;body:string;bullets?:string[]};
 export type AnswerFaq={question:string;answer:string};
+export type AnswerHome={
+ /** Address prefix of the answer page itself. */
+ base:string;
+ /** The parent page, for the breadcrumb and the links back. */
+ path:string;label:string;
+ /** Where the order form is, and what the link says. */
+ order:string;orderLabel:string;
+ /** The closing call to action. */
+ offer:{kicker:string;title:[string,string];text:string;link:string;linkLabel:string};
+ /** The three steps in the side card. */
+ steps:[string,string,string];
+};
+export const BUNDLE_HOME:AnswerHome={
+ base:'/bundle-sale',path:'/bundle-sale',label:'BUNDLE SALE',order:'/bundle-sale#order',orderLabel:'להזמנה בבאנדל',
+ offer:{kicker:'BUNDLE SALE',title:['כמה אתם?','המחיר יורד איתכם.'],text:'בוחרים כמות, משאירים פרטים ומוסיפים רעיון. מתחילים בלי חיוב, רואים את העיצוב ומאשרים לפני ההדפסה.',link:'/bundle-sale#bundles',linkLabel:'לבאנדלים'},
+ steps:['בוחרים כמות בעמוד הבאנדלים.','מצרפים רעיון, תמונות ולוגו.','רואים ומאשרים לפני הדפסה.'],
+};
+export const answerHome=(item:BundleAnswer):AnswerHome=>item.home||BUNDLE_HOME;
+export const answerUrl=(item:BundleAnswer)=>answerHome(item).base+'/'+item.slug;
 export type BundleAnswer={
  slug:string;
  /** The question, as the page heading. */
@@ -23,6 +42,8 @@ export type BundleAnswer={
  tableTitle:string;
  heroImage?:{src:string;alt:string};
  guide?:{slug:string;label:string};
+ /** Where the answer lives and where its reader orders. Defaults to the bundle sale. */
+ home?:AnswerHome;
  updatedAt:string;
  description:(pricing:Pricing)=>string;
  answer:(pricing:Pricing)=>string;
@@ -31,14 +52,14 @@ export type BundleAnswer={
 };
 /** The package large groups are quoted on: any group, one shared design. */
 const PACK=4;
-const per=(pricing:Pricing,quantity:number)=>shekels(unitPriceFor(pricing,quantity))+' ₪ לחולצה';
-const total=(pricing:Pricing,quantity:number)=>shekels(priceFor(pricing,PACK,quantity))+' ₪';
+export const per=(pricing:Pricing,quantity:number)=>shekels(unitPriceFor(pricing,quantity))+' ₪ לחולצה';
+export const total=(pricing:Pricing,quantity:number)=>shekels(priceFor(pricing,PACK,quantity))+' ₪';
 const ladder=(pricing:Pricing)=>{const [small,medium,large]=bundleOffers(pricing).bundles;return 'מ־'+small.size+' חולצות '+shekels(small.unit)+' ₪ לחולצה, מ־'+medium.size+' חולצות '+shekels(medium.unit)+' ₪ לחולצה, וב־'+large.size+' חולצות '+shekels(large.unit)+' ₪ לחולצה';};
 export type AnswerRow={quantity:number;unit:number;total:number};
 export function answerRows(pricing:Pricing,quantities:number[]):AnswerRow[]{return quantities.map(quantity=>({quantity,unit:unitPriceFor(pricing,quantity),total:priceFor(pricing,PACK,quantity)}));}
-const INCLUDED='המחיר כולל עיצוב אישי אחד לכל הקבוצה, הדפסה ומשלוח.';
-const TIMING='המשלוח הוא עד 5 ימי עסקים אחרי אישור העיצוב, ההזמנה והתשלום, וזמן העיצוב והתיקונים לא כלול בו. לכן מומלץ לשלוח פנייה לפחות שבועיים מראש.';
-const UPDATED='2026-11-05T00:00:00.000Z';
+export const INCLUDED='המחיר כולל עיצוב אישי אחד לכל הקבוצה, הדפסה ומשלוח.';
+export const TIMING='המשלוח הוא עד 5 ימי עסקים אחרי אישור העיצוב, ההזמנה והתשלום, וזמן העיצוב והתיקונים לא כלול בו. לכן מומלץ לשלוח פנייה לפחות שבועיים מראש.';
+export const UPDATED='2026-11-05T00:00:00.000Z';
 
 export const BUNDLE_ANSWERS:BundleAnswer[]=[
  {
@@ -140,6 +161,55 @@ export const BUNDLE_ANSWERS:BundleAnswer[]=[
    {question:'אפשר לשלב כינויים ומשפטים של הצוות בעיצוב?',answer:'כן. כותבים ברעיון את הכינויים, המשפטים והבדיחות של הצוות, והם נכנסים לעיצוב המשותף. מאשרים את העיצוב לפני ההדפסה.'},
    {question:'אפשר להשתמש בסמל של היחידה?',answer:'אפשר לשלב סמלים ותמונות שמותר לכם להשתמש בהם. האחריות על הזכות להשתמש בסמל היא של מי שמזמין, ולכן כדאי לוודא זאת לפני ששולחים אותו.'},
    {question:'מי מזמין את החולצות, חייל או הורה?',answer:'כל מי שמרכז את ההזמנה. אדם אחד ממלא את הטופס עם הכמות ופרטי הקשר, ואת המידות של כולם משלימים אחר כך ברשימה אחת, גם ב־WhatsApp.'},
+  ],
+ },
+ {
+  slug:'חולצות-לתנועת-נוער-מחיר',
+  title:'כמה עולות חולצות לתנועת נוער ולמחנה קיץ?',
+  seoTitle:'כמה עולות חולצות לתנועת נוער ולמחנה קיץ? מחירים | PARTYPRINT',
+  kicker:'חולצות לתנועת נוער · שבט, קן, גרעין ומחנה קיץ',
+  keywords:['חולצות לתנועת נוער','חולצות למחנה קיץ','חולצות לשבט','חולצות לגרעין','חולצות לחניכים','הדפסה על חולצות לתנועת נוער'],
+  quantities:[25,40,50,75,100],
+  tableTitle:'מחיר חולצות לתנועת נוער לפי מספר החניכים והמדריכים',
+  updatedAt:UPDATED,
+  description:pricing=>'חולצות לתנועת נוער בעיצוב אישי: 25 חולצות עולות '+total(pricing,25)+', 50 חולצות '+total(pricing,50)+', 100 חולצות '+total(pricing,100)+'. כולל עיצוב, הדפסה ומשלוח, במידות ילדים, נוער ומבוגרים.',
+  answer:pricing=>'חולצות לתנועת נוער ב־PARTYPRINT עולות '+ladder(pricing)+'. קבוצה של 25 משלמת '+total(pricing,25)+', ושבט של 100 משלם '+total(pricing,100)+'. '+INCLUDED+' אפשר לשלב מידות ילדים, נוער ומבוגרים באותה הזמנה.',
+  sections:pricing=>[
+   {title:'מחיר לקבוצה מול מחיר לשבט שלם',body:'המחיר לחולצה יורד עם הכמות: '+ladder(pricing)+'. קבוצה אחת של 25 משלמת '+per(pricing,25)+', ושבט שמרכז 100 חולצות בהזמנה אחת משלם '+per(pricing,100)+'. לכן משתלם לאסוף את כל השכבות להזמנה אחת.'},
+   {title:'מה כלול במחיר',body:'עיצוב אישי אחד לכל הקבוצה, שנבנה מהרעיון שלכם: שם השבט, נושא המחנה, סיסמה או סמל שמותר לכם להשתמש בו. רואים את העיצוב ומאשרים אותו לפני ההדפסה, וסבב תיקונים אחד כלול. כל סבב נוסף עולה 100 ₪.',bullets:['עיצוב אישי אחד לכל החולצות','הדפסה ומשלוח','אישור שלכם לפני ההדפסה']},
+   {title:'מידות לחניכים ולמדריכים',body:'מידות ילדים ונוער מגיל 2 עד 18 ומידות מבוגרים S עד XL, באותה הזמנה ובאותו עיצוב. צבעי החולצה הם לבן, שחור או אפור. את רשימת המידות אפשר להשלים אחרי שליחת הפנייה, כשכל הקבוצות מחזירות תשובה.'},
+   {title:'מתי להזמין לפני מחנה או טיול',body:TIMING+' לפני מחנה קיץ כדאי להתחיל מוקדם יותר, כי איסוף המידות מהחניכים לוקח זמן. מעל '+BUNDLE_MAX+' חולצות כותבים לנו ב־WhatsApp להצעה מותאמת.'},
+  ],
+  faqs:pricing=>[
+   {question:'כמה עולות 60 חולצות לתנועת נוער?',answer:'60 חולצות עולות '+total(pricing,60)+', כלומר '+per(pricing,60)+'. '+INCLUDED},
+   {question:'אפשר לשלב את הסמל של התנועה או של השבט?',answer:'אפשר לשלב סמלים שמותר לכם להשתמש בהם. מעלים את הסמל בטופס יחד עם הרעיון, והעיצוב מגיע אליכם לאישור לפני ההדפסה.'},
+   {question:'אפשר צבע שונה לכל שכבה באותו עיצוב?',answer:'כן. צבעי החולצה הם לבן, שחור או אפור, ואפשר לערבב ביניהם באותה הזמנה. העיצוב נשאר אותו עיצוב על כל הצבעים.'},
+   {question:'מי מרכז את ההזמנה בתנועת נוער?',answer:'מי שמרכז את הקבוצה, למשל ראש השבט או רכז הפעילות. אדם אחד ממלא את הטופס עם הכמות ופרטי הקשר, ואת המידות משלימים אחר כך ברשימה אחת.'},
+  ],
+ },
+ {
+  slug:'חולצות-לקבוצת-ספורט-מחיר',
+  title:'כמה עולה להדפיס חולצות לקבוצת ריצה או ספורט?',
+  seoTitle:'כמה עולה להדפיס חולצות לקבוצת ריצה או ספורט? מחירים | PARTYPRINT',
+  kicker:'חולצות לקבוצות · ריצה, ספורט, מקהלה ועמותה',
+  keywords:['חולצות לקבוצת ריצה','חולצות לקבוצת ספורט','חולצות לקבוצה','חולצות לעמותה','חולצות למקהלה','הדפסה על חולצות לקבוצה'],
+  quantities:[25,30,40,50,75],
+  tableTitle:'מחיר חולצות לקבוצה לפי מספר החברים',
+  guide:{slug:'חולצות-לאירועים',label:'חולצות לאירועים'},
+  updatedAt:UPDATED,
+  description:pricing=>'חולצות לקבוצת ריצה, ספורט או קהילה בעיצוב אישי: 25 חולצות עולות '+total(pricing,25)+', 50 חולצות '+total(pricing,50)+'. כולל עיצוב, הדפסה ומשלוח.',
+  answer:pricing=>'חולצות לקבוצת ריצה או ספורט ב־PARTYPRINT עולות '+per(pricing,25)+' בהזמנה של 25 חולצות ומעלה, ו־'+per(pricing,50)+' מ־50 חולצות. קבוצה של 30 משלמת '+total(pricing,30)+'. '+INCLUDED,
+  sections:pricing=>[
+   {title:'מה קובע את המחיר',body:'המחיר נקבע לפי מספר החולצות בהזמנה: '+ladder(pricing)+'. קבוצות קטנות מ־25 משלמות לפי מדרגות הכמות הרגילות שבטופס. המחיר הסופי מאושר איתכם לפני התשלום, ואין חיוב בשליחת הפנייה.'},
+   {title:'מה כלול במחיר',body:'עיצוב אישי אחד לכל הקבוצה, שנבנה מהרעיון שלכם: שם הקבוצה, סיסמה, אירוע או לוגו. רואים את העיצוב ומאשרים אותו לפני ההדפסה, וסבב תיקונים אחד כלול. כל סבב נוסף עולה 100 ₪.',bullets:['עיצוב אישי אחד לכל החולצות','הדפסה ומשלוח','אישור שלכם לפני ההדפסה']},
+   {title:'בד, מידות וצבעים',body:'צבעי החולצה הם לבן, שחור או אפור, במידות ילדים מגיל 2 עד 18 ומבוגרים S עד XL. את סוג הבד ואת פרטי החולצה מאשרים איתכם בהצעת המחיר. אם אתם צריכים חולצת ריצה מבד מנדף, שאלו אותנו ב־WhatsApp לפני ההזמנה.'},
+   {title:'מתי להזמין לפני מרוץ או אירוע',body:TIMING+' את רשימת המידות אפשר להשלים אחרי שליחת הפנייה, כשכל חברי הקבוצה עונים.'},
+  ],
+  faqs:pricing=>[
+   {question:'כמה עולות 30 חולצות לקבוצת ריצה?',answer:'30 חולצות עולות '+total(pricing,30)+', כלומר '+per(pricing,30)+'. '+INCLUDED},
+   {question:'החולצות מתאימות לריצה ולאימון?',answer:'את סוג הבד מאשרים איתכם בהצעת המחיר. אם חשוב לכם בד מנדף לריצה, כתבו זאת ברעיון או שאלו ב־WhatsApp לפני ההזמנה, ונענה בדיוק מה אפשרי.'},
+   {question:'אפשר להדפיס שם או מספר אישי על כל חולצה?',answer:'המחיר כולל עיצוב אחד משותף לכל החולצות. שם או מספר שונה על כל חולצה הם עיצובים נוספים שמתומחרים בנפרד. כתבו את הבקשה ברעיון ונחזור אליכם עם הצעה לפני שמתחילים.'},
+   {question:'אפשר לשלב לוגו של נותן חסות?',answer:'כן, אם יש לכם רשות להשתמש בו. מעלים את הלוגו בטופס יחד עם הרעיון, ואנחנו משלבים אותו בעיצוב. העיצוב מגיע לאישור שלכם לפני ההדפסה.'},
   ],
  },
 ];
