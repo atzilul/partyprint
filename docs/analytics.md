@@ -229,3 +229,11 @@ story and the Wow machine, a price calculator for that audience's package, audie
 questions ahead of the common FAQ, and a final call to action. They are `noindex`,
 not in the sitemap, and send the same GA4 and Meta events as the home page, so
 campaign reports split by page path. The home page is untouched.
+
+## Content pages: price block and WhatsApp
+
+Every guide, blog post and work page renders `components/content-contact.tsx`: price per shirt by
+quantity tier (server-rendered defaults, refreshed in the browser from `/api/pricing`), the minimum,
+the delivery window, and a WhatsApp button whose ready message names the page. Clicks are measured
+as `contact_whatsapp` with `cta_location=content`; the page name in the message identifies the
+source of enquiries that skip the form. The home page is untouched.
