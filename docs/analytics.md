@@ -220,15 +220,16 @@ hours the browser shows when the next answer comes.
 
 ## Paid landing pages
 
-`/lp/family`, `/lp/bride`, `/lp/groom`, `/lp/team` and `/lp/custom` are purpose-built
-pages (`components/landing-page.tsx`, copy and examples per audience in
-`lib/landing-content.ts`, styles and animations in `components/landing.css`). Each
-page: audience hero with its own palette and motion, marquee, four promises, the
-shared request form, three audience design examples with idea chips, the four-step
-story and the Wow machine, a price calculator for that audience's package, audience
-questions ahead of the common FAQ, and a final call to action. They are `noindex`,
-not in the sitemap, and send the same GA4 and Meta events as the home page, so
-campaign reports split by page path. The home page is untouched.
+`/lp/family`, `/lp/bride`, `/lp/groom`, `/lp/team` and `/lp/custom` are the home
+page's language for one audience (`components/landing-home.tsx`, copy, crops and
+examples per audience in `lib/landing-home-content.ts`, the few extra styles in
+`components/landing-home.css`). Each page reuses the home page's classes and section
+order: hero with the process in motion (photos, design, the group wearing it), the
+Wow machine with that audience's story, ticker, inspiration, three audience
+examples, the audience's package with the price ladder, confidence, statement, the
+shared request form, audience questions ahead of the common FAQ, and contact. They
+are `noindex`, not in the sitemap, and send the same GA4 and Meta events as the home
+page, so campaign reports split by page path. The home page is untouched.
 
 ## Content pages: price block and WhatsApp
 

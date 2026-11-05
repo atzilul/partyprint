@@ -1,14 +1,12 @@
 import type {Metadata} from 'next';
 import {notFound} from 'next/navigation';
-import LandingPage from '@/components/landing-page';
 import LandingHome from '@/components/landing-home';
-import {LANDING_HOME_CONTENT} from '@/lib/landing-home-content';
 import {BUSINESS_DETAILS,PAYMENT_DISCLOSURE} from '@/lib/business-details';
 import {LANDING_VARIANTS,LANDING_VARIANT_KEYS,isLandingVariant} from '@/lib/landing-variants';
 
 /**
- * Paid landing pages: one purpose-built page per audience (components/landing-page.tsx,
- * copy in lib/landing-content.ts). Same request form and events as the home page.
+ * Paid landing pages: the home page's language for one audience (components/landing-home.tsx,
+ * copy in lib/landing-home-content.ts). Same request form and events as the home page.
  * Not indexed: campaigns link here, search visitors land on the home page.
  */
 type PageProps={params:Promise<{slug:string}>};
@@ -28,7 +26,5 @@ export async function generateMetadata({params}:PageProps):Promise<Metadata>{
 export default async function Landing({params}:PageProps){
  const {slug}=await params;
  if(!isLandingVariant(slug))notFound();
- // Audiences already rebuilt in the home page's language use the new page; the rest keep the previous one.
- if(LANDING_HOME_CONTENT[slug])return <LandingHome variant={slug} businessEmail={BUSINESS_DETAILS.email} paymentDisclosure={PAYMENT_DISCLOSURE}/>;
- return <LandingPage variant={slug} businessEmail={BUSINESS_DETAILS.email} paymentDisclosure={PAYMENT_DISCLOSURE}/>;
+ return <LandingHome variant={slug} businessEmail={BUSINESS_DETAILS.email} paymentDisclosure={PAYMENT_DISCLOSURE}/>;
 }

@@ -4,6 +4,15 @@
  * the hero story, the one-package layout and a few audience tints.
  */
 
+/* ---------- Audience tints ---------- */
+.lh-page{--lh-tint:#fbc2de;--lh-tint-hover:#f9b2d5;--lh-tint-deep:#f09cc4;--lh-veil:#3a1030e0;--lh-photo:#d79aa7}
+.lh-family{--lh-tint:#efff5c;--lh-tint-hover:#e3f542;--lh-tint-deep:#cddd3c;--lh-veil:#4a1a16e0;--lh-photo:#e98a9c}
+.lh-groom{--lh-tint:#b8d8ff;--lh-tint-hover:#a6ccfb;--lh-tint-deep:#8ebaf0;--lh-veil:#0b1a40e0;--lh-photo:#171c2e}
+.lh-team,.lh-custom{--lh-tint:#d2c5ff;--lh-tint-hover:#c4b5fb;--lh-tint-deep:#ac9aee;--lh-veil:#1f1650e0;--lh-photo:#c9b8f5}
+
+/* ---------- A magnified part of an artwork (CropImage) ---------- */
+.lh-crop{position:absolute;inset:0;display:block;overflow:hidden;container-type:size}
+
 /* ---------- Hero: copy column ---------- */
 .lh-hero .custom-event-chips span:nth-child(3){background:#fff}
 .lh-hero-facts{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;margin:auto 0 0;padding:16px 0 0;border-top:1px solid #161616;list-style:none;font-size:14px;font-weight:700;color:#161616}
@@ -17,7 +26,7 @@
 .lh-story{overflow:hidden}
 .lh-story>.optimized-picture>img{transition:transform 1.4s cubic-bezier(.2,.8,.2,1)}
 .lh-stage-0>.optimized-picture>img,.lh-stage-1>.optimized-picture>img{transform:scale(1.09)}
-.lh-veil{position:absolute;inset:0;z-index:1;background:linear-gradient(165deg,#3a1030e0,#161616d0);opacity:0;transition:opacity .7s;pointer-events:none}
+.lh-veil{position:absolute;inset:0;z-index:1;background:linear-gradient(165deg,var(--lh-veil),#161616d0);opacity:0;transition:opacity .7s;pointer-events:none}
 .lh-stage-0 .lh-veil,.lh-stage-1 .lh-veil{opacity:1}
 .lh-story .image-caption{z-index:5}
 .lh-story .art-note{top:92px}
@@ -28,13 +37,13 @@
 .lh-chat{width:min(370px,76%);padding:16px;background:#f5f4ef;color:#161616;border:1.5px solid #161616;border-radius:24px;box-shadow:8px 8px 0 #161616;transform:translate(-50%,-50%) rotate(-2deg) scale(calc(.86*var(--lh-k,1)));direction:rtl}
 .lh-stage-0 .lh-chat{opacity:1;visibility:visible;transform:translate(-50%,-50%) rotate(-2deg) scale(var(--lh-k,1));transition-delay:0s}
 .lh-chat-head{display:flex;align-items:center;gap:11px;padding-bottom:11px;border-bottom:1px solid #16161622}
-.lh-chat-head>span{display:grid;place-items:center;width:42px;height:42px;flex-shrink:0;border-radius:50%;background:#fbc2de;border:1px solid #161616;font-size:21px}
+.lh-chat-head>span{display:grid;place-items:center;width:42px;height:42px;flex-shrink:0;border-radius:50%;background:var(--lh-tint);border:1px solid #161616;font-size:21px}
 .lh-chat-head b{display:block;font:700 17px/1.2 'Rubik',sans-serif;letter-spacing:-.4px}
 .lh-chat-head small{display:block;margin-top:2px;font-size:13px;color:#6b6b62}
 .lh-bubble{margin:12px 0 10px;padding:10px 13px;background:#d9fdd3;border-radius:16px 16px 16px 4px;font-size:15.5px;line-height:1.45;color:#161616}
 .lh-thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-.lh-thumbs span{position:relative;display:block;aspect-ratio:1;overflow:hidden;border-radius:12px;border:1px solid #161616;background:#e9c7d6}
-.lh-stage-0.is-running .lh-thumbs span{animation:lhThumb .55s calc(var(--i)*.32s + .45s) cubic-bezier(.2,.9,.3,1.4) backwards}
+.lh-thumbs>span{position:relative;display:block;aspect-ratio:1;overflow:hidden;border-radius:12px;border:1px solid #161616;background:var(--lh-tint)}
+.lh-stage-0.is-running .lh-thumbs>span{animation:lhThumb .55s calc(var(--i)*.32s + .45s) cubic-bezier(.2,.9,.3,1.4) backwards}
 .lh-sent{display:flex;align-items:center;justify-content:flex-start;gap:5px;margin-top:9px;font-size:13px;font-weight:700;color:#55554c}
 .lh-sent svg{color:#2a9ed8}
 @keyframes lhThumb{from{transform:translateY(26px) scale(.55) rotate(-9deg)}to{transform:none}}
@@ -74,7 +83,7 @@
 .lh-inspo-crop{position:relative;aspect-ratio:1.15;overflow:hidden;background:#161616}
 
 /* ---------- Examples: three cards for one audience ---------- */
-.lh-gallery .lh-card-crop>div:first-child{aspect-ratio:1.1;background:#ff80c6}
+.lh-gallery .lh-card-crop>div:first-child{aspect-ratio:1.1;background:var(--lh-tint)}
 .lh-gallery .gallery-card>div:first-child{position:relative}
 @media(min-width:681px){
  .lh-gallery{grid-template-columns:repeat(3,minmax(0,1fr));gap:32px 26px}
@@ -89,9 +98,9 @@
 .lh-pack-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:28px;align-items:stretch}
 .lh-package{border:1px solid var(--ink);box-shadow:7px 7px 0 var(--ink)}
 .lh-package:last-child,.lh-package{border-left:1px solid var(--ink)}
-.lh-bride .lh-package{background:#fbc2de}
-.lh-bride .lh-package:hover{background:#f9b2d5}
-.lh-bride .lh-package .pack-number{color:#f09cc4}
+.lh-page .package.lh-package{background:var(--lh-tint)}
+.lh-page .package.lh-package:hover{background:var(--lh-tint-hover)}
+.lh-page .lh-package .pack-number{color:var(--lh-tint-deep)}
 .lh-package h3{font-size:30px}
 .lh-package .pack-includes{border-top-color:#16161655}
 .lh-pack-side{display:grid;gap:22px;align-content:start}
@@ -111,8 +120,8 @@
 .lh-pack-notes b{display:block;font-size:17px}
 .lh-pack-notes p{font-size:15px;line-height:1.55;color:#55554c;margin-top:2px}
 
-/* ---------- Statement in colour for brides ---------- */
-.lh-bride .statement{background:#fbc2de}
+/* ---------- Statement in the audience's colour ---------- */
+.lh-page .statement{background:var(--lh-tint)}
 .lh-page .statement-image img{filter:none}
 
 /* ---------- Wide screens: the cards grow with the artwork ---------- */
@@ -148,7 +157,7 @@
  .lh-chat-head small{font-size:12px}
  .lh-bubble{margin:9px 0 8px;padding:8px 11px;font-size:14px;line-height:1.4}
  .lh-thumbs{gap:6px}
- .lh-thumbs span{aspect-ratio:1.2;border-radius:10px}
+ .lh-thumbs>span{aspect-ratio:1.2;border-radius:10px}
  .lh-sent{margin-top:7px;font-size:12px}
  .lh-design{height:min(56%,230px)}
  .lh-design-art{box-shadow:6px 6px 0 var(--acid);border-radius:13px}
@@ -173,5 +182,5 @@
 html[data-motion=off] .lh-story>.optimized-picture>img{transform:none;transition:none}
 @media(prefers-reduced-motion:reduce){
  .lh-story>.optimized-picture>img,.lh-chat,.lh-design,.lh-veil,.lh-ladder li{transition:none}
- .lh-thumbs span,.lh-scan,.lh-design-stamp,.lh-confetti i,.lh-steps button i{animation:none!important}
+ .lh-thumbs>span,.lh-scan,.lh-design-stamp,.lh-confetti i,.lh-steps button i{animation:none!important}
 }
