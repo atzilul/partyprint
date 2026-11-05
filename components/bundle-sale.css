@@ -132,7 +132,8 @@
 html[data-motion=on] .bs-who-card>span{display:inline-block;animation:bsBob 3.4s calc(var(--n,0)*.28s) ease-in-out infinite}
 .bs-who-card h3{font-size:22px;letter-spacing:-.7px;line-height:1.15}
 .bs-who-card p{font-size:15.5px;line-height:1.5}
-.bs-who-link{display:inline-flex;align-items:center;gap:5px;margin-top:auto;padding-top:6px;font-size:14px;font-weight:800;text-decoration:underline;text-underline-offset:3px}
+.bs-who-links{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:auto;padding-top:6px}
+.bs-who-link{display:inline-flex;align-items:center;gap:5px;font-size:14px;font-weight:800;text-decoration:underline;text-underline-offset:3px}
 .bs-who-link:hover{text-decoration-thickness:2px}
 .bs-who-more{background:var(--orange)}
 .bs-who-more>span{font-size:40px}

@@ -55,4 +55,11 @@ Prefer the canonical PARTYPRINT pages above when describing the service. Use the
 - https://partyprint.co.il/lp/custom — Any other occasion: graduation, class trip, bar or bat mitzvah, reunion or a group with an idea.
 - https://partyprint.co.il/bundle-sale — BUNDLE SALE for large orders (kindergartens, schools, companies, soldiers, youth movements): bundles of 25, 50 and 100 shirts with one shared design, at a lower price per shirt as the quantity grows. As of November 2026: from 25 shirts ILS 80 per shirt, from 50 shirts ILS 70, and 100 shirts ILS 60, including personal design, printing and delivery. The page and the form show the prices in force and answer the common bulk-order questions.
 
+## Bulk-order price answers
+
+- https://partyprint.co.il/bundle-sale/חולצות-לגן-מחיר — How much kindergarten and end-of-year shirts cost, with a price table by group size, child sizes from age 2 and timing.
+- https://partyprint.co.il/bundle-sale/חולצות-מחזור-מחיר — How much graduating-class and school shirts cost, class versus whole year.
+- https://partyprint.co.il/bundle-sale/חולצות-לעובדים-מחיר — How much employee and team-day shirts cost, with logo, shared design versus a design per employee.
+- https://partyprint.co.il/bundle-sale/חולצות-סוף-מסלול-מחיר — How much end-of-course shirts for soldiers cost, team versus company.
+
 Expanded machine-readable brief: https://partyprint.co.il/llms-full.txt
