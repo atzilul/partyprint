@@ -148,7 +148,7 @@ export default function BundleSale({initialPricing,businessEmail,paymentDisclosu
   </div></section>
 
   <section id="who" className="bs-who section"><div className="wrap">
-   <div className="section-head"><div><div className="eyebrow">ONE DESIGN. THE WHOLE GANG.</div><h2>כולם באותה חולצה.<br/><span>אף אחד לא נשאר בחוץ.</span></h2></div><p>כל קבוצה גדולה עם סיבה לחגוג,<br/>להתגבש או פשוט להיראות כמו קבוצה.</p></div>
+   <div className="section-head"><div><div className="eyebrow">ONE DESIGN. THE WHOLE GANG.</div><h2>עיצוב אחד לכל הקבוצה.<br/><span>אף אחד לא נשאר בחוץ.</span></h2></div><p>כל קבוצה גדולה עם סיבה לחגוג,<br/>להתגבש או פשוט להיראות כמו קבוצה.</p></div>
    <div className="bs-who-grid">{AUDIENCES.map((item,i)=><article className={'bs-who-card bs-who-'+i%4+' bs-reveal'} style={{'--d':i%4*80+'ms','--n':i} as CSSProperties} key={item.title}><span aria-hidden="true">{item.icon}</span><h3>{item.title}</h3><p>{item.text}</p></article>)}
     <article className="bs-who-card bs-who-more bs-reveal" style={{'--d':'240ms'} as CSSProperties}><span aria-hidden="true">✳</span><h3>ועוד</h3><p>חתונה גדולה, כנס או מפגש מחזור? ספרו לנו מה חוגגים.</p><button type="button" onClick={()=>choose()}>יש לנו קבוצה <ArrowUpLeft size={18}/></button></article>
    </div>
