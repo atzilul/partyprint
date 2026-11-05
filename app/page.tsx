@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 import {cookies} from 'next/headers';
 import HomeClient from './home-client';
 import {BUSINESS_DETAILS,PAYMENT_DISCLOSURE} from '@/lib/business-details';
-import {LANDING_VARIANTS,LANDING_VARIANT_COOKIE,resolveLandingVariant,type LandingVariantKey} from '@/lib/landing-variants';
+import {HOME_DEFAULT_COPY,LANDING_VARIANTS,LANDING_VARIANT_COOKIE,resolveLandingVariant,type LandingVariantKey} from '@/lib/landing-variants';
 import {homeFaq} from '@/lib/home-faq';
 import {homeStructuredData} from '@/lib/home-schema';
 import {getPricing} from '@/lib/studio-settings';
@@ -18,9 +18,10 @@ export async function generateMetadata({searchParams}:PageProps):Promise<Metadat
  const params=await searchParams;
  const jar=await cookies();
  const queryVariant=resolveLandingVariant(params.v);
- const variant=resolveLandingVariant(params.v,jar.get(LANDING_VARIANT_COOKIE)?.value)||'family';
+ const variant=resolveLandingVariant(params.v,jar.get(LANDING_VARIANT_COOKIE)?.value);
  const socialUrl=queryVariant?'https://partyprint.co.il/?v='+queryVariant:'https://partyprint.co.il/';
- const content=LANDING_VARIANTS[variant];
+ // No audience chosen (a first visit, or a crawler): describe the whole studio, not the family variant.
+ const content=variant?LANDING_VARIANTS[variant]:HOME_DEFAULT_COPY;
  return {
   title:content.title,
   description:content.description,
