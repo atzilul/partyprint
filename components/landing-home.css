@@ -1,0 +1,172 @@
+/*
+ * Landing pages that speak the home page's language (components/landing-home.tsx).
+ * Everything the home page already styles is reused as is; this file only adds
+ * the hero story, the one-package layout and a few audience tints.
+ */
+
+/* ---------- Hero: copy column ---------- */
+.lh-hero .custom-event-chips span:nth-child(3){background:#fff}
+.lh-hero-facts{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;margin:auto 0 0;padding:16px 0 0;border-top:1px solid #161616;list-style:none;font-size:14px;font-weight:700;color:#161616}
+.lh-hero-facts li{display:flex;align-items:center;gap:6px}
+.lh-hero-facts svg{flex-shrink:0}
+.lh-hero-price{font-size:15px}
+.lh-hero-price b{font:900 26px/1 'Rubik',sans-serif;letter-spacing:-1px;color:#161616;background:#fff;border:1px solid #161616;padding:5px 9px;transform:rotate(-2deg);box-shadow:3px 3px 0 #161616;margin-inline-end:4px}
+.lh-hero .cta{margin-bottom:26px}
+
+/* ---------- Hero: the story in motion ---------- */
+.lh-story{overflow:hidden}
+.lh-story>.optimized-picture>img{transition:transform 1.4s cubic-bezier(.2,.8,.2,1)}
+.lh-stage-0>.optimized-picture>img,.lh-stage-1>.optimized-picture>img{transform:scale(1.09)}
+.lh-veil{position:absolute;inset:0;z-index:1;background:linear-gradient(165deg,#3a1030e0,#161616d0);opacity:0;transition:opacity .7s;pointer-events:none}
+.lh-stage-0 .lh-veil,.lh-stage-1 .lh-veil{opacity:1}
+.lh-story .image-caption{z-index:5}
+.lh-story .art-note{top:92px}
+.lh-story .art-label{opacity:0;transition:opacity .5s .2s}
+.lh-stage-2 .art-label{opacity:1}
+
+.lh-chat,.lh-design{position:absolute;z-index:3;top:calc(50% + 22px);left:50%;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .4s,transform .65s cubic-bezier(.2,.9,.3,1.25),visibility 0s .4s}
+.lh-chat{width:min(370px,76%);padding:16px;background:#f5f4ef;color:#161616;border:1.5px solid #161616;border-radius:24px;box-shadow:8px 8px 0 #161616;transform:translate(-50%,-50%) rotate(-2deg) scale(.86);direction:rtl}
+.lh-stage-0 .lh-chat{opacity:1;visibility:visible;transform:translate(-50%,-50%) rotate(-2deg) scale(1);transition-delay:0s}
+.lh-chat-head{display:flex;align-items:center;gap:11px;padding-bottom:11px;border-bottom:1px solid #16161622}
+.lh-chat-head>span{display:grid;place-items:center;width:42px;height:42px;flex-shrink:0;border-radius:50%;background:#fbc2de;border:1px solid #161616;font-size:21px}
+.lh-chat-head b{display:block;font:700 17px/1.2 'Rubik',sans-serif;letter-spacing:-.4px}
+.lh-chat-head small{display:block;margin-top:2px;font-size:13px;color:#6b6b62}
+.lh-bubble{margin:12px 0 10px;padding:10px 13px;background:#d9fdd3;border-radius:16px 16px 16px 4px;font-size:15.5px;line-height:1.45;color:#161616}
+.lh-thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.lh-thumbs span{position:relative;display:block;aspect-ratio:1;overflow:hidden;border-radius:12px;border:1px solid #161616;background:#e9c7d6}
+.lh-stage-0.is-running .lh-thumbs span{animation:lhThumb .55s calc(var(--i)*.32s + .45s) cubic-bezier(.2,.9,.3,1.4) backwards}
+.lh-sent{display:flex;align-items:center;justify-content:flex-start;gap:5px;margin-top:9px;font-size:13px;font-weight:700;color:#55554c}
+.lh-sent svg{color:#2a9ed8}
+@keyframes lhThumb{from{transform:translateY(26px) scale(.55) rotate(-9deg)}to{transform:none}}
+
+.lh-design{height:min(54%,360px);aspect-ratio:1;transform:translate(-50%,-50%) rotate(3deg) scale(.82)}
+.lh-stage-1 .lh-design{opacity:1;visibility:visible;transform:translate(-50%,-50%) rotate(3deg) scale(1);transition-delay:0s}
+.lh-design-art{position:absolute;inset:0;overflow:hidden;background:#fff;border:1.5px solid #161616;border-radius:16px;box-shadow:9px 9px 0 var(--acid)}
+.lh-scan{position:absolute;inset:0;background:linear-gradient(transparent 40%,#efff5c70 49%,#efff5c 50%,transparent 51%);transform:translateY(-110%);pointer-events:none}
+.lh-stage-1.is-running .lh-scan{animation:lhScan 1.6s .35s linear 2}
+.lh-design-tag,.lh-design-stamp{position:absolute;z-index:2;display:flex;align-items:center;gap:6px;border:1.5px solid #161616;font-weight:800;white-space:nowrap}
+.lh-design-tag{top:-16px;right:-14px;padding:7px 12px;background:#161616;color:var(--acid);border-radius:999px;font-size:13px;transform:rotate(4deg)}
+.lh-design-stamp{bottom:-15px;left:-16px;padding:9px 14px;background:var(--acid);color:#161616;font-size:14px;transform:rotate(-7deg)}
+.lh-stage-1.is-running .lh-design-stamp{animation:lhStamp .5s 2.4s cubic-bezier(.2,.9,.3,1.5) backwards}
+@keyframes lhScan{from{transform:translateY(-110%)}to{transform:translateY(110%)}}
+@keyframes lhStamp{from{transform:rotate(-24deg) scale(2.2);opacity:0}to{transform:rotate(-7deg) scale(1);opacity:1}}
+
+.lh-confetti{position:absolute;inset:0;z-index:2;overflow:hidden;pointer-events:none}
+.lh-confetti i{position:absolute;top:-16px;left:calc(4% + var(--n)*6.8%);width:8px;height:15px;background:var(--acid);opacity:0}
+.lh-confetti i:nth-child(3n){background:var(--orange)}
+.lh-confetti i:nth-child(3n+1){background:#fbc2de}
+.lh-stage-2.is-running .lh-confetti i{animation:lhConfetti 2.6s calc(var(--n)*.07s + .15s) ease-in both}
+@keyframes lhConfetti{0%{opacity:0;transform:translateY(0) rotate(0)}8%{opacity:1}80%{opacity:1}100%{opacity:0;transform:translateY(640px) rotate(540deg)}}
+
+.lh-steps{position:absolute;z-index:4;left:16px;right:16px;top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;direction:rtl}
+.lh-steps button{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:6px 10px;border:1px solid #ffffff66;border-radius:999px;background:#161616c9;color:#fff;font:700 15px/1.2 'Assistant',Arial,sans-serif;cursor:pointer;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:background .3s,color .3s,border-color .3s}
+.lh-steps button span{font:600 12px 'Rubik',sans-serif;opacity:.6}
+.lh-steps button b{font-weight:700}
+.lh-steps button.is-active{background:#161616;border-color:var(--acid);color:var(--acid)}
+.lh-steps button.is-done{border-color:#ffffffa0}
+.lh-steps button i{position:absolute;right:0;left:0;bottom:0;height:4px;background:var(--acid);transform:scaleX(0);transform-origin:right}
+.lh-steps button.is-done i{transform:scaleX(1);opacity:.45}
+.is-running .lh-steps button.is-active i{animation:lhFill linear both}
+.is-paused .lh-steps button.is-active i{transform:scaleX(1)}
+@keyframes lhFill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+/* ---------- Inspiration: a magnified detail instead of the whole photo ---------- */
+.lh-inspo-crop{position:relative;aspect-ratio:1.15;overflow:hidden;background:#161616}
+
+/* ---------- Examples: three cards for one audience ---------- */
+.lh-gallery .lh-card-crop>div:first-child{aspect-ratio:1.1;background:#ff80c6}
+.lh-gallery .gallery-card>div:first-child{position:relative}
+@media(min-width:681px){
+ .lh-gallery{grid-template-columns:repeat(3,minmax(0,1fr));gap:32px 26px}
+ .lh-gallery .gallery-caption{flex-wrap:wrap;gap:8px 16px}
+ .lh-gallery .gallery-caption h3{font-size:23px}
+}
+.lh-bride .gallery-1 .gallery-sticker{background:var(--acid)}
+.lh-bride .gallery-2 .gallery-sticker{background:#ffc4df}
+.lh-bride .gallery-3 .gallery-sticker{background:#fff}
+
+/* ---------- Package: one card, the price ladder beside it ---------- */
+.lh-pack-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:28px;align-items:stretch}
+.lh-package{border:1px solid var(--ink);box-shadow:7px 7px 0 var(--ink)}
+.lh-package:last-child,.lh-package{border-left:1px solid var(--ink)}
+.lh-bride .lh-package{background:#fbc2de}
+.lh-bride .lh-package:hover{background:#f9b2d5}
+.lh-bride .lh-package .pack-number{color:#f09cc4}
+.lh-package h3{font-size:30px}
+.lh-package .pack-includes{border-top-color:#16161655}
+.lh-pack-side{display:grid;gap:22px;align-content:start}
+.lh-ladder,.lh-pack-notes{border:1px solid var(--ink);background:#f5f4ef;padding:24px 24px 20px}
+.lh-ladder h3,.lh-pack-notes h3{font-size:21px;letter-spacing:-.6px;margin-bottom:14px}
+.lh-ladder ol{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.lh-ladder li{display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid #16161622;font-size:16px;transition:background .3s,transform .3s}
+.lh-ladder li:first-child{border-top:0}
+.lh-ladder li b{margin-inline-start:auto;font:800 19px 'Rubik',sans-serif;letter-spacing:-.5px;white-space:nowrap}
+.lh-ladder li small{font:600 13px 'Assistant',Arial,sans-serif;letter-spacing:0;color:#55554c}
+.lh-ladder li em{font-style:normal;font-size:12px;font-weight:800;background:var(--ink);color:var(--acid);padding:3px 8px;border-radius:999px;white-space:nowrap}
+.lh-ladder li.is-here{background:var(--acid);border:1px solid var(--ink);box-shadow:3px 3px 0 var(--ink);transform:translateX(-4px);font-weight:800}
+.lh-ladder li.is-here+li{border-top-color:transparent}
+.lh-pack-notes ul{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.lh-pack-notes li{display:flex;gap:11px;align-items:flex-start}
+.lh-pack-notes svg{flex-shrink:0;margin-top:4px;padding:2px;border-radius:50%;background:var(--ink);color:var(--acid)}
+.lh-pack-notes b{display:block;font-size:17px}
+.lh-pack-notes p{font-size:15px;line-height:1.55;color:#55554c;margin-top:2px}
+
+/* ---------- Statement in colour for brides ---------- */
+.lh-bride .statement{background:#fbc2de}
+.lh-page .statement-image img{filter:none}
+
+/* ---------- Tablet ---------- */
+@media(max-width:1050px){
+ .lh-pack-grid{grid-template-columns:1fr 1fr;gap:20px}
+ .lh-steps button{font-size:13px;gap:5px;padding:6px}
+ .lh-steps button span{display:none}
+}
+
+/* ---------- Mobile ---------- */
+@media(max-width:680px){
+ .lh-hero-facts{order:3;margin:14px 0 0;padding-top:13px;border-top:1px solid #16161630;gap:7px 14px;font-size:13.5px}
+ .lh-hero-price{flex-basis:100%;font-size:14px}
+ .lh-hero-price b{font-size:22px;box-shadow:2px 2px 0 #161616}
+ .lh-hero .cta{margin-bottom:0}
+ .lh-hero .custom-event-chips{margin-top:12px;gap:6px}
+ .lh-hero .custom-event-chips span{font-size:13px;padding:6px 9px}
+ .lh-hero .hero-art.lh-story{height:clamp(330px,52svh,440px)}
+ .lh-story .image-caption{top:9px;bottom:auto;right:auto;left:11px;font-size:10.5px;opacity:.85}
+ .lh-inspo-crop{border-radius:14px;aspect-ratio:1.18}
+ .lh-gallery .lh-card-crop>div:first-child{aspect-ratio:1.1}
+ .hero-art.lh-story .art-label{display:block;left:14px;bottom:70px;font-size:31px;letter-spacing:-1.5px}
+ .lh-chat,.lh-design{top:calc(50% - 22px)}
+ .lh-chat{width:min(300px,80%);padding:11px 12px;border-radius:20px;box-shadow:5px 5px 0 #161616}
+ .lh-chat-head{gap:9px;padding-bottom:8px}
+ .lh-chat-head>span{width:34px;height:34px;font-size:17px}
+ .lh-chat-head b{font-size:15px}
+ .lh-chat-head small{font-size:12px}
+ .lh-bubble{margin:9px 0 8px;padding:8px 11px;font-size:14px;line-height:1.4}
+ .lh-thumbs{gap:6px}
+ .lh-thumbs span{aspect-ratio:1.2;border-radius:10px}
+ .lh-sent{margin-top:7px;font-size:12px}
+ .lh-design{height:min(56%,230px)}
+ .lh-design-art{box-shadow:6px 6px 0 var(--acid);border-radius:13px}
+ .lh-design-tag{top:-13px;right:-12px;font-size:12px;padding:6px 10px}
+ .lh-design-stamp{bottom:-13px;left:-12px;font-size:12.5px;padding:7px 11px}
+ .lh-steps{left:9px;right:9px;top:auto;bottom:9px;gap:5px}
+ .lh-steps button{min-height:44px;font-size:12.5px;padding:5px 4px}
+ .lh-pack-grid{grid-template-columns:1fr;gap:18px}
+ .lh-package{box-shadow:4px 4px 0 #161616}
+ .lh-package h3{font-size:28px}
+ .lh-ladder,.lh-pack-notes{border-radius:17px;padding:20px 16px 16px}
+ .lh-ladder li{padding:10px 8px;font-size:15px}
+ .lh-ladder li b{font-size:17px}
+ .lh-ladder li.is-here{transform:none;border-radius:10px}
+}
+@media(max-width:680px) and (max-height:640px){
+ .lh-chat{transform:translate(-50%,-50%) rotate(-2deg) scale(.8)}
+ .lh-stage-0 .lh-chat{transform:translate(-50%,-50%) rotate(-2deg) scale(.86)}
+}
+
+/* ---------- Calm mode ---------- */
+html[data-motion=off] .lh-story>.optimized-picture>img{transform:none;transition:none}
+@media(prefers-reduced-motion:reduce){
+ .lh-story>.optimized-picture>img,.lh-chat,.lh-design,.lh-veil,.lh-ladder li{transition:none}
+ .lh-thumbs span,.lh-scan,.lh-design-stamp,.lh-confetti i,.lh-steps button i{animation:none!important}
+}

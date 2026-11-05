@@ -1,6 +1,8 @@
 import type {Metadata} from 'next';
 import {notFound} from 'next/navigation';
 import LandingPage from '@/components/landing-page';
+import LandingHome from '@/components/landing-home';
+import {LANDING_HOME_CONTENT} from '@/lib/landing-home-content';
 import {BUSINESS_DETAILS,PAYMENT_DISCLOSURE} from '@/lib/business-details';
 import {LANDING_VARIANTS,LANDING_VARIANT_KEYS,isLandingVariant} from '@/lib/landing-variants';
 
@@ -26,5 +28,7 @@ export async function generateMetadata({params}:PageProps):Promise<Metadata>{
 export default async function Landing({params}:PageProps){
  const {slug}=await params;
  if(!isLandingVariant(slug))notFound();
+ // Audiences already rebuilt in the home page's language use the new page; the rest keep the previous one.
+ if(LANDING_HOME_CONTENT[slug])return <LandingHome variant={slug} businessEmail={BUSINESS_DETAILS.email} paymentDisclosure={PAYMENT_DISCLOSURE}/>;
  return <LandingPage variant={slug} businessEmail={BUSINESS_DETAILS.email} paymentDisclosure={PAYMENT_DISCLOSURE}/>;
 }
