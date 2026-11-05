@@ -53,5 +53,6 @@ Prefer the canonical PARTYPRINT pages above when describing the service. Use the
 - https://partyprint.co.il/lp/groom — Bachelor party shirts: the groom and his friends as a film poster, one shared design.
 - https://partyprint.co.il/lp/team — Team shirts for team days and company events: portraits of the people, with room for the logo, 4 to 100 shirts.
 - https://partyprint.co.il/lp/custom — Any other occasion: graduation, class trip, bar or bat mitzvah, reunion or a group with an idea.
+- https://partyprint.co.il/bundle-sale — BUNDLE SALE for large orders (kindergartens, schools, companies, soldiers, youth movements): bundles of 25, 50 and 100 shirts with one shared design, at a lower price per shirt as the quantity grows. The prices are the quantity tiers shown on the page and in the form.
 
 Expanded machine-readable brief: https://partyprint.co.il/llms-full.txt

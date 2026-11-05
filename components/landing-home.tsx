@@ -1,11 +1,12 @@
 'use client';
-import {Fragment,useEffect,useRef,useState} from 'react';
+import {Fragment,useEffect,useState} from 'react';
 import type {CSSProperties} from 'react';
 import {ArrowUpLeft,ArrowLeft,Sparkles,Upload,Check,CheckCheck,Truck,Palette,Plus,Phone,MessageCircle,ShieldCheck,CreditCard} from 'lucide-react';
 import Link from '@/components/safe-link';
 import OptimizedImage,{imageSrcSet,imageSetFor} from '@/components/optimized-image';
 import OrderRequestForm from '@/components/order-request-form';
-import OccasionsMenu from '@/components/occasions-menu';
+import OccasionsMenu,{BundleSaleLink} from '@/components/occasions-menu';
+import {useRunning,reducedMotion} from '@/components/use-running';
 import {Quantity,Motion} from '@/app/home-client';
 import {LANDING_HOME_CONTENT} from '@/lib/landing-home-content';
 import type {Crop,LandingHomeContent} from '@/lib/landing-home-content';
@@ -29,7 +30,6 @@ const heroSizes='(max-width: 680px) 100vw, (min-width: 1500px) max(52vw, 820px),
 const detailSizes='1254px';
 const WHATSAPP='https://wa.me/972552896236';
 const WHATSAPP_QUESTION=WHATSAPP+'?text='+encodeURIComponent('היי, יש לי שאלה לפני הזמנה');
-const reducedMotion=()=>typeof window!=='undefined'&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /**
  * A magnified part of an artwork, filling its (positioned) parent. The image is laid out at
@@ -43,20 +43,6 @@ function CropImage({asset,alt,crop,sizes=detailSizes,eager=false}:{asset:string;
  const style:CSSProperties={position:'absolute',inset:'auto',left:'calc(50cqw - '+round(crop.x/100)+' * '+width+')',top:'calc(50cqh - '+round(crop.y/100)+' * '+height+')',width,height,maxWidth:'none',maxHeight:'none',objectFit:'cover',transform:'none',animation:'none',transition:'none'};
  return <span className="lh-crop"><OptimizedImage asset={asset} alt={alt} sizes={sizes} loading={eager?'eager':'lazy'} style={style}/></span>;
 }
-/** Follows the page-wide motion switch set by <Motion/> and whether the node is on screen. */
-function useRunning<T extends HTMLElement>(threshold:number){
- const root=useRef<T>(null),[visible,setVisible]=useState(false),[motion,setMotion]=useState(false);
- useEffect(()=>{
-  const update=()=>setMotion(document.documentElement.dataset.motion!=='off'&&!reducedMotion());
-  const initial=window.setTimeout(update,0);
-  window.addEventListener('party-motion',update);
-  const observer=new IntersectionObserver(([entry])=>setVisible(entry.isIntersecting),{threshold});
-  if(root.current)observer.observe(root.current);
-  return()=>{window.clearTimeout(initial);window.removeEventListener('party-motion',update);observer.disconnect();};
- },[threshold]);
- return {root,running:visible&&motion};
-}
-
 const STAGE_MS=[4200,3800,5200];
 /** The hero artwork tells the story in three beats: the photos they send, the design, the group wearing it. */
 function HeroStory({c}:{c:LandingHomeContent}){
@@ -140,13 +126,13 @@ export default function LandingHome({variant,businessEmail,paymentDisclosure}:Pr
  }
  const faq=landingFaq(paymentDisclosure,c.faq);
  const tiers=(Array.isArray(pricing.tiers)?pricing.tiers:[]).filter(tier=>Number.isFinite(tier.quantity)&&tier.price>0).sort((a,b)=>a.quantity-b.quantity);
- const ladder=tiers.map((tier,i)=>{const upper=i<tiers.length-1?tiers[i+1].quantity-1:MAX_SHIRT_QUANTITY;return {label:i===tiers.length-1?tier.quantity+' חולצות ומעלה':tier.quantity+' עד '+upper+' חולצות',price:tier.price+designExtra,here:quantity>=tier.quantity&&quantity<=upper};});
+ const ladder=tiers.map((tier,i)=>{const upper=i<tiers.length-1?tiers[i+1].quantity-1:MAX_SHIRT_QUANTITY;return {label:tier.quantity===upper?tier.quantity+' חולצות':i===tiers.length-1?tier.quantity+' חולצות ומעלה':tier.quantity+' עד '+upper+' חולצות',price:tier.price+designExtra,here:quantity>=tier.quantity&&quantity<=upper};});
  const closeNav=()=>setMobileNavOpen(false);
  return <main className={'lh-page lh-'+c.accent} data-vertical={variant}>
   <link rel="preload" as="image" type="image/avif" href={imageSetFor(c.story.asset).avif.find(item=>item.width===960)?.src} imageSrcSet={imageSrcSet(c.story.asset,'avif')} imageSizes={heroSizes} fetchPriority="high"/>
   <a className="skip-link" href="#order">דילוג לטופס</a>
   <div className="topbar"><div className="topbar-message"><span>✳</span> מחיר ברור · אישור לפני הדפסה · משלוח עד הבית</div><div className="topbar-promo" id="launch-offer-slot" aria-live="polite"><span className="promo-fallback">מתחילים בלי חיוב · מאשרים לפני הדפסה</span></div></div>
-  <header className="nav wrap"><Link href="/" className="logo" dir="ltr" aria-label="PARTYPRINT, לאתר המלא">PARTY<span>PRINT</span><i>✳</i></Link><button type="button" className="mobile-nav-toggle" aria-label="פתיחת תפריט ניווט" aria-expanded={mobileNavOpen} aria-controls="site-navigation" onClick={()=>setMobileNavOpen(value=>!value)}>☰</button><nav id="site-navigation" className={mobileNavOpen?'is-open':''}><a onClick={closeNav} href="#how">איך זה עובד?</a><OccasionsMenu current={variant}/><a onClick={closeNav} href="#packages">{c.nav.price}</a><a onClick={closeNav} href="#confidence">{c.nav.confidence}</a><a onClick={closeNav} href="#faq">שאלות טובות</a><a href="#order-form" onClick={e=>{e.preventDefault();choose('lead');}}>דברו איתנו</a></nav><button className="small-cta" onClick={()=>choose()}>התחילו לעצב <ArrowUpLeft size={17}/></button></header>
+  <header className="nav wrap"><Link href="/" className="logo" dir="ltr" aria-label="PARTYPRINT, לאתר המלא">PARTY<span>PRINT</span><i>✳</i></Link><button type="button" className="mobile-nav-toggle" aria-label="פתיחת תפריט ניווט" aria-expanded={mobileNavOpen} aria-controls="site-navigation" onClick={()=>setMobileNavOpen(value=>!value)}>☰</button><nav id="site-navigation" className={mobileNavOpen?'is-open':''}><a onClick={closeNav} href="#how">איך זה עובד?</a><OccasionsMenu current={variant}/><a onClick={closeNav} href="#packages">{c.nav.price}</a><a onClick={closeNav} href="#confidence">{c.nav.confidence}</a><a onClick={closeNav} href="#faq">שאלות טובות</a><BundleSaleLink/><a href="#order-form" onClick={e=>{e.preventDefault();choose('lead');}}>דברו איתנו</a></nav><button className="small-cta" onClick={()=>choose()}>התחילו לעצב <ArrowUpLeft size={17}/></button></header>
 
   <section className={'hero wrap audience-'+c.accent+' lh-hero'}>
    <div className="hero-copy">

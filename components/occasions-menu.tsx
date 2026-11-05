@@ -6,8 +6,7 @@ import type {LandingVariantKey} from '@/lib/landing-variants';
 
 /**
  * "Shirts for every occasion": the navigation entry that opens the audience pages
- * (/lp/...). A hover menu where the pointer can hover, a tap-to-open group inside the
- * mobile navigation. Styles live in app/globals.css next to the navigation.
+ * (/lp/...) and the bundle sale. A hover menu where the pointer can hover, a tap-to-open group inside the mobile navigation. Styles live in app/globals.css next to the navigation.
  */
 const OCCASIONS:{key:LandingVariantKey;icon:string;label:string;hint:string}[]=[
  {key:'family',icon:'✳',label:'יום הולדת משפחתי',hint:'הילד גיבור־על, כל המשפחה לצידו'},
@@ -18,7 +17,7 @@ const OCCASIONS:{key:LandingVariantKey;icon:string;label:string;hint:string}[]=[
 ];
 const canHover=()=>typeof window!=='undefined'&&window.matchMedia('(hover: hover) and (min-width: 681px)').matches;
 
-export default function OccasionsMenu({current}:{current?:LandingVariantKey}){
+export default function OccasionsMenu({current}:{current?:LandingVariantKey|'bundle'}){
  const root=useRef<HTMLDivElement>(null),[open,setOpen]=useState(false);
  useEffect(()=>{
   if(!open)return;
@@ -30,6 +29,11 @@ export default function OccasionsMenu({current}:{current?:LandingVariantKey}){
  },[open]);
  return <div ref={root} className={'nav-menu'+(open?' is-open':'')} onMouseEnter={()=>{if(canHover())setOpen(true);}} onMouseLeave={()=>{if(canHover())setOpen(false);}} onBlur={event=>{if(!root.current?.contains(event.relatedTarget as Node|null))setOpen(false);}}>
   <button type="button" className="nav-menu-toggle" aria-expanded={open} aria-controls="occasions-menu" onClick={()=>setOpen(value=>canHover()?true:!value)}>חולצות לכל אירוע <ChevronDown size={15} aria-hidden="true"/></button>
-  <div id="occasions-menu" className="nav-menu-panel">{OCCASIONS.map(item=><Link key={item.key} href={'/lp/'+item.key} aria-current={current===item.key?'page':undefined}><i aria-hidden="true">{item.icon}</i><span><b>{item.label}</b><small>{item.hint}</small></span></Link>)}</div>
+  <div id="occasions-menu" className="nav-menu-panel">{OCCASIONS.map(item=><Link key={item.key} href={'/lp/'+item.key} aria-current={current===item.key?'page':undefined}><i aria-hidden="true">{item.icon}</i><span><b>{item.label}</b><small>{item.hint}</small></span></Link>)}<Link className="nav-menu-sale" href="/bundle-sale" aria-current={current==='bundle'?'page':undefined}><i aria-hidden="true">%</i><span><b dir="ltr">BUNDLE SALE</b><small>הזמנות גדולות, מ־25 חולצות</small></span></Link></div>
  </div>;
+}
+
+/** The direct BUNDLE SALE link; the navigations place it next to the blog link. */
+export function BundleSaleLink({current=false}:{current?:boolean}){
+ return <Link className="nav-sale" href="/bundle-sale" aria-current={current?'page':undefined}><b dir="ltr">BUNDLE SALE</b><small>הזמנות גדולות, מ־25 חולצות</small></Link>;
 }

@@ -10,7 +10,7 @@ export const LANDING_VARIANTS:Record<LandingVariantKey,LandingVariantCopy>={
  custom:{index:4,title:'חולצות בעיצוב אישי לכל אירוע | PARTYPRINT',description:'יש לכם רעיון לאירוע? הופכים תמונות, בדיחות ורגעים שלכם לחולצות בעיצוב אישי.',ogImage:'/og-custom.jpg',ogAlt:'חברים חוגגים בחולצות בעיצוב אישי של PARTYPRINT',points:['כל אירוע, כל רעיון, עיצוב שנולד מכם','בוחרים כמות ומקבלים מחיר ברור מראש','אתם מאשרים את העיצוב לפני ההדפסה']}
 };
 /** Home page metadata when no audience was chosen by link or by an earlier visit: the studio as a whole, not one audience. */
-export const HOME_DEFAULT_COPY:Pick<LandingVariantCopy,'title'|'description'|'ogImage'|'ogAlt'>={title:'PARTYPRINT | הדפסה על חולצות בעיצוב אישי לקבוצות ולאירועים',description:'חולצות בעיצוב אישי מתמונה ומרעיון: ימי הולדת, רווקות, רווקים וצוותים. מ־90 ₪ לחולצה כולל עיצוב, הדפסה ומשלוח. רואים ומאשרים לפני ההדפסה.',ogImage:'/og-default.jpg',ogAlt:'משפחה בחולצות יום הולדת בעיצוב אישי של PARTYPRINT'};
+export const HOME_DEFAULT_COPY:Pick<LandingVariantCopy,'title'|'description'|'ogImage'|'ogAlt'>={title:'PARTYPRINT | הדפסה על חולצות בעיצוב אישי לקבוצות ולאירועים',description:'חולצות בעיצוב אישי מתמונה ומרעיון: ימי הולדת, רווקות, רווקים וצוותים. מ־60 ₪ לחולצה בהזמנות גדולות, כולל עיצוב, הדפסה ומשלוח. רואים ומאשרים לפני ההדפסה.',ogImage:'/og-default.jpg',ogAlt:'משפחה בחולצות יום הולדת בעיצוב אישי של PARTYPRINT'};
 export function isLandingVariant(value:unknown):value is LandingVariantKey {
  return typeof value==='string'&&(LANDING_VARIANT_KEYS as readonly string[]).includes(value);
 }

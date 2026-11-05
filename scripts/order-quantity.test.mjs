@@ -22,12 +22,12 @@ test('all packages accept every integer quantity from one to one hundred, with a
  for(const pack of [-1,6,0.5,NaN])assert.throws(()=>pricing.priceFor(pricing.DEFAULT_PRICING,pack,4));
 });
 test('the reached tier applies through the quantity before the next threshold',()=>{
- const cases=[[1,180,180],[2,110,220],[3,110,330],[4,110,440],[5,110,550],[6,105,630],[7,105,735],[8,100,800],[9,100,900],[10,95,950],[14,95,1330],[15,93,1395],[19,93,1767],[20,90,1800],[21,90,1890],[100,90,9000]];
+ const cases=[[1,180,180],[2,110,220],[3,110,330],[4,110,440],[5,110,550],[6,105,630],[7,105,735],[8,100,800],[9,100,900],[10,95,950],[14,95,1330],[15,93,1395],[19,93,1767],[20,90,1800],[21,90,1890],[24,90,2160],[25,80,2000],[49,80,3920],[50,70,3500],[99,70,6930],[100,60,6000]];
  for(const [n,unit,total] of cases){assert.equal(pricing.unitPriceFor(pricing.DEFAULT_PRICING,n),unit);for(let pack=0;pack<5;pack++)assert.equal(pricing.priceFor(pricing.DEFAULT_PRICING,pack,n),total,'package '+pack+', quantity '+n);}
 });
 test('a design for every shirt adds its surcharge per shirt, on the team package only',()=>{
  assert.equal(catalog.INDIVIDUAL_DESIGN_PACK,3);assert.equal(catalog.INDIVIDUAL_DESIGN_SURCHARGE,50);
- for(const [n,total] of [[1,230],[4,640],[10,1450],[20,2800],[100,14000]])assert.equal(pricing.priceFor(pricing.DEFAULT_PRICING,3,n,'individual'),total,'team, quantity '+n);
+ for(const [n,total] of [[1,230],[4,640],[10,1450],[20,2800],[100,11000]])assert.equal(pricing.priceFor(pricing.DEFAULT_PRICING,3,n,'individual'),total,'team, quantity '+n);
  for(const mode of [undefined,'shared','','INDIVIDUAL',true,1])assert.equal(pricing.priceFor(pricing.DEFAULT_PRICING,3,10,mode),950);
  for(const pack of [0,1,2,4])assert.equal(pricing.priceFor(pricing.DEFAULT_PRICING,pack,10,'individual'),950,'package '+pack+' has one shared design only');
  assert.equal(catalog.designModeFor(3,'individual'),'individual');assert.equal(catalog.designModeFor(2,'individual'),'shared');

@@ -218,6 +218,18 @@ Thursday, 9:00 to 19:00, answer within two hours). The form's contact and idea
 steps, the confirmation page and the customer email read from it; outside the
 hours the browser shows when the next answer comes.
 
+## Bundle sale
+
+`/bundle-sale` sells large orders (kindergartens, schools, companies, soldiers, youth
+movements) as bundles of 25, 50 and 100 shirts (`components/bundle-sale.tsx`, rules in
+`lib/bundles.ts`). A bundle is not a separate product: its price is the quantity tier of
+the same size in `lib/pricing.ts` (or the tiers saved in the admin settings), so the home
+page, the audience pages and the request form quote the same amount for the same number
+of shirts. The page shows the bundle meter in the hero, three bundle cards, a quantity
+calculator that drives the request form, the audiences, four steps, the shared form, bundle
+questions ahead of the common FAQ, and contact. It is indexable, in the sitemap, linked from
+the navigation (`components/occasions-menu.tsx`) and sends the same events as the home page.
+
 ## Paid landing pages
 
 `/lp/family`, `/lp/bride`, `/lp/groom`, `/lp/team` and `/lp/custom` are the home

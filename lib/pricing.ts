@@ -10,6 +10,10 @@ export const DEFAULT_TIERS:PriceTier[]=[
  {quantity:10,price:95},
  {quantity:15,price:93},
  {quantity:20,price:90},
+ // Bundles for large orders (/bundle-sale, lib/bundles.ts).
+ {quantity:25,price:80},
+ {quantity:50,price:70},
+ {quantity:100,price:60},
 ];
 
 const cents=(value:number)=>Math.round(value*100);
