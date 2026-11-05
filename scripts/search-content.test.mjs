@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {ARTICLE_PREPARATION,editorialModifiedAt} from '../lib/editorial-preparation.ts';
-import {EDITORIAL_LINKS} from '../lib/editorial-links.ts';
+import {EDITORIAL_LINKS,WORK_FOR_GUIDE} from '../lib/editorial-links.ts';
+import {STUDIO_PAGE_SLUGS} from '../lib/studio-pages.ts';
 import {SEO_PAGES,SEO_PAGE_ALIASES,getSeoPage} from '../lib/seo-pages.ts';
 test('all existing guide addresses stay unique and resolve their aliases',()=>{
  assert.equal(SEO_PAGES.length,22);
@@ -61,4 +62,12 @@ test('authored article notes keep valid navigation and honest modified dates',()
   assert.equal(editorialModifiedAt(slug,'2026-11-01T12:00:00.000Z'),'2026-11-01T12:00:00.000Z');
  }
  assert.equal(editorialModifiedAt('__other__','2026-10-01T00:00:00.000Z'),'2026-10-01T00:00:00.000Z');
+});
+
+test('every guide has supporting reading and a studio example, with valid targets',()=>{
+ for(const page of SEO_PAGES){
+  assert.ok(EDITORIAL_LINKS.some(link=>link.guideSlug===page.slug),'Guide without supporting reading: '+page.slug);
+  assert.ok(STUDIO_PAGE_SLUGS.includes(WORK_FOR_GUIDE[page.slug]),'Guide without a valid studio example: '+page.slug);
+ }
+ for(const slug of Object.keys(WORK_FOR_GUIDE))assert.ok(SEO_PAGES.some(page=>page.slug===slug),'Unknown guide in WORK_FOR_GUIDE: '+slug);
 });

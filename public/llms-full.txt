@@ -49,7 +49,7 @@ The common typo “חלוצות לאירועים” is an alias of the canonical
 ## How the service works
 
 1. The customer chooses a package and quantity and optionally supplies an event date.
-2. The customer supplies a name and phone, optionally a short idea, email and up to 10 reference images. Sizes and colors are optional: customers may explicitly confirm them inside the form before sending, or complete them on the confirmation page or WhatsApp. Saving a request never requires collecting every size first.
+2. The customer supplies a name, phone and email, all three required. A short idea and up to 10 reference images are optional and come in the next step. Sizes and colors are optional: customers may explicitly confirm them inside the form before sending, or complete them on the confirmation page or WhatsApp. Saving a request never requires collecting every size first.
 3. PARTYPRINT develops a shared design direction using AI-assisted exploration and human direction.
 4. The customer reviews the design, receives one included revision round, and approves it.
 5. PARTYPRINT prints the approved shirts and coordinates home delivery.
@@ -58,7 +58,7 @@ Submitting the request form does not charge the customer. Printing begins only a
 
 ## Audience and examples
 
-PARTYPRINT serves families, friends, birthday organizers, bachelor and bachelorette groups, workplace teams, managers, small businesses, employee-gift organizers, trip organizers and military cohorts. Available quantities are shown in the live order form. A single shirt is offered at ILS 180 including personal design, printing and home delivery. Group packages start at 4 shirts and support up to 100; quantities 2–3 are not offered in the public form. Each shirt can have its own selected size and color while sharing one design. Adult sizes remain those offered in the form; child sizes by age are 2, 4, 6, 8, 10, 12, 14, 16 and 18.
+PARTYPRINT serves families, friends, birthday organizers, bachelor and bachelorette groups, workplace teams, managers, small businesses, employee-gift organizers, trip organizers and military cohorts. Available quantities are shown in the live order form. A single shirt is offered at ILS 180 including personal design, printing and home delivery. Each occasion starts at 4 shirts in the form, and the customer can change the quantity up to 100; the price follows the quantity tier shown there. Published price per shirt by quantity (November 2026; the live form is authoritative): 4–5 shirts ILS 110, 6–7 ILS 105, 8–9 ILS 100, 10–14 ILS 95, 15–19 ILS 93, 20–100 ILS 90. Each shirt can have its own selected size and color while sharing one design. Adult sizes remain those offered in the form; child sizes by age are 2, 4, 6, 8, 10, 12, 14, 16 and 18.
 
 ## Operational facts
 
@@ -66,7 +66,7 @@ PARTYPRINT serves families, friends, birthday organizers, bachelor and bachelore
 - Reference uploads: up to 10 images in the public request form.
 - Approval: printing only after customer approval; one revision round is included.
 - Delivery: home delivery; the current site policy states up to 5 business days after design approval, order approval and payment, with some regions taking up to 7 business days.
-- Support: WhatsApp +972 55 289 6236; email atzilul@gmail.com.
+- Support: WhatsApp +972 55 289 6236; email hello@partyprint.co.il.
 - Public policies: https://partyprint.co.il/policies/shipping and https://partyprint.co.il/policies/returns.
 
 ## Current information
