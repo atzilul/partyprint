@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 import BundleSale from '@/components/bundle-sale';
 import {BUSINESS_DETAILS,PAYMENT_DISCLOSURE} from '@/lib/business-details';
 import {landingFaq} from '@/lib/home-faq';
-import {bundleFaq,bundleOffers,shekels} from '@/lib/bundles';
+import {BUNDLE_KEYWORDS,bundleFaq,bundleOffers,shekels} from '@/lib/bundles';
 import {getPricing} from '@/lib/studio-settings';
 import {DEFAULT_PRICING} from '@/lib/pricing';
 import type {Pricing} from '@/lib/pricing';
@@ -14,17 +14,18 @@ import type {Pricing} from '@/lib/pricing';
  */
 export const dynamic='force-dynamic';
 const origin='https://partyprint.co.il',url=origin+'/bundle-sale',ogImage='/og-team.jpg';
-const title='BUNDLE SALE | חולצות בעיצוב אישי להזמנות גדולות | PARTYPRINT';
+const title='חולצות מודפסות בכמויות: BUNDLE SALE מ־25 חולצות | PARTYPRINT';
 async function currentPricing():Promise<Pricing>{try{return await getPricing();}catch{return DEFAULT_PRICING;}}
 function describe(pricing:Pricing){
  const [small,medium,large]=bundleOffers(pricing).bundles;
- return 'באנדלים של חולצות בעיצוב אישי לגנים, בתי ספר, חברות, חיילים ותנועות נוער: '+small.size+' חולצות ב־'+shekels(small.unit)+' ₪ לחולצה, '+medium.size+' ב־'+shekels(medium.unit)+' ₪ ו־'+large.size+' ב־'+shekels(large.unit)+' ₪. כולל עיצוב, הדפסה ומשלוח.';
+ return 'חולצות מודפסות בעיצוב אישי בכמות גדולה, לגנים, בתי ספר, חברות, חיילים ותנועות נוער: '+small.size+' חולצות ב־'+shekels(small.unit)+' ₪ לחולצה, '+medium.size+' ב־'+shekels(medium.unit)+' ₪ ו־'+large.size+' ב־'+shekels(large.unit)+' ₪. כולל עיצוב, הדפסה ומשלוח.';
 }
 export async function generateMetadata():Promise<Metadata>{
  const description=describe(await currentPricing()),alt='קבוצה גדולה בחולצות תואמות בעיצוב אישי של PARTYPRINT';
  return {
   title,
   description,
+  keywords:BUNDLE_KEYWORDS,
   alternates:{canonical:'/bundle-sale'},
   openGraph:{type:'website',locale:'he_IL',url,siteName:'PARTYPRINT',title,description,images:[{url:ogImage,width:1200,height:630,alt}]},
   twitter:{card:'summary_large_image',title,description,images:[{url:ogImage,alt}]},

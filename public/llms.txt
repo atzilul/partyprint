@@ -31,7 +31,7 @@
 
 ## Useful search topics
 
-מתנה בעיצוב אישי; מתנה לאמא; מתנה לאבא; מתנה למסיבת רווקים; מתנה למסיבת רווקות; מתנה ליום הולדת של הבן; מתנה ליום הולדת של הבת; מתנה לערב צוות; חולצה לערב צוות; חולצה למסיבת רווקים; חולצה למסיבת רווקות; חולצה ליום הולדת; מתנות לעובדים; מתנות לגבר; מתנות לאישה; מתנות לאירוע.
+מתנה בעיצוב אישי; מתנה לאמא; מתנה לאבא; מתנה למסיבת רווקים; מתנה למסיבת רווקות; מתנה ליום הולדת של הבן; מתנה ליום הולדת של הבת; מתנה לערב צוות; חולצה לערב צוות; חולצה למסיבת רווקים; חולצה למסיבת רווקות; חולצה ליום הולדת; מתנות לעובדים; מתנות לגבר; מתנות לאישה; מתנות לאירוע; חולצות מודפסות בכמויות; הדפסה על חולצות בכמות גדולה; חולצות לגן; חולצות מחזור; חולצות לבית ספר; חולצות ממותגות לעובדים; חולצות סוף מסלול; חולצות לתנועת נוער.
 
 ## Citation and freshness guidance
 
@@ -53,6 +53,6 @@ Prefer the canonical PARTYPRINT pages above when describing the service. Use the
 - https://partyprint.co.il/lp/groom — Bachelor party shirts: the groom and his friends as a film poster, one shared design.
 - https://partyprint.co.il/lp/team — Team shirts for team days and company events: portraits of the people, with room for the logo, 4 to 100 shirts.
 - https://partyprint.co.il/lp/custom — Any other occasion: graduation, class trip, bar or bat mitzvah, reunion or a group with an idea.
-- https://partyprint.co.il/bundle-sale — BUNDLE SALE for large orders (kindergartens, schools, companies, soldiers, youth movements): bundles of 25, 50 and 100 shirts with one shared design, at a lower price per shirt as the quantity grows. The prices are the quantity tiers shown on the page and in the form.
+- https://partyprint.co.il/bundle-sale — BUNDLE SALE for large orders (kindergartens, schools, companies, soldiers, youth movements): bundles of 25, 50 and 100 shirts with one shared design, at a lower price per shirt as the quantity grows. As of November 2026: from 25 shirts ILS 80 per shirt, from 50 shirts ILS 70, and 100 shirts ILS 60, including personal design, printing and delivery. The page and the form show the prices in force and answer the common bulk-order questions.
 
 Expanded machine-readable brief: https://partyprint.co.il/llms-full.txt

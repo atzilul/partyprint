@@ -73,6 +73,17 @@ PARTYPRINT serves families, friends, birthday organizers, bachelor and bachelore
 
 The event-specific guides explain the use cases and link to the ordering flow at https://partyprint.co.il/#order. Current pricing, available quantities and delivery terms are determined by the live form, public policies and studio confirmation. Separate design versions, rush deadlines, printing methods and fabric specifications are not confirmed by this brief. Customers should supply only photos, logos and symbols they are authorized to use.
 
+## Bundle sale for large orders
+
+https://partyprint.co.il/bundle-sale is the page for bulk orders of printed shirts with a personal design: kindergartens and end-of-year parties, school classes and graduating years, tech companies and workplaces, soldiers and units, youth movements, sports groups and communities. One shared design for the whole group, printing and delivery are included in the price per shirt.
+
+- Bundles: 25, 50 and 100 shirts. The price applies from that quantity up, so 30 shirts are priced as the 25 bundle.
+- Prices as of November 2026: from 25 shirts ILS 80 per shirt (25 shirts: ILS 2,000), from 50 shirts ILS 70 (50 shirts: ILS 3,500), 100 shirts ILS 60 (100 shirts: ILS 6,000). The same prices apply to any order of that quantity anywhere on the site. Use the page for the prices in force.
+- Child sizes (ages 2 to 18) and adult sizes (S to XL) can be mixed in one order; shirt colours are white, black or grey.
+- A logo can be uploaded with the photos and the idea. The customer sees and approves the design before printing; one revision round is included.
+- The form accepts up to 100 shirts. Larger orders are quoted by WhatsApp at +972 55 289 6236.
+- A separate design for every shirt is offered on the team package only, for ILS 50 more per shirt.
+
 ## Discovery endpoints
 
 - https://partyprint.co.il/robots.txt — crawler rules for search engines and AI crawlers.

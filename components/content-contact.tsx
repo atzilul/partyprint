@@ -2,6 +2,7 @@
 import {useEffect,useState} from 'react';
 import {MessageCircle} from 'lucide-react';
 import OrderFormLink from '@/components/order-form-link';
+import Link from '@/components/safe-link';
 import {MAX_SHIRT_QUANTITY,SINGLE_SHIRT_PRICE} from '@/lib/catalog';
 import {DEFAULT_PRICING} from '@/lib/pricing';
 import type {Pricing} from '@/lib/pricing';
@@ -27,6 +28,7 @@ export default function ContentContact({title}:{title:string}){
   <ul className="content-contact-facts">
    <li><b>מינימום:</b> חבילה קבוצתית מ־4 חולצות, או חולצה אחת כמתנה אישית.</li>
    <li><b>זמנים:</b> משלוח עד 5 ימי עסקים אחרי אישור העיצוב, ההזמנה והתשלום. זמן העיצוב והתיקונים אינו כלול.</li>
+   <li><b>הזמנה גדולה:</b> מ־25 חולצות המחיר לחולצה יורד עוד. <Link href="/bundle-sale">לבאנדלים של 25, 50 ו־100 חולצות</Link>.</li>
    <li><b>בלי התחייבות:</b> אין חיוב בשליחת הפנייה. רואים את העיצוב ומאשרים לפני ההדפסה.</li>
   </ul>
   <div className="content-contact-actions"><a className="content-whatsapp" href={contentWhatsappUrl(title)} target="_blank" rel="noopener noreferrer"><MessageCircle size={20} aria-hidden="true"/> שואלים ב־WhatsApp</a><OrderFormLink className="content-form-link" href="/#order">לטופס ההצעה <span aria-hidden="true">←</span></OrderFormLink></div>

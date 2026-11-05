@@ -111,6 +111,9 @@
 .bs-calc-next{font-size:16px;line-height:1.5}
 .bs-calc-next a{font-weight:800;text-decoration:underline}
 .bs-calc .cta{grid-column:1/-1;justify-self:start;min-width:min(100%,360px)}
+.bs-about{max-width:900px;margin:48px auto 0;text-align:center}
+.bs-about h3{font-size:27px;letter-spacing:-.8px}
+.bs-about p{margin-top:12px;font-size:17px;line-height:1.7;color:#3d3d36}
 .bs-foot{margin-top:30px;font-size:14px;line-height:1.7;color:#666;text-align:center}
 
 /* ---------- Who it is for ---------- */
@@ -127,8 +130,10 @@
 .bs-who-card:hover{transform:rotate(0deg) scale(1.04);box-shadow:6px 6px 0 #fff}
 .bs-who-card>span{font-size:44px;line-height:1}
 html[data-motion=on] .bs-who-card>span{display:inline-block;animation:bsBob 3.4s calc(var(--n,0)*.28s) ease-in-out infinite}
-.bs-who-card h3{font-size:24px;letter-spacing:-.8px}
+.bs-who-card h3{font-size:22px;letter-spacing:-.7px;line-height:1.15}
 .bs-who-card p{font-size:15.5px;line-height:1.5}
+.bs-who-link{display:inline-flex;align-items:center;gap:5px;margin-top:auto;padding-top:6px;font-size:14px;font-weight:800;text-decoration:underline;text-underline-offset:3px}
+.bs-who-link:hover{text-decoration-thickness:2px}
 .bs-who-more{background:var(--orange)}
 .bs-who-more>span{font-size:40px}
 .bs-who-more button{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding:11px 13px;background:var(--ink);color:#fff;border:0;font:700 15px 'Assistant',Arial,sans-serif;cursor:pointer}
@@ -205,7 +210,11 @@ html[data-motion=on] .bs-who-card>span{display:inline-block;animation:bsBob 3.4s
  .bs-who-grid{gap:12px}
  .bs-who-card{min-height:0;padding:18px 15px 16px;border-radius:15px;gap:6px}
  .bs-who-card>span{font-size:34px}
- .bs-who-card h3{font-size:19px}
+ .bs-who-card h3{font-size:18px}
+ .bs-about{margin-top:32px;text-align:right}
+ .bs-about h3{font-size:22px}
+ .bs-about p{font-size:15.5px}
+ .bs-who-link{font-size:13px}
  .bs-who-card p{font-size:14px;line-height:1.45}
  .bs-who-more{grid-column:1/-1}
  .bs-steps{grid-template-columns:1fr;gap:12px}

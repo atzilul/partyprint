@@ -14,7 +14,8 @@ import {priceFor,unitPriceFor} from '@/lib/pricing';
 import type {Pricing} from '@/lib/pricing';
 import {normalizeOrderQuantity} from '@/lib/order-quantity';
 import {track,siteEvent,packageType,requestMode} from '@/lib/analytics';
-import {BUNDLE_SIZES,BUNDLE_MIN,BUNDLE_MAX,bundleOffers,bundleFor,bundleFaq,shekels} from '@/lib/bundles';
+import {BUNDLE_SIZES,BUNDLE_MIN,BUNDLE_MAX,BUNDLE_AUDIENCES as AUDIENCES,bundleOffers,bundleFor,bundleFaq,shekels} from '@/lib/bundles';
+import {SEO_PAGE_URL} from '@/lib/seo-pages';
 import type {BundleOffers} from '@/lib/bundles';
 import './bundle-sale.css';
 
@@ -27,15 +28,6 @@ const WHATSAPP='https://wa.me/972552896236';
 const WHATSAPP_BUNDLE=WHATSAPP+'?text='+encodeURIComponent('היי, אשמח להצעה להזמנה גדולה של חולצות בעיצוב אישי');
 /** Any group, one shared design: the open-ended package. */
 const PACK=4;
-const AUDIENCES=[
- {icon:'🧸',chip:'גנים',title:'גנים וצהרונים',text:'מסיבת סוף שנה עם כל הילדים באיור אחד. מידות מגיל 2.'},
- {icon:'🎒',chip:'בתי ספר',title:'בתי ספר ושכבות',text:'חולצת מחזור, טיול שנתי או יום ספורט. שכבה שלמה באותו הדפס.'},
- {icon:'💻',chip:'הייטק',title:'חברות הייטק',text:'יום גיבוש, האקתון או השקה. האנשים במרכז, הלוגו לצידם.'},
- {icon:'🏢',chip:'מקומות עבודה',title:'מקומות עבודה',text:'כנס, נופש חברה או יום כיף. משלוח אחד לכתובת אחת.'},
- {icon:'🪖',chip:'חיילים',title:'חיילים ויחידות',text:'סוף מסלול, מחזור או פלוגה. הבדיחות שרק אתם מבינים, על חולצה.'},
- {icon:'⛺',chip:'תנועות נוער',title:'תנועות נוער',text:'מחנה קיץ, שבט או גרעין. חולצה שממשיכים ללבוש גם אחרי.'},
- {icon:'🏃',chip:'קהילות',title:'קבוצות וקהילות',text:'קבוצת ריצה, מקהלה או עמותה. כולם באותו צבע, באותו סיפור.'},
-];
 const STEPS=[
  {icon:Layers,title:'בוחרים באנדל',text:'25, 50 או 100, או כל כמות ביניהם. המחיר מוצג מראש.'},
  {icon:Upload,title:'שולחים רעיון ולוגו',text:'משפט אחד, תמונות ולוגו אם יש. את השאר נפתח יחד.'},
@@ -116,7 +108,7 @@ export default function BundleSale({initialPricing,businessEmail,paymentDisclosu
 
   <section className="hero wrap audience-family bs-hero">
    <div className="hero-copy">
-    <div className="audience-copy"><span className="bs-badge" dir="ltr" lang="en">BUNDLE SALE</span><h1><small>{BUNDLE_MIN} חולצות ומעלה?</small>המחיר<br/><span>צונח.</span><i>✳</i></h1><p>גן, שכבה, צוות, פלוגה או שבט שלם: עיצוב אישי אחד, הדפסה ומשלוח, במחיר שיורד ככל שאתם יותר. {small.size} חולצות ב־{shekels(small.unit)} ₪ לחולצה, {medium.size} ב־{shekels(medium.unit)} ₪, ו־{large.size} ב־{shekels(large.unit)} ₪.</p><div className="custom-event-chips" aria-label="למי זה מתאים">{AUDIENCES.slice(0,6).map(item=><span key={item.title}>{item.icon} {item.chip}</span>)}</div></div>
+    <div className="audience-copy"><span className="bs-badge" dir="ltr" lang="en">BUNDLE SALE</span><h1><small>חולצות מודפסות בכמויות?</small>המחיר<br/><span>צונח.</span><i>✳</i></h1><p>חולצות בעיצוב אישי להזמנות גדולות, מ־{BUNDLE_MIN} חולצות ומעלה. גן, שכבה, צוות, פלוגה או שבט שלם: עיצוב אישי אחד, הדפסה ומשלוח, במחיר שיורד ככל שאתם יותר. {small.size} חולצות ב־{shekels(small.unit)} ₪ לחולצה, {medium.size} ב־{shekels(medium.unit)} ₪, ו־{large.size} ב־{shekels(large.unit)} ₪.</p><div className="custom-event-chips" aria-label="למי זה מתאים">{AUDIENCES.slice(0,6).map(item=><span key={item.title}>{item.icon} {item.chip}</span>)}</div></div>
     <button className="cta orange-bg" onClick={()=>document.getElementById('bundles')?.scrollIntoView({behavior:reducedMotion()?'auto':'smooth',block:'start'})}>בחרו את הבאנדל שלכם <ArrowUpLeft/></button>
     <ul className="bs-facts"><li className="bs-facts-price">מ־<b>{shekels(large.unit)} ₪</b> לחולצה</li><li><Check size={15} aria-hidden="true"/>כולל עיצוב אישי אחד, הדפסה ומשלוח</li><li><Check size={15} aria-hidden="true"/>מאשרים לפני שמדפיסים</li><li><Check size={15} aria-hidden="true"/>אין חיוב בשליחת הטופס</li></ul>
    </div>
@@ -144,12 +136,13 @@ export default function BundleSale({initialPricing,businessEmail,paymentDisclosu
     <p className="bs-calc-next">{next?<>עוד {next.size-shown} {next.size-shown===1?'חולצה':'חולצות'} ואתם בבאנדל {next.size}: <b>{shekels(next.unit)} ₪ לחולצה</b></>:<>זה המחיר הכי טוב שלנו. מעל {BUNDLE_MAX} חולצות? <a href={WHATSAPP_BUNDLE} target="_blank" rel="noopener noreferrer" data-cta-location="bundle_calculator">דברו איתנו</a></>}</p>
     <button type="button" className="cta orange-bg" onClick={()=>choose()}>ממשיכים עם {shown} חולצות <ArrowUpLeft/></button>
    </div>
+   <div className="bs-about bs-reveal"><h3>הדפסה על חולצות בכמות גדולה, עם עיצוב אישי</h3><p>ב־PARTYPRINT מדפיסים חולצות בעיצוב אישי בהזמנות של {BUNDLE_MIN} עד {BUNDLE_MAX} חולצות: חולצות מודפסות לגנים, לבתי ספר, לחברות, לחיילים ולתנועות נוער. במקום חולצה אחידה עם לוגו בלבד, מקבלים עיצוב אישי אחד לכל הקבוצה, שנולד מהרעיון, מהתמונות ומהלוגו שלכם. המחיר לחולצה כולל עיצוב, הדפסה ומשלוח, ויורד ככל שהכמות עולה.</p></div>
    <p className="bs-foot">* המחיר מחושב לפי מדרגת הכמות וכולל עיצוב אישי אחד לכל החולצות, הדפסה ומשלוח. נשלח לכם מחיר סופי לאישור לפני התשלום. עיצובים נוספים יתומחרו בנפרד.</p>
   </div></section>
 
   <section id="who" className="bs-who section"><div className="wrap">
-   <div className="section-head"><div><div className="eyebrow">ONE DESIGN. THE WHOLE GANG.</div><h2>עיצוב אחד לכל הקבוצה.<br/><span>אף אחד לא נשאר בחוץ.</span></h2></div><p>כל קבוצה גדולה עם סיבה לחגוג,<br/>להתגבש או פשוט להיראות כמו קבוצה.</p></div>
-   <div className="bs-who-grid">{AUDIENCES.map((item,i)=><article className={'bs-who-card bs-who-'+i%4+' bs-reveal'} style={{'--d':i%4*80+'ms','--n':i} as CSSProperties} key={item.title}><span aria-hidden="true">{item.icon}</span><h3>{item.title}</h3><p>{item.text}</p></article>)}
+   <div className="section-head"><div><div className="eyebrow">ONE DESIGN. THE WHOLE GANG.</div><h2>עיצוב אחד לכל הקבוצה.<br/><span>אף אחד לא נשאר בחוץ.</span></h2></div><p>חולצות מודפסות לכל קבוצה גדולה<br/>עם סיבה לחגוג, להתגבש<br/>או פשוט להיראות כמו קבוצה.</p></div>
+   <div className="bs-who-grid">{AUDIENCES.map((item,i)=><article className={'bs-who-card bs-who-'+i%4+' bs-reveal'} style={{'--d':i%4*80+'ms','--n':i} as CSSProperties} key={item.title}><span aria-hidden="true">{item.icon}</span><h3>{item.title}</h3><p>{item.text}</p>{item.guide&&<Link className="bs-who-link" href={SEO_PAGE_URL(item.guide.slug)}>למדריך: {item.guide.label} <ArrowUpLeft size={15} aria-hidden="true"/></Link>}</article>)}
     <article className="bs-who-card bs-who-more bs-reveal" style={{'--d':'240ms'} as CSSProperties}><span aria-hidden="true">✳</span><h3>ועוד</h3><p>חתונה גדולה, כנס או מפגש מחזור? ספרו לנו מה חוגגים.</p><button type="button" onClick={()=>choose()}>יש לנו קבוצה <ArrowUpLeft size={18}/></button></article>
    </div>
   </div></section>
