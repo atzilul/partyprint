@@ -5,6 +5,7 @@ import {ArrowUpLeft,ArrowLeft,Sparkles,Upload,Check,CheckCheck,Truck,Palette,Plu
 import Link from '@/components/safe-link';
 import OptimizedImage,{imageSrcSet,imageSetFor} from '@/components/optimized-image';
 import OrderRequestForm from '@/components/order-request-form';
+import OccasionsMenu from '@/components/occasions-menu';
 import {Quantity,Motion} from '@/app/home-client';
 import {LANDING_HOME_CONTENT} from '@/lib/landing-home-content';
 import type {Crop,LandingHomeContent} from '@/lib/landing-home-content';
@@ -142,7 +143,7 @@ export default function LandingHome({variant,businessEmail,paymentDisclosure}:Pr
   <link rel="preload" as="image" type="image/avif" href={imageSetFor(c.story.asset).avif.find(item=>item.width===960)?.src} imageSrcSet={imageSrcSet(c.story.asset,'avif')} imageSizes={heroSizes} fetchPriority="high"/>
   <a className="skip-link" href="#order">דילוג לטופס</a>
   <div className="topbar"><div className="topbar-message"><span>✳</span> מחיר ברור · אישור לפני הדפסה · משלוח עד הבית</div><div className="topbar-promo" id="launch-offer-slot" aria-live="polite"><span className="promo-fallback">מתחילים בלי חיוב · מאשרים לפני הדפסה</span></div></div>
-  <header className="nav wrap"><Link href="/" className="logo" dir="ltr" aria-label="PARTYPRINT, לאתר המלא">PARTY<span>PRINT</span><i>✳</i></Link><button type="button" className="mobile-nav-toggle" aria-label="פתיחת תפריט ניווט" aria-expanded={mobileNavOpen} aria-controls="site-navigation" onClick={()=>setMobileNavOpen(value=>!value)}>☰</button><nav id="site-navigation" className={mobileNavOpen?'is-open':''}><a onClick={closeNav} href="#how">איך זה עובד?</a><a onClick={closeNav} href="#examples">{c.nav.examples}</a><a onClick={closeNav} href="#packages">{c.nav.price}</a><a onClick={closeNav} href="#confidence">{c.nav.confidence}</a><a onClick={closeNav} href="#faq">שאלות טובות</a><a href="#order-form" onClick={e=>{e.preventDefault();choose('lead');}}>דברו איתנו</a></nav><button className="small-cta" onClick={()=>choose()}>התחילו לעצב <ArrowUpLeft size={17}/></button></header>
+  <header className="nav wrap"><Link href="/" className="logo" dir="ltr" aria-label="PARTYPRINT, לאתר המלא">PARTY<span>PRINT</span><i>✳</i></Link><button type="button" className="mobile-nav-toggle" aria-label="פתיחת תפריט ניווט" aria-expanded={mobileNavOpen} aria-controls="site-navigation" onClick={()=>setMobileNavOpen(value=>!value)}>☰</button><nav id="site-navigation" className={mobileNavOpen?'is-open':''}><a onClick={closeNav} href="#how">איך זה עובד?</a><OccasionsMenu current={variant}/><a onClick={closeNav} href="#packages">{c.nav.price}</a><a onClick={closeNav} href="#confidence">{c.nav.confidence}</a><a onClick={closeNav} href="#faq">שאלות טובות</a><a href="#order-form" onClick={e=>{e.preventDefault();choose('lead');}}>דברו איתנו</a></nav><button className="small-cta" onClick={()=>choose()}>התחילו לעצב <ArrowUpLeft size={17}/></button></header>
 
   <section className={'hero wrap audience-'+c.accent+' lh-hero'}>
    <div className="hero-copy">

@@ -12,7 +12,7 @@ export type LandingHomeContent={
  accent:'family'|'bride'|'groom'|'team'|'custom';
  packIndex:number;
  mode:'order'|'custom';
- nav:{examples:string;price:string;confidence:string};
+ nav:{price:string;confidence:string};
  hero:{lead:string;pre:string;headline:string;desc:string;chips:string[];cta:string;priceNote:string;facts:string[];english:string;caption:string};
  /** One artwork tells the whole story: faces (the photos they send), the print (the design), the group (the result). */
  story:{asset:string;alt:string;faces:Crop[];print:Crop;chatIcon:string;chatTitle:string;chatMembers:string;chatMessage:string;chatPhotos:string;steps:[string,string,string];designTag:string;stamp:string};
@@ -82,7 +82,7 @@ export const LANDING_HOME_CONTENT:Record<LandingVariantKey,LandingHomeContent>={
   accent:'bride',
   packIndex:1,
   mode:'order',
-  nav:{examples:'דוגמאות לחברות',price:'כמה זה עולה?',confidence:'מזמינות בראש שקט'},
+  nav:{price:'כמה זה עולה?',confidence:'מזמינות בראש שקט'},
   hero:{
    lead:'הכלה והחברות.',
    pre:'בגרסת',
@@ -232,7 +232,7 @@ export const LANDING_HOME_CONTENT:Record<LandingVariantKey,LandingHomeContent>={
   accent:'family',
   packIndex:0,
   mode:'order',
-  nav:{examples:'דוגמאות למשפחה',price:'כמה זה עולה?',confidence:'מזמינים בראש שקט'},
+  nav:{price:'כמה זה עולה?',confidence:'מזמינים בראש שקט'},
   hero:{
    lead:'הילד שלכם.',
    pre:'בגרסת',
@@ -361,7 +361,7 @@ export const LANDING_HOME_CONTENT:Record<LandingVariantKey,LandingHomeContent>={
   accent:'groom',
   packIndex:2,
   mode:'order',
-  nav:{examples:'דוגמאות לחבר׳ה',price:'כמה זה עולה?',confidence:'מזמינים בראש שקט'},
+  nav:{price:'כמה זה עולה?',confidence:'מזמינים בראש שקט'},
   hero:{
    lead:'החתן והחבר׳ה.',
    pre:'בגרסת',
@@ -490,7 +490,7 @@ export const LANDING_HOME_CONTENT:Record<LandingVariantKey,LandingHomeContent>={
   accent:'team',
   packIndex:3,
   mode:'order',
-  nav:{examples:'דוגמאות לצוות',price:'כמה זה עולה?',confidence:'מזמינים בראש שקט'},
+  nav:{price:'כמה זה עולה?',confidence:'מזמינים בראש שקט'},
   hero:{
    lead:'הצוות שלכם.',
    pre:'בגרסה',
@@ -619,7 +619,7 @@ export const LANDING_HOME_CONTENT:Record<LandingVariantKey,LandingHomeContent>={
   accent:'custom',
   packIndex:4,
   mode:'custom',
-  nav:{examples:'דוגמאות לרעיונות',price:'כמה זה עולה?',confidence:'מזמינים בראש שקט'},
+  nav:{price:'כמה זה עולה?',confidence:'מזמינים בראש שקט'},
   hero:{
    lead:'יש לכם רעיון?',
    pre:'',
