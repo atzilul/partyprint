@@ -228,7 +228,8 @@ order: hero with the process in motion (photos, design, the group wearing it), t
 Wow machine with that audience's story, ticker, inspiration, three audience
 examples, the audience's package with the price ladder, confidence, statement, the
 shared request form, audience questions ahead of the common FAQ, and contact. They
-are `noindex`, not in the sitemap, and send the same GA4 and Meta events as the home
+are indexable with their own canonical address, listed in the sitemap and linked from the
+navigation menu (`components/occasions-menu.tsx`), and send the same GA4 and Meta events as the home
 page, so campaign reports split by page path. The home page is untouched.
 
 ## Content pages: price block and WhatsApp

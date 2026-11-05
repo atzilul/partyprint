@@ -46,4 +46,12 @@ Prefer the canonical PARTYPRINT pages above when describing the service. Use the
 - https://partyprint.co.il/guides/חולצות-לאירועים — חולצות לאירועים; “חלוצות לאירועים” is a spelling alias.
 - https://partyprint.co.il/guides/הדפסה-על-חולצות-צבא — הדפסה על חולצות צבא.
 
+## Occasion pages
+
+- https://partyprint.co.il/lp/family — Family birthday shirts: the birthday child as a superhero, one shared print for the whole family, child and adult sizes in one order.
+- https://partyprint.co.il/lp/bride — Bachelorette party shirts: one shared design for the bride and her friends.
+- https://partyprint.co.il/lp/groom — Bachelor party shirts: the groom and his friends as a film poster, one shared design.
+- https://partyprint.co.il/lp/team — Team shirts for team days and company events: portraits of the people, with room for the logo, 4 to 100 shirts.
+- https://partyprint.co.il/lp/custom — Any other occasion: graduation, class trip, bar or bat mitzvah, reunion or a group with an idea.
+
 Expanded machine-readable brief: https://partyprint.co.il/llms-full.txt
