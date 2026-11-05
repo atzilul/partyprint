@@ -11,6 +11,18 @@ export const packs=[
 {name:'הרעיון שלכם',tag:'YOUR OWN THING',n:5,price:561.25,desc:'כל רעיון, כל אירוע. עיצוב שנולד מכם.',icon:'✺',cls:'custom',image:'/shirts.webp'},
 {name:'חולצה אחת. מתנה אישית.',tag:'ONE OF A KIND',n:1,price:SINGLE_SHIRT_PRICE,desc:'אדם אחד, סיפור אחד ועיצוב שנוצר במיוחד בשבילו.',icon:'✦',cls:'single',image:'/shirts.webp'}
 ];
+/**
+ * The team package can be ordered with a separate design for every shirt instead of one
+ * shared design. It costs a fixed surcharge per shirt on top of the quantity price.
+ */
+export const INDIVIDUAL_DESIGN_PACK=3;
+export const INDIVIDUAL_DESIGN_SURCHARGE=50;
+export type DesignMode='shared'|'individual';
+/** The design choice that applies to a package; anything but the team package is always one shared design. */
+export function designModeFor(pack:number,value:unknown):DesignMode{return pack===INDIVIDUAL_DESIGN_PACK&&value==='individual'?'individual':'shared';}
+export function designSurcharge(pack:number,quantity:number,value:unknown){return designModeFor(pack,value)==='individual'?INDIVIDUAL_DESIGN_SURCHARGE*quantity:0;}
+/** The package name as staff and customers read it, with the design choice when it is not the default. */
+export function packageLabel(pack:number,value:unknown){return packs[pack].name+(designModeFor(pack,value)==='individual'?' · עיצוב אישי לכל חולצה':'');}
 // Four is the starting suggestion; customers can reduce the same order to one.
 export const DEFAULT_SHIRT_QUANTITY=4;
 export const MIN_SHIRT_QUANTITY=1;

@@ -43,3 +43,17 @@ Remaining limits: no actual customer order, upload, mail send or Meta/GA account
 [Public performance verification](https://github.com/atzilul/partyprint/actions/runs/41417850383/job/125187022821): three fresh contexts per profile against the same clean SHA/fingerprint. Mobile LCP median1.656s (1.624–1.744), desktop0.468s (0.468–0.492). Six functional sample passes; mobile CLS0.00254–0.00304, desktop~0.00161; no client errors. These are throttled laboratory results from a Linux CI runner, not field Core Web Vitals or real-user conversion data. No regression of the previous media fixes was observed.
 
 Sites metadata was read again on2026-11-02: the same project [account identifier omitted] is active at version28, last updated2026-10-26, URL https://partyprint-ai.atzilul.chatgpt.site. It is not this Hostinger release and was not overwritten or duplicated. The source executor remains disconnected; formal Hostinger receipt and safe Sites packaging/sync remain blocked independently.
+
+## Design choice on the team package
+
+The team package (index 3) can be ordered with one shared design (the default, included in
+the quantity price) or with a separate design for every shirt, which adds a fixed
+`INDIVIDUAL_DESIGN_SURCHARGE` (ILS 50) per shirt. The rule lives in `lib/catalog.ts`
+(`designModeFor`, `designSurcharge`, `packageLabel`) and `priceFor` applies it, so the form,
+`/api/pricing`, `/api/contacts`, `/api/orders` and the admin editor share one calculation.
+The form sends `designMode`; the server ignores it for every other package and rejects a
+total that does not match its own (HTTP 409). An order with a design for every shirt stores
+`designMode: "individual"` and its package name carries the choice, so emails, the board,
+tracking and exports show it without their own logic. The choice appears in the form for the
+team package and as a selector on `/lp/team`; no other page offers it.
+

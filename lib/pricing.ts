@@ -1,4 +1,4 @@
-import {packs,calculatePrice,DEFAULT_SHIRT_PRICE,SINGLE_SHIRT_PRICE} from './catalog';
+import {packs,calculatePrice,designSurcharge,DEFAULT_SHIRT_PRICE,SINGLE_SHIRT_PRICE} from './catalog';
 
 export type PriceTier={quantity:number;price:number};
 export type Pricing={singleShirtPrice?:number;shirtPrice:number;tiers:PriceTier[];basePrices:number[];extraShirtPrice:number;customPrices:Record<number,number>;version:number};
@@ -63,9 +63,10 @@ export function normalizePricing(v:Partial<Pricing>,version=0):Pricing {
  return pricingForTiers(DEFAULT_TIERS,version);
 }
 
-export function priceFor(config:Pricing,pack:number,quantity:number){
+/** The order subtotal. A separate design for every shirt (team package only) adds its surcharge per shirt. */
+export function priceFor(config:Pricing,pack:number,quantity:number,designMode?:unknown){
  calculatePrice(pack,quantity);
- return money(unitPriceFor(config,quantity)*quantity);
+ return money(unitPriceFor(config,quantity)*quantity+designSurcharge(pack,quantity,designMode));
 }
 
 export type Coupon={code:string;title:string;promoText?:string;kind:'percent'|'fixed';value:number;minQuantity:number;minSubtotal:number;maxUses:number;starts:string;ends:string;enabled:boolean;package:number;used:number;version:number};

@@ -120,6 +120,25 @@
 .lh-pack-notes b{display:block;font-size:17px}
 .lh-pack-notes p{font-size:15px;line-height:1.55;color:#55554c;margin-top:2px}
 
+/* ---------- One design or a design for every shirt (team) ---------- */
+.lh-design-choice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 22px;margin-bottom:30px}
+.lh-design-head{grid-column:1/-1;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px 28px}
+.lh-design-head h3{font-size:27px;letter-spacing:-.8px}
+.lh-design-head p{max-width:600px;font-size:16px;line-height:1.55;color:#55554c}
+.lh-design-choice button{position:relative;display:grid;gap:7px;justify-items:start;align-content:start;padding:20px 22px 18px;padding-inline-start:62px;text-align:start;background:#f5f4ef;color:var(--ink);border:1px solid var(--ink);font:inherit;cursor:pointer;transition:background .25s,box-shadow .25s,transform .25s}
+.lh-design-choice button:hover{background:#ecebe4}
+.lh-design-choice button.is-selected{background:var(--lh-tint);box-shadow:5px 5px 0 var(--ink);transform:translate(-2px,-2px)}
+.lh-design-mark{position:absolute;inset-inline-start:20px;top:21px;display:grid;place-items:center;width:27px;height:27px;border:1.5px solid var(--ink);border-radius:50%;background:#fff}
+.is-selected .lh-design-mark{background:var(--ink);color:var(--acid)}
+.lh-design-choice button b{font:800 22px/1.2 'Rubik',sans-serif;letter-spacing:-.5px}
+.lh-design-choice button em{padding:3px 10px;background:var(--ink);color:var(--acid);font-style:normal;font-size:15px;font-weight:800}
+.lh-design-choice button p{font-size:15.5px;line-height:1.55;color:#3d3d36}
+.lh-design-choice button small{font-size:14.5px;font-weight:700}
+.lh-ladder-note{margin:-6px 0 12px;font-size:14px;font-weight:700;color:#55554c}
+.lh-card-badge{display:inline-block;margin:10px 0 0;padding:3px 9px;background:#fff;border:1px solid var(--ink);font-size:13px;font-weight:800}
+.lh-card-badge.is-extra{background:var(--acid)}
+.lh-card-badge+p{margin-top:8px}
+
 /* ---------- Statement in the audience's colour ---------- */
 .lh-page .statement{background:var(--lh-tint)}
 .lh-page .statement-image img{filter:none}
@@ -166,6 +185,13 @@
  .lh-steps{left:9px;right:9px;top:auto;bottom:9px;gap:5px}
  .lh-steps button{min-height:44px;font-size:12.5px;padding:5px 4px}
  .lh-pack-grid{grid-template-columns:1fr;gap:18px}
+ .lh-design-choice{grid-template-columns:1fr;gap:12px;margin-bottom:20px}
+ .lh-design-head h3{font-size:23px}
+ .lh-design-head p{font-size:15px}
+ .lh-design-choice button{border-radius:17px;padding:17px 16px 15px;padding-inline-start:54px}
+ .lh-design-choice button.is-selected{box-shadow:4px 4px 0 var(--ink);transform:none}
+ .lh-design-mark{inset-inline-start:15px;top:17px}
+ .lh-design-choice button b{font-size:20px}
  .lh-package{box-shadow:4px 4px 0 #161616}
  .lh-package h3{font-size:28px}
  .lh-ladder,.lh-pack-notes{border-radius:17px;padding:20px 16px 16px}
@@ -181,6 +207,6 @@
 /* ---------- Calm mode ---------- */
 html[data-motion=off] .lh-story>.optimized-picture>img{transform:none;transition:none}
 @media(prefers-reduced-motion:reduce){
- .lh-story>.optimized-picture>img,.lh-chat,.lh-design,.lh-veil,.lh-ladder li{transition:none}
+ .lh-story>.optimized-picture>img,.lh-chat,.lh-design,.lh-veil,.lh-ladder li,.lh-design-choice button{transition:none}
  .lh-thumbs>span,.lh-scan,.lh-design-stamp,.lh-confetti i,.lh-steps button i{animation:none!important}
 }

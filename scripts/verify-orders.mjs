@@ -256,6 +256,15 @@ try{
   const submitted=await response.json(),stored=await store.getOrder(submitted.id);
   assert.equal(stored.quantity,n);assert.equal(stored.shirts.length,n);assert.equal(stored.price,expected);assert.equal(submitted.emailSent,false);
  }
+ // A design for every shirt: the team package only, 50 per shirt on top of the quantity price.
+ for(const [pack,n,design,individual] of [[3,10,'individual',true],[3,4,'individual',true],[3,10,'shared',false],[1,6,'individual',false],[4,5,'individual',false]]){
+  sql.prepare('DELETE FROM form_rate_limits').run();
+  const expected=business.priceFor(quantityConfig,pack,n)+(individual?50*n:0),f=quantityForm(pack,n);f.set('designMode',design);f.set('expectedPrice',String(expected));
+  const response=await publicRoute.POST(post('/api/orders',f));assert.equal(response.status,201,'design '+design+' in package '+pack);
+  const submitted=await response.json(),stored=await store.getOrder(submitted.id);
+  assert.equal(stored.price,expected);assert.equal(stored.designMode,individual?'individual':undefined);assert.equal(stored.packageName.includes('עיצוב אישי לכל חולצה'),individual);assert.equal(submitted.packageName,stored.packageName);
+ }
+ {sql.prepare('DELETE FROM form_rate_limits').run();const f=quantityForm(3,10);f.set('designMode','individual');f.set('expectedPrice',String(business.priceFor(quantityConfig,3,10)));assert.equal((await publicRoute.POST(post('/api/orders',f))).status,409,'the shared-design price cannot buy a design for every shirt');}
  for(const n of [0,-1,4.5,101,NaN]){
   sql.prepare('DELETE FROM form_rate_limits').run();
   assert.equal((await publicRoute.POST(post('/api/orders',quantityForm(4,n)))).status,400);

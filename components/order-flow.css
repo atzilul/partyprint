@@ -91,3 +91,15 @@ main:has(.pp-request:focus-within)>.mobile-sticky,body:has(.pp-size-dialog[open]
 .pp-response-promise{display:flex;align-items:flex-start;gap:7px;margin:12px 0 0;font-size:13px;line-height:1.55;color:#3d422d;font-weight:600}
 .pp-response-promise svg{flex-shrink:0;margin-top:2px}
 .pp-confirmation .pp-confirm-promise{justify-content:center;font-size:15px;margin:4px 0 14px}
+
+/* One shared design or a design for every shirt (team package). */
+.pp-design-choice{margin-top:var(--space-pp-lg)}
+.pp-design-label{display:block;font-weight:700;font-size:var(--text-pp-sm);margin-bottom:var(--space-pp-sm)}
+.pp-design-choice>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-pp-sm)}
+.pp-design-choice button{display:grid;gap:2px;justify-items:start;text-align:start;padding:var(--space-pp-md);background:var(--color-pp-canvas);border:1px solid var(--color-pp-rule);border-radius:var(--radius-pp-input);color:inherit;font:inherit;cursor:pointer}
+.pp-design-choice button b{font-size:var(--text-pp-sm)}
+.pp-design-choice button span{font-size:var(--text-pp-xs);font-weight:700;color:var(--color-pp-muted)}
+.pp-design-choice button:hover{background:var(--color-pp-soft)}
+.pp-design-choice [aria-checked=true]{background:var(--color-pp-soft);border-color:var(--color-pp-ink);box-shadow:inset 0 0 0 1px var(--color-pp-ink)}
+.pp-design-choice [aria-checked=true] span{color:var(--color-pp-ink)}
+@media(max-width:360px){.pp-design-choice>div{grid-template-columns:minmax(0,1fr)}}

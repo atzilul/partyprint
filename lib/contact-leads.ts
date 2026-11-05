@@ -2,14 +2,14 @@ import {bindings,getOrder} from './order-store';
 import {tokenHash} from './order-access';
 import {cleanSingleLine} from './text';
 import {validPhone,validCalendarDate} from './contact-validation';
-import {packs,isPackageQuantity,validateShirts} from './catalog';
-import type {ShirtSelection} from './catalog';
+import {isPackageQuantity,validateShirts,designModeFor,packageLabel} from './catalog';
+import type {ShirtSelection,DesignMode} from './catalog';
 import {getCoupon,getPricing} from './studio-settings';
 import {couponDiscount,priceFor} from './pricing';
 import {sendContactMail} from './order-mail';
 import {parseAttribution} from './attribution';
 import type {Attribution} from './attribution';
-export type ContactDetails={name:string;phone:string;email:string;package:number;quantity:number;mode:string;eventDate:string;source:string;attribution?:Attribution;pricePreview:number;shirtDetailsStatus:'pending'|'complete';shirts:ShirtSelection[]};
+export type ContactDetails={name:string;phone:string;email:string;package:number;quantity:number;mode:string;eventDate:string;source:string;attribution?:Attribution;pricePreview:number;designMode?:DesignMode;shirtDetailsStatus:'pending'|'complete';shirts:ShirtSelection[]};
 export type ContactRow={id:string;token_hash:string;token_expires_at:number;created_at:string;updated_at:string;version:number;mail_status:string;data:string};
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/;
 const TOKEN=/^[a-f0-9]{64}$/;
@@ -23,12 +23,13 @@ export async function contactDetails(value:Record<string,unknown>):Promise<Conta
  const shirts=value.shirts===undefined?[]:value.shirts;if(!Array.isArray(shirts)||shirts.length&&!validateShirts(shirts,quantity))throw Error('invalid_contact');
  const source=String(value.source||'direct').replace(/[^a-zA-Z0-9_ .-]/g,'').slice(0,100)||'direct';
  const attribution=parseAttribution(value.attribution);
- const pricing=await getPricing(),subtotal=priceFor(pricing,pack,quantity);let pricePreview=subtotal;
+ const designMode=designModeFor(pack,value.designMode);
+ const pricing=await getPricing(),subtotal=priceFor(pricing,pack,quantity,designMode);let pricePreview=subtotal;
  const couponCode=typeof value.couponCode==='string'?value.couponCode.trim().slice(0,30).toUpperCase():'';
  if(couponCode){const coupon=await getCoupon(couponCode);if(coupon){try{pricePreview=Math.round((subtotal-couponDiscount(coupon,subtotal,quantity,pack))*100)/100;}catch{}}}
- return {name,phone,email,package:pack,quantity,mode,eventDate,source,...(attribution?{attribution}:{}),pricePreview,shirtDetailsStatus:shirts.length?'complete':'pending',shirts:shirts as ShirtSelection[]};
+ return {name,phone,email,package:pack,quantity,mode,eventDate,source,...(attribution?{attribution}:{}),pricePreview,...(designMode==='individual'?{designMode}:{}),shirtDetailsStatus:shirts.length?'complete':'pending',shirts:shirts as ShirtSelection[]};
 }
-async function deliver(row:ContactRow,attempt:string){const result=await sendContactMail(bindings(),{...contactView(row),packageName:packs[(JSON.parse(row.data) as ContactDetails).package].name},attempt);await bindings().DB.prepare('UPDATE contact_leads SET mail_status=? WHERE id=? AND version=?').bind(result.accepted?'accepted':result.code||'failed',row.id,row.version).run();return result;}
+async function deliver(row:ContactRow,attempt:string){const details=JSON.parse(row.data) as ContactDetails;const result=await sendContactMail(bindings(),{...contactView(row),packageName:packageLabel(details.package,details.designMode)},attempt);await bindings().DB.prepare('UPDATE contact_leads SET mail_status=? WHERE id=? AND version=?').bind(result.accepted?'accepted':result.code||'failed',row.id,row.version).run();return result;}
 export async function saveContact(id:string,token:string,details:ContactDetails,version:number){
  const {DB}=bindings(),now=new Date().toISOString(),hash=await tokenHash(token),json=JSON.stringify(details);
  if(!await contactGrant(id,token)&&await getOrder(id))throw Error('not_found');

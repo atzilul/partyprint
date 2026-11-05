@@ -21,7 +21,9 @@ export type LandingHomeContent={
  ticker:string[];
  how:{eyebrow:string;title:[string,string];intro:string[];steps:{short:string;text:string}[];brief:{label:string;lines:string[];bold:string;chips:string[]};fileChip:string;stamp:string;delivery:string;note:string;terms:string};
  inspo:{eyebrow:string;title:[string,string];intro:string[];asset:string;alt:string;crop?:Crop;stamp:string;tag:string;lines:string[];accent:string;text:string;ideas:string[];link:string;caption:string};
- examples:{eyebrow:string;title:[string,string];intro:string[];cards:{asset:string;alt:string;crop?:Crop;sticker:string;title:string;text:string}[];caption:string};
+ examples:{eyebrow:string;title:[string,string];intro:string[];cards:{asset:string;alt:string;crop?:Crop;sticker:string;title:string;text:string;badge?:{text:string;extra?:boolean}}[];caption:string};
+ /** Only where a separate design for every shirt is offered (the team package): the choice and its wording. */
+ design?:{title:string;intro:string;shared:{label:string;price:string;text:string};individual:{label:string;price:string;text:string};priceIncludes:{shared:string;individual:string};includes:string;ladderNote:string};
  packages:{eyebrow:string;title:[string,string];intro:string[];includes:string[];button:string;ladderTitle:string;ladderHere:string;sideTitle:string;side:{title:string;text:string}[];foot:string};
  confidence:{eyebrow:string;title:[string,string];intro:string[];summaryTag:string;summaryTitle:string;summaryText:string;summaryBold:string;checks:string[];cards:{title:string;text:string}[];contactTitle:string;contactText:string};
  statement:{asset:string;alt:string;tag:string;lines:string[];accent:string;link:string};
@@ -495,13 +497,13 @@ export const LANDING_HOME_CONTENT:Record<LandingVariantKey,LandingHomeContent>={
    lead:'הצוות שלכם.',
    pre:'בגרסה',
    headline:'שכולם רוצים ללבוש.',
-   desc:'שולחים תמונות של האנשים, את הלוגו ומשפט אחד על הצוות. אנחנו הופכים אתכם לעיצוב אחד, שלובשים גם אחרי יום הגיבוש. בלי עוד חולצת לוגו שנשארת במגירה.',
+   desc:'שולחים תמונות של האנשים, את הלוגו ומשפט אחד על הצוות. אנחנו מעצבים הדפס אחד לכולם, או עיצוב אישי לכל אחד בתוספת 50 ₪ לחולצה. בלי עוד חולצת לוגו שנשארת במגירה.',
    chips:['🚀 יום גיבוש','☕ ההומור של המשרד','🏃 ריצת צוות','+ הלוגו שלכם'],
    cta:'עצבו לצוות שלנו',
    priceNote:'לחולצה, לצוות של עשרה',
-   facts:M.facts,
+   facts:['כולל עיצוב אחד לכל הצוות, הדפסה ומשלוח','עיצוב אישי לכל חולצה: 50 ₪ נוספים לחולצה','מאשרים לפני שמדפיסים','אין חיוב בשליחת הטופס'],
    english:'TEAM UNREAL.',
-   caption:'הדמיית AI • עיצוב אישי לצוות שלכם',
+   caption:'הדמיית AI • בתמונה: עיצוב אישי לכל חולצה, בתוספת 50 ₪ לחולצה',
   },
   story:{
    asset:'/tech-team.webp',
@@ -534,7 +536,7 @@ export const LANDING_HOME_CONTENT:Record<LandingVariantKey,LandingHomeContent>={
    steps:[
     {short:'שולחים תמונות ולוגו',text:'תמונת צוות או סלפי של כל אחד, והלוגו בקובץ. כן, גם התמונה מההאקתון.'},
     {short:'מספרים על הצוות',text:'״צוות מוצר. חיים על קפה. הדדליין היה אתמול.״ זה לגמרי בריף.'},
-    {short:'מאשרים את העיצוב',text:'אנחנו הופכים את הצוות לעיצוב אחד, עם AI ומגע אנושי. מי שמארגן מאשר לפני שמדפיסים.'},
+    {short:'מאשרים את העיצוב',text:'אנחנו מעצבים הדפס אחד לכולם, או עיצוב אישי לכל אחד בתוספת מחיר. מי שמארגן מאשר לפני שמדפיסים.'},
     {short:'מקבלים למשרד',text:'אחרי אישור העיצוב וההזמנה, מדפיסים ושולחים לכתובת אחת. נשאר רק לחלק.'},
    ],
    brief:{label:'THE BRIEF /',lines:['צוות מוצר.','חיים על קפה.'],bold:'תעשו מאיתנו נבחרת.',chips:['🚀 גיבוש','☕ קפה']},
@@ -562,20 +564,29 @@ export const LANDING_HOME_CONTENT:Record<LandingVariantKey,LandingHomeContent>={
   },
   examples:{
    eyebrow:'YOUR TEAM. OUR DESIGN.',
-   title:['צוות אחד. עיצוב אחד.','אפס חולצות מגירה.'],
-   intro:['שלושה כיוונים לצוות אחד.','העיצוב שלכם ייוולד מהתמונות','ומהבדיחות שלכם.'],
+   title:['עיצוב אחד, או אישי.','אפס חולצות מגירה.'],
+   intro:['שלושה כיוונים לצוות אחד.','שניים בעיצוב אישי לכל חולצה,','ואחד בעיצוב אחד לכולם.'],
    cards:[
-    {asset:'/tech-team.webp',alt:'חמישה אנשי צוות בחולצות עם פורטרטים אישיים בסגנון עתידני',sticker:'TEAM UNREAL',title:'פורטרט לכל אחד',text:'כל אחד מהצוות מקבל את הפנים שלו באותו סגנון. כולם באותו לוק, ואף אחד לא אותו דבר.'},
-    {asset:'/tech-team.webp',alt:'תקריב של חולצה עם פורטרט עתידני של איש צוות עם משקפיים',crop:{x:23,y:31,scale:2.2},sticker:'PEOPLE FIRST',title:'האנשים, לא רק הלוגו',text:'הפנים של האנשים במרכז ההדפס, והלוגו משתלב לידם. חולצה שלובשים גם ביום רגיל.'},
-    {asset:'/review-shirts-v1.webp',alt:'חולצה שחורה עם איור של רובוט מחזיק כוס קפה והכיתוב HUMAN AFTER COFFEE',crop:{x:83.33,y:50,scale:2.2},sticker:'HUMAN AFTER COFFEE',title:'ההומור של המשרד',text:'הבדיחה מהדיילי, המשפט של ראש הצוות, הקפה של הבוקר. ספרו לנו, וזה נכנס להדפס.'},
+    {asset:'/tech-team.webp',alt:'חמישה אנשי צוות בחולצות עם פורטרטים אישיים בסגנון עתידני',sticker:'TEAM UNREAL',title:'פורטרט לכל אחד',badge:{text:'עיצוב אישי לכל חולצה · בתוספת 50 ₪ לחולצה',extra:true},text:'כל אחד מהצוות מקבל את הפנים שלו באותו סגנון. כולם באותו לוק, ואף אחד לא אותו דבר.'},
+    {asset:'/tech-team.webp',alt:'תקריב של חולצה עם פורטרט עתידני של איש צוות עם משקפיים',crop:{x:23,y:31,scale:2.2},sticker:'PEOPLE FIRST',title:'האנשים, לא רק הלוגו',badge:{text:'עיצוב אישי לכל חולצה · בתוספת 50 ₪ לחולצה',extra:true},text:'הפנים של כל אחד במרכז החולצה שלו, והלוגו משתלב לידן. חולצה שלובשים גם ביום רגיל.'},
+    {asset:'/review-shirts-v1.webp',alt:'חולצה שחורה עם איור של רובוט מחזיק כוס קפה והכיתוב HUMAN AFTER COFFEE',crop:{x:83.33,y:50,scale:2.2},sticker:'HUMAN AFTER COFFEE',title:'ההומור של המשרד',badge:{text:'עיצוב אחד לכולם · כלול במחיר'},text:'הבדיחה מהדיילי, המשפט של ראש הצוות, הקפה של הבוקר. ספרו לנו, וזה נכנס להדפס אחד שכולם לובשים.'},
    ],
    caption:M.examplesCaption,
+  },
+  design:{
+   title:'עיצוב אחד לכולם, או עיצוב לכל אחד?',
+   intro:'בתמונות בעמוד כל אחד מהצוות לובש פורטרט משלו. זו אפשרות בתוספת מחיר. בוחרים כאן, והמחיר מתעדכן בחבילה ובטופס.',
+   shared:{label:'עיצוב אחד לכל הצוות',price:'כלול במחיר',text:'הדפס אחד שכולם לובשים: כל הצוות באיור אחד, בדיחה של המשרד או לוגו עם אופי.'},
+   individual:{label:'עיצוב אישי לכל חולצה',price:'בתוספת 50 ₪ לחולצה',text:'כל אחד מקבל עיצוב משלו באותו סגנון, למשל פורטרט שלו, כמו בתמונות בעמוד.'},
+   priceIncludes:{shared:'כולל עיצוב אחד לכל הצוות, הדפסה ומשלוח עד הבית',individual:'כולל עיצוב אישי לכל חולצה, הדפסה ומשלוח עד הבית'},
+   includes:'עיצוב אישי לכל חולצה, באותו סגנון ועם מקום ללוגו',
+   ladderNote:'המחירים כוללים 50 ₪ לחולצה על עיצוב אישי לכל חולצה.',
   },
   packages:{
    eyebrow:'TEAM SPIRIT',
    title:['חבילת הצוות.','הוסיפו את כולם.'],
    intro:[...M.packIntro,'ככל שהצוות גדל, המחיר לחולצה יורד.'],
-   includes:['עיצוב משותף אישי לכל הצוות, עם מקום ללוגו','הדפסה ומשלוח לכתובת אחת','אישור של המארגן לפני הדפסה'],
+   includes:['עיצוב אחד לכל הצוות, עם מקום ללוגו','הדפסה ומשלוח לכתובת אחת','אישור של המארגן לפני הדפסה'],
    button:'זאת החבילה שלנו',
    ladderTitle:'הצוות גדל? המחיר לחולצה יורד',
    ladderHere:'אתם כאן',
@@ -585,7 +596,7 @@ export const LANDING_HOME_CONTENT:Record<LandingVariantKey,LandingHomeContent>={
     {title:'הלוגו משתלב בעיצוב',text:'מעלים את הלוגו עם התמונות, ואנחנו משלבים אותו לצד האנשים. רואים הכול לפני ההדפסה.'},
     {title:'עד 100 חולצות בהזמנה',text:'צריכים יותר ממאה? כתבו לנו ב־WhatsApp ונתאים הצעה.'},
    ],
-   foot:M.packFoot,
+   foot:'* המחיר מחושב לפי מדרגת הכמות וכולל עיצוב אחד לכל הצוות, הדפסה ומשלוח. עיצוב אישי לכל חולצה: 50 ₪ נוספים לכל חולצה. נשלח לכם מחיר סופי לאישור לפני התשלום.',
   },
   confidence:confidenceM('כיף לצוות. בהירות בהזמנה.','מתאמים לפי האירוע'),
   statement:{
@@ -609,6 +620,7 @@ export const LANDING_HOME_CONTENT:Record<LandingVariantKey,LandingHomeContent>={
   },
   trust:M.trust,
   faq:[
+   ['אפשר עיצוב שונה לכל אחד בצוות?','כן. המחיר הרגיל כולל עיצוב אחד משותף לכל החולצות. עיצוב אישי לכל חולצה, למשל פורטרט של כל אחד מהצוות כמו בתמונות בעמוד, עולה 50 ₪ נוספים לכל חולצה. בוחרים את האפשרות בחבילה או בטופס, והמחיר מתעדכן מיד.'],
    ['אפשר לשלב את הלוגו של החברה?','כן. מעלים את הלוגו בטופס יחד עם התמונות, ואנחנו משלבים אותו בעיצוב לצד האנשים. העיצוב מגיע אליכם לאישור לפני ההדפסה.'],
    ['אנחנו צוות גדול. יש מחיר לכמות?','בטופס בוחרים כל כמות עד 100 חולצות, והמחיר לחולצה יורד לפי מדרגות הכמות שמוצגות שם. מעל 100 חולצות כתבו לנו ב־WhatsApp ונתאים הצעה.'],
    leadTimeQ('האירוע','אם הוא קרוב יותר'),

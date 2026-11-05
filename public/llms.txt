@@ -22,7 +22,7 @@
 
 - Personalized shirts for birthdays, family events, bachelor and bachelorette parties, team evenings, employee gifts, trips and other celebrations.
 - AI-assisted visual design guided by a human creative process and customer approval before printing.
-- One shared design direction per package, printing and home delivery as shown on the site.
+- One shared design direction per package, printing and home delivery as shown on the site. On the team package only, a separate design for every shirt (for example a portrait of each team member) can be chosen instead, for ILS 50 more per shirt.
 - Quantity-based shirt pricing. The displayed price per shirt and package total update according to the quantity tier shown on the ordering page.
 - A single shirt costs ILS 180 including personal design, printing and home delivery. Each occasion starts at 4 shirts in the form, and the customer can change the quantity up to 100; the price follows the quantity tier shown there. Published price per shirt by quantity (November 2026; the live form is authoritative): 4–5 shirts ILS 110, 6–7 ILS 105, 8–9 ILS 100, 10–14 ILS 95, 15–19 ILS 93, 20–100 ILS 90.
 - Contact details are saved after two steps: shirts and an optional event date, then name, phone and email, all three required. The idea and photos follow in a third step and are optional. Sizes and colors can be selected optionally inside the request form, on the confirmation page, or coordinated on WhatsApp. Explicitly confirmed selections are saved with the request; skipping sizes never blocks contacting the studio. Customers can send up to 10 reference images and a short brief.
