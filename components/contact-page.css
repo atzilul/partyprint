@@ -1,0 +1,163 @@
+/* Contact page (components/contact-page.tsx). The header, hero frame, type and buttons are
+   the home page's (app/globals.css); this file adds the page's own pieces. */
+.cp-page{--cp-green:#25d366;--cp-lilac:#d2c5ff;--cp-pink:#fbc2de;background:var(--background)}
+
+/* ---------- Hero ---------- */
+.cp-hero{background:var(--acid)}
+.cp-hero .audience-copy{min-height:0;margin-bottom:26px}
+.cp-hero .audience-copy p{min-height:0;max-width:520px}
+.cp-badge{display:inline-block;background:var(--ink);color:var(--acid);font:900 13px/1 Arial,sans-serif;letter-spacing:1px;padding:8px 11px;transform:rotate(-2deg)}
+.cp-whatsapp{display:inline-flex;align-items:center;justify-content:center;gap:12px;background:var(--cp-green);color:var(--ink);border:2px solid var(--ink);border-radius:4px;padding:14px 22px;font-size:17px;font-weight:800;box-shadow:5px 5px 0 var(--ink);transition:transform .16s,box-shadow .16s}
+.cp-whatsapp:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink)}
+.cp-whatsapp:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--ink)}
+.cp-whatsapp-big{font-size:21px;padding:19px 28px;min-height:68px;width:100%;max-width:440px;justify-content:space-between}
+.cp-whatsapp-big svg:first-child{animation:cp-ring 3.4s ease-in-out infinite;transform-origin:50% 60%}
+.cp-page .pp-response-promise{display:flex;align-items:flex-start;gap:7px;margin:14px 0 0;font-size:14px;line-height:1.55;color:#3d422d;font-weight:700}
+.cp-page .pp-response-promise svg{flex-shrink:0;margin-top:3px}
+.cp-to-form{display:inline-flex;align-items:center;gap:7px;margin-top:16px;font-size:15.5px;font-weight:800;text-decoration:underline;text-underline-offset:4px}
+.cp-to-form svg{animation:cp-nudge 1.8s ease-in-out infinite}
+.cp-points{list-style:none;padding:0;margin:22px 0 0;display:flex;flex-wrap:wrap;gap:8px 20px;font-size:14.5px;font-weight:700;color:#3d422d}
+.cp-points li{display:flex;align-items:center;gap:6px}
+.cp-points svg{flex-shrink:0}
+
+/* The chat in the hero */
+.cp-page .cp-art::before,.cp-page .cp-art::after{display:none}
+.cp-art{background:var(--cp-lilac);display:flex;align-items:center;justify-content:center;padding:44px 28px;overflow:hidden;background-image:radial-gradient(#16161622 1.4px,transparent 1.5px);background-size:22px 22px}
+.cp-chat{position:relative;z-index:1;width:min(430px,100%);background:#fffdf7;border:2px solid var(--ink);border-radius:26px;box-shadow:10px 10px 0 var(--ink);overflow:hidden;transform:rotate(-2deg);animation:cp-float 7s ease-in-out infinite}
+.cp-chat-head{display:flex;align-items:center;gap:12px;padding:15px 18px;background:var(--ink);color:#fff}
+.cp-chat-avatar{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--acid);color:var(--ink);font:400 26px/1 Arial,sans-serif;flex-shrink:0;animation:spin 18s linear infinite}
+.cp-chat-head b{display:block;font:900 17px/1.1 Arial,sans-serif;letter-spacing:-.6px}
+.cp-chat-head small{display:block;font-size:12.5px;color:#cfcfc6;margin-top:3px;min-height:16px}
+.cp-chat-dot{width:10px;height:10px;border-radius:50%;background:var(--cp-green);margin-inline-start:auto;box-shadow:0 0 0 0 #25d36699;animation:cp-pulse 2s ease-out infinite}
+.cp-chat-body{display:flex;flex-direction:column;gap:9px;padding:18px 16px;min-height:330px;justify-content:flex-end;background:#f5f1e6}
+.cp-bubble{margin:0;max-width:84%;padding:10px 14px;font-size:15.5px;line-height:1.45;font-weight:600;border:1.5px solid var(--ink);animation:cp-pop .34s cubic-bezier(.2,1.4,.4,1) both}
+.cp-them{align-self:flex-start;background:#fff;border-radius:16px 16px 16px 4px}
+.cp-us{align-self:flex-end;background:#dcf8c6;border-radius:16px 16px 4px 16px}
+.cp-typing{display:flex;gap:5px;align-items:center;padding:14px 16px}
+.cp-typing i{width:7px;height:7px;border-radius:50%;background:var(--ink);animation:cp-dot 1s ease-in-out infinite}
+.cp-typing i:nth-child(2){animation-delay:.15s}
+.cp-typing i:nth-child(3){animation-delay:.3s}
+.cp-chat-foot{display:flex;align-items:center;gap:10px;padding:12px 14px;border-top:2px solid var(--ink);background:#fffdf7}
+.cp-chat-foot span{flex:1;border:1.5px solid #bdb8a8;border-radius:20px;padding:9px 14px;font-size:14px;color:#8a8576}
+.cp-chat-foot b{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--cp-green);border:1.5px solid var(--ink)}
+.cp-chat-foot svg{transform:scaleX(-1)}
+.cp-sticker{position:absolute;z-index:2;font:900 18px/1 'Rubik',Arial,sans-serif;border:2px solid var(--ink);padding:9px 13px;box-shadow:4px 4px 0 var(--ink)}
+.cp-sticker-a{top:9%;right:7%;background:var(--orange);color:#fff;transform:rotate(8deg);animation:cp-wobble 5s ease-in-out infinite}
+.cp-sticker-b{bottom:11%;left:6%;background:var(--acid);transform:rotate(-9deg);animation:cp-wobble 6s ease-in-out infinite reverse}
+.cp-sticker-c{top:13%;left:9%;background:#fff;font-size:30px;border-radius:50%;width:62px;height:62px;display:grid;place-items:center;padding:0;animation:cp-wave 2.6s ease-in-out infinite;transform-origin:70% 80%}
+
+/* ---------- Running band ---------- */
+.cp-ticker>div{justify-content:flex-start;animation:cp-run 34s linear infinite}
+
+/* ---------- Subjects ---------- */
+.cp-subjects .section-head h2 span{color:var(--orange);-webkit-text-stroke:1px var(--ink);text-shadow:3px 3px 0 var(--ink);display:inline-block;transform:rotate(-3deg)}
+.cp-subjects .section-head>p{color:#55574a;max-width:360px}
+.cp-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.cp-card{position:relative;display:flex;flex-direction:column;gap:8px;min-height:230px;padding:24px 22px 20px;border:2px solid var(--ink);border-radius:6px;box-shadow:6px 6px 0 var(--ink);transform:rotate(var(--cp-turn,0deg));transition:transform .2s cubic-bezier(.2,1.4,.4,1),box-shadow .2s;color:var(--ink)}
+.cp-card:hover,.cp-card:focus-visible{transform:rotate(0deg) translate(-3px,-5px);box-shadow:10px 11px 0 var(--ink)}
+.cp-card:hover .cp-card-icon,.cp-card:focus-visible .cp-card-icon{animation:cp-jump .55s cubic-bezier(.2,1.4,.4,1)}
+.cp-card-icon{font-size:42px;line-height:1;margin-bottom:6px;display:inline-block;width:max-content}
+.cp-card strong{font:900 27px/1.1 'Rubik',Arial,sans-serif;letter-spacing:-.03em}
+.cp-card-text{font-size:16px;line-height:1.5;flex:1}
+.cp-card-go{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-size:15px;font-weight:800;border-top:1.5px solid currentColor;padding-top:12px}
+.cp-card-go svg:last-child{margin-inline-start:auto;transition:transform .2s}
+.cp-card:hover .cp-card-go svg:last-child{transform:translate(-4px,-4px)}
+.cp-acid{background:var(--acid)}
+.cp-lilac{background:var(--cp-lilac)}
+.cp-pink{background:var(--cp-pink)}
+.cp-white{background:#fff}
+.cp-orange{background:var(--orange);color:#fff}
+.cp-orange .cp-card-go{border-color:#fff}
+.cp-ink{background:var(--ink);color:#fff}
+.cp-ink .cp-card-icon{color:var(--acid)}
+.cp-orange,.cp-ink{box-shadow:6px 6px 0 #16161655}
+.cp-ink:hover,.cp-ink:focus-visible,.cp-orange:hover,.cp-orange:focus-visible{box-shadow:10px 11px 0 #16161655}
+
+/* ---------- Other ways ---------- */
+.cp-ways{background:var(--ink);color:#fff;padding:34px 0}
+.cp-ways .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.cp-ways a,.cp-ways .wrap>div{display:flex;align-items:center;gap:14px;padding:16px 18px;border:1px solid #444;border-radius:5px;min-width:0;transition:background .2s,border-color .2s,transform .2s}
+.cp-ways a:hover{background:#242424;border-color:var(--acid);transform:translateY(-3px)}
+.cp-ways svg{flex-shrink:0;color:var(--acid)}
+.cp-ways span{min-width:0}
+.cp-ways small{display:block;font-size:12.5px;color:#bdbdb4;letter-spacing:.4px}
+.cp-ways b{display:block;font-size:17px;font-weight:800;overflow-wrap:anywhere}
+
+/* ---------- Message form ---------- */
+.cp-message{display:grid;grid-template-columns:.85fr 1fr;gap:70px;align-items:start}
+.cp-message-copy h2{margin:18px 0 20px}
+.cp-message-copy h2 span{color:#7351fb}
+.cp-message-copy>p{font-size:18px;line-height:1.65;color:#444;max-width:440px}
+.cp-points-dark{flex-direction:column;gap:11px;color:var(--ink);font-size:16px;margin-top:26px}
+.cp-points-dark a{text-decoration:underline;text-underline-offset:3px}
+.cp-form{background:#fff;border:2px solid var(--ink);border-radius:8px;box-shadow:9px 9px 0 var(--ink);padding:30px 28px 26px;display:flex;flex-direction:column;gap:16px}
+.cp-form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cp-form label{display:flex;flex-direction:column;gap:6px;font-size:15px;font-weight:800;min-width:0}
+.cp-form input,.cp-form select,.cp-form textarea{font:inherit;font-weight:600;font-size:16px;border:1.5px solid var(--ink);border-radius:4px;background:#fdfcf8;padding:12px 13px;width:100%;min-width:0;color:var(--ink);transition:box-shadow .15s,background .15s}
+.cp-form textarea{resize:vertical;min-height:130px;line-height:1.5}
+.cp-form input:focus,.cp-form select:focus,.cp-form textarea:focus{outline:none;background:#fff;box-shadow:4px 4px 0 var(--acid),4px 4px 0 1.5px var(--ink)}
+.cp-form [aria-invalid=true]{border-color:#c0172b;background:#fff5f6}
+.cp-error{color:#c0172b;font-size:13.5px;font-weight:700}
+.cp-failure{margin:0;background:#fff0f1;border:1.5px solid #c0172b;color:#8d1220;padding:11px 14px;font-size:15px;font-weight:700;border-radius:4px}
+.cp-website{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.cp-form .cta{width:100%;margin-top:4px;cursor:pointer;background:var(--orange);border:2px solid var(--ink);color:#fff;box-shadow:5px 5px 0 var(--ink);transition:transform .16s,box-shadow .16s}
+.cp-form .cta:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink)}
+.cp-form .cta:disabled{opacity:.6;cursor:default}
+.cp-consent{margin:0;font-size:13px;line-height:1.6;color:#666}
+.cp-consent a{text-decoration:underline}
+.cp-sent{align-items:flex-start;gap:12px;background:var(--acid);animation:cp-pop .45s cubic-bezier(.2,1.4,.4,1) both}
+.cp-sent-mark{display:grid;place-items:center;width:74px;height:74px;border-radius:50%;background:var(--ink);color:var(--acid);animation:cp-stamp .6s cubic-bezier(.2,1.6,.4,1) both}
+.cp-sent h3{font:900 40px/1.05 'Rubik',Arial,sans-serif;letter-spacing:-.03em;margin:6px 0 0}
+.cp-sent p{margin:0;font-size:17px;line-height:1.6}
+.cp-sent .cp-whatsapp{margin-top:8px}
+
+/* ---------- Motion ---------- */
+@keyframes cp-pop{from{opacity:0;transform:translateY(14px) scale(.92)}to{opacity:1;transform:none}}
+@keyframes cp-dot{0%,80%,100%{transform:translateY(0);opacity:.35}40%{transform:translateY(-5px);opacity:1}}
+@keyframes cp-float{0%,100%{transform:rotate(-2deg) translateY(0)}50%{transform:rotate(-1deg) translateY(-10px)}}
+@keyframes cp-pulse{0%{box-shadow:0 0 0 0 #25d36699}100%{box-shadow:0 0 0 12px #25d36600}}
+@keyframes cp-wobble{0%,100%{translate:0 0}50%{translate:0 -9px}}
+@keyframes cp-wave{0%,60%,100%{rotate:0deg}10%,30%{rotate:16deg}20%,40%{rotate:-10deg}}
+@keyframes cp-ring{0%,82%,100%{transform:rotate(0)}86%,94%{transform:rotate(-14deg)}90%,98%{transform:rotate(12deg)}}
+@keyframes cp-nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+@keyframes cp-jump{0%{transform:none}45%{transform:translateY(-12px) rotate(-10deg) scale(1.12)}100%{transform:none}}
+@keyframes cp-stamp{from{transform:scale(2.2) rotate(-25deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes cp-run{to{transform:translateX(50%)}}
+html[data-motion=off] .cp-page *,html[data-motion=off] .cp-page *::before{animation:none!important}
+@media(prefers-reduced-motion:reduce){.cp-page *{animation:none!important;transition:none!important}}
+
+/* ---------- Smaller screens ---------- */
+@media(max-width:1050px){
+ .cp-cards{grid-template-columns:repeat(2,1fr)}
+ .cp-ways .wrap{grid-template-columns:repeat(2,1fr)}
+ .cp-message{grid-template-columns:1fr;gap:34px}
+ .cp-art{min-height:560px}
+}
+@media(max-width:680px){
+ /* On a phone the words and the WhatsApp button come first; the chat follows at its own height. */
+ .cp-page .cp-hero .cp-art{order:0;height:auto;aspect-ratio:auto;min-height:0}
+ .cp-page .cp-hero h1{font-size:clamp(56px,17vw,74px);line-height:.98;margin:14px 0 16px}
+ .cp-page .cp-hero h1 small{font-size:.3em;line-height:1.35;margin-bottom:6px}
+ .cp-page .cp-hero h1 i{display:none}
+ .cp-hero .audience-copy{margin-bottom:20px}
+ .cp-whatsapp-big{font-size:19px;padding:17px 20px;max-width:none}
+ .cp-points{flex-direction:column;gap:8px}
+ .cp-art{min-height:0;padding:44px 18px 52px}
+ .cp-chat{transform:rotate(-1deg);box-shadow:7px 7px 0 var(--ink)}
+ .cp-chat-body{min-height:300px}
+ .cp-bubble{font-size:15px}
+ .cp-sticker{font-size:15px;padding:7px 10px}
+ .cp-sticker-a{top:3%;right:4%}
+ .cp-sticker-b{bottom:3%;left:4%}
+ .cp-sticker-c{top:4%;left:5%;width:50px;height:50px;font-size:24px}
+ .cp-cards{grid-template-columns:1fr;gap:18px}
+ .cp-card{min-height:0;transform:none;padding:20px 18px 16px}
+ .cp-card strong{font-size:24px}
+ .cp-card-icon{font-size:36px}
+ .cp-ways{padding:24px 0}
+ .cp-ways .wrap{grid-template-columns:1fr;gap:10px}
+ .cp-form{padding:22px 18px 20px;box-shadow:6px 6px 0 var(--ink)}
+ .cp-form-row{grid-template-columns:1fr}
+ .cp-message-copy>p{font-size:17px}
+ .cp-sent h3{font-size:32px}
+}

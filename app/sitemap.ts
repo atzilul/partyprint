@@ -38,6 +38,7 @@ export default async function sitemap():Promise<MetadataRoute.Sitemap>{
   {url:base+'/bundle-sale',lastModified:occasionsUpdatedAt,images:imageList('/og-team.jpg')},
   ...[...BUNDLE_ANSWERS,...PRICE_ANSWERS].map(item=>({url:base+answerUrl(item),lastModified:new Date(item.updatedAt),images:imageList(item.heroImage?.src)})),
   {url:base+'/buyers-guide',lastModified:occasionsUpdatedAt},
+  {url:base+'/contact',lastModified:occasionsUpdatedAt},
   {url:base+'/en',lastModified:occasionsUpdatedAt},
   ...LANDING_VARIANT_KEYS.map(key=>({url:base+'/lp/'+key,lastModified:occasionsUpdatedAt,images:imageList(LANDING_HOME_CONTENT[key].story.asset)})),
   ...paths.map(path=>({url:base+path,lastModified:path==='/faq'||path==='/terms'?editorialUpdatedAt:contentUpdatedAt})),

@@ -5,7 +5,9 @@ import {orderSummary} from './order-summary';
 import {bundleLinkDays,customerLinkDays} from './security';
 import {safeMailSubject} from './text';
 import {getTeam,getOwnerEmail} from './team';
-import {renderOrderMail,renderCustomerConfirmation,renderContactNotice,renderManagerMailTest,managerMailRecipients} from './order-mail-template.mjs';
+import {renderOrderMail,renderCustomerConfirmation,renderContactNotice,renderContactMessage,renderManagerMailTest,managerMailRecipients} from './order-mail-template.mjs';
+import {topicLabel} from './contact-messages';
+import type {ContactMessage} from './contact-messages';
 
 import {bindings} from './order-store';
 import {mailConfiguration,mailFailure,sendResendMail} from './mail-delivery';
@@ -72,4 +74,18 @@ export async function sendContactMail(env:MailEnv,contact:{id:string;version:num
   result=await sendResendMail(env,{to,reply_to:contact.details.email,subject:safeMailSubject('PARTYPRINT · פרטי קשר '+(attempt==='initial'?'חדשים':'עודכנו')+' מ'+contact.details.name+' · '+contact.id.slice(0,8).toUpperCase()),text,html},'partyprint/contact/'+contact.id+'/'+attempt,3000);
  }catch{result=mailFailure('preparation_failed')}
  return recordAttempt(result,'contact',contact.id);
+}
+
+/** Tells the managers about a message from the contact page, with a ready WhatsApp reply to the sender. */
+export async function sendContactMessageMail(env:MailEnv,message:ContactMessage&{id:string;createdAt:string}):Promise<MailResult>{
+ let result:MailResult;
+ try{
+  const to=await recipients(),origin=publicOrigin(),reference=message.id.slice(0,8).toUpperCase();
+  const config=mailConfiguration(env);
+  if(config.issue)return recordAttempt({...config.issue,recipients:to},'contact',message.id);
+  const whatsappUrl=whatsappLink(message.phone,'היי '+message.name+', כאן PARTYPRINT. קיבלנו את ההודעה שלך ('+reference+') ואנחנו כאן.');
+  const {html,text}=renderContactMessage({...message,topicLabel:topicLabel(message.topic)},{origin,adminUrl:origin+'/admin?ticket='+encodeURIComponent(message.id),whatsappUrl});
+  result=await sendResendMail(env,{to,reply_to:message.email,subject:safeMailSubject('PARTYPRINT · הודעה מהאתר מ'+message.name+' · '+reference),text:text as string,html:html as string},'partyprint/message/'+message.id,5000);
+ }catch{result=mailFailure('preparation_failed')}
+ return recordAttempt(result,'contact',message.id);
 }
