@@ -1,0 +1,20 @@
+# ar.batch3 notes (91 items, 0-based indices into ar.missing.json)
+- 58-79: these are URL slugs of the guide pages (keys in components/seo-footer-links.tsx), not visible copy. Translated word-for-word with hyphens, matching the dictionary's labels, only because Hebrew is not allowed in the output. Recommend excluding them from the dictionary; they must never replace a real address.
+- 12, 18: "أضيفوا {0:tshirt}" follows the brief's example. The noun table is nominative, so 1 and 2 give "أضيفوا تيشيرت واحد / تيشيرتان" (strict grammar wants the accusative). Same limitation as existing entries.
+- 30: written "تم اختيار المقاسات ({0:tshirt})" with brackets instead of "لـ {0:tshirt}", so the nominative noun form stays correct for 2 ("تيشيرتان").
+- 13, 14: {1#tshirt} / {0#tshirt} after the number element. For 1 the table prints "تيشيرت واحد" after the digit ("1 تيشيرت واحد"); fine if these only show 2 and up.
+- 15, 16, 17: step number in its own element followed directly by the label, no space, as in the Hebrew (assumes the element is styled as a badge).
+- 0: hero headline in the order small line / "بنسخة" / line break / "يريد الجميع ارتداءها."; reads "فريقكم. بنسخة يريد الجميع ارتداءها."
+- 9: kept the dictionary's idiom "الفريق عليكم. / والتصميم علينا." (not literal).
+- 19: "נשאר לבחור {0} מידות" reworded to "المقاسات المتبقية للاختيار: {0}" to avoid number agreement.
+- 20, 21, 38: "מידה להשלמה" -> "مقاس لم يُحدَّد بعد" (size not chosen yet); alternative "مقاس بانتظار الإكمال".
+- 23: "גיל {0}" -> "العمر {0}" (no "سنوات", to avoid agreement).
+- 29: "ביטול ההחלה" is an undo button -> "التراجع عن التطبيق".
+- 31: "נשלים מידות בהמשך" is said by the customer (button) -> "سنكمل المقاسات لاحقًا".
+- 32, 33: copied from the existing entries (same text without the link) plus the link; "ידנית" stays "شخصيًا".
+- 41: prefilled WhatsApp message; it is URL-encoded in the code, so the gate may never see it.
+- 44, 45, 47: "עוגיות" -> "ملفات تعريف الارتباط" (as in the dictionary), "פיקסל" -> "بيكسل Meta"; Hebrew quote marks replaced with « ». 45: "הפרסום שלנו" -> "أداء إعلاناتنا".
+- 52 and the quotes in 45, 47: consent button "אישור" -> "موافق". If the bare key "אישור" is ever used as a noun label elsewhere it needs "موافقة". 48: status "מאושר" -> "تمت الموافقة".
+- 55: "פרטים" is only the consent "details" toggle -> "التفاصيل"; elsewhere the dictionary renders פרטים as "بيانات".
+- 56, 57: fragments followed by the promo code; 56 agrees with a masculine subject (خصم / عرض).
+- 89: "הצוות" here is the studio's staff -> "فريقنا", to keep it apart from the customer's team.

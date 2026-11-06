@@ -27,48 +27,74 @@ export function languageOfPath(pathname:string|null|undefined):Language{
 /** "מ־80 ₪ לחולצה" becomes the key "מ־{0} ₪ לחולצה" and the numbers ["80"]. */
 export function maskNumbers(text:string):{key:string;numbers:string[]}{
  const numbers:string[]=[];
- const key=text.replace(/\d+(?:[.,]\d+)*/g,found=>{numbers.push(found);return '{'+(numbers.length-1)+'}';});
+ // The numbered places of elements (<0>, </0>, <0/>) are not numbers of the sentence.
+ const key=text.replace(/<\/?\d+\/?>|\d+(?:[.,]\d+)*/g,found=>{if(found[0]==='<')return found;numbers.push(found);return '{'+(numbers.length-1)+'}';});
  return {key,numbers};
 }
+
+/** A short, stable name for a sentence. The browser's dictionary is keyed by it, to stay small. */
+export function hashKey(text:string):string{
+ let high=0xdeadbeef,low=0x41c6ce57;
+ for(let index=0;index<text.length;index++){
+  const code=text.charCodeAt(index);
+  high=Math.imul(high^code,2654435761);low=Math.imul(low^code,1597334677);
+ }
+ high=Math.imul(high^(high>>>16),2246822507)^Math.imul(low^(low>>>13),3266489909);
+ low=Math.imul(low^(low>>>16),2246822507)^Math.imul(high^(high>>>13),3266489909);
+ return (4294967296*(2097151&low)+(high>>>0)).toString(36);
+}
+
 /**
  * A noun counted by a number changes with the number in some languages: Arabic says
  * "4 تيشيرتات" and "20 تيشيرت". A translation writes such a pair as {0:tshirt}, and the
  * language's noun table gives the form for each plural category ({n} is the number).
+ * {0#tshirt} gives the noun alone, in the form that number calls for, when the page shows
+ * the number somewhere else.
  */
 export type Nouns=Record<string,Partial<Record<Intl.LDMLPluralRule,string>>>;
 const rules=new Map<string,Intl.PluralRules>();
-function counted(language:Language,noun:Nouns[string],number:string):string{
+function counted(language:Language,noun:Nouns[string],number:string,alone:boolean):string{
  let rule=rules.get(language);if(!rule){rule=new Intl.PluralRules(language);rules.set(language,rule);}
  const form=noun[rule.select(Number(number.replace(/,/g,'')))]??noun.other??'{n}';
- return form.replace('{n}',number);
+ return alone?form.replace('{n}','').trim():form.replace('{n}',number);
 }
 export function fillNumbers(text:string,numbers:string[],language:Language='he',nouns:Nouns={}):string{
- return text.replace(/\{(\d+)(?::([a-z]+))?\}/g,(whole,index,name)=>{
+ return text.replace(/\{(\d+)(?:([:#])([a-z]+))?\}/g,(whole,index,mark,name)=>{
   const number=numbers[Number(index)];
   if(number===undefined)return whole;
-  return name&&nouns[name]?counted(language,nouns[name],number):number;
+  return name&&nouns[name]?counted(language,nouns[name],number,mark==='#'):number;
  });
 }
 
 export type GateEnvironment={
  language:()=>Language;
- dictionary:(language:Language)=>Dictionary|undefined;
+ /** The translation of a masked Hebrew sentence, if there is one. */
+ lookup:(language:Language,key:string)=>string|undefined;
  nouns:(language:Language)=>Nouns|undefined;
  missing:(language:Language,key:string)=>void;
- /** Address of the dictionary the browser loads, or null where the browser needs none. */
- dictionaryScript:(language:Language)=>string|null;
+ /** Scripts the browser needs before it takes over the page: the dictionary, and the collect flag. */
+ scripts:(language:Language)=>{src?:string;code?:string}[];
 };
+export type Lookup=Pick<GateEnvironment,'lookup'|'missing'|'nouns'>;
+
+/**
+ * The translation of one sentence with its numbers still masked, or null when there is none
+ * (the sentence is then reported). Leading and trailing spaces are not part of the sentence.
+ */
+export function findTranslation(text:string,language:Language,environment:Lookup):{before:string;after:string;translated:string;numbers:string[]}|null{
+ const parts=/^(\s*)([\s\S]*?)(\s*)$/.exec(text);
+ if(!parts||!parts[2])return null;
+ const {key,numbers}=maskNumbers(parts[2]);
+ const found=environment.lookup(language,key);
+ if(found===undefined){environment.missing(language,key);return null;}
+ return {before:parts[1],after:parts[3],translated:found,numbers};
+}
 
 /** One sentence. Text without Hebrew is returned as it is; an unknown sentence stays Hebrew and is reported. */
-type Lookup=Pick<GateEnvironment,'dictionary'|'missing'|'nouns'>;
 export function translateText(text:string,language:Language,environment:Lookup):string{
  if(language==='he'||!hasHebrew(text))return text;
- const parts=/^(\s*)([\s\S]*?)(\s*)$/.exec(text);
- if(!parts||!parts[2])return text;
- const {key,numbers}=maskNumbers(parts[2]);
- const found=environment.dictionary(language)?.[key];
- if(found===undefined){environment.missing(language,key);return text;}
- return parts[1]+fillNumbers(found,numbers,language,environment.nouns(language))+parts[3];
+ const found=findTranslation(text,language,environment);
+ return found?found.before+fillNumbers(found.translated,found.numbers,language,environment.nouns(language))+found.after:text;
 }
 
 /** Every string inside a value (metadata, structured data). Addresses and other non-Hebrew strings pass through. */
@@ -80,4 +106,36 @@ export function translateDeep<T>(value:T,language:Language,environment:Lookup):T
   return item;
  };
  return walk(value) as T;
+}
+
+/**
+ * A sentence that the page writes around small elements ("עוד 3 חולצות ויורדים ל־<b>93 ₪</b>")
+ * is one message with numbered places for the elements: "עוד {0} חולצות ויורדים ל־<0>{1} ₪</0>".
+ * A translation may move the places to where its grammar needs them.
+ */
+export type RichPart=string|{slot:number;children:RichPart[]|null};
+export function parseRich(text:string):RichPart[]|null{
+ const root:RichPart[]=[],stack:{slot:number;children:RichPart[]}[]=[];
+ const tag=/<(\d+)\/>|<(\d+)>|<\/(\d+)>/g;
+ let last=0;
+ const here=()=>stack.length?stack[stack.length-1].children:root;
+ for(let match;(match=tag.exec(text));){
+  if(match.index>last)here().push(text.slice(last,match.index));
+  last=tag.lastIndex;
+  if(match[1]!==undefined)here().push({slot:Number(match[1]),children:null});
+  else if(match[2]!==undefined){const node={slot:Number(match[2]),children:[] as RichPart[]};here().push(node);stack.push(node);}
+  else{const open=stack.pop();if(!open||open.slot!==Number(match[3]))return null;}
+ }
+ if(stack.length)return null;
+ if(last<text.length)root.push(text.slice(last));
+ return root;
+}
+
+/** The addresses that exist in each language, without the language prefix. */
+export const TRANSLATED_ROUTES:Partial<Record<Language,string[]>>={ar:['/lp/team']};
+/** A link inside the site leads to the same page in the reader's language when that page exists. */
+export function localizedHref(language:Language,href:string):string{
+ if(language==='he'||!href.startsWith('/')||href.startsWith('//'))return href;
+ const cut=href.search(/[?#]/),path=cut<0?href:href.slice(0,cut);
+ return TRANSLATED_ROUTES[language]?.includes(path)?'/'+language+href:href;
 }

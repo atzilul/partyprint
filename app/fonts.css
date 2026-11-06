@@ -142,3 +142,18 @@
   src: url(./assets/static/rubik-900-hebrew.00d230e36d451b8f.woff2?no-inline) format('woff2');
   unicode-range: U+5B0-5BC,U+5BE,U+5C1-5C2,U+5C7,U+5D0-5EA,U+5F2-5F4,U+20AA,U+FB2A-FB36,U+FB38-FB3C,U+FB3E,U+FB40-FB41,U+FB43-FB44,U+FB46-FB4B;
 }
+
+/*
+ * Arabic and Cyrillic (translated addresses). The site's subsets above carry Hebrew and
+ * Latin only. Rubik's full files, already in public/fonts, carry both scripts; the browser
+ * fetches them only when a page shows those letters. They are declared under both family
+ * names, so body text set in Assistant gets them too.
+ */
+@font-face{font-family:'Rubik';font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/rubik-400.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFF,U+0400-04FF}
+@font-face{font-family:'Rubik';font-style:normal;font-weight:600;font-display:swap;src:url(/fonts/rubik-600.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFF,U+0400-04FF}
+@font-face{font-family:'Rubik';font-style:normal;font-weight:900;font-display:swap;src:url(/fonts/rubik-900.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFF,U+0400-04FF}
+@font-face{font-family:'Assistant';font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/rubik-400.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFF,U+0400-04FF}
+@font-face{font-family:'Assistant';font-style:normal;font-weight:600;font-display:swap;src:url(/fonts/rubik-600.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFF,U+0400-04FF}
+@font-face{font-family:'Assistant';font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/rubik-600.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFF,U+0400-04FF}
+/* Arabic letters join; tightened or widened spacing pulls the joins apart. */
+:lang(ar) *{letter-spacing:0!important}

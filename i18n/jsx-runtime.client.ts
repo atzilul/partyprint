@@ -3,9 +3,10 @@ import * as real from 'react/jsx-runtime';
 import {createGate} from './gate';
 import {clientEnvironment} from './env.client';
 
-type Run=(type:unknown,props:Record<string,unknown>,key?:unknown)=>unknown;
+type Props=Record<string,unknown>;
+type Run=(type:unknown,props:Props,key?:unknown)=>unknown;
 const react=real as unknown as {Fragment:unknown;jsx:Run;jsxs:Run};
-const gate=createGate(clientEnvironment);
+const wrap=createGate(clientEnvironment);
 export const Fragment=react.Fragment;
-export const jsx:Run=(type,props,key)=>react.jsx(type,gate(type,props,react.jsx) as Record<string,unknown>,key);
-export const jsxs:Run=(type,props,key)=>react.jsxs(type,gate(type,props,react.jsx) as Record<string,unknown>,key);
+export const jsx=wrap(react.jsx,react.jsx);
+export const jsxs=wrap(react.jsxs,react.jsxs);
