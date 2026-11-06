@@ -331,6 +331,8 @@ button,a,input,select,textarea,summary{touch-action:manipulation}
 .lang-menu-panel .is-current i{background:var(--acid);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
 .lang-menu-panel .is-current svg{margin-inline-start:auto}
 .lang-row{display:none}
+/* On a page that is not Arabic, the Arabic name of the language is drawn with a system font, so that one word does not download the Arabic font files. */
+:root:not(:lang(ar)) .lang-menu [lang=ar],:root:not(:lang(ar)) .lang-row [lang=ar],:root:not(:lang(ar)) .language-switch [lang=ar],:root:not(:lang(ar)) .lang-suggest{font-family:'Segoe UI',Tahoma,'Geeza Pro','Noto Sans Arabic',Arial,sans-serif}
 /* The header keeps one line with the language button in it: links do not wrap, and the spacing gives the button its room. */
 @media(min-width:1101px){.nav nav>a,.nav-menu-toggle{white-space:nowrap}}
 @media(min-width:1481px){.nav{gap:20px}.nav nav{gap:clamp(14px,1.2vw,18px);font-size:14.5px}}
