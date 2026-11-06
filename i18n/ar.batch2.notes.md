@@ -1,0 +1,23 @@
+# ar.batch2 notes (indices are 0-based, matching ar.missing2.json)
+
+- 129: NOT interface copy. It is a piece of server code captured by the extractor (`fail('...',{0}); await bindings.DB.prepare(...`). I translated only the Hebrew string inside the quotes (same text as 108) and left the code untouched. Recommend excluding it from the replacement run; 108 already covers the message.
+- 7: fragment followed by a price. Hebrew ends with a maqaf glued to the price; Arabic "إلى" needs a space, so the item ends with a trailing space. If the pipeline trims strings, the space must be added in the template. Also "{0} تيشيرت" is grammatical for 11+ and tolerable for 1, but not ideal for 2-10 (Arabic number agreement).
+- 89 + 90: two fragments that I assume form one sentence: "... والدفع حتى [date] يترك مهلة من {0} أيام عمل حتى [date]". The verb "يترك" agrees with "اعتماد" in 89. If they are shown separately, 90 needs a subject. "{0} أيام عمل" is correct for 3-10 only.
+- 93-96: one sentence split in four ("بالإرسال أنتم توافقون على" + "الشروط والأحكام" + "وسياسة" + "الخصوصية"). Reads correctly only if the page joins them in this order with spaces. 94 "התקנון" rendered as "الشروط والأحكام"; align with the other translator if they chose another term.
+- 12, 30: used "التيشيرتات الـ {0}" to avoid number-agreement errors for any quantity.
+- 69: rephrased as "the maximum number of T-shirts in the form is {0}" for the same reason.
+- 91: "{0} أيام عمل" assumes 3-10. "אזורים חריגים" rendered as "المناطق الاستثنائية" (probably remote areas).
+- 4: "צוות עם אופי" looks like a package name; rendered "فريق له شخصيته". Must match the other translator's rendering of the same name.
+- 0: "עוגיות" rendered formally as "ملفات تعريف الارتباط"; "الكوكيز" is the common informal alternative. Align with the other list.
+- 23, 25, 34: bare labels ("מידה", "צבע", "חולצה"). Rendered with the article as form labels / column headers ("المقاس", "اللون", "التيشيرت"). If 34 is used as a unit after a number, it should be "تيشيرت".
+- 20, 21: "מבוגר" / "ילד" follow the glossary (كبار / أطفال), i.e. plural category names, not "adult" / "child".
+- 40: "מידת דגם" (age marking is the garment model's size) rendered "مقاس الموديل"; the Hebrew itself is terse.
+- 46: legal consent text. "ידנית" (non-automated contact) rendered "شخصيًا" because "يدويًا" reads as a translation; a legal reader may prefer the literal word. "המשך" rendered "زر المتابعة"; must match the actual button label.
+- 48, 116: "שליחה" refers to a button; rendered "الإرسال". Must match the button label in the other list.
+- 59, 60, 61: time fragments ("خلال ساعتين", "صباح يوم الأحد", "صباح الغد"), presumably inserted after "سنردّ عليكم عبر WhatsApp". They work in that position.
+- 62: prefilled WhatsApp message; it will reach the studio in Arabic.
+- 97, 98, 105, 106: "בקשה" here is a technical (HTTP) request, rendered "الطلب" like the customer request; 98 and 106 share one Arabic string.
+- 120: "מצב המידות" is an internal state name ("sizes mode"); rendered "وضع المقاسات".
+- 124, 125: look like internal labels (order source = site), not customer copy; rendered "تم استلام طلبية من الموقع" / "الموقع".
+- 75: "הנחת השקה" rendered "خصم الإطلاق" (launch discount).
+- "אירוע" is rendered "مناسبة" throughout (63, 67, 80, 81, 112); not in the glossary, align with the other list.

@@ -5,6 +5,7 @@ import { defineConfig } from "vite";
 import hostingConfig from "./.openai/hosting.json";
 import { readExecutionProfile } from "./scripts/execution-profile.mjs";
 import { sites } from "./build/sites-vite-plugin";
+import { i18nGate } from "./build/i18n-vite-plugin";
 import { createBuildIdentity, collectBuildSourceDiagnostics } from "./scripts/build-identity.mjs";
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
@@ -119,6 +120,7 @@ export default defineConfig(async ({command}) => {
       ...(isCodexSeatbeltSandbox ? { watch: { useFsEvents: false, usePolling: true } } : {}),
     },
     plugins: [
+      i18nGate(),
       vinext(),
       sites({ mockAuth: !managedLinux }),
       ...(cloudflarePlugin ? [cloudflarePlugin({
