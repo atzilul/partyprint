@@ -314,3 +314,31 @@ button,a,input,select,textarea,summary{touch-action:manipulation}
 .language-switch{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;padding:16px;font-size:14.5px;background:var(--background)}.language-switch a{color:inherit;text-decoration:underline;text-underline-offset:3px}.language-switch b{font-weight:800}
 /* Shown above a translated legal page: the Hebrew text is the binding one. */
 .translation-notice{margin:0;padding:12px 16px;background:#fff6db;color:#594521;font-size:14.5px;text-align:center}.translation-notice a{color:inherit;font-weight:700;text-decoration:underline}
+/* Arabic navigation. */
+/* Arabic labels run longer than the Hebrew ones. On a wide screen every link stays on one line
+   with a clear space between links; below 1101px the links move behind the menu button, as on a phone. */
+@media(min-width:1101px){:lang(ar) .nav nav{gap:clamp(12px,1.15vw,20px);font-size:14px}:lang(ar) .nav nav>a,:lang(ar) .nav-menu-toggle{white-space:nowrap}}
+@media(min-width:1101px) and (max-width:1500px){:lang(ar) .nav nav a.nav-sale{display:none}}
+@media(min-width:681px) and (max-width:1100px){
+ :lang(ar) .nav{position:relative;z-index:40;isolation:isolate}
+ :lang(ar) .mobile-nav-toggle{display:grid;place-items:center;width:42px;height:42px;padding:0;margin-inline-start:auto;background:transparent;border:1px solid #777;color:#fff;font-size:22px;line-height:1;z-index:2}
+ :lang(ar) .mobile-nav-toggle:hover,:lang(ar) .mobile-nav-toggle[aria-expanded=true]{background:var(--acid);border-color:var(--acid);color:var(--ink)}
+ :lang(ar) .nav nav{position:absolute;display:none;top:100%;left:0;right:0;z-index:50;padding:10px 24px 16px;background:var(--ink);border-top:1px solid #444;box-shadow:0 8px 18px #0004;font-size:16px}
+ :lang(ar) .nav nav.is-open{display:grid;gap:0}
+ :lang(ar) .nav nav a{display:block;padding:14px 4px;border-bottom:1px solid #444;font-size:16px}
+ :lang(ar) .nav nav a:last-child{border-bottom:0}
+ :lang(ar) .nav nav a.nav-sale{display:none}
+ :lang(ar) .nav-menu{display:block;border-bottom:1px solid #444}
+ :lang(ar) .nav-menu-toggle{justify-content:space-between;width:100%;padding:14px 4px;font-size:16px;font-weight:600}
+ :lang(ar) .nav-menu-panel{position:static;display:none;width:auto;margin:0;padding:0 0 8px;background:none;color:inherit;border:0;box-shadow:none;opacity:1;visibility:visible;transform:none;transition:none}
+ :lang(ar) .nav-menu-panel::before{content:none}
+ :lang(ar) .nav-menu.is-open .nav-menu-panel{display:grid}
+ :lang(ar) .nav nav .nav-menu-panel a{display:flex;padding:10px 12px;border-bottom:0;font-size:15px}
+ :lang(ar) .nav-menu-panel a:hover,:lang(ar) .nav-menu-panel a:focus-visible,:lang(ar) .nav-menu-panel a[aria-current=page]{background:#ffffff14}
+ :lang(ar) .nav-menu-panel a.nav-menu-sale{background:var(--acid);color:var(--ink)}
+ :lang(ar) .nav-menu-panel i{width:30px;height:30px;background:var(--acid);color:var(--ink);font-size:15px}
+ :lang(ar) .nav-menu-panel a.nav-menu-sale i{background:var(--ink);color:var(--acid)}
+ :lang(ar) .nav-menu-panel b{font-size:15px}
+ :lang(ar) .nav-menu-panel small{color:#b9b9ae}
+ :lang(ar) .nav-menu-panel a.nav-menu-sale small{color:#3d3d36}
+}

@@ -9,7 +9,7 @@ import type {Language} from './core';
  */
 const SLUGS:Partial<Record<Language,Record<string,string>>>={ar:arSlugs as Record<string,string>};
 /** The purchase path. [slug] takes the slugs that have a translation; [id] takes any value. */
-export const PATTERNS=['/','/lp/family','/lp/bride','/lp/groom','/lp/team','/lp/custom','/bundle-sale','/bundle-sale/[slug]','/prices/[slug]','/terms','/policies/shipping','/policies/returns','/privacy-policy','/thanks','/track/[id]','/design/[id]'] as const;
+export const PATTERNS=['/','/lp/family','/lp/bride','/lp/groom','/lp/team','/lp/custom','/bundle-sale','/bundle-sale/[slug]','/prices/[slug]','/terms','/policies/shipping','/policies/returns','/privacy-policy','/thanks','/track/[id]','/design/[id]','/contact'] as const;
 const PAGES:Partial<Record<Language,readonly string[]>>={ar:PATTERNS};
 /** Pages whose Hebrew text is the binding one. */
 export const LEGAL=['/terms','/policies/shipping','/policies/returns','/privacy-policy'];

@@ -28,4 +28,5 @@ export const PAGE_MODULES:Record<string,()=>Promise<PageModule>>={
  '/thanks':()=>load(import('@/app/thanks/page')),
  '/track/[id]':()=>load(import('@/app/track/[id]/page')),
  '/design/[id]':()=>load(import('@/app/design/[id]/page')),
+ '/contact':()=>load(import('@/app/contact/page')),
 };
