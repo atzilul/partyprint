@@ -17,11 +17,16 @@ export const DIRECTION:Record<Language,'rtl'|'ltr'>={he:'rtl',ar:'rtl',en:'ltr',
 const HEBREW=/[֐-׿]/;
 export const hasHebrew=(text:string)=>HEBREW.test(text);
 
-/** The language of an address: /ar/lp/team is Arabic, everything without a prefix is Hebrew. */
+/**
+ * The languages the site is translated into today. /en is not one of them: it is a page of
+ * its own, written in English inside the Hebrew site, and the gate must leave it alone.
+ */
+export const TRANSLATED:readonly Language[]=['ar'];
+/** The language of an address: /ar/lp/team is Arabic, everything without a translated prefix is Hebrew. */
 export function languageOfPath(pathname:string|null|undefined):Language{
  if(!pathname)return 'he';
  const first=pathname.split('/')[1];
- return (LANGUAGES as readonly string[]).includes(first)?first as Language:'he';
+ return (TRANSLATED as readonly string[]).includes(first)?first as Language:'he';
 }
 
 /** "מ־80 ₪ לחולצה" becomes the key "מ־{0} ₪ לחולצה" and the numbers ["80"]. */

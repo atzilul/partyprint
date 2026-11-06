@@ -23,6 +23,8 @@ jobs:
       - run: npx tsc --noEmit
       - run: node --test scripts/search-utils.test.mjs scripts/search-metrics.test.mjs scripts/build-identity.test.mjs scripts/order-quantity.test.mjs scripts/quote-planning.test.mjs
       - run: node --experimental-strip-types --test scripts/search-content.test.mjs scripts/analytics-contract.test.mjs scripts/meta-capi.test.mjs
+      - name: Translation gate
+        run: node --test scripts/i18n-gate.test.mjs
       - name: PartyPrint branded email templates and Resend delivery guard
         run: node scripts/verify-order-mail.mjs
       - name: Resend payload and delivery failure contract; fetch mocked, no real emails
@@ -31,6 +33,8 @@ jobs:
         run: node scripts/verify-orders.mjs
       - run: node scripts/verify-immutable-media.mjs
       - run: npm run build
+      - name: Every Hebrew sentence on a translated page has its translation
+        run: node scripts/check-translations.mjs
       - name: Install isolated browser QA tooling
         run: npm install --prefix /tmp/partyprint-browser --no-save --package-lock=false --ignore-scripts playwright@1.64.1
       - run: /tmp/partyprint-browser/node_modules/.bin/playwright install --with-deps chromium

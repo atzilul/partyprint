@@ -1,4 +1,4 @@
-// Translation check (experiment): node scripts/i18n-check.mjs <base> <language> <path...>
+// Translation check: node scripts/i18n-check.mjs <base> <language> <path...>
 // Reads each translated page as a visitor's browser receives it and fails when something
 // did not follow the Hebrew source: Hebrew letters left in the text, in spoken attributes,
 // in the page's title and description or in its structured data; the wrong language on the
@@ -30,7 +30,7 @@ const collected=await fetch(base+'/api/i18n-missing');
 if(collected.status===200){
  const missing=(await collected.json())[language]||[];
  for(const key of missing)note('(any page)','sentence without a translation',key);
-}
+}else if(process.env.PP_I18N_COLLECT==='1')note('/api/i18n-missing','the list of sentences without a translation did not arrive: HTTP '+collected.status);
 console.log(language+': checked '+paths.length+' pages; '+problems.length+' problems');
 for(const problem of problems.slice(0,40))console.log('  '+problem);
 if(problems.length)process.exitCode=1;

@@ -19,6 +19,7 @@ import {BUNDLE_SIZES,BUNDLE_MIN,BUNDLE_MAX,BUNDLE_AUDIENCES as AUDIENCES,bundleO
 import {SEO_PAGE_URL} from '@/lib/seo-pages';
 import type {BundleOffers} from '@/lib/bundles';
 import './bundle-sale.css';
+import LanguageMenu,{LanguageRow} from '@/components/language-menu';
 
 /**
  * BUNDLE SALE: large orders (25 shirts and up) at the quantity prices of the same sizes.
@@ -105,7 +106,7 @@ export default function BundleSale({initialPricing,businessEmail,paymentDisclosu
  return <main className="bs-page">
   <a className="skip-link" href="#order">דילוג לטופס</a>
   <div className="topbar"><div className="topbar-message"><span>✳</span> מחיר ברור · אישור לפני הדפסה · משלוח עד הבית</div><div className="topbar-promo" id="launch-offer-slot" aria-live="polite"><span className="promo-fallback">מתחילים בלי חיוב · מאשרים לפני הדפסה</span></div></div>
-  <header className="nav wrap"><Link href="/" className="logo" dir="ltr" aria-label="PARTYPRINT, לאתר המלא">PARTY<span>PRINT</span><i>✳</i></Link><button type="button" className="mobile-nav-toggle" aria-label="פתיחת תפריט ניווט" aria-expanded={mobileNavOpen} aria-controls="site-navigation" onClick={()=>setMobileNavOpen(value=>!value)}>☰</button><nav id="site-navigation" className={mobileNavOpen?'is-open':''}><OccasionsMenu current="bundle"/><a onClick={closeNav} href="#bundles">הבאנדלים</a><a onClick={closeNav} href="#who">למי זה מתאים?</a><a onClick={closeNav} href="#how">איך זה עובד?</a><a onClick={closeNav} href="#faq">שאלות טובות</a><BundleSaleLink current/><Link onClick={closeNav} href="/contact">דברו איתנו</Link></nav><button className="small-cta" onClick={()=>choose()}>התחילו לעצב <ArrowUpLeft size={17}/></button></header>
+  <header className="nav wrap"><Link href="/" className="logo" dir="ltr" aria-label="PARTYPRINT, לאתר המלא">PARTY<span>PRINT</span><i>✳</i></Link><button type="button" className="mobile-nav-toggle" aria-label="פתיחת תפריט ניווט" aria-expanded={mobileNavOpen} aria-controls="site-navigation" onClick={()=>setMobileNavOpen(value=>!value)}>☰</button><nav id="site-navigation" className={mobileNavOpen?'is-open':''}><LanguageRow/><OccasionsMenu current="bundle"/><a onClick={closeNav} href="#bundles">הבאנדלים</a><a onClick={closeNav} href="#who">למי זה מתאים?</a><a onClick={closeNav} href="#how">איך זה עובד?</a><a onClick={closeNav} href="#faq">שאלות טובות</a><BundleSaleLink current/><Link onClick={closeNav} href="/contact">דברו איתנו</Link></nav><LanguageMenu/><button className="small-cta" onClick={()=>choose()}>התחילו לעצב <ArrowUpLeft size={17}/></button></header>
 
   <section className="hero wrap audience-family bs-hero">
    <div className="hero-copy">

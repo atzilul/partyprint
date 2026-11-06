@@ -42,3 +42,33 @@ and indexed states. Do not close a task without its stated acceptance evidence.
 Treat owner-reported connections separately from successful data reads. Do not
 infer background execution or scheduled reviews from this file; keep any actual
 automation IDs and schedules in the project memory when one is explicitly set up.
+
+## Translations
+
+The site is written in Hebrew, and the Hebrew text in the code is the only source. Arabic
+(`/ar/...`) is produced from it by the translation gate in `i18n/`: a sentence is looked up
+by its Hebrew text, so an edited Hebrew sentence no longer matches its old translation and
+appears in Hebrew on the Arabic page until it is translated. Nothing goes stale silently,
+but nothing translates itself either.
+
+Every change to Hebrew text on a translated page ends, in the same commit, with its
+translations. The translated pages are listed by `node scripts/i18n-pages.mjs ar`.
+
+1. `npm run build`, then start the built site with `PP_I18N_COLLECT=1`.
+2. `node scripts/i18n-sync.mjs collect ar http://localhost:3333 $(node scripts/i18n-pages.mjs ar)`
+   writes the sentences without a translation to `i18n/ar.missing.json`. For text that
+   appears only after a click (errors, dialogs, later form steps), first run
+   `node scripts/i18n-sync.mjs scan ar <changed files>` and walk the page in a browser.
+3. Translate the list in its order, following `i18n/ar.style.md`, into a JSON array;
+   `node scripts/i18n-sync.mjs merge ar <file>`, then `node scripts/i18n-sync.mjs publish ar`.
+4. `npm run build` and `node scripts/check-translations.mjs`: it must report 0 problems.
+
+- A new page becomes Arabic by adding it to `PATTERNS` in `i18n/routes.ts` and to
+  `PAGE_MODULES` in `i18n/pages.ts`; a page with a Hebrew slug also needs its slug in
+  `i18n/ar.slugs.json`. The sitemap, the language menu and the checks follow these lists.
+- An urgent Hebrew fix may be released before its translation; the "Search discovery
+  quality" workflow then fails on `check-translations` until the translation follows.
+- Never set `PP_I18N_COLLECT` in production. Never turn the root layout's `metadata` into a
+  function: it moves the title and description out of `<head>` on static pages.
+- Names of languages and other text that must stay as written carry `translate="no"`.
+- The Arabic legal pages are a convenience translation; the Hebrew text is the binding one.

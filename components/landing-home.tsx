@@ -21,6 +21,7 @@ import {normalizeOrderQuantity} from '@/lib/order-quantity';
 import {track,siteEvent,packageType,requestMode} from '@/lib/analytics';
 import type {LandingVariantKey} from '@/lib/landing-variants';
 import './landing-home.css';
+import LanguageMenu,{LanguageRow} from '@/components/language-menu';
 
 /**
  * A landing page that is the home page for one audience: the same classes,
@@ -137,7 +138,7 @@ export default function LandingHome({variant,initialPricing,businessEmail,paymen
   <link rel="preload" as="image" type="image/avif" href={imageSetFor(c.story.asset).avif.find(item=>item.width===960)?.src} imageSrcSet={imageSrcSet(c.story.asset,'avif')} imageSizes={heroSizes} fetchPriority="high"/>
   <a className="skip-link" href="#order">דילוג לטופס</a>
   <div className="topbar"><div className="topbar-message"><span>✳</span> מחיר ברור · אישור לפני הדפסה · משלוח עד הבית</div><div className="topbar-promo" id="launch-offer-slot" aria-live="polite"><span className="promo-fallback">מתחילים בלי חיוב · מאשרים לפני הדפסה</span></div></div>
-  <header className="nav wrap"><Link href="/" className="logo" dir="ltr" aria-label="PARTYPRINT, לאתר המלא">PARTY<span>PRINT</span><i>✳</i></Link><button type="button" className="mobile-nav-toggle" aria-label="פתיחת תפריט ניווט" aria-expanded={mobileNavOpen} aria-controls="site-navigation" onClick={()=>setMobileNavOpen(value=>!value)}>☰</button><nav id="site-navigation" className={mobileNavOpen?'is-open':''}><a onClick={closeNav} href="#how">איך זה עובד?</a><OccasionsMenu current={variant}/><a onClick={closeNav} href="#packages">{c.nav.price}</a><a onClick={closeNav} href="#confidence">{c.nav.confidence}</a><a onClick={closeNav} href="#faq">שאלות טובות</a><BundleSaleLink/><Link onClick={()=>setMobileNavOpen(false)} href="/contact">דברו איתנו</Link></nav><button className="small-cta" onClick={()=>choose()}>התחילו לעצב <ArrowUpLeft size={17}/></button></header>
+  <header className="nav wrap"><Link href="/" className="logo" dir="ltr" aria-label="PARTYPRINT, לאתר המלא">PARTY<span>PRINT</span><i>✳</i></Link><button type="button" className="mobile-nav-toggle" aria-label="פתיחת תפריט ניווט" aria-expanded={mobileNavOpen} aria-controls="site-navigation" onClick={()=>setMobileNavOpen(value=>!value)}>☰</button><nav id="site-navigation" className={mobileNavOpen?'is-open':''}><LanguageRow/><a onClick={closeNav} href="#how">איך זה עובד?</a><OccasionsMenu current={variant}/><a onClick={closeNav} href="#packages">{c.nav.price}</a><a onClick={closeNav} href="#confidence">{c.nav.confidence}</a><a onClick={closeNav} href="#faq">שאלות טובות</a><BundleSaleLink/><Link onClick={()=>setMobileNavOpen(false)} href="/contact">דברו איתנו</Link></nav><LanguageMenu/><button className="small-cta" onClick={()=>choose()}>התחילו לעצב <ArrowUpLeft size={17}/></button></header>
 
   <section className={'hero wrap audience-'+c.accent+' lh-hero'}>
    <div className="hero-copy">

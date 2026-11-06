@@ -13,6 +13,7 @@ import {CONTACT_TOPICS,MESSAGE_LIMITS,messageProblems} from '@/lib/contact-messa
 import type {ContactTopic,MessageProblem} from '@/lib/contact-messages';
 import {RESPONSE_PROMISE} from '@/lib/response-promise';
 import './contact-page.css';
+import LanguageMenu,{LanguageRow} from '@/components/language-menu';
 
 /**
  * Contact page (/contact): talking to the studio. WhatsApp comes first, because that is
@@ -133,7 +134,7 @@ export default function ContactPage({businessEmail,businessPhone}:{businessEmail
  return <main className="cp-page">
   <a className="skip-link" href="#message">דילוג לטופס</a>
   <div className="topbar"><div className="topbar-message"><span>✳</span> מחיר ברור · אישור לפני הדפסה · משלוח עד הבית</div><div className="topbar-promo" id="launch-offer-slot" aria-live="polite"><span className="promo-fallback">מתחילים בלי חיוב · מאשרים לפני הדפסה</span></div></div>
-  <header className="nav wrap"><Link href="/" className="logo" dir="ltr" aria-label="PARTYPRINT, לעמוד הבית">PARTY<span>PRINT</span><i>✳</i></Link><button type="button" className="mobile-nav-toggle" aria-label="פתיחת תפריט ניווט" aria-expanded={mobileNavOpen} aria-controls="site-navigation" onClick={()=>setMobileNavOpen(value=>!value)}>☰</button><nav id="site-navigation" className={mobileNavOpen?'is-open':''}><OccasionsMenu/><Link onClick={closeNav} href="/#packages">החבילות שלנו</Link><Link onClick={closeNav} href="/#how">איך זה עובד?</Link><Link onClick={closeNav} href="/faq">שאלות טובות</Link><BundleSaleLink/><Link onClick={closeNav} href="/blog">בלוג</Link><a onClick={closeNav} href="#talk" aria-current="page">דברו איתנו</a></nav><Link className="small-cta" href="/#order">התחילו לעצב <ArrowUpLeft size={17}/></Link></header>
+  <header className="nav wrap"><Link href="/" className="logo" dir="ltr" aria-label="PARTYPRINT, לעמוד הבית">PARTY<span>PRINT</span><i>✳</i></Link><button type="button" className="mobile-nav-toggle" aria-label="פתיחת תפריט ניווט" aria-expanded={mobileNavOpen} aria-controls="site-navigation" onClick={()=>setMobileNavOpen(value=>!value)}>☰</button><nav id="site-navigation" className={mobileNavOpen?'is-open':''}><LanguageRow/><OccasionsMenu/><Link onClick={closeNav} href="/#packages">החבילות שלנו</Link><Link onClick={closeNav} href="/#how">איך זה עובד?</Link><Link onClick={closeNav} href="/faq">שאלות טובות</Link><BundleSaleLink/><Link onClick={closeNav} href="/blog">בלוג</Link><a onClick={closeNav} href="#talk" aria-current="page">דברו איתנו</a></nav><LanguageMenu/><Link className="small-cta" href="/#order">התחילו לעצב <ArrowUpLeft size={17}/></Link></header>
 
   <section className="hero wrap cp-hero" id="talk">
    <div className="hero-copy">

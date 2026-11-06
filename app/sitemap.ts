@@ -8,6 +8,7 @@ import {LANDING_VARIANT_KEYS} from '@/lib/landing-variants';
 import {LANDING_HOME_CONTENT} from '@/lib/landing-home-content';
 import {BUNDLE_ANSWERS,answerUrl} from '@/lib/bundle-answers';
 import {PRICE_ANSWERS} from '@/lib/price-answers';
+import {translationsOf} from '@/i18n/routes';
 
 export const dynamic='force-dynamic';
 const base='https://partyprint.co.il';
@@ -22,6 +23,20 @@ const occasionsUpdatedAt=new Date('2026-11-05T00:00:00.000Z');
 const absoluteImage=(src:string)=>/^https?:\/\//.test(src)?src:`${base}${src}`;
 const imageList=(...sources:(string|undefined)[])=>sources.filter((src):src is string=>Boolean(src)).map(absoluteImage);
 
+/**
+ * A page that exists in other languages says so, and each translation gets an entry of its
+ * own with the same list. This is how search engines learn which page to show to whom
+ * (hreflang), for the Hebrew page and its translations alike.
+ */
+function withLanguages(entries:MetadataRoute.Sitemap):MetadataRoute.Sitemap{
+ return entries.flatMap(entry=>{
+  const others=translationsOf(entry.url.slice(base.length)||'/');
+  if(!others.length)return [entry];
+  const languages={he:entry.url,'x-default':entry.url,...Object.fromEntries(others.map(other=>[other.language,base+other.path]))};
+  return [{...entry,alternates:{languages}},...others.map(other=>({...entry,url:base+other.path,alternates:{languages}}))];
+ });
+}
+
 export default async function sitemap():Promise<MetadataRoute.Sitemap>{
  let posts:BlogPost[]=[];
  try {posts=await listBlogPosts();}
@@ -31,7 +46,7 @@ export default async function sitemap():Promise<MetadataRoute.Sitemap>{
   return date>latest?date:latest;
  },contentUpdatedAt);
  const paths=['/guides','/about','/work','/faq','/policies/shipping','/policies/returns','/privacy-policy','/terms'];
- return [
+ return withLanguages([
   {url:base,lastModified:editorialUpdatedAt},
   {url:base+'/blog',lastModified:blogUpdatedAt},
   {url:base+'/ordering-guide',lastModified:new Date('2026-11-01T00:00:00.000Z')},
@@ -45,5 +60,5 @@ export default async function sitemap():Promise<MetadataRoute.Sitemap>{
   ...SEO_PAGES.map(page=>({url:base+SEO_PAGE_URL(page.slug),lastModified:validDate(page.updatedAt),images:imageList(page.heroImage)})),
   ...STUDIO_PAGES.map(page=>({url:base+STUDIO_PAGE_URL(page.slug),lastModified:contentUpdatedAt,images:imageList(page.heroImage)})),
   ...posts.map(post=>({url:base+'/blog/'+post.slug,lastModified:validDate(editorialModifiedAt(post.slug,post.updatedAt||post.publishedAt||fallbackDate)),images:imageList(post.coverImage,post.inlineImage1,post.inlineImage2)})),
- ];
+ ]);
 }
