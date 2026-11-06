@@ -265,6 +265,23 @@ try{
   assert.equal(stored.price,expected);assert.equal(stored.designMode,individual?'individual':undefined);assert.equal(stored.packageName.includes('עיצוב אישי לכל חולצה'),individual);assert.equal(submitted.packageName,stored.packageName);
  }
  {sql.prepare('DELETE FROM form_rate_limits').run();const f=quantityForm(3,10);f.set('designMode','individual');f.set('expectedPrice',String(business.priceFor(quantityConfig,3,10)));assert.equal((await publicRoute.POST(post('/api/orders',f))).status,409,'the shared-design price cannot buy a design for every shirt');}
+ // The admin panel sets both fees; an order is priced by them and keeps them.
+ {const visitor=globalThis.testUser;globalThis.testUser={userId:'owner',email:'atzilul@gmail.com'};const before=await settingsStore.getPricing();
+  let saved=await settings.POST(jsonRequest({action:'pricing',pricing:{...before,individualDesignPrice:65.5,extraRevisionPrice:120}}));assert.equal(saved.status,200);
+  const feeConfig=await settingsStore.getPricing();assert.equal(feeConfig.individualDesignPrice,65.5);assert.equal(feeConfig.extraRevisionPrice,120);assert.equal(feeConfig.version,before.version+1);
+  const published=await (await prices.GET()).json();assert.equal(published.individualDesignPrice,65.5);assert.equal(published.extraRevisionPrice,120);
+  sql.prepare('DELETE FROM form_rate_limits').run();
+  const expected=business.priceFor(feeConfig,3,10,'individual');assert.equal(expected,business.priceFor(feeConfig,3,10)+655);
+  const f=quantityForm(3,10);f.set('designMode','individual');f.set('expectedPrice',String(expected));
+  const response=await publicRoute.POST(post('/api/orders',f));assert.equal(response.status,201);
+  const submitted=await response.json(),stored=await store.getOrder(submitted.id);
+  assert.equal(stored.price,expected);assert.equal(stored.designSurcharge,65.5);assert.equal(stored.revisionPrice,120);
+  assert.match(submitted.summary,/65\.5 ₪ נוספים לחולצה/);assert.match(submitted.summary,/כל סבב נוסף: 120 ₪\./);
+  sql.prepare('DELETE FROM form_rate_limits').run();const old=quantityForm(3,10);old.set('designMode','individual');old.set('expectedPrice',String(business.priceFor(feeConfig,3,10)+500));assert.equal((await publicRoute.POST(post('/api/orders',old))).status,409,'the previous surcharge no longer buys a design for every shirt');
+  assert.equal((await settings.POST(jsonRequest({action:'pricing',pricing:{...feeConfig,extraRevisionPrice:0}}))).status,400);
+  saved=await settings.POST(jsonRequest({action:'pricing',pricing:{...feeConfig,individualDesignPrice:50,extraRevisionPrice:100}}));assert.equal(saved.status,200);
+  const restored=await settingsStore.getPricing();assert.equal(restored.individualDesignPrice,50);assert.equal(restored.extraRevisionPrice,100);globalThis.testUser=visitor;
+ }
  for(const n of [0,-1,4.5,101,NaN]){
   sql.prepare('DELETE FROM form_rate_limits').run();
   assert.equal((await publicRoute.POST(post('/api/orders',quantityForm(4,n)))).status,400);

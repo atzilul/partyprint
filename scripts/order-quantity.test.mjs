@@ -61,3 +61,28 @@ test('quantity input normalization enforces whole shirts and the supported bound
 });
 
 test('reducing any occasion to one uses configured single price; two/three use the first tier; legacy single SKU remains valid',()=>{const config=pricing.normalizePricing({...pricing.DEFAULT_PRICING,singleShirtPrice:195},7);for(const p of [0,1,2,3,4]){assert.equal(pricing.priceFor(config,p,1),195);assert.equal(pricing.priceFor(config,p,2),220);assert.equal(pricing.priceFor(config,p,3),330);assert.equal(pricing.priceFor(config,p,4),440);}assert.equal(pricing.priceFor(config,catalog.SINGLE_PACK_INDEX,1),195);for(const n of [0,2,3,4,100])assert.throws(()=>pricing.priceFor(config,5,n));assert.equal(pricing.validPricing({...config,singleShirtPrice:-1}),false);});
+
+test('the design surcharge and the revision fee follow the price list',async()=>{
+ assert.equal(pricing.DEFAULT_PRICING.individualDesignPrice,50);assert.equal(pricing.DEFAULT_PRICING.extraRevisionPrice,100);
+ const config=pricing.pricingForTiers([{quantity:4,price:100}],3,180,{individualDesignPrice:65.5,extraRevisionPrice:120});
+ assert.equal(pricing.priceFor(config,3,10,'individual'),1655);
+ assert.equal(pricing.priceFor(config,3,10,'shared'),1000);
+ assert.equal(pricing.priceFor(config,0,10,'individual'),1000,'only the team package has a design for every shirt');
+ assert.equal(pricing.designFeeFor(config),65.5);assert.equal(pricing.revisionFeeFor(config),120);
+ assert.equal(pricing.designFeeFor({}),50);assert.equal(pricing.revisionFeeFor({}),100);
+ const stored=pricing.normalizePricing(JSON.parse(JSON.stringify(config)),4);
+ assert.equal(stored.individualDesignPrice,65.5);assert.equal(stored.extraRevisionPrice,120);assert.equal(stored.version,4);
+ const legacy=pricing.normalizePricing({tiers:[{quantity:4,price:100}]},2);
+ assert.equal(legacy.individualDesignPrice,50);assert.equal(legacy.extraRevisionPrice,100);
+ assert.equal(pricing.validPricing(config),true);
+ for(const bad of [0,-1,1000.01,1.001,NaN,'50',null])for(const key of ['individualDesignPrice','extraRevisionPrice'])assert.equal(pricing.validPricing({...config,[key]:bad}),false,key+' '+String(bad));
+ const {withFees}=await import(moduleUrl(resolve(root,'lib/fee-text.ts')));
+ const icon=()=>null,copy={title:'בתוספת {designFee} ₪ לחולצה',rows:[['שאלה','כל סבב נוסף: {revisionFee} ₪.']],icon,count:3};
+ const filled=withFees(copy,config);
+ assert.equal(filled.title,'בתוספת 65.5 ₪ לחולצה');assert.equal(filled.rows[0][1],'כל סבב נוסף: 120 ₪.');assert.equal(filled.icon,icon);assert.equal(filled.count,3);
+ assert.equal(copy.title,'בתוספת {designFee} ₪ לחולצה','the source copy is not changed');
+ const {homeFaq,landingFaq}=await import(moduleUrl(resolve(root,'lib/home-faq.ts')));
+ const text=homeFaq('',{singleShirtPrice:199,extraRevisionPrice:120}).flat().join(' ');
+ assert.match(text,/חולצה אחת ב־199 ₪/);assert.match(text,/נוסף של 120 ₪/);assert.doesNotMatch(text,/180 ₪|100 ₪|\{/);
+ assert.match(landingFaq('',[],config).flat().join(' '),/נוסף של 120 ₪/);
+});

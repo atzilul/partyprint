@@ -1,6 +1,6 @@
-import {INDIVIDUAL_DESIGN_SURCHARGE,MAX_SHIRT_QUANTITY,SINGLE_SHIRT_PRICE} from './catalog';
+import {MAX_SHIRT_QUANTITY,SINGLE_SHIRT_PRICE} from './catalog';
 import {BUNDLE_SIZES} from './bundles';
-import {unitPriceFor} from './pricing';
+import {unitPriceFor,designFeeFor,revisionFeeFor} from './pricing';
 import type {Pricing} from './pricing';
 
 /**
@@ -19,7 +19,7 @@ function priceFacts(pricing:Pricing){
   const unit=unitPriceFor(pricing,size);
   return (size<MAX_SHIRT_QUANTITY?'from ':'')+size+' shirts '+ils(unit)+' per shirt'+(withTotal?' ('+size+' shirts: '+ils(unit*size)+')':'');
  }).join(', ');
- return {single:ils(pricing.singleShirtPrice??SINGLE_SHIRT_PRICE),surcharge:ils(INDIVIDUAL_DESIGN_SURCHARGE),ladder,bundles:bundle(false),bundleTotals:bundle(true)};
+ return {single:ils(pricing.singleShirtPrice??SINGLE_SHIRT_PRICE),surcharge:ils(designFeeFor(pricing)),revision:ils(revisionFeeFor(pricing)),ladder,bundles:bundle(false),bundleTotals:bundle(true)};
 }
 export function llmsText(pricing:Pricing):string{
  const f=priceFacts(pricing);
@@ -51,7 +51,7 @@ export function llmsText(pricing:Pricing):string{
 - Quantity-based shirt pricing. The displayed price per shirt and package total update according to the quantity tier shown on the ordering page.
 - A single shirt costs ${f.single} including personal design, printing and home delivery. Each occasion starts at 4 shirts in the form, and the customer can change the quantity up to 100; the price follows the quantity tier shown there. Price per shirt by quantity (the price list in force; the live form is authoritative): ${f.ladder}.
 - Contact details are saved after two steps: shirts and an optional event date, then name, phone and email, all three required. The idea and photos follow in a third step and are optional. Sizes and colors can be selected optionally inside the request form, on the confirmation page, or coordinated on WhatsApp. Explicitly confirmed selections are saved with the request; skipping sizes never blocks contacting the studio. Customers can send up to 10 reference images and a short brief.
-- One revision round is included. Additional revisions are coordinated in advance.
+- One revision round is included. Each additional round costs ${f.revision} and is coordinated in advance.
 - Customer support by WhatsApp: +972 55 289 6236. Email: hello@partyprint.co.il.
 
 ## Useful search topics

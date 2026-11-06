@@ -17,10 +17,12 @@ export const packs=[
  */
 export const INDIVIDUAL_DESIGN_PACK=3;
 export const INDIVIDUAL_DESIGN_SURCHARGE=50;
+/** A revision round after the included one. Like the surcharge above, this is the default; the admin price list sets the fee in force. */
+export const EXTRA_REVISION_PRICE=100;
 export type DesignMode='shared'|'individual';
 /** The design choice that applies to a package; anything but the team package is always one shared design. */
 export function designModeFor(pack:number,value:unknown):DesignMode{return pack===INDIVIDUAL_DESIGN_PACK&&value==='individual'?'individual':'shared';}
-export function designSurcharge(pack:number,quantity:number,value:unknown){return designModeFor(pack,value)==='individual'?INDIVIDUAL_DESIGN_SURCHARGE*quantity:0;}
+export function designSurcharge(pack:number,quantity:number,value:unknown,perShirt:number=INDIVIDUAL_DESIGN_SURCHARGE){return designModeFor(pack,value)==='individual'?perShirt*quantity:0;}
 /** The package name as staff and customers read it, with the design choice when it is not the default. */
 export function packageLabel(pack:number,value:unknown){return packs[pack].name+(designModeFor(pack,value)==='individual'?' · עיצוב אישי לכל חולצה':'');}
 // Four is the starting suggestion; customers can reduce the same order to one.

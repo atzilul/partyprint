@@ -69,6 +69,14 @@ the database cannot be reached. This covers the home page, `/lp/*`, `/bundle-sal
 answer pages, `/prices/*`, `/buyers-guide`, `/en`, `/faq`, `/ordering-guide` and the price
 block on guides, work pages and blog posts. `/llms.txt` and `/llms-full.txt` are route
 handlers (`lib/llms-text.ts`), not static files, for the same reason. Do not write a shirt
-price as text in a page: take it from the price list. The fee for an extra revision round
-(ILS 100) and `INDIVIDUAL_DESIGN_SURCHARGE` (ILS 50) are fixed in code and are not part of
-the admin price list.
+price as text in a page: take it from the price list.
+
+The price list also carries two fees, edited on the same admin screen: `individualDesignPrice`
+(a separate design for every shirt, per shirt, team package) and `extraRevisionPrice` (a
+revision round after the included one). `designFeeFor` and `revisionFeeFor` in
+`lib/pricing.ts` read them; the constants in `lib/catalog.ts` (ILS 50 and ILS 100) are only
+the defaults for a price list saved before the fees existed. Functions that build copy take
+the price list; static copy writes `{designFee}` and `{revisionFee}` and is filled by
+`withFees` in `lib/fee-text.ts`. An order stores the fees in force when it was sent
+(`designSurcharge`, `revisionPrice`), and its emails, summary and design review page quote
+those, so a later change does not rewrite what a customer was told.

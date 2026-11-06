@@ -1,7 +1,9 @@
-import {packs,calculatePrice,designSurcharge,DEFAULT_SHIRT_PRICE,SINGLE_SHIRT_PRICE} from './catalog';
+import {packs,calculatePrice,designSurcharge,DEFAULT_SHIRT_PRICE,SINGLE_SHIRT_PRICE,INDIVIDUAL_DESIGN_SURCHARGE,EXTRA_REVISION_PRICE} from './catalog';
 
 export type PriceTier={quantity:number;price:number};
-export type Pricing={singleShirtPrice?:number;shirtPrice:number;tiers:PriceTier[];basePrices:number[];extraShirtPrice:number;customPrices:Record<number,number>;version:number};
+/** Fees that are not per-quantity prices: a separate design for every shirt (per shirt, team package) and a revision round after the included one. */
+export type PricingFees={individualDesignPrice?:number;extraRevisionPrice?:number};
+export type Pricing=PricingFees&{singleShirtPrice?:number;shirtPrice:number;tiers:PriceTier[];basePrices:number[];extraShirtPrice:number;customPrices:Record<number,number>;version:number};
 
 export const DEFAULT_TIERS:PriceTier[]=[
  {quantity:4,price:110},
@@ -26,13 +28,23 @@ export function unitPriceFor(config:Pick<Pricing,'tiers'|'shirtPrice'|'singleShi
  return money(tier?.price??config.shirtPrice??DEFAULT_SHIRT_PRICE);
 }
 
-export function pricingForTiers(tiers:PriceTier[],version=0,singleShirtPrice=SINGLE_SHIRT_PRICE):Pricing {
+/** The fee per shirt for a separate design for every shirt, from the price list. */
+export const designFeeFor=(config:PricingFees)=>money(config.individualDesignPrice??INDIVIDUAL_DESIGN_SURCHARGE);
+/** The fee for every revision round after the included one, from the price list. */
+export const revisionFeeFor=(config:PricingFees)=>money(config.extraRevisionPrice??EXTRA_REVISION_PRICE);
+/** Both fees as the Hebrew pages print them, without the currency sign. */
+export const designFeeText=(config:PricingFees)=>designFeeFor(config).toLocaleString('he-IL');
+export const revisionFeeText=(config:PricingFees)=>revisionFeeFor(config).toLocaleString('he-IL');
+
+export function pricingForTiers(tiers:PriceTier[],version=0,singleShirtPrice=SINGLE_SHIRT_PRICE,fees:PricingFees={}):Pricing {
  const sorted=tiers.map(t=>({quantity:Number(t.quantity),price:money(Number(t.price))})).sort((a,b)=>a.quantity-b.quantity);
  const fallback=sorted[0]?.price||DEFAULT_SHIRT_PRICE;
  const config={tiers:sorted,shirtPrice:fallback};
  const total=(n:number)=>money(unitPriceFor(config,n)*n);
  return {
   singleShirtPrice,
+  individualDesignPrice:designFeeFor(fees),
+  extraRevisionPrice:revisionFeeFor(fees),
   shirtPrice:unitPriceFor(config,4),
   tiers:sorted,
   basePrices:packs.slice(0,4).map(p=>total(p.n)),
@@ -48,9 +60,11 @@ export function pricingForShirt(shirtPrice:number,version=0):Pricing {
 
 export const DEFAULT_PRICING:Pricing=pricingForTiers(DEFAULT_TIERS);
 
+const validFee=(value:unknown)=>value===undefined||(typeof value==='number'&&Number.isFinite(value)&&value>=0.01&&value<=1000&&Math.abs(value*100-Math.round(value*100))<1e-8);
 export function validPricing(v:unknown):v is Pricing {
  if(!v||typeof v!=='object')return false;
- const {tiers,version,singleShirtPrice}=v as Pricing;
+ const {tiers,version,singleShirtPrice,individualDesignPrice,extraRevisionPrice}=v as Pricing;
+ if(!validFee(individualDesignPrice)||!validFee(extraRevisionPrice))return false;
  if(singleShirtPrice!==undefined&&(!Number.isFinite(singleShirtPrice)||singleShirtPrice<0.01||singleShirtPrice>1000||Math.abs(singleShirtPrice*100-Math.round(singleShirtPrice*100))>1e-8))return false;
  if(!Array.isArray(tiers)||tiers.length<1||tiers.length>12||!Number.isInteger(version)||version<0)return false;
  let previous=0;
@@ -60,7 +74,7 @@ export function validPricing(v:unknown):v is Pricing {
 export function normalizePricing(v:Partial<Pricing>,version=0):Pricing {
  if(Array.isArray(v.tiers)&&v.tiers.length){
   const tiers=v.tiers.filter(t=>t&&Number.isFinite(t.quantity)&&Number.isFinite(t.price)).map(t=>({quantity:Number(t.quantity),price:Number(t.price)}));
-  if(validPricing({...v,tiers,version}))return pricingForTiers(tiers,version,v.singleShirtPrice??SINGLE_SHIRT_PRICE);
+  if(validPricing({...v,tiers,version}))return pricingForTiers(tiers,version,v.singleShirtPrice??SINGLE_SHIRT_PRICE,v);
  }
  // The previous release stored one global shirtPrice. Migrate that shape to the
  // new public ladder so every package immediately uses the same quantity rules.
@@ -70,7 +84,7 @@ export function normalizePricing(v:Partial<Pricing>,version=0):Pricing {
 /** The order subtotal. A separate design for every shirt (team package only) adds its surcharge per shirt. */
 export function priceFor(config:Pricing,pack:number,quantity:number,designMode?:unknown){
  calculatePrice(pack,quantity);
- return money(unitPriceFor(config,quantity)*quantity+designSurcharge(pack,quantity,designMode));
+ return money(unitPriceFor(config,quantity)*quantity+designSurcharge(pack,quantity,designMode,designFeeFor(config)));
 }
 
 export type Coupon={code:string;title:string;promoText?:string;kind:'percent'|'fixed';value:number;minQuantity:number;minSubtotal:number;maxUses:number;starts:string;ends:string;enabled:boolean;package:number;used:number;version:number};

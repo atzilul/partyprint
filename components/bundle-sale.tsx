@@ -8,6 +8,7 @@ import OccasionsMenu,{BundleSaleLink} from '@/components/occasions-menu';
 import {Motion} from '@/app/home-client';
 import {useRunning,reducedMotion} from '@/components/use-running';
 import {landingFaq} from '@/lib/home-faq';
+import {revisionFeeText} from '@/lib/pricing';
 import {packs,SINGLE_PACK_INDEX} from '@/lib/catalog';
 import type {DesignMode} from '@/lib/catalog';
 import {priceFor,unitPriceFor} from '@/lib/pricing';
@@ -98,7 +99,7 @@ export default function BundleSale({initialPricing,businessEmail,paymentDisclosu
   setSelectedPack(pack);setMode(nextMode);setOpenSignal(value=>value+1);setMobileNavOpen(false);
   document.getElementById('order')?.scrollIntoView({behavior:reducedMotion()?'auto':'smooth',block:'start'});
  }
- const faq=landingFaq(paymentDisclosure,bundleFaq(pricing));
+ const faq=landingFaq(paymentDisclosure,bundleFaq(pricing),pricing);
  const ticker=[...offers.bundles.map(item=>item.size+' חולצות · '+shekels(item.unit)+' ₪ לחולצה'),'גנים','בתי ספר','הייטק','חיילים','תנועות נוער'];
  const closeNav=()=>setMobileNavOpen(false);
  return <main className="bs-page">
@@ -147,7 +148,7 @@ export default function BundleSale({initialPricing,businessEmail,paymentDisclosu
    </div>
   </div></section>
 
-  <section id="how" className="how section"><div className="wrap"><div className="section-head"><div><div className="eyebrow">FOUR STEPS. ONE DELIVERY.</div><h2>הזמנה גדולה.<br/><span>כאב ראש קטן.</span></h2></div><p>אחד מארגן, כולם לובשים.<br/>אנחנו מעצבים, אתם מאשרים,<br/>והכול מגיע במשלוח אחד.</p></div><BundleSteps/><p className="terms">* העיצוב כולל סבב תיקונים אחד. כל סבב תיקונים נוסף כרוך בתשלום נוסף של 100 ₪.</p><div className="desktop-order-cta"><button type="button" className="cta orange-bg" onClick={()=>choose()}>מתחילים הזמנה גדולה <ArrowUpLeft/></button></div></div></section>
+  <section id="how" className="how section"><div className="wrap"><div className="section-head"><div><div className="eyebrow">FOUR STEPS. ONE DELIVERY.</div><h2>הזמנה גדולה.<br/><span>כאב ראש קטן.</span></h2></div><p>אחד מארגן, כולם לובשים.<br/>אנחנו מעצבים, אתם מאשרים,<br/>והכול מגיע במשלוח אחד.</p></div><BundleSteps/><p className="terms">* העיצוב כולל סבב תיקונים אחד. כל סבב תיקונים נוסף כרוך בתשלום נוסף של {revisionFeeText(pricing)} ₪.</p><div className="desktop-order-cta"><button type="button" className="cta orange-bg" onClick={()=>choose()}>מתחילים הזמנה גדולה <ArrowUpLeft/></button></div></div></section>
 
   <section id="confidence" className="confidence section"><div className="wrap"><div className="section-head"><div><div className="eyebrow">הזמנה גדולה. בהירות מלאה.</div><h2>הכול ברור.<br/><span>לפני שמדפיסים.</span></h2></div><p>אתם יודעים מה מזמינים,<br/>כמה זה עולה ומה השלב הבא.</p></div><div className="offer-summary"><div><span className="small-tag">מה מקבלים?</span><strong>באנדל שלם, בלי הפתעות.</strong><p>המחיר לחולצה כולל עיצוב אישי אחד, הדפסה ומשלוח.<br/><strong>ככל שמזמינים יותר חולצות, המחיר לחולצה יורד.</strong></p></div><ul><li><Check size={17}/> סבב תיקונים אחד כלול</li><li><Check size={17}/> אתם מאשרים לפני הדפסה</li><li><Check size={17}/> אין חיוב בשליחת הטופס</li></ul></div><div className="confidence-grid">{[
    {title:'מתחילים בלי חיוב',text:'הטופס שולח בקשת הזמנה או התייעצות. מסכמים מחיר ותנאי תשלום לפני תחילת העבודה.'},

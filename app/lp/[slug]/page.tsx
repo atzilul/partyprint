@@ -6,6 +6,7 @@ import {landingFaq} from '@/lib/home-faq';
 import {BUSINESS_DETAILS,PAYMENT_DISCLOSURE} from '@/lib/business-details';
 import {LANDING_VARIANTS,LANDING_VARIANT_KEYS,isLandingVariant} from '@/lib/landing-variants';
 import {currentPricing} from '@/lib/current-pricing';
+import {withFees} from '@/lib/fee-text';
 
 /**
  * Paid landing pages: the home page's language for one audience (components/landing-home.tsx,
@@ -37,7 +38,7 @@ export default async function Landing({params}:PageProps){
  const schema={'@context':'https://schema.org','@graph':[
   {'@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'PARTYPRINT',item:origin+'/'},{'@type':'ListItem',position:2,name:copy.title.split(' | ')[0],item:url}]},
   {'@type':'WebPage','@id':url+'#webpage',url,name:copy.title,description:copy.description,inLanguage:'he-IL',isPartOf:{'@id':origin+'/#website'},about:{'@id':origin+'/#service'},primaryImageOfPage:origin+copy.ogImage},
-  {'@type':'FAQPage','@id':url+'#faq',inLanguage:'he-IL',mainEntity:landingFaq(PAYMENT_DISCLOSURE,LANDING_HOME_CONTENT[slug].faq).map(([question,answer])=>({'@type':'Question',name:question,acceptedAnswer:{'@type':'Answer',text:answer}}))},
+  {'@type':'FAQPage','@id':url+'#faq',inLanguage:'he-IL',mainEntity:landingFaq(PAYMENT_DISCLOSURE,withFees(LANDING_HOME_CONTENT[slug].faq,pricing),pricing).map(([question,answer])=>({'@type':'Question',name:question,acceptedAnswer:{'@type':'Answer',text:answer}}))},
  ]};
  return <><LandingHome variant={slug} initialPricing={pricing} businessEmail={BUSINESS_DETAILS.email} paymentDisclosure={PAYMENT_DISCLOSURE}/><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(schema).replace(/</g,'\u003c')}}/></>;
 }

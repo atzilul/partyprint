@@ -38,7 +38,7 @@ export default async function BundleSalePage(){
   {'@type':'WebPage','@id':url+'#webpage',url,name:title,description:describe(pricing),inLanguage:'he-IL',isPartOf:{'@id':origin+'/#website'},about:{'@id':origin+'/#service'},primaryImageOfPage:origin+ogImage},
   {'@type':'Product','@id':url+'#bundles',name:'באנדל חולצות בעיצוב אישי להזמנות גדולות',description:'באנדלים של '+offers.bundles.map(item=>item.size).join(', ')+' חולצות עם עיצוב אישי אחד לכל הקבוצה, הדפסה ומשלוח. המחיר לחולצה יורד ככל שהכמות עולה.',image:origin+ogImage,brand:{'@type':'Brand',name:'PARTYPRINT'},
    offers:{'@type':'AggregateOffer',lowPrice:String(Math.min(...prices)),highPrice:String(Math.max(...prices)),priceCurrency:'ILS',offerCount:offers.bundles.length,availability:'https://schema.org/InStock',url:url+'#order',seller:{'@id':origin+'/#organization'}}},
-  {'@type':'FAQPage','@id':url+'#faq',inLanguage:'he-IL',mainEntity:landingFaq(PAYMENT_DISCLOSURE,bundleFaq(pricing)).map(([question,answer])=>({'@type':'Question',name:question,acceptedAnswer:{'@type':'Answer',text:answer}}))},
+  {'@type':'FAQPage','@id':url+'#faq',inLanguage:'he-IL',mainEntity:landingFaq(PAYMENT_DISCLOSURE,bundleFaq(pricing),pricing).map(([question,answer])=>({'@type':'Question',name:question,acceptedAnswer:{'@type':'Answer',text:answer}}))},
  ]};
  return <><BundleSale initialPricing={pricing} businessEmail={BUSINESS_DETAILS.email} paymentDisclosure={PAYMENT_DISCLOSURE}/><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(schema).replace(/</g,'\\u003c')}}/></>;
 }

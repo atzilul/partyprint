@@ -5,7 +5,7 @@ import {shekels} from '@/lib/bundles';
 import {answerUrl,BUNDLE_ANSWERS} from '@/lib/bundle-answers';
 import {PRICE_ANSWERS} from '@/lib/price-answers';
 import {getPricing} from '@/lib/studio-settings';
-import {DEFAULT_PRICING,priceFor,unitPriceFor} from '@/lib/pricing';
+import {DEFAULT_PRICING,priceFor,unitPriceFor,revisionFeeText} from '@/lib/pricing';
 import type {Pricing} from '@/lib/pricing';
 import '@/components/content-contact.css';
 import '../seo/seo.css';
@@ -38,7 +38,7 @@ const questions=(pricing:Pricing)=>[
  {q:'מה המינימום להזמנה?',why:'יש ספקים שמתחילים מעשרות חולצות, ויש שמדפיסים גם אחת.',us:'מחולצה אחת ('+shekels(unitPriceFor(pricing,1))+' ₪). לקבוצות הטופס מתחיל ב־4 חולצות.'},
  {q:'מי מעצב?',why:'תבנית מוכנה, מעצב עצמי או עיצוב שנבנה בשבילכם הם שלושה מוצרים שונים.',us:'אנחנו מעצבים מהתמונות ומהרעיון שלכם, עם AI ומגע אנושי.'},
  {q:'רואים את העיצוב לפני ההדפסה?',why:'הטעות היקרה ביותר היא הדפסה שלא אישרתם.',us:'כן. מדפיסים רק אחרי שאישרתם את העיצוב.'},
- {q:'כמה תיקונים כלולים?',why:'כדאי לדעת מראש מה קורה אם העיצוב הראשון לא מדויק.',us:'סבב תיקונים אחד כלול. כל סבב נוסף עולה 100 ₪.'},
+ {q:'כמה תיקונים כלולים?',why:'כדאי לדעת מראש מה קורה אם העיצוב הראשון לא מדויק.',us:'סבב תיקונים אחד כלול. כל סבב נוסף עולה '+revisionFeeText(pricing)+' ₪.'},
  {q:'אילו מידות וצבעים יש?',why:'קבוצה מעורבת צריכה גם מידות ילדים וגם מבוגרים, באותו עיצוב.',us:'ילדים מגיל 2 עד 18, מבוגרים S עד XL. לבן, שחור או אפור, ואפשר לערבב.'},
  {q:'מאיזה בד החולצה ובאיזו שיטה מדפיסים?',why:'הבד ושיטת ההדפסה משפיעים על התחושה ועל העמידות בכביסה.',us:'מאשרים איתכם בהצעת המחיר. שאלו אותנו ב־WhatsApp לפני ההזמנה.'},
  {q:'כמה זמן זה לוקח?',why:'זמן העיצוב וזמן המשלוח הם שני דברים, וספקים רבים מציינים רק אחד מהם.',us:'עד 5 ימי עסקים למשלוח אחרי אישור העיצוב, ההזמנה והתשלום. זמן העיצוב לא כלול.'},

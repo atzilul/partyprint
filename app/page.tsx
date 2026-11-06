@@ -6,7 +6,6 @@ import {homeDefaultCopy,LANDING_VARIANTS,LANDING_VARIANT_COOKIE,resolveLandingVa
 import {homeFaq} from '@/lib/home-faq';
 import {homeStructuredData} from '@/lib/home-schema';
 import {currentPricing} from '@/lib/current-pricing';
-import {SINGLE_SHIRT_PRICE} from '@/lib/catalog';
 
 type PageProps={searchParams:Promise<{v?:string|string[]}>};
 async function selectedVariant(searchParams:PageProps['searchParams']):Promise<LandingVariantKey|null>{
@@ -33,6 +32,6 @@ export async function generateMetadata({searchParams}:PageProps):Promise<Metadat
 export default async function HomePage({searchParams}:PageProps){
  const variant=await selectedVariant(searchParams);
  const pricing=await currentPricing();
- const schema=homeStructuredData(homeFaq(PAYMENT_DISCLOSURE,pricing.singleShirtPrice??SINGLE_SHIRT_PRICE),pricing);
+ const schema=homeStructuredData(homeFaq(PAYMENT_DISCLOSURE,pricing),pricing);
  return <><HomeClient initialVariant={variant||undefined} initialPricing={pricing} businessEmail={BUSINESS_DETAILS.email} paymentDisclosure={PAYMENT_DISCLOSURE}/><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(schema).replace(/</g,'\\u003c')}}/></>;
 }

@@ -2,20 +2,27 @@ import type {Metadata} from 'next';
 import {Check,Clock3,HeartHandshake,Palette,ShieldCheck,Truck} from 'lucide-react';
 import {PolicyFAQ,PolicyFlow,PolicyHero,PolicyLayout,PolicyRibbon,PolicySection} from '@/app/policies/policy-ui';
 import {BUSINESS_DETAILS,PAYMENT_DISCLOSURE,TERMS_REVIEW,TERMS_REVIEW_COMPLETE} from '@/lib/business-details';
+import {currentPricing} from '@/lib/current-pricing';
+import {revisionFeeText} from '@/lib/pricing';
+import {withFees} from '@/lib/fee-text';
 import '../policies/policies.css';
+
+// Rendered per request: the revision fee is the one in the admin price list.
+export const dynamic='force-dynamic';
 
 export const metadata:Metadata={
  title:'תקנון ותנאי שימוש | PARTYPRINT',
  description:'תנאי בקשת הזמנה, הצעת מחיר, אישור עיצוב, תשלום, הדפסה ומשלוח של PARTYPRINT.',
  alternates:{canonical:'/terms'}
 };
-const faq=[
+const faqSource=[
  {question:'האם שליחת הטופס מחייבת אותי להזמין?',answer:'לא. הטופס שולח בקשה ללא חיוב. ההזמנה מתקדמת לאחר הצעת מחיר ואישור מפורש שלכם.'},
- {question:'מה קורה אם צריך עוד תיקונים?',answer:'סבב תיקונים אחד כלול. כל סבב נוסף מתומחר ב־100 ₪ ונעשה לאחר תיאום ואישור מראש.'},
+ {question:'מה קורה אם צריך עוד תיקונים?',answer:'סבב תיקונים אחד כלול. כל סבב נוסף מתומחר ב־{revisionFee} ₪ ונעשה לאחר תיאום ואישור מראש.'},
  {question:'האם אפשר לבטל מוצר בעיצוב אישי?',answer:'זכויות הביטול תלויות בסוג ההזמנה, במאפייני המוצר ובשלב הייצור. נבדוק כל מקרה לפי הדין; אישור עיצוב כשלעצמו אינו ויתור על זכות שאי אפשר לוותר עליה.'}
 ];
-const schema={'@context':'https://schema.org','@type':'FAQPage',mainEntity:faq.map(item=>({'@type':'Question',name:item.question,acceptedAnswer:{'@type':'Answer',text:item.answer}}))};
-export default function TermsPage(){
+const schemaFor=(faq:typeof faqSource)=>({'@context':'https://schema.org','@type':'FAQPage',mainEntity:faq.map(item=>({'@type':'Question',name:item.question,acceptedAnswer:{'@type':'Answer',text:item.answer}}))});
+export default async function TermsPage(){
+ const pricing=await currentPricing(),faq=withFees(faqSource,pricing),schema=schemaFor(faq);
  return <PolicyLayout>
   <PolicyHero eyebrow="CLEAR TERMS. GOOD VIBES." title="תקנון" highlight="PARTYPRINT." intro="כאן מסבירים בפשטות מה קורה מהרגע ששולחים רעיון ועד שהחולצות מגיעות. הצעת המחיר והתנאים שאושרו להזמנה הספציפית הם חלק מתנאי ההתקשרות." icon={ShieldCheck}/>
   <div className="policy-content">
@@ -43,7 +50,7 @@ export default function TermsPage(){
      <p>אין חיוב בעת שליחת הטופס. לא נבקש מכם פרטי אשראי בתוך הטופס. ההזמנה תעבור להדפסה רק בהתאם לאישור ההזמנה ולהסדר התשלום שסוכם.</p>
     </PolicySection>
     <PolicySection number="04" title="עיצוב ותיקונים">
-     <p>המחיר כולל עיצוב אישי משותף אחד לחבילה וסבב תיקונים אחד. סבב תיקונים נוסף עולה 100 ₪. לפני ביצוע סבב נוסף נעדכן אתכם ונקבל את אישורכם.</p>
+     <p>המחיר כולל עיצוב אישי משותף אחד לחבילה וסבב תיקונים אחד. סבב תיקונים נוסף עולה {revisionFeeText(pricing)} ₪. לפני ביצוע סבב נוסף נעדכן אתכם ונקבל את אישורכם.</p>
      <p>האחריות לבדוק את העיצוב, הכיתוב, השמות, הפרטים והתמונות היא על המזמין לפני אישור ההדפסה. נתחיל להדפיס רק לאחר קבלת האישור.</p>
     </PolicySection>
     <PolicySection number="05" title="ביטול, שינוי ומוצר בעיצוב אישי">

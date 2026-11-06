@@ -1,5 +1,5 @@
 'use client';
-import {Fragment,useEffect,useState} from 'react';
+import {Fragment,useEffect,useMemo,useState} from 'react';
 import type {CSSProperties} from 'react';
 import {ArrowUpLeft,ArrowLeft,Sparkles,Upload,Check,CheckCheck,Truck,Palette,Plus,Phone,MessageCircle,ShieldCheck,CreditCard} from 'lucide-react';
 import Link from '@/components/safe-link';
@@ -14,7 +14,8 @@ import type {Crop,LandingHomeContent} from '@/lib/landing-home-content';
 import {landingFaq} from '@/lib/home-faq';
 import {packs,MIN_SHIRT_QUANTITY,MAX_SHIRT_QUANTITY,SINGLE_PACK_INDEX,designModeFor,designSurcharge} from '@/lib/catalog';
 import type {DesignMode} from '@/lib/catalog';
-import {DEFAULT_PRICING,priceFor,unitPriceFor} from '@/lib/pricing';
+import {DEFAULT_PRICING,priceFor,unitPriceFor,designFeeFor} from '@/lib/pricing';
+import {withFees} from '@/lib/fee-text';
 import type {Pricing} from '@/lib/pricing';
 import {normalizeOrderQuantity} from '@/lib/order-quantity';
 import {track,siteEvent,packageType,requestMode} from '@/lib/analytics';
@@ -104,10 +105,12 @@ const lines=(items:string[])=>items.map((line,i)=><span key={line}>{i>0&&<br/>}{
 /** `initialPricing` is the admin price list read on the server, so the first HTML already carries the prices in force. */
 type Props={variant:LandingVariantKey;initialPricing?:Pricing;businessEmail:string;paymentDisclosure:string};
 export default function LandingHome({variant,initialPricing,businessEmail,paymentDisclosure}:Props){
- const c=LANDING_HOME_CONTENT[variant],packIndex=c.packIndex,pack=packs[packIndex];
+ const base=LANDING_HOME_CONTENT[variant],packIndex=base.packIndex,pack=packs[packIndex];
  // The open-ended package starts at four shirts, as on the home page.
  const startQuantity=packIndex===4?4:pack.n;
- const [mobileNavOpen,setMobileNavOpen]=useState(false),[quantities,setQuantities]=useState(()=>packs.map((p,i)=>i===4?4:p.n)),[selectedPack,setSelectedPack]=useState(packIndex),[mode,setMode]=useState<string>(c.mode),[busy,setBusy]=useState(false),[openSignal,setOpenSignal]=useState(0),[pricing,setPricing]=useState<Pricing>(initialPricing??DEFAULT_PRICING),[orderVisible,setOrderVisible]=useState(false),[designMode,setDesignMode]=useState<DesignMode>('shared');
+ const [mobileNavOpen,setMobileNavOpen]=useState(false),[quantities,setQuantities]=useState(()=>packs.map((p,i)=>i===4?4:p.n)),[selectedPack,setSelectedPack]=useState(packIndex),[mode,setMode]=useState<string>(base.mode),[busy,setBusy]=useState(false),[openSignal,setOpenSignal]=useState(0),[pricing,setPricing]=useState<Pricing>(initialPricing??DEFAULT_PRICING),[orderVisible,setOrderVisible]=useState(false),[designMode,setDesignMode]=useState<DesignMode>('shared');
+ // The audience copy with the fees of the price list in force.
+ const c=useMemo(()=>withFees(base,pricing),[base,pricing]);
  useEffect(()=>{
   fetch('/api/pricing').then(r=>{if(!r.ok)throw Error();return r.json();}).then(v=>setPricing(v as Pricing)).catch(()=>{});
   siteEvent('view');
@@ -117,7 +120,7 @@ export default function LandingHome({variant,initialPricing,businessEmail,paymen
   return()=>observer.disconnect();
  },[variant]);
  // Where the audience offers it (team), the visitor picks one shared design or a design for every shirt.
- const design=designModeFor(packIndex,designMode),designExtra=designSurcharge(packIndex,1,design);
+ const design=designModeFor(packIndex,designMode),designExtra=designSurcharge(packIndex,1,design,designFeeFor(pricing));
  const quantity=quantities[packIndex],unit=unitPriceFor(pricing,quantity)+designExtra;
  function setQuantity(i:number,n:number){if(busy||!packs[i]||i===SINGLE_PACK_INDEX)return;const next=normalizeOrderQuantity(n);setQuantities(previous=>previous.map((value,index)=>index===i?next:value));}
  function choose(nextMode:string=c.mode){
@@ -126,7 +129,7 @@ export default function LandingHome({variant,initialPricing,businessEmail,paymen
   setSelectedPack(packIndex);setMode(nextMode);setOpenSignal(v=>v+1);setMobileNavOpen(false);
   document.getElementById('order')?.scrollIntoView({behavior:reducedMotion()?'auto':'smooth',block:'start'});
  }
- const faq=landingFaq(paymentDisclosure,c.faq);
+ const faq=landingFaq(paymentDisclosure,c.faq,pricing);
  const tiers=(Array.isArray(pricing.tiers)?pricing.tiers:[]).filter(tier=>Number.isFinite(tier.quantity)&&tier.price>0).sort((a,b)=>a.quantity-b.quantity);
  const ladder=tiers.map((tier,i)=>{const upper=i<tiers.length-1?tiers[i+1].quantity-1:MAX_SHIRT_QUANTITY;return {label:tier.quantity===upper?tier.quantity+' חולצות':i===tiers.length-1?tier.quantity+' חולצות ומעלה':tier.quantity+' עד '+upper+' חולצות',price:tier.price+designExtra,here:quantity>=tier.quantity&&quantity<=upper};});
  const closeNav=()=>setMobileNavOpen(false);
