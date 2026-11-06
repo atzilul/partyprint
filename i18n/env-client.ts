@@ -31,3 +31,22 @@ export const clientEnvironment:GateEnvironment={
  },
  scripts:()=>[],
 };
+
+/**
+ * A request the page sends to the site from a translated address says which language the
+ * reader is using, so that an order remembers it. Hebrew addresses are not touched.
+ */
+type Marked={__PP_I18N_FETCH?:boolean};
+if(typeof window!=='undefined'&&!(window as unknown as Marked).__PP_I18N_FETCH){
+ (window as unknown as Marked).__PP_I18N_FETCH=true;
+ const send=window.fetch.bind(window);
+ window.fetch=(input,init)=>{
+  const language=languageOfPath(window.location.pathname);
+  if(language==='he')return send(input,init);
+  const url=typeof input==='string'?input:input instanceof URL?input.href:input.url;
+  if(!(url.startsWith('/')&&!url.startsWith('//'))&&!url.startsWith(window.location.origin+'/'))return send(input,init);
+  const headers=new Headers(init?.headers??(input instanceof Request?input.headers:undefined));
+  headers.set('X-Partyprint-Language',language);
+  return send(input,{...init,headers});
+ };
+}

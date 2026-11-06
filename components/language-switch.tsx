@@ -1,21 +1,23 @@
 'use client';
 import {usePathname} from 'next/navigation';
-import {LANGUAGES,TRANSLATED_ROUTES,languageOfPath} from '@/i18n/core';
+import {languageOfPath} from '@/i18n/core';
 import type {Language} from '@/i18n/core';
+import {toHebrew,translationsOf} from '@/i18n/routes';
 
 /**
  * Links to the same page in the other languages it exists in. Shown only on pages that
  * have a translation. Each language is named in its own script, so the names are not
- * translated.
+ * translated, and each link says which language it leads to, so it is left where it points.
  */
 const NAMES:Record<Language,string>={he:'עברית',ar:'العربية',en:'English',ru:'Русский',fr:'Français'};
 export default function LanguageSwitch(){
  const pathname=usePathname()||'/',current=languageOfPath(pathname);
- const path=current==='he'?pathname:pathname.slice(current.length+1)||'/';
- const others=LANGUAGES.filter(language=>TRANSLATED_ROUTES[language]?.includes(path));
+ const hebrew=current==='he'?pathname:toHebrew(current,pathname.split('/').filter(Boolean).slice(1))?.path;
+ if(!hebrew)return null;
+ const others=translationsOf(hebrew);
  if(!others.length)return null;
- const all:Language[]=['he',...others];
- return <nav className="language-switch" aria-label="Language" translate="no">{all.map(language=>language===current
+ const all:{language:Language;path:string}[]=[{language:'he',path:hebrew},...others];
+ return <nav className="language-switch" aria-label="Language" translate="no">{all.map(({language,path})=>language===current
   ?<b key={language} lang={language} translate="no" aria-current="true">{NAMES[language]}</b>
-  :<a key={language} lang={language} hrefLang={language} translate="no" href={language==='he'?path:'/'+language+path}>{NAMES[language]}</a>)}</nav>;
+  :<a key={language} lang={language} hrefLang={language} translate="no" href={path}>{NAMES[language]}</a>)}</nav>;
 }

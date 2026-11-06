@@ -13,6 +13,7 @@ import type {MailEnv,MailResult} from './mail-delivery';
 import {describeAttribution} from './attribution';
 import type {Attribution} from './attribution';
 import {RESPONSE_PROMISE_STATIC} from './response-promise';
+import {translateMail} from '@/i18n/mail';
 type MailAttempt=MailResult & {at:string;kind:'order'|'test'|'contact';orderId?:string};
 async function recipients(){return managerMailRecipients(getOwnerEmail(),(await getTeam()).members)}
 async function recordAttempt(result:MailResult,kind:'order'|'test'|'contact',orderId?:string){
@@ -52,12 +53,17 @@ export async function testOrderMail(env:MailEnv):Promise<MailResult>{
  return recordAttempt(result,'test');
 }
 
+export const CUSTOMER_SUBJECT='PARTYPRINT · קיבלנו את הרעיון שלכם';
+/** The confirmation a customer receives, in the language they ordered in. The link, the name and the reference are theirs alone. */
+export function customerConfirmation(order:Order,url:string){
+ const rendered=renderCustomerConfirmation(order,{origin:publicOrigin(),url,days:customerLinkDays(),promise:RESPONSE_PROMISE_STATIC});
+ return translateMail({subject:CUSTOMER_SUBJECT,html:rendered.html as string,text:rendered.text as string},order.language,[url,order.name,order.id.slice(0,8).toUpperCase()]);
+}
 export async function notifyCustomer(env:MailEnv,order:Order,url:string,attempt='initial'){
  if(!order.email||mailConfiguration(env).issue)return false;
- const customerDays=customerLinkDays();
- const {html,text}=renderCustomerConfirmation(order,{origin:publicOrigin(),url,days:customerDays,promise:RESPONSE_PROMISE_STATIC});
+ const {subject,html,text}=customerConfirmation(order,url);
  try{
-  const result=await sendResendMail(env,{to:[order.email],reply_to:getOwnerEmail(),subject:'PARTYPRINT · קיבלנו את הרעיון שלכם',text,html},'partyprint/customer/'+order.id+'/'+attempt);
+  const result=await sendResendMail(env,{to:[order.email],reply_to:getOwnerEmail(),subject,text,html},'partyprint/customer/'+order.id+'/'+attempt);
   return result.accepted;
  }catch{return false}
 }

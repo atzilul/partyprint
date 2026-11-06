@@ -27,8 +27,8 @@ export function languageOfPath(pathname:string|null|undefined):Language{
 /** "מ־80 ₪ לחולצה" becomes the key "מ־{0} ₪ לחולצה" and the numbers ["80"]. */
 export function maskNumbers(text:string):{key:string;numbers:string[]}{
  const numbers:string[]=[];
- // The numbered places of elements (<0>, </0>, <0/>) are not numbers of the sentence.
- const key=text.replace(/<\/?\d+\/?>|\d+(?:[.,]\d+)*/g,found=>{if(found[0]==='<')return found;numbers.push(found);return '{'+(numbers.length-1)+'}';});
+ // The numbered places of elements (<0>, </0>, <0/>) and of private values ({v0}) are not numbers of the sentence.
+ const key=text.replace(/<\/?\d+\/?>|\{v\d+\}|\d+(?:[.,]\d+)*/g,found=>{if(found[0]==='<'||found[0]==='{')return found;numbers.push(found);return '{'+(numbers.length-1)+'}';});
  return {key,numbers};
 }
 
@@ -91,16 +91,18 @@ export function findTranslation(text:string,language:Language,environment:Lookup
 }
 
 /** One sentence. Text without Hebrew is returned as it is; an unknown sentence stays Hebrew and is reported. */
+/** A page address or a link (no spaces, starts with / or http). It is led to its language by i18n/routes.ts, never by the dictionary. */
+export const isAddress=(text:string)=>/^(?:https?:\/\/|\/)\S*$/.test(text);
 export function translateText(text:string,language:Language,environment:Lookup):string{
- if(language==='he'||!hasHebrew(text))return text;
+ if(language==='he'||!hasHebrew(text)||isAddress(text))return text;
  const found=findTranslation(text,language,environment);
  return found?found.before+fillNumbers(found.translated,found.numbers,language,environment.nouns(language))+found.after:text;
 }
 
-/** Every string inside a value (metadata, structured data). Addresses and other non-Hebrew strings pass through. */
-export function translateDeep<T>(value:T,language:Language,environment:Lookup):T{
+/** Every string inside a value (metadata, structured data). An address goes through `address` when one is given, and is otherwise left as it is. */
+export function translateDeep<T>(value:T,language:Language,environment:Lookup,address?:(value:string)=>string):T{
  const walk=(item:unknown):unknown=>{
-  if(typeof item==='string')return translateText(item,language,environment);
+  if(typeof item==='string')return address&&isAddress(item)?address(item):translateText(item,language,environment);
   if(Array.isArray(item))return item.map(walk);
   if(item&&typeof item==='object'&&Object.getPrototypeOf(item)===Object.prototype)return Object.fromEntries(Object.entries(item).map(([name,entry])=>[name,walk(entry)]));
   return item;
@@ -129,13 +131,4 @@ export function parseRich(text:string):RichPart[]|null{
  if(stack.length)return null;
  if(last<text.length)root.push(text.slice(last));
  return root;
-}
-
-/** The addresses that exist in each language, without the language prefix. */
-export const TRANSLATED_ROUTES:Partial<Record<Language,string[]>>={ar:['/lp/team']};
-/** A link inside the site leads to the same page in the reader's language when that page exists. */
-export function localizedHref(language:Language,href:string):string{
- if(language==='he'||!href.startsWith('/')||href.startsWith('//'))return href;
- const cut=href.search(/[?#]/),path=cut<0?href:href.slice(0,cut);
- return TRANSLATED_ROUTES[language]?.includes(path)?'/'+language+href:href;
 }

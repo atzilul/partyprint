@@ -1,7 +1,7 @@
 /* The JSX runtime the site's own code is built against: React's, behind the translation gate. */
 import * as real from 'react/jsx-runtime';
 import {createGate} from './gate';
-import {serverEnvironment} from './env.server';
+import {serverEnvironment} from './env-server';
 
 type Props=Record<string,unknown>;
 type Run=(type:unknown,props:Props,key?:unknown)=>unknown;

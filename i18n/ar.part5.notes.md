@@ -1,0 +1,15 @@
+# ar.part5 notes (162 items, 0-based)
+- Not a sentence (page addresses with Hebrew slugs): 19, 20, 29, 30, 55, 56. Written as the real Arabic address: slug from ar.slugs.json plus the /ar prefix, i.e. what routes.ts localizedHref returns. If you want the slug swapped without /ar, remove the prefix.
+- 21, 22, 57, 58: input was already half Arabic (a translated link text inside a Hebrew sentence). Translated whole; same Arabic as 10, 11, 45, 46.
+- 2, 36: "לעיצוב לחתן ולחבר׳ה / למשפחה שלנו" read as a button and written as an imperative ("صمّموا لـ..."), following "עצבו לצוות שלנו" in ar.json. If it is a label ("towards a design for..."), use "إلى تصميم للعريس ورفاقه / لعائلتنا".
+- 60, 68, 130: "בקשת הזמנה" in the legal text -> "طلب (ل)تقديم طلبية", to keep request (طلب) and order (طلبية) apart; ar.json shortens it to "طلب" in marketing copy.
+- 88, 101, 102: "המזמין" -> "صاحب الطلبية". 68, 91: "שאין להתנות עליהן" -> "لا يجوز الاتفاق على خلافها". Legal items 59-115 deserve a lawyer's or native reviewer's eye.
+- 64, 65, 66: look like internal placeholders (legal review still to be completed), translated literally.
+- 86 + 87 and 146 + 147: sentence pieces around a number shown by the page. 86 has no trailing space, like the Hebrew; 146 + 147 read "حتى 5" + "أيام عمل".
+- Days: "{n} أيام عمل" is right for 3-10 (8, 42, 95, 143, 150, 161). If the far-area value in 95 / 150 is above 10 it should read "يوم عمل".
+- 3, 37: "מ־{n} חולצות" -> "ابتداءً من {n:tshirt}"; for n = 2 the noun would print in the nominative (not a realistic tier).
+- 95, 143, 150: place names: إيلات, العربة, ما وراء الخط الأخضر, هضبة الجولان.
+- 151, 153: "חבילה" here is the parcel -> "الطرد", not "باقة". 149, 159: "לוקר" -> "خزانة استلام".
+- 13, 23, 48: "כמה עולות" -> "كم تكلفة" (ar.json has "كم التكلفة؟"); part 4 has the sister titles for the bachelor page, please align.
+- 141: "דין ופניות" -> "القانون والتواصل" (פניות here is contacting us, not the form request).
+- 119: "אותיות קטנות שמתחבאות באמצע" adapted to "بنود بخط صغير تختبئ بين السطور".

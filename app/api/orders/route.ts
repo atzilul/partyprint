@@ -17,8 +17,9 @@ import {cleanSingleLine} from '@/lib/text';
 import {contactGrant,validContactKey} from '@/lib/contact-leads';
 import {parseAttribution} from '@/lib/attribution';
 import type {Order} from '@/lib/orders';
+import {languageOfRequest,localizedUrl} from '@/i18n/server';
 async function replayReceipt(order:Order){
- let trackingUrl='';try{trackingUrl=await createCustomerAccess(order.id);}catch{console.error('Customer access unavailable');}
+ let trackingUrl='';try{trackingUrl=localizedUrl(order.language,await createCustomerAccess(order.id));}catch{console.error('Customer access unavailable');}
  return Response.json({id:order.id,summary:orderSummary(order),emailSent:order.emailStatus==='accepted',trackingUrl,customerEmailSent:order.customerEmailStatus==='accepted',quantity:order.quantity,price:order.price,package:order.package,packageName:order.packageName,shirtDetailsStatus:order.shirtDetailsStatus||'complete',imagesCount:order.images.length,replayed:true},{headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 }
 const fail=(error:string,status=400)=>Response.json({error},{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
@@ -54,7 +55,7 @@ export async function POST(request:Request){
  const uploadError=imageUploadError(files);if(uploadError)return fail(uploadError);
  const payloads=[];for(const f of files){const bytes=await f.arrayBuffer();if(!validImage(new Uint8Array(bytes),f.type))return fail('אחד הקבצים אינו תמונת JPG, PNG או WEBP תקינה.');payloads.push({name:f.name,bytes,type:f.type})}
  const id=contactId||crypto.randomUUID(),uploadBatch=crypto.randomUUID(),saved:string[]=[];
- const order={...(contactId?{contactCaptureId:contactId}:{}),...(attribution?{attribution}:{}),shirtDetailsStatus,eventDate,source,stageHistory:[{status:'received',at:new Date().toISOString()}],subtotal,discount,...(coupon?{couponCode:coupon.code}:{}),pricingVersion:pricing.version,revisionPrice:revisionFeeFor(pricing),id,name,phone,email,brief,package:pack,packageName:packageLabel(pack,designMode),...(designMode==='individual'?{designMode,designSurcharge:designFeeFor(pricing)}:{}),quantity,price:total,shirts:shirts as ShirtSelection[],baseQuantity:packs[pack].n,extraShirtPrice:pricing.extraShirtPrice,priceStatus:'advertised',mode,createdAt:new Date().toISOString(),status:'received',communicationChannel:email?'email':'whatsapp',communicationStatus:'pending',images:[] as {name:string;key:string;size:number;role:string}[]};
+ const order={...(contactId?{contactCaptureId:contactId}:{}),...(attribution?{attribution}:{}),shirtDetailsStatus,eventDate,source,stageHistory:[{status:'received',at:new Date().toISOString()}],subtotal,discount,...(coupon?{couponCode:coupon.code}:{}),...(languageOfRequest(request)!=='he'?{language:languageOfRequest(request) as string}:{}),pricingVersion:pricing.version,revisionPrice:revisionFeeFor(pricing),id,name,phone,email,brief,package:pack,packageName:packageLabel(pack,designMode),...(designMode==='individual'?{designMode,designSurcharge:designFeeFor(pricing)}:{}),quantity,price:total,shirts:shirts as ShirtSelection[],baseQuantity:packs[pack].n,extraShirtPrice:pricing.extraShirtPrice,priceStatus:'advertised',mode,createdAt:new Date().toISOString(),status:'received',communicationChannel:email?'email':'whatsapp',communicationStatus:'pending',images:[] as {name:string;key:string;size:number;role:string}[]};
  try{for(let i=0;i<payloads.length;i++){const f=payloads[i],key=`orders/${id}/reference-${uploadBatch}-${i}`;await bindings.BUCKET.put(key,f.bytes,{httpMetadata:{contentType:f.type}});saved.push(key);order.images.push({name:f.name,key,size:f.bytes.byteLength,role:"reference"})}}catch(e){await Promise.allSettled(saved.map(k=>bindings.BUCKET.delete(k)));throw e}
  const summary=orderSummary(order);
  let stored;try{stored=await insertOrder(order,coupon)}catch(e){await Promise.allSettled(saved.map(k=>bindings.BUCKET.delete(k)));if(contactId){const existing=await getOrder(contactId);if(existing?.contactCaptureId===contactId)return replayReceipt(existing);}throw e}
@@ -62,7 +63,7 @@ export async function POST(request:Request){
  let trackingUrl='';
  const [emailSent,customerEmailSent]=await Promise.all([
   (async()=>{try{const bundleUrl=await createOrderAccess(bindings.BUCKET,id);return await notifyOrder(bindings,stored,bundleUrl)}catch{console.error('Order mail link unavailable');return false}})(),
-  (async()=>{try{trackingUrl=await createCustomerAccess(id);if(!email)return false;return await notifyCustomer(bindings,stored,trackingUrl)}catch{console.error('Customer notification unavailable');return false}})()
+  (async()=>{try{trackingUrl=localizedUrl(stored.language,await createCustomerAccess(id));if(!email)return false;return await notifyCustomer(bindings,stored,trackingUrl)}catch{console.error('Customer notification unavailable');return false}})()
  ]);
  try{await saveOrder({...stored,customerEmailStatus:!email?'not_requested':customerEmailSent?'accepted':!mailConfiguration(bindings).issue?'failed':'not_configured',emailStatus:emailSent?'accepted':!mailConfiguration(bindings).issue?'failed':'not_configured'},1,'הזמנה התקבלה מהאתר','אתר');}catch{console.error('Order delivery status update failed')}
  return Response.json({id,summary,emailSent,trackingUrl,customerEmailSent,quantity,price:total,package:pack,packageName:packageLabel(pack,designMode),shirtDetailsStatus,imagesCount:order.images.length},{status:201,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});

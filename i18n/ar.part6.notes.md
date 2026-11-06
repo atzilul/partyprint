@@ -1,0 +1,15 @@
+# ar.part6 notes (133 items, 0-based indices into ar.part6.json)
+- 107: not a sentence. It is the conjunction "ו־" between two cookie names (`_fbp` ו־ `_fbc`); rendered "و". 106 + cookie names + 107 + 108 form one sentence; 108 starts with the full stop.
+- 35, 36 / 42, 43 / 81, 82: sentence pieces around a price or a phone number; each is the exact prefix/suffix of the full item (34, 41, 80), so they only read correctly joined in that order.
+- 10-12, 57-58, 117-119: two-line headline pieces. 119 "מדיניות" is "سياسة" without article because 117 "الخصوصية." completes it; if 119 is ever shown alone it should be "السياسة".
+- 52: "זיכוי" (credit) rendered "قيد مبلغ لصالحكم" (crediting an amount in your favour), neither "refund" nor "store credit", to avoid strengthening the obligation. 54: "החזר" rendered with the neutral "الاسترداد".
+- 33, 50: consumer-law wording. "זכויות שאי אפשר להתנות עליהן" -> "حقوق لا يجوز الاتفاق على ما يخالفها"; "חריג לזכות הביטול" -> "استثناء من حق الإلغاء". Worth a look by a legal reader.
+- 84, 85, 95, 114: "ידנית / פנייה ידנית" rendered "يدويًا / التواصل اليدوي" (the policy contrasts it with automatic reminders). The existing consent text in ar.json uses "شخصيًا" for the same word.
+- פרטי קשר -> "بيانات التواصل" as in the style table (40, 77, 83-85, 101, 104, 105, 109, 112); ar.json mostly has "بيانات الاتصال". Align one way.
+- Number agreement, checked against the page sources: 56 "{0} يومًا" (14), 108 "{0} شهرًا" (12), 109 "{1} ساعة" (24) are right for 11+; 3, 20, 109 "{0} أيام" (7, 5, 7) and 87/88 "{0} صور" (10) are right for 3-10.
+- 78: month written "تشرين الثاني" (usage of Arabic speakers in Israel) and "עודכן" as "آخر تحديث". The month is hard-coded in the Hebrew, so the key changes whenever the date does.
+- 104: "מגובבים ב־SHA" -> "تُطبَّق عليهما دالة التجزئة SHA-{0}" (hashing, not encryption); "מנורמלים" -> "تُوحَّد صيغة"; "Lead", "_fbp", "_fbc", IP kept in Latin.
+- 5, 56: "החבילה" here is the parcel -> "الطرد", not "باقة". 37-39, 52: "אריזה" -> "التغليف".
+- 16, 69: "כיוון" (design direction) -> "تصوّر (التصميم)", following ar.json. 9: "עומסים" -> "ضغط العمل" (the Hebrew does not say whose load).
+- 3: place names "وادي عربة", "ما وراء الخط الأخضر", "هضبة الجولان"; the part-5 translator has the same list and may have chosen other forms.
+- 131: "פניות וזכויות" -> "الطلبات والحقوق" (glossary term for פנייה); here it means data-subject requests.

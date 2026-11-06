@@ -15,9 +15,9 @@ const dictionaryFile=root+'i18n/'+language+'.json',missingFile=root+'i18n/'+lang
 const read=file=>existsSync(file)?JSON.parse(readFileSync(file,'utf8')):null;
 const write=(file,value)=>writeFileSync(file,JSON.stringify(value,null,1)+'\n');
 const HEBREW=/[\u0590-\u05ff]/;
-const mask=text=>{let index=0;return text.replace(/<\/?\d+\/?>|\d+(?:[.,]\d+)*/g,found=>found[0]==='<'?found:'{'+(index++)+'}');};
+const mask=text=>{let index=0;return text.replace(/<\/?\d+\/?>|\{v\d+\}|\d+(?:[.,]\d+)*/g,found=>found[0]==='<'||found[0]==='{'?found:'{'+(index++)+'}');};
 /** The numbered places of a sentence: numbers ({0}, {0:noun}) and elements (<0>, </0>, <0/>). {0#noun} prints a noun only and is extra. */
-const places=text=>[...text.matchAll(/\{(\d+)(?::[a-z]+)?\}/g)].map(match=>'n'+match[1]).concat([...text.matchAll(/<\/?(\d+)\/?>/g)].map(match=>match[0])).sort().join(' ');
+const places=text=>[...text.matchAll(/\{(v?\d+)(?::[a-z]+)?\}/g)].map(match=>'n'+match[1]).concat([...text.matchAll(/<\/?(\d+)\/?>/g)].map(match=>match[0])).sort().join(' ');
 // The same hash as i18n/core.ts.
 function hashKey(text){
  let high=0xdeadbeef,low=0x41c6ce57;
@@ -44,7 +44,9 @@ if(step==='collect'){
  const known=new Set(read(candidatesFile)||[]),before=known.size;
  // Words joined by hyphens with no space are an address of a page, not a sentence.
  const address=/^[^\s]+(?:-[^\s]+)+$/;
- const add=text=>{const clean=text.replace(/\s+/g,' ').trim();if(clean&&HEBREW.test(clean)&&!address.test(clean))known.add(mask(clean));};
+ // So is a link; and copy that still holds a named place ({designFee}) is filled in before it is shown.
+ const unshown=/^https?:\/\/|\{[a-zA-Z]+\}/;
+ const add=text=>{const clean=text.replace(/\s+/g,' ').trim();if(clean&&HEBREW.test(clean)&&!address.test(clean)&&!unshown.test(clean))known.add(mask(clean));};
  for(const file of rest){
   const source=ts.createSourceFile(file,readFileSync(root+file,'utf8'),ts.ScriptTarget.Latest,true,file.endsWith('x')?ts.ScriptKind.TSX:ts.ScriptKind.TS);
   const visit=node=>{

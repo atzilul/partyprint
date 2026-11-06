@@ -1,3 +1,4 @@
+import {languageOfRequest} from '@/i18n/server';
 import {clientKey} from '#partyprint-runtime';
 import {bindings} from '@/lib/order-store';
 import {readLimitedJson} from '@/lib/order-security';
@@ -17,7 +18,7 @@ export async function POST(request:Request){
  const count=await DB.prepare('INSERT INTO form_rate_limits (key,count,expires_at) VALUES (?,1,?) ON CONFLICT(key) DO UPDATE SET count=count+1 WHERE count<8 RETURNING count').bind(key,now+7200000).first();
  if(!count)return fail('נשלחו יותר מדי בקשות. נסו שוב מאוחר יותר או פנו ב־WhatsApp.',429);
  await DB.prepare('DELETE FROM form_rate_limits WHERE expires_at < ?').bind(now).run();
- const details=await contactDetails(v),result=await saveContact(id,token,details,Number(v.version)||0);
+ const details={...await contactDetails(v),...(languageOfRequest(request)!=='he'?{language:languageOfRequest(request) as string}:{})},result=await saveContact(id,token,details,Number(v.version)||0);
  return Response.json({saved:true,...result},{status:result.created?201:200,headers});
  }catch(e){const message=e instanceof Error?e.message:'';return fail(message==='invalid_contact'?'מלאו שם, טלפון ומייל תקינים.':message==='not_found'?'השמירה אינה זמינה בכרטיסייה הזו.':message==='conflict'?'הפרטים השתנו בכרטיסייה אחרת. רעננו ונסו שוב.':message==='too_large'?'הבקשה גדולה מדי.':'לא הצלחנו לשמור את הפרטים. הם נשארו בטופס, נסו שוב.',message==='invalid_contact'?400:message==='not_found'?404:message==='conflict'?409:message==='too_large'?413:503);}
 }

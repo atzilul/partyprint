@@ -1,0 +1,15 @@
+# ar.part4 notes (172 items, 0-based indices into ar.part4.json)
+- Not sentences (page addresses with Hebrew slugs): 11, 12, 17, 18, 46, 47, 55, 56, 77, 78, 86, 87, 108, 109, 118, 119, 157, 158, 167, 168. Not translated word for word: I wrote the real Arabic address of the same page (/ar/ + the slug from ar.slugs.json, as routes.ts builds it). If these strings must stay Hebrew addresses (canonical, @id), exclude them from the dictionary.
+- 48, 110, 159, 160: the Hebrew key already contains Arabic (a translated label was inserted into a Hebrew sentence before extraction). Translated the Hebrew remainder; results equal 33, 99, 142, 143. The keys look like an extraction artefact.
+- 111-151 (bachelorette): the Hebrew addresses the readers in the feminine plural. I kept the guide's أنتم / ـكم (masculine-generic), not أنتنّ / ـكنّ. Align with whoever translates /lp/bride.
+- 51, 57, 58, 61-63, 71, 76: שבט -> فرقة كشفية (scout troop), ראש השבט -> قائد الفرقة الكشفية. 57: קן -> فرع. 52, 57: גרעין -> نواة / مجموعة النواة. Israeli youth-movement terms with no fixed Arabic equivalent.
+- 53, 59, 64, 67: חניכים -> أعضاء (الحركة), מדריכים -> مرشدين. 76: רכז הפעילות -> منسّق الأنشطة.
+- 6, 10, 62, 73: שכבה -> الدفعة (school year group, 6 and 10) and فئة عمرية (youth-movement age group, 62 and 73).
+- 50, 58, 65: מידות נוער -> مقاسات الشبيبة (alternative: الفتيان).
+- 96, 103: בד מנדף -> قماش طارد للعرق (moisture-wicking; alternative: سريع الجفاف). No fabric claim added.
+- 63, 94: סיסמה -> عبارة (not شعار, which is the logo term); סמל -> رمز (63, 71, 72).
+- 21, 25, 58, 62, 93, 127: price tiers reordered to "{1} ₪ للتيشيرت ابتداءً من {0:tshirt}" (price first) so two numbers do not sit side by side; "וב־{4} חולצות" -> "عند طلب {4:tshirt}".
+- 21, 58, 62, 89: "צוות / קבוצה של {6}" -> "فريق / مجموعة من {6}" with no counted noun, to avoid agreement. 44: "أكثر من {0} من الموظفين" for the same reason.
+- 1, 32, 43, 67, 98, 135: "{0} أيام عمل" assumes 3-10 days, as in the dictionary. "שבועיים מראש" -> "قبل الموعد بأسبوعين على الأقل". 1: משלחת -> البعثة (school delegation trip); מסיבת סיום -> حفل التخرج.
+- 40, 41: חולצה ממותגת -> "تيشيرت عادي بشعار الشركة" (branded shirt). 128, 150: בדיחה פנימית -> نكتتكم الخاصة / النكتة الخاصة بين الصديقات.
+- 15, 16, 51-54, 81-85, 113-117, 163-166: SEO keyword phrases, not sentences; translated as short noun phrases. 151: "בוואטסאפ" written as WhatsApp.

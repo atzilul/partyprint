@@ -1,7 +1,7 @@
 /* Development build of the same runtime. */
 import * as real from 'react/jsx-dev-runtime';
 import {createGate} from './gate';
-import {serverEnvironment} from './env.server';
+import {serverEnvironment} from './env-server';
 
 type Props=Record<string,unknown>;
 type Dev=(type:unknown,props:Props,key?:unknown,...rest:unknown[])=>unknown;

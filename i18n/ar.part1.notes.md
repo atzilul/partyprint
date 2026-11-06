@@ -1,0 +1,15 @@
+- Bachelorette items (58, 113, 253, 257, 258, 260, 261): Hebrew addresses women (אתן/שלכן). Aligned with part 2: generic plural أنتم/ـكم, feminine only in third person. 58 "ערב שלכן" therefore became third person ("والسهرة سهرتهنّ"). 258 and 160 now share one Arabic string.
+- 4: {0} is the WhatsApp phone number (checked in lib/home-faq.ts), written "عبر WhatsApp على الرقم {0}". If the number is ever replaced by a name, reword.
+- 6: section name "מהסטודיו לחגיגות שלכם" rendered «من الاستوديو إلى احتفالاتكم» with added « »; it must match the heading wherever that section title itself is translated. "המלצות" = "التوصيات" (testimonials).
+- 60: "הקאסט שלכם" -> "أبطالكم" (film cast, as part 2's "أبطال الليلة"); on a superhero-heavy site it can also read "your heroes". Alternative: "طاقمكم".
+- 81, 82, 176, 179, 184, 188, 206: playful "אבא/אמא" rendered "بابا/ماما" (pan-Arab informal, not a local dialect); descriptive text (203) uses "الأب والأم". Switch to "الأب/الأم" if stricter MSA is wanted.
+- החוגג: "صاحب عيد الميلاد" on the birthday page (as part 7), "صاحب المناسبة" on the home page (136, 137) where the same line also covers a bride or a group. 226/227 keep the dictionary idiom ("صاحب عيد الميلاد عليكم. / والتصميم علينا.").
+- "מזל טוב" (163, 180, 181) -> «عيد ميلاد سعيد», the Arabic birthday cliche, not a literal "congratulations". "מהמדף" -> "الجاهزة".
+- Ages: "בן/בת {0}" written without a counted noun: "عمره {0}", "في الـ{0}", "بعمر {0}", "عيد الميلاد الـ{0}" (140, 141, 145, 165, 174, 176, 177, 179, 184, 188, 190, 234, 236, 242, 247). Names kept as transliterations (داني، يوآف).
+- 24: "צוות בעבודה" (home card label, a team at work) -> "فريق العمل". 38: "ימי חברה" -> "فعاليات الشركات". 41, 62: "מסיבת סיום" -> "حفلة تخرّج" as in part 2.
+- 151: "להרים" -> "تُشعلوا الأجواء" as in part 2 (no drinking reference). 185, 200, 248: "גלימה" (cape) -> "رداء", since "عباءة" suggests an abaya.
+- 152: aria-label of the free-quantity picker (5/10/15/20) -> "عدد التيشيرتات في الطلبية الحرّة"; "הזמנה חופשית" has no fixed term.
+- 134: Hebrew is singular ("התחל לעצב"); rendered plural "ابدؤوا التصميم" like the dictionary's "התחילו לעצב".
+- Split headlines must stay in source order: 18+21+19 ("طفلكم. بنسخة بطل خارق."), 91+89 ("هكذا يمكن لفكرتكم / أن تبدو."), 106+104, 196+197, 182 + the dictionary's "إلى عمل فني يمكن ارتداؤه.".
+- 160, 162, 237, 258, 260: "صور" / "أيام عمل" after a number place assume values 3-10 (10 photos, 5 days in the source).
+- Not sentences (tag lists, translated item by item): 42, 179. No code or addresses in this part.

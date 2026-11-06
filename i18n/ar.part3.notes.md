@@ -1,0 +1,15 @@
+# ar.part3 notes (247 items, 0-based indices)
+- Not a sentence: 165, 166, 224, 225, 236, 237 are page addresses. I wrote the real Arabic address (/ar/ prefix + slug from ar.slugs.json), not a literal translation; drop "/ar" if your code adds the prefix itself.
+- Trailing space on purpose (Hebrew glues the number with a maqaf, Arabic needs a space): 21, 23, 25, 42, 128, 172. Do not trim when merging.
+- Sentence pieces, correct only next to their neighbours and for bundle numbers 25-100 (noun written as singular "تيشيرت"): 21-26, 54, 58, 81, 129, 142. Generic one-word pieces that could match elsewhere: 73 "עוד" -> "أضيفوا", 80 "עד" -> "إلى", 42 "מ־" -> "من ".
+- 147-150: the input was already half Arabic ("מדריך: تيشيرت ..."); only the prefix was translated ("دليل:").
+- שכבה (school year group) -> "طبقة" (the word used in Arab schools in Israel; not general MSA), כיתה -> "صفّ": 1, 20, 22, 65, 93, 232, 234, 238-240, 242-246.
+- צהרון -> "نادي الظهيرة", מעון -> "حضانة": 1, 91, 169. No single standard Arabic term for צהרון.
+- צוות of a kindergarten (staff, not a team) -> "طاقم", not the glossary "فريق": 2, 91, 170, 175, 182, 188, 210. Army צוות stays "فريق" (101).
+- Army and youth-movement words, 20, 22, 65, 100, 101, 104, 221: פלוגה -> "سرية (عسكرية)", סוף מסלול -> "نهاية المسار", שבט -> "فوج كشفي", קן -> "فرع الحركة", גרעין -> "مجموعة النواة", army מחזור -> "دفعة". Culturally distant for Arab readers; consider hiding these blocks.
+- באנדל with a possessive, 64 "هذه هي باقتنا BUNDLE" and 66 "باقتكم BUNDLE": kept BUNDLE for the term rule; plain "باقتنا / باقتكم" reads lighter.
+- "משלוח אחד" (one shipment, countable) -> "شحنة واحدة" instead of "توصيل": 98, 114, 116, 157.
+- Adapted headlines: 17-18 "السعر يهبط", 46-47 "سعر لا يعرف إلا الانخفاض", 83-84 "لا أحد يُستثنى", 111-112 "صداع صغير", 192-193 "كلما زدتم، انخفض السعر", 132-133 follows the existing "الفريق عليكم / والتصميم علينا".
+- 49, 50: "מספר עגול" -> "عدد مدوَّر"; understood, slightly technical. 50-52: "כולל" rephrased as "في كل باقة BUNDLE ..." so the line-broken pieces need no case endings.
+- 182, 239: price ladder reordered (price first, then "ابتداءً من {n:tshirt}"); places moved, all kept. 182, 239, 245 use "طفلًا / طالبًا / طالب" for the real values (30, 30, 100).
+- 31, 32, 94: הייטק -> "هايتك" (as used locally) rather than "شركات التقنية". 171-172: "עודכנה ב־" -> "آخر تحديث:".

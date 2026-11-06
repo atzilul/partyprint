@@ -1,4 +1,5 @@
-import {DIRECTION,fillNumbers,findTranslation,hasHebrew,localizedHref,parseRich,translateDeep,translateText} from './core';
+import {DIRECTION,fillNumbers,findTranslation,hasHebrew,parseRich,translateDeep,translateText} from './core';
+import {localizedAddress,localizedHref} from './routes';
 import type {GateEnvironment,Language,RichPart} from './core';
 
 /**
@@ -91,17 +92,34 @@ export function createGate(environment:GateEnvironment){
    if(hasHebrew(joined)){
     const translated=text(joined,language);
     if(translated!==joined){put(start,translated);for(let index=start+1;index<=end;index++)put(index,null);}
+    // A sentence built around a value the site cannot know (a customer's name) has no
+    // translation as a whole; its own words are translated and the value stays as it is.
+    else if(end>start)for(let index=start;index<=end;index++){
+     const piece=list[index];
+     if(typeof piece==='string'&&hasHebrew(piece)){const single=text(piece,language);if(single!==piece)put(index,single);}
+    }
    }
    start=end;
   }
   return out;
  }
 
+ /** A WhatsApp link carries a ready message; the reader should be able to read what they send. */
+ function message(href:string,language:Language):string{
+  const found=/^(https:\/\/wa\.me\/\d+\?text=)([^&#]+)(.*)$/.exec(href);
+  if(!found)return href;
+  try{
+   const hebrewText=decodeURIComponent(found[2]);
+   const translated=text(hebrewText,language);
+   return translated===hebrewText?href:found[1]+encodeURIComponent(translated)+found[3];
+  }catch{return href;}
+ }
+
  function structuredData(props:Props,language:Language):Props{
   const html=(props.dangerouslySetInnerHTML as {__html?:unknown}|undefined)?.__html;
-  if(props.type!=='application/ld+json'||typeof html!=='string'||!hasHebrew(html))return props;
+  if(props.type!=='application/ld+json'||typeof html!=='string')return props;
   try{
-   const translated=JSON.stringify(translateDeep(JSON.parse(html),language,environment)).replace(/</g,'\\u003c');
+   const translated=JSON.stringify(translateDeep(JSON.parse(html),language,environment,address=>localizedAddress(language,address))).replace(/</g,'\\u003c');
    return {...props,dangerouslySetInnerHTML:{__html:translated}};
   }catch{return props;}
  }
@@ -121,7 +139,12 @@ export function createGate(environment:GateEnvironment){
    const value=props[name];
    if(typeof value==='string'){const translated=text(value,language);if(translated!==value)set(name,translated);}
   }
-  if(typeof props.href==='string'){const href=localizedHref(language,props.href);if(href!==props.href)set('href',href);}
+  if(typeof props.href==='string'){
+   // A link that names the language of its target (hrefLang) is left where it points.
+   const elsewhere=typeof props.hrefLang==='string'&&props.hrefLang!==language;
+   const href=elsewhere?props.href:message(localizedHref(language,props.href),language);
+   if(href!==props.href)set('href',href);
+  }
   if(type==='body'){
    const scripts=environment.scripts(language).map((script,index)=>create('script',script.src?{src:script.src}:{dangerouslySetInnerHTML:{__html:script.code}},'partyprint-i18n-'+index));
    if(scripts.length){const current=out.children;set('children',[...scripts,...(Array.isArray(current)?current:[current])]);}

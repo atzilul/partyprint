@@ -1,0 +1,15 @@
+# ar.part7 notes (313 items, 0-based indices). Verification script: 0 errors.
+- Not a sentence: 111 is a WhatsApp URL whose prefilled text had Hebrew; the 4 words were translated ("أحتاج مساعدة لاختيار المقاس") and `%{1} %{2} %{3}` (the "20" of %20) kept between them. 195 "מקור: direct" -> label translated, value `direct` kept.
+- Named places `{revisionFee}` (90, 119, 239) and `{designFee}` (244-251) are not in the style guide; kept exactly as written, Arabic copied from the matching `{0}` entries in ar.json.
+- Pieces of a larger sentence: 20+21 (order reference is rendered between them: "مرحبًا X، طلبكم" + ref + "تم حفظه لدى PARTYPRINT."); 23; 217 (suffix after a package name); 83 (caption under the big "0 ₪"); 88+89 ("جولة واحدة" / "مشمولة في تصميمكم", feminine to agree with جولة); 74 (headline after "יש לכם רעיון?"; "لها" refers to فكرة).
+- 240-243, 252: event names and "if it is closer" clauses that code glues into the lead-time FAQ. 241 and 243 are both "إذا كان الموعد أقرب" (no gender), because the masculine Hebrew piece is also used with האירוע = المناسبة (feminine). If code joins them with Hebrew glue text, the composed sentence needs its own entry.
+- Staff-only strings (admin mail, order summary, API validation), translated literally: 44, 55, 56, 265-279, 281-289, 300-308. 268/269 ("חדשים"/"עודכנו") follow "פרטי קשר" -> feminine "جديدة"/"محدَّثة"; 277-279 follow "מחיר".
+- 190 "עברית" is the language-switch name for Hebrew; written "العبرية" because Hebrew letters are not allowed. The switcher should probably keep the endonym in code instead.
+- New term: לקוח -> زبون / زبائن (44, 55, 56, 118, 282, 293, 297), chosen over عميل, which can read as "collaborator" locally. Please align the other parts.
+- New term: מעקב (order tracking) -> تتبّع (18, 28, 29, 35, 129, 144, 180-182), to keep it apart from المتابعة = "continue" in ar.json.
+- 276 "בקשת הזמנה" as a request-type label -> "طلب طلبية" (terms table: בקשה = طلب, הזמנה = طلبية); correct but clumsy. In the customer mail (19, 20, 33) it is simply "طلبكم".
+- Army pages 198-203, 206, 207, 233: סוף מסלול -> "نهاية المسار", פלוגה -> "سريّة", מחזור -> "دفعة", טקס הסיום -> "حفل التخرّج". Literal; unsure these are the words Arabic-speaking soldiers use.
+- 234 בר מצווה -> "بار متسفا" (transliteration); 95/234 מסיבת סיום -> "حفلة تخرّج"; 214 קהילות -> "مجتمعات".
+- 71 and 257 address women: feminine plural (ـكنّ / أنتنّ توافقن) as in the Hebrew, unlike the masculine plural elsewhere. 220 keeps the generic "تطلبون".
+- 35, 173: "{0} يومًا" is right for 11-99 (the code uses 30); a value of 3-10 would need "أيام".
+- 53, 123, 159: רענון of the request data -> "إعادة تحميل", while רעננו (the page) -> "حدّثوا الصفحة" as in ar.json. 291-297 are order stages shown to the customer too, although worded from the studio's side ("أُرسل التصميم إلى الزبون").

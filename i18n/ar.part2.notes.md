@@ -1,0 +1,14 @@
+- Global (0-108, bachelorette page): Hebrew addresses women (אתן/שלכן). I used the generic plural أنتم/ـكم as the style guide states, and kept feminine only in third person (صديقاتها، كل واحدة). Part 1 holds the start of this page (its items 252-262); align if it chose أنتنّ/ـكنّ.
+- 0, 1, 118, 119: headline "בגרסת האיקוניות / הרווקים" rendered "بنسخة الأيقونات / العزّاب". 118 "הרווקים" alone could also be a page label ("the bachelor party"); translated as the headline piece.
+- 107, 191: "להרים" (slang: raise a glass / get the party going) rendered "تُشعلوا الأجواء / إشعال الأجواء" to avoid an explicit drinking reference. 136 alt text keeps "كأس" (glass in hand).
+- 86, 88, 95, 100, 176, 178, 183, 187: sample names kept as transliterations (נועה = نوعا, עומר = عومر, not عمر). Change if Arabic names are preferred for this audience.
+- 142, 153, 181, 285, 286, 287: army references translated literally (أيام الجيش، الجنود، السريّة). 285 "סוף מסלול" = "نهاية المسار التدريبي" (end of training track); no settled Arabic term.
+- 201, 204, 214, 219: "בר/בת מצווה" transliterated "بار / بات متسفا"; Jewish occasion, cultural fit for the Arabic site is the owner's call.
+- 236: "יום הולדת עגול" (round-number birthday) has no fixed Arabic idiom; used "عيد ميلاد برقم مميّز".
+- 209, 210: "לחולצה." here is the headline "from half an idea / to a T-shirt" = "إلى تيشيرت.", not "per T-shirt" (للتيشيرت) as in the dictionary entry without the full stop.
+- 54, 114: "הצעה" rendered "عرض" (offer), not the full "عرض سعر", since the Hebrew does not say price.
+- 122, 129, 131, 138: "קאסט" rendered "أبطال (الليلة / الفيلم)", the usual Arabic for a film's cast.
+- 99, 186: chips "רווקות / רווקים" shortened to "توديع عزوبية العروس / العريس" (no "حفلة").
+- 258, 260, 264, 267: "תואר" (academic degree) rendered as university graduation (التخرّج الجامعي / تخرّجنا من الجامعة).
+- 247: "{0}" left as a bare number ("من تيشيرت واحد حتى {0}") as in the Hebrew; switch to {0:tshirt} if the noun should repeat.
+- Not sentences (keyword / tag lists, translated item by item): 17, 131, 219, and SEO keywords 274-290.

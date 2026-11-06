@@ -9,12 +9,14 @@ import ts from 'typescript';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),urls=new Map();
 function moduleUrl(file){
  if(urls.has(file))return urls.get(file);
- let code=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
+ let code=file.endsWith('.json')?'export default '+readFileSync(file,'utf8'):ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
  code=code.replace(/from ["'](\.\.?\/[^"']+)["']/g,(_m,name)=>{const path=resolve(dirname(file),name);return 'from '+JSON.stringify(moduleUrl(extname(path)?path:path+'.ts'))});
  const url='data:text/javascript;base64,'+Buffer.from(code).toString('base64');urls.set(file,url);return url;
 }
 const core=await import(moduleUrl(resolve(root,'i18n/core.ts')));
 const {createGate}=await import(moduleUrl(resolve(root,'i18n/gate.ts')));
+const html=await import(moduleUrl(resolve(root,'i18n/html.ts')));
+const routes=await import(moduleUrl(resolve(root,'i18n/routes.ts')));
 
 const element=(type,props,key)=>({$$typeof:Symbol.for('react.transitional.element'),type,props,key:key??null});
 function gateFor(dictionary,language='ar',nouns={}){
@@ -94,9 +96,13 @@ test('spoken attributes, structured data, links, the page language and the dicti
  assert.equal(jsx('input',{placeholder:'שם',defaultValue:'שם'}).props.defaultValue,'שם');
  const data=JSON.stringify({'@type':'FAQPage',url:'https://partyprint.co.il/lp/team',mainEntity:[{name:'שאלה?',acceptedAnswer:{text:'תשובה.'}}]});
  const script=jsx('script',{type:'application/ld+json',dangerouslySetInnerHTML:{__html:data}}).props.dangerouslySetInnerHTML.__html;
- assert.deepEqual(JSON.parse(script).mainEntity[0],{name:'سؤال؟',acceptedAnswer:{text:'جواب.'}});assert.equal(JSON.parse(script).url,'https://partyprint.co.il/lp/team');
+ assert.deepEqual(JSON.parse(script).mainEntity[0],{name:'سؤال؟',acceptedAnswer:{text:'جواب.'}});assert.equal(JSON.parse(script).url,'https://partyprint.co.il/ar/lp/team');
+ assert.equal(routes.localizedAddress('ar','https://partyprint.co.il/#organization'),'https://partyprint.co.il/ar#organization');assert.equal(routes.localizedAddress('ar','https://partyprint.co.il/guides'),'https://partyprint.co.il/guides');assert.equal(routes.localizedAddress('ar','https://schema.org'),'https://schema.org');
+ assert.equal(core.isAddress('/bundle-sale/x-y'),true);assert.equal(core.isAddress('שלום עולם'),false);
  assert.equal(jsx('a',{href:'/lp/team#order',children:'x'}).props.href,'/ar/lp/team#order');
- assert.equal(jsx('a',{href:'/bundle-sale',children:'x'}).props.href,'/bundle-sale');
+ assert.equal(jsx('a',{href:'/bundle-sale',children:'x'}).props.href,'/ar/bundle-sale');
+ assert.equal(jsx('a',{href:'/guides',children:'x'}).props.href,'/guides');
+ assert.equal(jsx('a',{href:'/lp/team',hrefLang:'he',children:'x'}).props.href,'/lp/team');
  assert.equal(jsx('a',{href:'/lp/team',translate:'no',children:'שם'}).props.href,'/lp/team');
  assert.equal(jsx('a',{href:'/lp/team',translate:'no',children:'שם'}).props.children,'שם');
  const html=jsx('html',{lang:'he',dir:'rtl',children:[]}).props;
@@ -110,4 +116,74 @@ test('the browser dictionary key is stable and the address language is read from
  assert.notEqual(core.hashKey('מ־{0} ₪ לחולצה'),core.hashKey('מ־{0} ₪ לחולצה.'));
  assert.equal(core.languageOfPath('/ar/lp/team'),'ar');assert.equal(core.languageOfPath('/lp/team'),'he');assert.equal(core.languageOfPath('/article'),'he');assert.equal(core.languageOfPath(undefined),'he');
  assert.equal(core.parseRich('<0>a<1/></0>b</2>'),null);
+});
+
+test('a sentence around a value the site cannot know keeps the value and translates its own words',()=>{
+ const {jsx}=gateFor({'שלום,':'مرحبًا،','ההזמנה שלך התקבלה.':'تم استلام طلبيتك.'});
+ assert.deepEqual(jsx('p',{children:['שלום, ','דנה',' ','ההזמנה שלך התקבלה.']}).props.children,['مرحبًا، ','דנה',' ','تم استلام طلبيتك.']);
+});
+
+test('a WhatsApp link sends a message the reader can read',()=>{
+ const {jsx}=gateFor({'היי, יש לי שאלה על חולצות לצוות':'مرحبًا، لديّ سؤال عن تيشيرتات للفريق'});
+ const href=jsx('a',{href:'https://wa.me/972552896236?text='+encodeURIComponent('היי, יש לי שאלה על חולצות לצוות'),children:'x'}).props.href;
+ assert.equal(decodeURIComponent(href.split('text=')[1]),'مرحبًا، لديّ سؤال عن تيشيرتات للفريق');
+ assert.equal(jsx('a',{href:'https://wa.me/972552896236',children:'x'}).props.href,'https://wa.me/972552896236');
+});
+
+test('addresses: the pages of the purchase path exist in Arabic, with their own slugs',()=>{
+ assert.equal(routes.toLanguage('ar','/'),'/ar');assert.equal(routes.toLanguage('ar','/lp/team'),'/ar/lp/team');assert.equal(routes.toLanguage('ar','/track/abc-123'),'/ar/track/abc-123');
+ assert.equal(routes.toLanguage('ar','/guides'),null);assert.equal(routes.toLanguage('ar','/lp/unknown'),null);assert.equal(routes.toLanguage('he','/guides'),'/guides');
+ const slugs=JSON.parse(readFileSync(resolve(root,'i18n/ar.slugs.json'),'utf8')),hebrew=Object.keys(slugs)[0];
+ const translated=routes.toLanguage('ar','/prices/'+hebrew);
+ assert.equal(translated,'/ar/prices/'+slugs[hebrew]);
+ assert.equal(routes.toLanguage('ar','/prices/'+encodeURIComponent(hebrew)),translated);
+ assert.deepEqual(routes.toHebrew('ar',['prices',slugs[hebrew]]),{pattern:'/prices/[slug]',path:'/prices/'+hebrew,params:{slug:hebrew}});
+ assert.deepEqual(routes.toHebrew('ar',[]),{pattern:'/',path:'/',params:{}});
+ assert.deepEqual(routes.toHebrew('ar',['lp','team']).params,{slug:'team'});
+ assert.equal(routes.toHebrew('ar',['guides']),null);
+ assert.equal(routes.localizedHref('ar','/prices/'+hebrew+'#faq'),translated+'#faq');
+ assert.equal(routes.localizedHref('ar','https://example.com/lp/team'),'https://example.com/lp/team');
+});
+
+test('an email is translated as finished HTML: whole sentences, small tags as places, private values kept',()=>{
+ const dictionary={
+  'היי {v0}, בקשת ההזמנה <0>{v1}</0> נשמרה ב־PARTYPRINT.':'مرحبًا {v0}، تم حفظ طلبكم <0>{v1}</0> في PARTYPRINT.',
+  '<0>{0} חולצות · <1>{1} ₪</1></0>':'<0>{0:tshirt} · <1>{1} ₪</1></0>',
+  'ומה עכשיו?':'وماذا الآن؟',
+  'מעקב אחר ההזמנה (קישור פרטי ל־{0} יום): {v0}':'متابعة الطلبية (رابط خاص لمدة {0} يومًا): {v0}',
+  'PARTYPRINT · קיבלנו את הרעיון שלכם':'PARTYPRINT · استلمنا فكرتكم',
+ };
+ const missing=[],env={lookup:(_l,key)=>dictionary[key],nouns:()=>NOUNS,missing:(_l,key)=>missing.push(key)};
+ const source='<html lang="he"><body><style>.a{color:red}</style><p style="margin:0">היי Dana &amp; Co, בקשת ההזמנה <span dir="ltr">1A2B3C4D</span> נשמרה ב־PARTYPRINT.</p><p><b>12 חולצות · <span dir="ltr">1,140 ₪</span></b></p><h2>ומה עכשיו?</h2><p>משפט בלי תרגום</p></body></html>';
+ const out=html.translateHtml(source,'ar',env,['Dana & Co','1A2B3C4D']);
+ assert.ok(out.includes('<html lang="ar">'));assert.ok(out.includes('<style>.a{color:red}</style>'));
+ assert.ok(out.includes('<p style="margin:0">مرحبًا Dana &amp; Co، تم حفظ طلبكم <span dir="ltr">1A2B3C4D</span> في PARTYPRINT.</p>'));
+ assert.ok(out.includes('<p><b>12 تيشيرت · <span dir="ltr">1,140 ₪</span></b></p>'));
+ assert.ok(out.includes('<h2>وماذا الآن؟</h2>'));assert.ok(out.includes('<p>משפט בלי תרגום</p>'));
+ assert.deepEqual([...new Set(missing)],['משפט בלי תרגום']);
+ const url='https://partyprint.co.il/ar/track/0f8e7d6c-1111-4222-8333-444455556666#abc123';
+ assert.equal(html.translateLines('מעקב אחר ההזמנה (קישור פרטי ל־7 יום): '+url+'\nשורה באנגלית only','ar',env,[url]).split('\n')[0],'متابعة الطلبية (رابط خاص لمدة 7 يومًا): '+url);
+ assert.equal(html.translateLine('PARTYPRINT · קיבלנו את הרעיון שלכם','ar',env),'PARTYPRINT · استلمنا فكرتكم');
+ assert.equal(html.translateHtml(source,'he',env),source);
+});
+
+test('the confirmation email a customer receives is complete in Arabic, in both design choices',async()=>{
+ const {renderCustomerConfirmation}=await import('../lib/order-mail-template.mjs');
+ const promise=(await import(moduleUrl(resolve(root,'lib/response-promise.ts')))).RESPONSE_PROMISE_STATIC;
+ const dictionary=JSON.parse(readFileSync(resolve(root,'i18n/ar.json'),'utf8')),nouns=JSON.parse(readFileSync(resolve(root,'i18n/ar.nouns.json'),'utf8'));
+ const missing=[],env={lookup:(_l,key)=>dictionary[key],nouns:()=>nouns,missing:(_l,key)=>missing.push(key)};
+ const url='https://partyprint.co.il/ar/track/0f8e7d6c-1111-4222-8333-444455556666#abcdef0123456789';
+ for(const designMode of [undefined,'individual']){
+  const order={id:'0f8e7d6c-1111-4222-8333-444455556666',name:'Rana Khoury',email:'rana@example.com',quantity:12,price:1140,images:[{},{},{}],designMode,revisionPrice:120};
+  const rendered=renderCustomerConfirmation(order,{origin:'https://partyprint.co.il',url,days:7,promise});
+  const values=[url,order.name,order.id.slice(0,8).toUpperCase()];
+  const page=html.translateHtml(rendered.html,'ar',env,values),text=html.translateLines(rendered.text,'ar',env,values);
+  assert.deepEqual([...new Set(missing)],[],'sentences of the email without a translation');
+  assert.doesNotMatch(page.replace(/<style[\s\S]*?<\/style>/g,''),/[֐-׿]/,'Hebrew left in the email');
+  assert.doesNotMatch(text,/[֐-׿]/,'Hebrew left in the text version');
+  assert.ok(page.includes('Rana Khoury')&&page.includes('0F8E7D6C')&&page.includes(url.replace(/&/g,'&amp;')),'the name, the reference and the private link are kept');
+  assert.ok(text.includes(url)&&text.includes('120 ₪')&&text.includes('12 تيشيرت'),'numbers and the counted noun are filled in');
+ }
+ assert.equal(html.translateLine('PARTYPRINT · קיבלנו את הרעיון שלכם','ar',env).includes('PARTYPRINT'),true);
+ assert.doesNotMatch(html.translateLine('PARTYPRINT · קיבלנו את הרעיון שלכם','ar',env),/[֐-׿]/);
 });
