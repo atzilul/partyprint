@@ -294,6 +294,25 @@ try{
   const unknown=await send({'x-partyprint-language':'xx',referer:base+'/guides'});
   assert.equal(unknown.stored.language,undefined,'a language the site does not have is ignored');
  }
+ // The contact page's form: a message becomes an open ticket; junk, other origins and floods are turned away.
+ {const contactRoute=await load('app/api/contact/route.ts');
+  const send=(body,origin=base)=>contactRoute.POST(new Request(base+'/api/contact',{method:'POST',headers:{origin,'content-type':'application/json'},body:JSON.stringify(body)}));
+  const good={name:'דנה לוי',phone:'0501234567',email:'dana.contact@example.com',topic:'bundle',body:'צריכים 40 חולצות לגן, אפשר הצעה?'};
+  sql.prepare('DELETE FROM form_rate_limits').run();
+  const saved=await send(good);assert.equal(saved.status,201);const reply=await saved.json();assert.match(reply.reference,/^[0-9A-F]{8}$/);assert.equal(reply.emailSent,false);
+  const row=sql.prepare("SELECT * FROM tickets WHERE customer_email='dana.contact@example.com'").get();
+  assert.equal(row.status,'open');assert.equal(row.priority,'normal');assert.equal(row.customer_name,'דנה לוי');assert.match(row.title,/^פנייה מהאתר · הזמנה גדולה/);assert.match(row.description,/40 חולצות/);assert.match(row.description,/טלפון: 0501234567/);assert.equal(row.id.slice(0,8).toUpperCase(),reply.reference);
+  assert.equal((await send(good,'https://evil.example')).status,403);
+  assert.equal((await send({...good,website:'https://spam.example'})).status,400);
+  for(const bad of [{name:''},{phone:'12'},{email:'nope'},{body:'hi'},{body:'x'.repeat(2001)}])assert.equal((await send({...good,...bad})).status,400,JSON.stringify(Object.keys(bad)));
+  assert.equal((await contactRoute.POST(new Request(base+'/api/contact',{method:'POST',headers:{origin:base,'content-type':'text/plain'},body:'x'}))).status,415);
+  assert.equal((await send({...good,email:'other.topic@example.com',topic:'not-a-topic'})).status,201);
+  assert.match(sql.prepare("SELECT title FROM tickets WHERE customer_email='other.topic@example.com'").get().title,/משהו אחר/,'an unknown topic is filed under the last one');
+  sql.prepare('DELETE FROM form_rate_limits').run();
+  for(let attempt=0;attempt<5;attempt++)assert.equal((await send(good)).status,201);
+  assert.equal((await send(good)).status,429,'the sixth message in an hour waits');
+  sql.prepare('DELETE FROM form_rate_limits').run();
+ }
  for(const n of [0,-1,4.5,101,NaN]){
   sql.prepare('DELETE FROM form_rate_limits').run();
   assert.equal((await publicRoute.POST(post('/api/orders',quantityForm(4,n)))).status,400);

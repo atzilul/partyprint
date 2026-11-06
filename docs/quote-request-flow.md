@@ -80,3 +80,16 @@ the price list; static copy writes `{designFee}` and `{revisionFee}` and is fill
 `withFees` in `lib/fee-text.ts`. An order stores the fees in force when it was sent
 (`designSurcharge`, `revisionPrice`), and its emails, summary and design review page quote
 those, so a later change does not rewrite what a customer was told.
+
+## Contact page
+
+`/contact` (components/contact-page.tsx) is for people who want to talk before, or instead
+of, filling in the order request. WhatsApp comes first: the hero button and six subject cards
+open a chat with the first line written. A short form follows (name, phone, email, subject,
+message). `POST /api/contact` saves the message as an open ticket (`tickets`, created by
+"טופס יצירת קשר") and emails the managers with a ready WhatsApp reply; nothing is sent to the
+visitor. The endpoint accepts same-origin JSON only, ignores a filled honeypot field, and
+allows five messages an hour per visitor. The navigation's "דברו איתנו" on the home page, the
+audience pages and the bundle sale leads here. WhatsApp, phone and email clicks are measured
+by the existing `contact_*` events with `cta_location` `hero` or `contact`; the form adds no
+new event.
