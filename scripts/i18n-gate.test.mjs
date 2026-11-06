@@ -187,3 +187,79 @@ test('the confirmation email a customer receives is complete in Arabic, in both 
  assert.equal(html.translateLine('PARTYPRINT · קיבלנו את הרעיון שלכם','ar',env).includes('PARTYPRINT'),true);
  assert.doesNotMatch(html.translateLine('PARTYPRINT · קיבלנו את הרעיון שלכם','ar',env),/[֐-׿]/);
 });
+
+// English: the same mechanism, read left to right.
+const EN_NOUNS=JSON.parse(readFileSync(resolve(root,'i18n/en.nouns.json'),'utf8'));
+test('English is a translated language that reads left to right; its page takes lang and dir',()=>{
+ assert.equal(core.languageOfPath('/en/lp/team'),'en');assert.equal(core.DIRECTION.en,'ltr');
+ const {jsx}=gateFor({},'en');
+ assert.deepEqual([jsx('html',{lang:'he',dir:'rtl'}).props.lang,jsx('html',{lang:'he',dir:'rtl'}).props.dir],['en','ltr']);
+ // A part of the page that states the Hebrew direction (a radio group, a form) follows the reader.
+ assert.equal(jsx('div',{dir:'rtl'}).props.dir,'ltr');assert.equal(jsx(function Group(){},{dir:'rtl'}).props.dir,'ltr');
+ // Latin text marked left to right stays so.
+ assert.equal(jsx('span',{dir:'ltr'}).props.dir,'ltr');
+ const arabic=gateFor({},'ar').jsx('div',{dir:'rtl'});assert.equal(arabic.props.dir,'rtl');
+});
+
+test('left to right, a price puts the shekel sign first and a separator arrow turns around',()=>{
+ const {jsx}=gateFor({'₪ לחולצה':'₪ per shirt'},'en');
+ assert.equal(jsx('b',{children:['440',' ₪']}).props.children[0],'₪440');
+ assert.equal(jsx('b',{children:'1,140 ₪'}).props.children,'₪1,140');
+ const sign=jsx('small',{children:' ₪'}),boxed=jsx('strong',{children:['630',sign]}).props.children;
+ assert.equal(boxed[0].props.children,'₪');assert.equal(boxed[1],'630');
+ const number=jsx('b',{children:'105'}),label=jsx('span',{children:'₪ לחולצה'}),pair=jsx('div',{children:[number,label]}).props.children;
+ assert.equal(pair[0].props.children,'₪105');assert.equal(pair[1].props.children,'per shirt');
+ assert.equal(jsx('span',{children:' ← '}).props.children,' → ');
+ assert.deepEqual(jsx('a',{children:['FAQ',' ←']}).props.children,['FAQ',' ←'],'an arrow inside text is the translation’s business');
+ // Hebrew and Arabic pages keep the order they were written in.
+ assert.deepEqual(gateFor({},'ar').jsx('b',{children:['440',' ₪']}).props.children,['440',' ₪']);
+});
+
+test('English counts shirts in the singular and the plural',()=>{
+ const {jsx}=gateFor({'{0} חולצות':'{0:tshirt}','<0>{0}–{1}</0> חולצות':'<0>{0}–{1}</0> {1#tshirt}'},'en',EN_NOUNS);
+ const shown=count=>jsx('b',{children:[count,' חולצות']}).props.children[0];
+ assert.equal(shown(1),'1 shirt');assert.equal(shown(2),'2 shirts');assert.equal(shown(12),'12 shirts');assert.equal(shown('1,000'),'1,000 shirts');
+});
+
+test('addresses: every page of the purchase path exists in English, with English slugs',()=>{
+ assert.equal(routes.toLanguage('en','/'),'/en');assert.equal(routes.toLanguage('en','/contact'),'/en/contact');assert.equal(routes.toLanguage('en','/guides'),null);
+ const slugs=JSON.parse(readFileSync(resolve(root,'i18n/en.slugs.json'),'utf8')),arabic=JSON.parse(readFileSync(resolve(root,'i18n/ar.slugs.json'),'utf8'));
+ assert.deepEqual(Object.keys(slugs).sort(),Object.keys(arabic).sort(),'every page with a Hebrew slug has an English one');
+ for(const [hebrew,english] of Object.entries(slugs)){
+  assert.match(english,/^[a-z0-9-]+$/,'an English slug is plain lowercase ASCII');
+  const section=routes.toLanguage('en','/prices/'+hebrew)?'prices':'bundle-sale';
+  assert.equal(routes.toLanguage('en','/'+section+'/'+hebrew),'/en/'+section+'/'+english);
+  assert.deepEqual(routes.toHebrew('en',[section,english]).params,{slug:hebrew});
+ }
+ assert.deepEqual(routes.translationsOf('/lp/team').map(entry=>entry.language),['ar','en']);
+ assert.equal(routes.localizedHref('en','/lp/team?v=team#order'),'/en/lp/team?v=team#order');
+});
+
+test('the confirmation email a customer receives is complete in English and reads left to right',async()=>{
+ const {renderCustomerConfirmation}=await import('../lib/order-mail-template.mjs');
+ const promise=(await import(moduleUrl(resolve(root,'lib/response-promise.ts')))).RESPONSE_PROMISE_STATIC;
+ const dictionary=JSON.parse(readFileSync(resolve(root,'i18n/en.json'),'utf8'));
+ const missing=[],env={lookup:(_l,key)=>dictionary[key],nouns:()=>EN_NOUNS,missing:(_l,key)=>missing.push(key)};
+ const url='https://partyprint.co.il/en/track/0f8e7d6c-1111-4222-8333-444455556666#abcdef0123456789';
+ for(const designMode of [undefined,'individual']){
+  const order={id:'0f8e7d6c-1111-4222-8333-444455556666',name:'Sarah Cohen',email:'sarah@example.com',quantity:12,price:1140,images:[{},{},{}],designMode,revisionPrice:120};
+  const rendered=renderCustomerConfirmation(order,{origin:'https://partyprint.co.il',url,days:7,promise});
+  const values=[url,order.name,order.id.slice(0,8).toUpperCase()];
+  const page=html.translateHtml(rendered.html,'en',env,values),text=html.translateLines(rendered.text,'en',env,values);
+  assert.deepEqual([...new Set(missing)],[],'sentences of the email without a translation');
+  assert.doesNotMatch(page.replace(/<style[\s\S]*?<\/style>/g,''),/[֐-׿]/,'Hebrew left in the email');
+  assert.doesNotMatch(text,/[֐-׿]/,'Hebrew left in the text version');
+  assert.doesNotMatch(page,/dir="rtl"|text-align:\s*right|align="right"/,'the email reads left to right');
+  assert.match(page,/<html[^>]*lang="en"/);
+  assert.ok(page.includes('Sarah Cohen')&&page.includes('0F8E7D6C')&&page.includes(url.replace(/&/g,'&amp;')),'the name, the reference and the private link are kept');
+  assert.ok(text.includes(url)&&text.includes('₪120')&&text.includes('12 shirts'),'numbers, the shekel sign and the counted noun are in English order');
+ }
+});
+
+test('the English dictionary keeps the markup of every Hebrew sentence and holds no Hebrew',()=>{
+ const english=JSON.parse(readFileSync(resolve(root,'i18n/en.json'),'utf8')),arabic=JSON.parse(readFileSync(resolve(root,'i18n/ar.json'),'utf8'));
+ const places=text=>[...text.matchAll(/\{(v?\d+)(?::[a-z]+)?\}/g)].map(match=>'n'+match[1]).concat([...text.matchAll(/<\/?(\d+)\/?>/g)].map(match=>match[0])).sort().join(' ');
+ assert.deepEqual(Object.keys(english).sort(),Object.keys(arabic).sort(),'English and Arabic translate the same Hebrew sentences');
+ const broken=Object.entries(english).filter(([hebrew,text])=>!text.trim()||/[֐-׿]/.test(text)||places(hebrew)!==places(text)||/\}\s?₪|₪\s\{/.test(text)).map(([hebrew])=>hebrew);
+ assert.deepEqual(broken,[]);
+});

@@ -18,10 +18,10 @@ const HEBREW=/[֐-׿]/;
 export const hasHebrew=(text:string)=>HEBREW.test(text);
 
 /**
- * The languages the site is translated into today. /en is not one of them: it is a page of
- * its own, written in English inside the Hebrew site, and the gate must leave it alone.
+ * The languages the site is translated into today. An address that starts with one of them
+ * (/ar/..., /en/...) is a translated page; every other address is Hebrew.
  */
-export const TRANSLATED:readonly Language[]=['ar'];
+export const TRANSLATED:readonly Language[]=['ar','en'];
 /** The language of an address: /ar/lp/team is Arabic, everything without a translated prefix is Hebrew. */
 export function languageOfPath(pathname:string|null|undefined):Language{
  if(!pathname)return 'he';

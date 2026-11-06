@@ -8,7 +8,7 @@ import {VARIANTS} from './variants';
 import {customerConfirmation} from '@/lib/order-mail';
 import type {Order} from '@/lib/orders';
 
-const LOCALE:Record<Language,string>={he:'he_IL',ar:'ar_IL',en:'en_US',ru:'ru_RU',fr:'fr_FR'};
+const LOCALE:Record<Language,string>={he:'he_IL',ar:'ar_IL',en:'en_IL',ru:'ru_RU',fr:'fr_FR'};
 
 /** The same page in every language it exists in, for search engines. `path` has no language prefix. */
 export function languageAlternates(path:string):Record<string,string>{

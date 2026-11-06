@@ -27,6 +27,47 @@ const SPLIT=/<\d+>[^<]*[֐-׿\d][^<]*<\/\d+>|[֐-׿][^<]*<\d+\/>[^<]*[֐-׿]/;
 
 const isElement=(value:unknown):value is Element=>!!value&&typeof value==='object'&&'$$typeof' in value&&'props' in value&&'type' in value;
 
+/*
+ * Left to right, the page also reverses two things the Hebrew code writes outside any sentence:
+ * a price ("440 ₪" becomes "₪440", also when the number and the sign sit in neighbouring
+ * elements) and a separator arrow ("←" becomes "→").
+ */
+const SHEKEL_AFTER=/^(\s*)(\d[\d,.]*)\s*₪(\s*)$/;
+const NUMBER=/^\s*\d[\d,.]*\s*$/;
+// ↗ is used as a decorative icon on Hebrew pages too, so only the Hebrew "forward" diagonal ↖ turns.
+const ARROWS:Record<string,string>={'←':'→','→':'←','↖':'↗'};
+const flipArrows=(text:string)=>/^[\s←→↖↗·|/]+$/.test(text)&&/[←→↖]/.test(text)?text.replace(/[←→↖]/g,arrow=>ARROWS[arrow]):text;
+const numeric=(value:unknown)=>typeof value==='number'||typeof value==='string'&&NUMBER.test(value);
+function readingOrder(children:unknown,create:Create):unknown{
+ if(typeof children==='string')return flipArrows(children.replace(SHEKEL_AFTER,'$1₪$2$3'));
+ if(!Array.isArray(children))return children;
+ let list=children;
+ const put=(index:number,value:unknown)=>{if(list===children)list=children.slice();list[index]=value;};
+ const previous=(index:number)=>{for(let at=index-1;at>=0;at--)if(list[at]!==null&&list[at]!==undefined&&list[at]!==false&&list[at]!=='')return at;return -1;};
+ for(let start=0;start<list.length;start++){
+  const item=list[start];
+  if(typeof item==='string'||typeof item==='number'){
+   // A run of text and numbers that is a price: "440", " ₪".
+   let end=start;
+   while(end+1<list.length&&(typeof list[end+1]==='string'||typeof list[end+1]==='number'))end++;
+   const joined=list.slice(start,end+1).join('');
+   const ordered=flipArrows(joined.replace(SHEKEL_AFTER,'$1₪$2$3'));
+   if(ordered!==joined){put(start,ordered);for(let index=start+1;index<=end;index++)put(index,null);}
+   start=end;continue;
+  }
+  if(!isElement(item)||typeof item.props.children!=='string')continue;
+  const text=item.props.children,before=previous(start),prior=before<0?undefined:list[before];
+  // "440" then <small> ₪</small>: the sign goes first.
+  if(/^\s*₪\s*$/.test(text)&&numeric(prior)){put(before,create(item.type,{...item.props,children:'₪'},item.key??undefined));put(start,String(prior).trim());continue;}
+  // <b>105</b> then <span>₪ per shirt</span>: the sign moves to the number.
+  if(/^\s*₪/.test(text)&&isElement(prior)&&numeric(prior.props.children)){
+   put(before,create(prior.type,{...prior.props,children:'₪'+String(prior.props.children).trim()},prior.key??undefined));
+   put(start,create(item.type,{...item.props,children:text.replace(/^\s*₪\s*/,'')},item.key??undefined));
+  }
+ }
+ return list;
+}
+
 export function createGate(environment:GateEnvironment){
  /** An element whose text the gate changed remembers the Hebrew it was made from. */
  const hebrew=new WeakMap<object,unknown>();
@@ -131,9 +172,12 @@ export function createGate(environment:GateEnvironment){
   let out=props;
   const set=(name:string,value:unknown)=>{if(out===props)out={...props};out[name]=value;};
   if(type==='html'){set('lang',language);set('dir',DIRECTION[language]);}
+  // An element or a component (a radio group, say) that states the direction of the Hebrew page follows the language of the reader.
+  else if(props.dir==='rtl'&&DIRECTION[language]==='ltr')set('dir','ltr');
   const inner=props.children;
   if(typeof inner==='string'){const translated=text(inner,language);if(translated!==inner)set('children',translated);}
   else if(Array.isArray(inner)){const translated=whole(inner,language,create)??pieces(inner,language);if(translated!==inner)set('children',translated);}
+  if(DIRECTION[language]==='ltr'){const ordered=readingOrder(out.children,create);if(ordered!==out.children)set('children',ordered);}
   const host=typeof type==='string';
   for(const name of host?[...SPOKEN,...ELEMENT_ONLY]:SPOKEN){
    const value=props[name];

@@ -6,6 +6,7 @@ import {homeDefaultCopy,LANDING_VARIANTS,LANDING_VARIANT_COOKIE,resolveLandingVa
 import {homeFaq} from '@/lib/home-faq';
 import {homeStructuredData} from '@/lib/home-schema';
 import {currentPricing} from '@/lib/current-pricing';
+import {translationsOf} from '@/i18n/routes';
 
 type PageProps={searchParams:Promise<{v?:string|string[]}>};
 async function selectedVariant(searchParams:PageProps['searchParams']):Promise<LandingVariantKey|null>{
@@ -24,7 +25,7 @@ export async function generateMetadata({searchParams}:PageProps):Promise<Metadat
  return {
   title:content.title,
   description:content.description,
-  alternates:{canonical:'/',languages:{he:'/',en:'/en','x-default':'/'}},
+  alternates:{canonical:'/',languages:{he:'/','x-default':'/',...Object.fromEntries(translationsOf('/').map(entry=>[entry.language,entry.path]))}},
   openGraph:{type:'website',locale:'he_IL',url:socialUrl,siteName:'PARTYPRINT',title:content.title,description:content.description,images:[{url:content.ogImage,width:1200,height:630,alt:content.ogAlt}]},
   twitter:{card:'summary_large_image',title:content.title,description:content.description,images:[{url:content.ogImage,alt:content.ogAlt}]}
  };

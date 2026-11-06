@@ -11,7 +11,7 @@ import {setTimeout as delay} from 'node:timers/promises';
 import {fileURLToPath} from 'node:url';
 
 const root=fileURLToPath(new URL('../',import.meta.url));
-const PORT=process.env.PARTYPRINT_I18N_CHECK_PORT||'3334',base='http://127.0.0.1:'+PORT;
+const PORT=process.env.PARTYPRINT_I18N_CHECK_PORT||'3391',base='http://127.0.0.1:'+PORT;
 // A language is one that has a dictionary: i18n/ar.json.
 const languages=readdirSync(root+'i18n').map(name=>name.match(/^([a-z]{2})\.json$/)?.[1]).filter(Boolean);
 const server=spawn(process.execPath,['server.js'],{cwd:root,stdio:'inherit',env:{...process.env,HOST:'127.0.0.1',PORT,PP_I18N_COLLECT:'1',PARTYPRINT_PUBLIC_URL:process.env.PARTYPRINT_PUBLIC_URL||'https://partyprint.co.il'}});

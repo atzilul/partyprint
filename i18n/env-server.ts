@@ -1,12 +1,14 @@
 import ar from './ar.json';
 import arNouns from './ar.nouns.json';
+import en from './en.json';
+import enNouns from './en.nouns.json';
 import versions from './versions.json';
 import {languageOfPath} from './core';
 import type {Dictionary,GateEnvironment,Language,Nouns} from './core';
 
 /** Server side of the gate: the language comes from the address of the request being rendered. */
-const DICTIONARIES:Partial<Record<Language,Dictionary>>={ar:ar as Dictionary};
-const NOUNS:Partial<Record<Language,Nouns>>={ar:arNouns as Nouns};
+const DICTIONARIES:Partial<Record<Language,Dictionary>>={ar:ar as Dictionary,en:en as Dictionary};
+const NOUNS:Partial<Record<Language,Nouns>>={ar:arNouns as Nouns,en:enNouns as Nouns};
 /**
  * The framework keeps the request being rendered here, for server and client components
  * alike. It is an internal of vinext, so it is read in this one place only. If a framework

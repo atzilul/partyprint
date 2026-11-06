@@ -3,7 +3,7 @@ import {useEffect,useRef,useState} from 'react';
 import type {MouseEvent} from 'react';
 import {usePathname} from 'next/navigation';
 import {Check,Globe} from 'lucide-react';
-import {languageOfPath} from '@/i18n/core';
+import {TRANSLATED,languageOfPath} from '@/i18n/core';
 import type {Language} from '@/i18n/core';
 import {toHebrew,toLanguage} from '@/i18n/routes';
 
@@ -25,16 +25,11 @@ export type LanguageOption={language:Language;href:string;current:boolean;
  samePage:boolean};
 /** What a reader can switch to from this address. A page with no translation offers the translated home page. */
 export function languageOptions(pathname:string):LanguageOption[]{
- // /en is a page of its own, written in English; it is not a translation of another page.
- const english=pathname==='/en';
- const current:Language=english?'en':languageOfPath(pathname);
- const hebrew=english?'/':current==='he'?pathname:toHebrew(current,pathname.split('/').filter(Boolean).slice(1))?.path||'/';
- const arabic=toLanguage('ar',hebrew);
+ const current=languageOfPath(pathname);
+ const hebrew=current==='he'?pathname:toHebrew(current,pathname.split('/').filter(Boolean).slice(1))?.path||'/';
  return [
   {language:'he',href:hebrew,current:current==='he',samePage:true},
-  {language:'ar',href:arabic||'/ar',current:current==='ar',samePage:!!arabic},
-  // English is one page for now (/en); orders in English are taken over WhatsApp.
-  {language:'en',href:'/en',current:current==='en',samePage:false},
+  ...TRANSLATED.map(language=>{const same=toLanguage(language,hebrew);return {language,href:same||'/'+language,current:current===language,samePage:!!same};}),
  ];
 }
 const remember=(language:Language)=>{try{window.localStorage.setItem(CHOICE,language);}catch{/* private mode: the choice is simply not kept */}};

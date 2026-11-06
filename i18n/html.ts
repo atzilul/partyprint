@@ -1,4 +1,4 @@
-import {fillNumbers,findTranslation,hasHebrew,parseRich} from './core';
+import {DIRECTION,fillNumbers,findTranslation,hasHebrew,parseRich} from './core';
 import type {Language,Lookup,RichPart} from './core';
 
 /**
@@ -10,6 +10,11 @@ import type {Language,Lookup,RichPart} from './core';
  */
 const INLINE=new Set(['span','b','strong','a','em','i','u','bdi','small','br','font','sup','sub']);
 const tagName=(tag:string)=>/^<\/?\s*([a-zA-Z0-9]+)/.exec(tag)?.[1].toLowerCase()||'';
+/** The email is written for a right-to-left reader; for a left-to-right language its direction and alignment are mirrored. */
+function mirror(tag:string,language:Language):string{
+ if(DIRECTION[language]!=='ltr'||tag[1]==='/')return tag;
+ return tag.replace(/\sdir="rtl"/g,' dir="ltr"').replace(/\salign="right"/g,' align="left"').replace(/text-align:(\s*)right/g,'text-align:$1left');
+}
 const escapeHtml=(value:string)=>value.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 
 /**
@@ -87,5 +92,7 @@ export function translateHtml(html:string,language:Language,environment:Lookup,v
   out.push(name==='html'?token.replace(/\slang="[^"]*"/,' lang="'+language+'"'):token.replace(/\s(alt|title)="([^"]*)"/g,(whole,attribute,value)=>hasHebrew(value)?' '+attribute+'="'+translateLine(value,language,environment,values)+'"':whole));
  }
  flush();
- return out.join('');
+ const result=out.join('');
+ // Every tag, the small ones inside sentences included (a link styled as a button).
+ return DIRECTION[language]==='ltr'?result.replace(/<[^>]+>/g,tag=>mirror(tag,language)):result;
 }
