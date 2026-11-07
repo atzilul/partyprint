@@ -97,11 +97,11 @@ test('spoken attributes, structured data, links, the page language and the dicti
  const data=JSON.stringify({'@type':'FAQPage',url:'https://partyprint.co.il/lp/team',mainEntity:[{name:'שאלה?',acceptedAnswer:{text:'תשובה.'}}]});
  const script=jsx('script',{type:'application/ld+json',dangerouslySetInnerHTML:{__html:data}}).props.dangerouslySetInnerHTML.__html;
  assert.deepEqual(JSON.parse(script).mainEntity[0],{name:'سؤال؟',acceptedAnswer:{text:'جواب.'}});assert.equal(JSON.parse(script).url,'https://partyprint.co.il/ar/lp/team');
- assert.equal(routes.localizedAddress('ar','https://partyprint.co.il/#organization'),'https://partyprint.co.il/ar#organization');assert.equal(routes.localizedAddress('ar','https://partyprint.co.il/guides'),'https://partyprint.co.il/guides');assert.equal(routes.localizedAddress('ar','https://schema.org'),'https://schema.org');
+ assert.equal(routes.localizedAddress('ar','https://partyprint.co.il/#organization'),'https://partyprint.co.il/ar#organization');assert.equal(routes.localizedAddress('ar','https://partyprint.co.il/blog'),'https://partyprint.co.il/blog');assert.equal(routes.localizedAddress('ar','https://schema.org'),'https://schema.org');
  assert.equal(core.isAddress('/bundle-sale/x-y'),true);assert.equal(core.isAddress('שלום עולם'),false);
  assert.equal(jsx('a',{href:'/lp/team#order',children:'x'}).props.href,'/ar/lp/team#order');
  assert.equal(jsx('a',{href:'/bundle-sale',children:'x'}).props.href,'/ar/bundle-sale');
- assert.equal(jsx('a',{href:'/guides',children:'x'}).props.href,'/guides');
+ assert.equal(jsx('a',{href:'/blog',children:'x'}).props.href,'/blog');
  assert.equal(jsx('a',{href:'/lp/team',hrefLang:'he',children:'x'}).props.href,'/lp/team');
  assert.equal(jsx('a',{href:'/lp/team',translate:'no',children:'שם'}).props.href,'/lp/team');
  assert.equal(jsx('a',{href:'/lp/team',translate:'no',children:'שם'}).props.children,'שם');
@@ -132,7 +132,7 @@ test('a WhatsApp link sends a message the reader can read',()=>{
 
 test('addresses: the pages of the purchase path exist in Arabic, with their own slugs',()=>{
  assert.equal(routes.toLanguage('ar','/'),'/ar');assert.equal(routes.toLanguage('ar','/lp/team'),'/ar/lp/team');assert.equal(routes.toLanguage('ar','/track/abc-123'),'/ar/track/abc-123');
- assert.equal(routes.toLanguage('ar','/guides'),null);assert.equal(routes.toLanguage('ar','/lp/unknown'),null);assert.equal(routes.toLanguage('he','/guides'),'/guides');
+ assert.equal(routes.toLanguage('ar','/guides'),'/ar/guides');assert.equal(routes.toLanguage('ar','/blog'),null);assert.equal(routes.toLanguage('ar','/lp/unknown'),null);assert.equal(routes.toLanguage('he','/guides'),'/guides');
  const slugs=JSON.parse(readFileSync(resolve(root,'i18n/ar.slugs.json'),'utf8')),hebrew=Object.keys(slugs)[0];
  const translated=routes.toLanguage('ar','/prices/'+hebrew);
  assert.equal(translated,'/ar/prices/'+slugs[hebrew]);
@@ -140,7 +140,7 @@ test('addresses: the pages of the purchase path exist in Arabic, with their own 
  assert.deepEqual(routes.toHebrew('ar',['prices',slugs[hebrew]]),{pattern:'/prices/[slug]',path:'/prices/'+hebrew,params:{slug:hebrew}});
  assert.deepEqual(routes.toHebrew('ar',[]),{pattern:'/',path:'/',params:{}});
  assert.deepEqual(routes.toHebrew('ar',['lp','team']).params,{slug:'team'});
- assert.equal(routes.toHebrew('ar',['guides']),null);
+ assert.equal(routes.toHebrew('ar',['blog']),null);
  assert.equal(routes.localizedHref('ar','/prices/'+hebrew+'#faq'),translated+'#faq');
  assert.equal(routes.localizedHref('ar','https://example.com/lp/team'),'https://example.com/lp/team');
 });
@@ -232,9 +232,9 @@ test('English counts shirts in the singular and the plural',()=>{
 
 test('addresses: every page of the purchase path exists in English, with English slugs',()=>{
  assert.equal(routes.toLanguage('en','/'),'/en');assert.equal(routes.toLanguage('en','/contact'),'/en/contact');
- // The content pages exist in English; Arabic has the purchase path only, and the blog is Hebrew only.
+ // The content pages exist in English and Arabic; the blog is Hebrew only.
  assert.equal(routes.toLanguage('en','/guides'),'/en/guides');assert.equal(routes.toLanguage('en','/faq'),'/en/faq');
- assert.equal(routes.toLanguage('ar','/guides'),null);assert.equal(routes.toLanguage('en','/blog'),null);
+ assert.equal(routes.toLanguage('ar','/guides'),'/ar/guides');assert.equal(routes.toLanguage('en','/blog'),null);
  const slugs=JSON.parse(readFileSync(resolve(root,'i18n/en.slugs.json'),'utf8')),arabic=JSON.parse(readFileSync(resolve(root,'i18n/ar.slugs.json'),'utf8'));
  for(const hebrew of Object.keys(arabic))assert.ok(slugs[hebrew],'every Arabic slug has an English one: '+hebrew);
  assert.equal(new Set(Object.values(slugs)).size,Object.keys(slugs).length,'English slugs are unique');
