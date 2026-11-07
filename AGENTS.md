@@ -65,6 +65,10 @@ translations in every language. The translated pages are listed by
 4. `npm run build` and `node scripts/check-translations.mjs`: it must report 0 problems for
    every language. `node --test scripts/i18n-gate.test.mjs` must pass.
 
+- The purchase path (`PATTERNS`) is in Arabic and English; the content pages (`CONTENT_PATTERNS`:
+  about, FAQ, idea guides, examples, ordering and buyer's guides) are in English only. Blog posts
+  are written in the admin panel and stay Hebrew. Text set in the admin panel (the launch offer)
+  is not seen by the collection: add its translation by hand when it changes.
 - A new page is translated by adding it to `PATTERNS` in `i18n/routes.ts` and to
   `PAGE_MODULES` in `i18n/pages.ts`; a page with a Hebrew slug also needs its slug in
   `i18n/<language>.slugs.json` for every language. The sitemap, the language menu and the

@@ -29,4 +29,12 @@ export const PAGE_MODULES:Record<string,()=>Promise<PageModule>>={
  '/track/[id]':()=>load(import('@/app/track/[id]/page')),
  '/design/[id]':()=>load(import('@/app/design/[id]/page')),
  '/contact':()=>load(import('@/app/contact/page')),
+ '/about':()=>load(import('@/app/about/page')),
+ '/faq':()=>load(import('@/app/faq/page')),
+ '/guides':()=>load(import('@/app/guides/page')),
+ '/guides/[slug]':()=>load(import('@/app/guides/[slug]/page')),
+ '/work':()=>load(import('@/app/work/page')),
+ '/work/[slug]':()=>load(import('@/app/work/[slug]/page')),
+ '/ordering-guide':()=>load(import('@/app/ordering-guide/page')),
+ '/buyers-guide':()=>load(import('@/app/buyers-guide/page')),
 };

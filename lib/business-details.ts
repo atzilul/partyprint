@@ -5,7 +5,8 @@ function setting(name:string,fallback:string):string {
 export type BusinessDetailsData={businessName:string;legalName:string;businessId:string;address:string;phone:string;email:string};
 export const BUSINESS_DETAILS:BusinessDetailsData={
  businessName:'partyprint.co.il',
- legalName:setting('PARTYPRINT_LEGAL_NAME','TODO_LEGAL_NAME'),
+ // The official business name, confirmed by the owner on 2026-11-07.
+ legalName:setting('PARTYPRINT_LEGAL_NAME','פארטי פרינט'),
  businessId:setting('PARTYPRINT_BUSINESS_ID','TODO_BUSINESS_ID'),
  address:setting('PARTYPRINT_BUSINESS_ADDRESS','TODO_ADDRESS'),
  phone:setting('PARTYPRINT_PUBLIC_PHONE','055 289 6236'),

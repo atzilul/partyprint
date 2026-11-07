@@ -11,7 +11,9 @@ import type {Language} from './core';
 const SLUGS:Partial<Record<Language,Record<string,string>>>={ar:arSlugs as Record<string,string>,en:enSlugs as Record<string,string>};
 /** The purchase path. [slug] takes the slugs that have a translation; [id] takes any value. */
 export const PATTERNS=['/','/lp/family','/lp/bride','/lp/groom','/lp/team','/lp/custom','/bundle-sale','/bundle-sale/[slug]','/prices/[slug]','/terms','/policies/shipping','/policies/returns','/privacy-policy','/thanks','/track/[id]','/design/[id]','/contact'] as const;
-const PAGES:Partial<Record<Language,readonly string[]>>={ar:PATTERNS,en:PATTERNS};
+/** The content pages around it, so far in English only. [slug] takes the slugs that have a translation. */
+export const CONTENT_PATTERNS=['/about','/faq','/guides','/guides/[slug]','/work','/work/[slug]','/ordering-guide','/buyers-guide'] as const;
+const PAGES:Partial<Record<Language,readonly string[]>>={ar:PATTERNS,en:[...PATTERNS,...CONTENT_PATTERNS]};
 /** Pages whose Hebrew text is the binding one. */
 export const LEGAL=['/terms','/policies/shipping','/policies/returns','/privacy-policy'];
 

@@ -210,7 +210,16 @@ test('left to right, a price puts the shekel sign first and a separator arrow tu
  const number=jsx('b',{children:'105'}),label=jsx('span',{children:'₪ לחולצה'}),pair=jsx('div',{children:[number,label]}).props.children;
  assert.equal(pair[0].props.children,'₪105');assert.equal(pair[1].props.children,'per shirt');
  assert.equal(jsx('span',{children:' ← '}).props.children,' → ');
- assert.deepEqual(jsx('a',{children:['FAQ',' ←']}).props.children,['FAQ',' ←'],'an arrow inside text is the translation’s business');
+ assert.deepEqual(jsx('a',{children:['BUNDLE SALE',' ←']}).props.children,['BUNDLE SALE',' →'],'an arrow the code writes beside Latin text points forward');
+ assert.equal(jsx('a',{children:'PARTYPRINT ↖'}).props.children,'PARTYPRINT ↗');
+ assert.equal(jsx('i',{children:'↗'}).props.children,'↗','a decorative ↗ stays');
+ assert.equal(jsx('time',{dateTime:'2026-11-01',children:'1.11.2026'}).props.children,'November 1, 2026','a date is written out for an English reader');
+ assert.equal(gateFor({},'ar').jsx('time',{dateTime:'2026-11-01',children:'1.11.2026'}).props.children,'1.11.2026');
+ const dated=gateFor({'עודכן ב־<0>{0}</0>.':'Updated on <0>{0}</0>.'},'en').jsx;
+ const sentence=dated('p',{children:['עודכן ב־',dated('time',{dateTime:'2026-11-05',children:'5.11.2026'}),'.']}).props.children;
+ assert.equal(sentence.find(part=>part&&part.type==='time').props.children,'November 5, 2026','also inside a translated sentence');
+ assert.equal(gateFor({'לעמוד {0} ←':'Go to page {0} →'},'en').jsx('a',{children:['לעמוד ',7,' ←']}).props.children[0],'Go to page 7 →','an arrow inside a Hebrew sentence is the translation’s');
+ assert.equal(gateFor({'חזרה →':'← Back'},'en').jsx('a',{children:'חזרה →'}).props.children,'← Back','a translation writes its own arrows');
  // Hebrew and Arabic pages keep the order they were written in.
  assert.deepEqual(gateFor({},'ar').jsx('b',{children:['440',' ₪']}).props.children,['440',' ₪']);
 });
@@ -222,12 +231,20 @@ test('English counts shirts in the singular and the plural',()=>{
 });
 
 test('addresses: every page of the purchase path exists in English, with English slugs',()=>{
- assert.equal(routes.toLanguage('en','/'),'/en');assert.equal(routes.toLanguage('en','/contact'),'/en/contact');assert.equal(routes.toLanguage('en','/guides'),null);
+ assert.equal(routes.toLanguage('en','/'),'/en');assert.equal(routes.toLanguage('en','/contact'),'/en/contact');
+ // The content pages exist in English; Arabic has the purchase path only, and the blog is Hebrew only.
+ assert.equal(routes.toLanguage('en','/guides'),'/en/guides');assert.equal(routes.toLanguage('en','/faq'),'/en/faq');
+ assert.equal(routes.toLanguage('ar','/guides'),null);assert.equal(routes.toLanguage('en','/blog'),null);
  const slugs=JSON.parse(readFileSync(resolve(root,'i18n/en.slugs.json'),'utf8')),arabic=JSON.parse(readFileSync(resolve(root,'i18n/ar.slugs.json'),'utf8'));
- assert.deepEqual(Object.keys(slugs).sort(),Object.keys(arabic).sort(),'every page with a Hebrew slug has an English one');
- for(const [hebrew,english] of Object.entries(slugs)){
+ for(const hebrew of Object.keys(arabic))assert.ok(slugs[hebrew],'every Arabic slug has an English one: '+hebrew);
+ assert.equal(new Set(Object.values(slugs)).size,Object.keys(slugs).length,'English slugs are unique');
+ // Each section's own Hebrew slugs, read from its source file.
+ const owned=file=>new Set([...readFileSync(resolve(root,file),'utf8').matchAll(/^\s*["']?slug["']?\s*:\s*["']([^"']+)["']/gm)].map(match=>match[1]));
+ const sections={'bundle-sale':owned('lib/bundle-answers.ts'),prices:owned('lib/price-answers.ts'),guides:owned('lib/seo-pages.ts'),work:owned('lib/studio-pages.ts')};
+ for(const [section,own] of Object.entries(sections))for(const hebrew of own){
+  const english=slugs[hebrew];
+  assert.ok(english,'the '+section+' page '+hebrew+' has an English slug');
   assert.match(english,/^[a-z0-9-]+$/,'an English slug is plain lowercase ASCII');
-  const section=routes.toLanguage('en','/prices/'+hebrew)?'prices':'bundle-sale';
   assert.equal(routes.toLanguage('en','/'+section+'/'+hebrew),'/en/'+section+'/'+english);
   assert.deepEqual(routes.toHebrew('en',[section,english]).params,{slug:hebrew});
  }
@@ -259,7 +276,8 @@ test('the confirmation email a customer receives is complete in English and read
 test('the English dictionary keeps the markup of every Hebrew sentence and holds no Hebrew',()=>{
  const english=JSON.parse(readFileSync(resolve(root,'i18n/en.json'),'utf8')),arabic=JSON.parse(readFileSync(resolve(root,'i18n/ar.json'),'utf8'));
  const places=text=>[...text.matchAll(/\{(v?\d+)(?::[a-z]+)?\}/g)].map(match=>'n'+match[1]).concat([...text.matchAll(/<\/?(\d+)\/?>/g)].map(match=>match[0])).sort().join(' ');
- assert.deepEqual(Object.keys(english).sort(),Object.keys(arabic).sort(),'English and Arabic translate the same Hebrew sentences');
+ // English covers the content pages too, so it holds every Arabic sentence and more.
+ assert.deepEqual(Object.keys(arabic).filter(key=>!(key in english)),[],'every sentence translated into Arabic is translated into English');
  const broken=Object.entries(english).filter(([hebrew,text])=>!text.trim()||/[֐-׿]/.test(text)||places(hebrew)!==places(text)||/\}\s?₪|₪\s\{/.test(text)).map(([hebrew])=>hebrew);
  assert.deepEqual(broken,[]);
 });

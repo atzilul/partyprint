@@ -30,16 +30,36 @@ const isElement=(value:unknown):value is Element=>!!value&&typeof value==='objec
 /*
  * Left to right, the page also reverses two things the Hebrew code writes outside any sentence:
  * a price ("440 ₪" becomes "₪440", also when the number and the sign sit in neighbouring
- * elements) and a separator arrow ("←" becomes "→").
+ * elements), and the "forward" arrows of text the code writes without Hebrew ("BUNDLE SALE ←"
+ * becomes "BUNDLE SALE →"). A translation writes its own arrows; ↗ is also a decorative icon
+ * on Hebrew pages, so only ← and ↖ turn.
  */
 const SHEKEL_AFTER=/^(\s*)(\d[\d,.]*)\s*₪(\s*)$/;
 const NUMBER=/^\s*\d[\d,.]*\s*$/;
-// ↗ is used as a decorative icon on Hebrew pages too, so only the Hebrew "forward" diagonal ↖ turns.
-const ARROWS:Record<string,string>={'←':'→','→':'←','↖':'↗'};
-const flipArrows=(text:string)=>/^[\s←→↖↗·|/]+$/.test(text)&&/[←→↖]/.test(text)?text.replace(/[←→↖]/g,arrow=>ARROWS[arrow]):text;
+const forward=(text:string)=>hasHebrew(text)||!/[←↖]/.test(text)?text:text.replace(/←/g,'→').replace(/↖/g,'↗');
+function forwardArrows(children:unknown):unknown{
+ if(typeof children==='string')return forward(children);
+ if(!Array.isArray(children)||!children.some(item=>typeof item==='string'&&/[←↖]/.test(item)))return children;
+ // Neighbouring strings are one sentence ("לעמוד ", name, " ←"): a run with Hebrew in it is left for the translation.
+ const out=children.slice();
+ for(let start=0;start<out.length;start++){
+  if(typeof out[start]!=='string'&&typeof out[start]!=='number')continue;
+  let end=start;
+  while(end+1<out.length&&(typeof out[end+1]==='string'||typeof out[end+1]==='number'))end++;
+  if(!hasHebrew(out.slice(start,end+1).join('')))for(let index=start;index<=end;index++)if(typeof out[index]==='string')out[index]=forward(out[index] as string);
+  start=end;
+ }
+ return out.some((item,index)=>item!==children[index])?out:children;
+}
+/** An English reader reads 1.11.2026 as January 11: a <time> with a machine value is written out ("November 1, 2026"). */
+function writtenDate(type:unknown,props:Props,language:Language):string|null{
+ if(type!=='time'||language!=='en'||typeof props.dateTime!=='string')return null;
+ const date=new Date(props.dateTime);
+ return Number.isNaN(date.getTime())?null:new Intl.DateTimeFormat('en-US',{day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Jerusalem'}).format(date);
+}
 const numeric=(value:unknown)=>typeof value==='number'||typeof value==='string'&&NUMBER.test(value);
 function readingOrder(children:unknown,create:Create):unknown{
- if(typeof children==='string')return flipArrows(children.replace(SHEKEL_AFTER,'$1₪$2$3'));
+ if(typeof children==='string')return children.replace(SHEKEL_AFTER,'$1₪$2$3');
  if(!Array.isArray(children))return children;
  let list=children;
  const put=(index:number,value:unknown)=>{if(list===children)list=children.slice();list[index]=value;};
@@ -51,7 +71,7 @@ function readingOrder(children:unknown,create:Create):unknown{
    let end=start;
    while(end+1<list.length&&(typeof list[end+1]==='string'||typeof list[end+1]==='number'))end++;
    const joined=list.slice(start,end+1).join('');
-   const ordered=flipArrows(joined.replace(SHEKEL_AFTER,'$1₪$2$3'));
+   const ordered=joined.replace(SHEKEL_AFTER,'$1₪$2$3');
    if(ordered!==joined){put(start,ordered);for(let index=start+1;index<=end;index++)put(index,null);}
    start=end;continue;
   }
@@ -108,7 +128,7 @@ export function createGate(environment:GateEnvironment){
    if(typeof node==='string')return fillNumbers(node,found.numbers,language,nouns);
    const element=places[node.slot];
    if(!element){broken=true;return null;}
-   return node.children===null?element:create(element.type,{...element.props,children:build(node.children)},element.key??undefined);
+   return node.children===null?element:create(element.type,{...element.props,children:writtenDate(element.type,element.props,language)??build(node.children)},element.key??undefined);
   });
   const built=build(parts);
   if(broken)return null;
@@ -172,9 +192,12 @@ export function createGate(environment:GateEnvironment){
   let out=props;
   const set=(name:string,value:unknown)=>{if(out===props)out={...props};out[name]=value;};
   if(type==='html'){set('lang',language);set('dir',DIRECTION[language]);}
+  const date=writtenDate(type,props,language);
+  if(date){set('children',date);return out;}
   // An element or a component (a radio group, say) that states the direction of the Hebrew page follows the language of the reader.
   else if(props.dir==='rtl'&&DIRECTION[language]==='ltr')set('dir','ltr');
-  const inner=props.children;
+  let inner=props.children;
+  if(DIRECTION[language]==='ltr'){const turned=forwardArrows(inner);if(turned!==inner){set('children',turned);inner=turned;}}
   if(typeof inner==='string'){const translated=text(inner,language);if(translated!==inner)set('children',translated);}
   else if(Array.isArray(inner)){const translated=whole(inner,language,create)??pieces(inner,language);if(translated!==inner)set('children',translated);}
   if(DIRECTION[language]==='ltr'){const ordered=readingOrder(out.children,create);if(ordered!==out.children)set('children',ordered);}

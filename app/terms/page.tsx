@@ -26,7 +26,7 @@ export default async function TermsPage(){
  return <PolicyLayout>
   <PolicyHero eyebrow="CLEAR TERMS. GOOD VIBES." title="תקנון" highlight="PARTYPRINT." intro="כאן מסבירים בפשטות מה קורה מהרגע ששולחים רעיון ועד שהחולצות מגיעות. הצעת המחיר והתנאים שאושרו להזמנה הספציפית הם חלק מתנאי ההתקשרות." icon={ShieldCheck}/>
   <div className="policy-content">
-   <aside className="terms-review-box" aria-label="פרטי בדיקת עורך דין"><ShieldCheck size={28}/><div><strong>{TERMS_REVIEW_COMPLETE?'התקנון נבדק על ידי עו״ד':'פרטי בדיקה משפטית להשלמה'}</strong>{TERMS_REVIEW_COMPLETE?<p>{TERMS_REVIEW.lawyerName} · {TERMS_REVIEW.reviewDate}</p>:<small>התקנון ייבדק ויאושר על ידי עו״ד.</small>}</div></aside>
+   {/* Shown once a lawyer's review is recorded (PARTYPRINT_TERMS_LAWYER, PARTYPRINT_TERMS_REVIEW_DATE); never as a placeholder. */}{TERMS_REVIEW_COMPLETE&&<aside className="terms-review-box" aria-label="פרטי בדיקת עורך דין"><ShieldCheck size={28}/><div><strong>התקנון נבדק על ידי עו״ד</strong><p>{TERMS_REVIEW.lawyerName} · {TERMS_REVIEW.reviewDate}</p></div></aside>}
    <PolicyFlow steps={[
     {icon:Palette,title:'שולחים בקשה',text:'הרעיון, הכמות והפרטים עוזרים לנו להבין מה תרצו ליצור.'},
     {icon:Clock3,title:'מקבלים הצעת מחיר',text:'מסכמים מחיר, פרטי הזמנה ומועד אספקה לפני שמתקדמים.'},

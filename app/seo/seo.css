@@ -39,3 +39,8 @@
 @media(max-width:680px){.business-details{padding:22px 14px 28px}.business-details-heading{display:block}.business-details-heading h2{margin-top:7px}.business-details dl{gap:12px 20px}}
 /* Tablet: the links move to a second row that scrolls sideways, as on a phone, so the button stays on screen. */
 @media(min-width:681px) and (max-width:1040px){.seo-nav{flex-wrap:wrap;row-gap:8px}.seo-nav nav{order:3;flex-basis:100%;gap:22px;overflow-x:auto;white-space:nowrap;padding-top:6px}.seo-nav-cta{margin-inline-start:auto}}
+
+/* The language button sits before the call to action; on a phone it stays in the header row. */
+.seo-nav .lang-menu{margin-inline-start:auto}
+.seo-nav .lang-menu+.seo-nav-cta{margin-inline-start:0}
+@media(max-width:680px){.seo-nav .lang-menu{display:flex}.seo-nav .lang-menu-toggle{height:40px}}
