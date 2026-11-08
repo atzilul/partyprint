@@ -284,3 +284,9 @@ test('the English dictionary keeps the markup of every Hebrew sentence and holds
  const broken=Object.entries(english).filter(([hebrew,text])=>!text.trim()||/[֐-׿]/.test(text)||places(hebrew)!==places(text)||/\}\s?₪|₪\s\{/.test(text)).map(([hebrew])=>hebrew);
  assert.deepEqual(broken,[]);
 });
+
+test('a WhatsApp message is translated line by line, so a request number on its own line stays out of the sentence',()=>{
+ const {jsx}=gateFor({'היי, יש לי שאלה. מספר הפנייה:':'Hi, I have a question. Request number:'},'en');
+ const href='https://wa.me/972552896236?text='+encodeURIComponent('היי, יש לי שאלה. מספר הפנייה:\nedb4c381-c39d-4546');
+ assert.equal(decodeURIComponent(jsx('a',{href,children:'x'}).props.href.split('text=')[1]),'Hi, I have a question. Request number:\nedb4c381-c39d-4546');
+});

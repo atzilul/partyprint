@@ -3306,5 +3306,10 @@
  "אנשים מצטרפים, ומידות משתנות עד הרגע האחרון. אצל PARTYPRINT: מעדכנים ב־WhatsApp. שינוי אחרי אישור ההדפסה כפוף לאפשרות הביצוע.": "People join, and sizes keep changing until the last minute. At PARTYPRINT: send updates on WhatsApp. A change after print approval depends on whether it can still be done.",
  "אפשר לפתח קונספט סביב אמא: חולצה אחת כמתנה, או הזמנה משפחתית במידות שונות שכולם לובשים. בטופס בוחרים כמות מחולצה אחת ועד {0}, והמחיר לחולצה מתעדכן לפי הכמות.": "Build a concept around Mom: a single shirt as a gift, or a family order in different sizes that everyone wears. In the form you choose any quantity from one shirt to {0}, and the price per shirt updates with the quantity.",
  "המחיר לחולצה נקבע לפי הכמות. הטבלה בעמוד מציגה את המחירים העדכניים, ובטופס רואים את הסכום המדויק לפני השליחה.": "The price per shirt depends on the quantity. The table on this page shows the current prices, and the form shows the exact total before you send.",
- "אפשר להזמין חולצה אחת לחוגג, או חולצות לכל מי שחוגג איתו. בטופס בוחרים כמות מחולצה אחת ועד {0}, והמחיר לחולצה מתעדכן לפי הכמות. שליחת בקשה או התייעצות מתחילה בלי חיוב.": "You can order a single shirt for the birthday star, or shirts for everyone celebrating with them. In the form you choose any quantity from one shirt to {0}, and the price per shirt updates with the quantity. Sending a request or asking for advice is free."
+ "אפשר להזמין חולצה אחת לחוגג, או חולצות לכל מי שחוגג איתו. בטופס בוחרים כמות מחולצה אחת ועד {0}, והמחיר לחולצה מתעדכן לפי הכמות. שליחת בקשה או התייעצות מתחילה בלי חיוב.": "You can order a single shirt for the birthday star, or shirts for everyone celebrating with them. In the form you choose any quantity from one shirt to {0}, and the price per shirt updates with the quantity. Sending a request or asking for advice is free.",
+ "לא צורפו תמונות": "No photos attached",
+ "צורפה תמונה אחת": "1 photo attached",
+ "{0} תמונות צורפו": "{0} photos attached",
+ "היי PARTYPRINT, שלחתי פנייה ואשמח להמשיך בתיאום. מספר הפנייה:": "Hi PARTYPRINT, I sent a request and would like to continue arranging it. Request number:",
+ "היי, את המידות לפנייה שלי אשלים איתכם בשיחה. מספר הפנייה:": "Hi, I’ll finalize the sizes for my request with you in a chat. Request number:"
 }

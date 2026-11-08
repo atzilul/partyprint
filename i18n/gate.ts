@@ -171,7 +171,8 @@ export function createGate(environment:GateEnvironment){
   if(!found)return href;
   try{
    const hebrewText=decodeURIComponent(found[2]);
-   const translated=text(hebrewText,language);
+   // Each line on its own, so that a value on a line of its own (a request number) stays out of the sentence.
+   const translated=hebrewText.split('\n').map(line=>text(line,language)).join('\n');
    return translated===hebrewText?href:found[1]+encodeURIComponent(translated)+found[3];
   }catch{return href;}
  }
