@@ -490,3 +490,34 @@ console.log('PASS: all occasions start at four and support reduction to one with
   console.log('PASS: review request is off until a valid Google link is switched on; sent once when an order first ships, to the customer, in their language, with a WhatsApp way out; settings validate the link and versions.');
  }finally{globalThis.fetch=priorFetch;globalThis.testEnv.RESEND_API_KEY=priorKey;globalThis.testEnv.MAIL_FROM=priorFrom;globalThis.testUser=priorUser;if(priorOwner===undefined)delete process.env.PARTYPRINT_ADMIN_EMAIL;else process.env.PARTYPRINT_ADMIN_EMAIL=priorOwner;}
 }
+// The admin design-approval flow as the order screen sends it: upload design files straight into the order, then create the approval link.
+{
+ delete process.env.PARTYPRINT_ADMIN_EMAIL;globalThis.testUser={userId:'owner',email:'atzilul@gmail.com'};
+ const productionRoute=await load('app/api/admin/orders/[id]/production/route.ts'),editRoute=await load('app/api/admin/orders/[id]/route.ts');
+ sql.prepare('DELETE FROM form_rate_limits').run();
+ const created=await (await publicRoute.POST(post('/api/orders',form('approval@example.com')))).json();
+ const ctx={params:Promise.resolve({id:created.id})};let current=await store.getOrder(created.id);
+ const upload=new FormData();
+ upload.append('order',JSON.stringify({...current,notes:current.notes||'',address:current.address||'',tracking:current.tracking||'',dueDate:current.dueDate||'',priceNote:current.priceNote||'',keep:current.images.map(i=>i.key),imageRoles:Object.fromEntries(current.images.map(i=>[i.key,i.role||'reference']))}));
+ upload.append('images',new File([new Uint8Array([255,216,255,224,0,16,74,70,73,70])],'design.jpg',{type:'image/jpeg'}));upload.append('roles','design');
+ const saved=await editRoute.POST(post('/api/admin/orders/'+created.id,upload),ctx);assert.equal(saved.status,200,'the design upload is saved');
+ current=await store.getOrder(created.id);
+ const designs=current.images.filter(i=>i.role==='design');assert.equal(designs.length,1,'the uploaded file is marked as a design for approval');
+ assert(current.images.some(i=>i.role!=='design'),'the reference photos are kept');
+ const approval=await productionRoute.POST(post('/api/admin/orders/'+created.id+'/production',JSON.stringify({action:'approval',keys:designs.map(i=>i.key),version:current.version})),ctx);
+ assert.equal(approval.status,200);const {url}=await approval.json();assert.match(url,/\/design\/[a-f0-9-]{36}#[a-f0-9]{64}$/,'an approval link is returned');
+ console.log('PASS: the order screen uploads a design straight into the order as a design for approval, keeps the reference photos, and creates the customer approval link.');
+}
+// Links the panel creates for a customer who ordered in another language open in that language.
+{
+ const productionRoute=await load('app/api/admin/orders/[id]/production/route.ts'),trackingRoute=await load('app/api/admin/orders/[id]/tracking/route.ts');
+ sql.prepare('DELETE FROM form_rate_limits').run();
+ const created=await (await publicRoute.POST(new Request(base+'/api/orders',{method:'POST',headers:{origin:base,'x-partyprint-language':'ru'},body:form('ru-approval@example.com')}))).json();
+ const ctx={params:Promise.resolve({id:created.id})};const editRoute=await load('app/api/admin/orders/[id]/route.ts');let current=await store.getOrder(created.id);
+ const upload=new FormData();upload.append('order',JSON.stringify({...current,notes:'',address:'',tracking:'',dueDate:'',priceNote:'',keep:current.images.map(i=>i.key),imageRoles:Object.fromEntries(current.images.map(i=>[i.key,i.role||'reference']))}));
+ upload.append('images',new File([new Uint8Array([255,216,255,224,0,16,74,70,73,70])],'design.jpg',{type:'image/jpeg'}));upload.append('roles','design');
+ assert.equal((await editRoute.POST(post('/api/admin/orders/'+created.id,upload),ctx)).status,200);current=await store.getOrder(created.id);
+ const approval=await (await productionRoute.POST(post('/api/admin/orders/'+created.id+'/production',JSON.stringify({action:'approval',keys:current.images.filter(i=>i.role==='design').map(i=>i.key),version:current.version})),ctx)).json();
+ assert.match(approval.url,/\/ru\/design\/[a-f0-9-]{36}#[a-f0-9]{64}$/,'the approval link opens in Russian');
+ console.log('PASS: approval links for a customer who ordered in Russian open the Russian approval page.');
+}

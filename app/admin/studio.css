@@ -25,3 +25,20 @@
 .ticket-notice{display:flex;align-items:center;gap:8px;background:#e8f6df;border:1px solid #cfe5c1;color:#4e7440;padding:10px 14px;border-radius:11px;margin:0 0 16px;font-size:14px}.ticket-quick-filters{display:flex;align-items:center;gap:5px;padding:0 14px 12px;overflow:auto;scrollbar-width:none}.ticket-quick-filters::-webkit-scrollbar{display:none}.ticket-quick-filters>span{font-size:11px;color:#a097aa;margin-left:3px}.ticket-quick-filters button{border:1px solid #e3deea;background:#fff;color:#746a80;border-radius:20px;padding:6px 10px;white-space:nowrap;font-size:12px;min-height:32px}.ticket-quick-filters button:hover,.ticket-quick-filters button.is-active{background:#eee6ff;border-color:#d4c2f5;color:#5d3d91}.ticket-quick-filters button b{font-size:11px;margin-right:2px}.ticket-form-hint{color:#8b8194;font-size:12px;margin:0 0 10px;line-height:1.6}
 
 .admin-shirt{grid-template-columns:85px minmax(0,1.25fr) minmax(0,1fr) minmax(0,1fr)}.admin-shirt .shirt-size-type{gap:6px;margin:0;font-size:12px}.admin-shirt .shirt-size-toggle button{min-height:36px;padding:6px 11px;font-size:13px}@media(max-width:850px){.admin-shirt{grid-template-columns:1fr 1fr}.admin-shirt>b,.admin-shirt .shirt-size-type{grid-column:1/-1}}
+/* Design approval: three steps in one place (app/admin/production.tsx). */
+.approval-steps{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:14px}
+.approval-steps>li{border:1px solid #e1d8ee;border-radius:14px;padding:16px;background:#fff;display:grid;gap:12px;min-width:0}
+.approval-steps>li.is-done{border-color:#b9dcc4;background:#f6fbf7}
+.approval-step-head{display:flex;gap:12px;align-items:flex-start}
+.approval-step-head>b{flex-shrink:0;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#6842a7;color:#fff;font-size:15px}
+.approval-steps>li.is-done .approval-step-head>b{background:#2f7d4a}
+.approval-step-head h4{margin:2px 0 4px;font-size:18px}
+.approval-step-head p{margin:0;font-size:14px;color:#6f6480}
+.approval-upload{margin:0}
+.approval-checks{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:15px}
+.approval-checks .ok{color:#2f7d4a}
+.approval-checks .missing{color:#a3332b}
+.approval-wait{display:block;margin-top:8px;font-size:13px;color:#6f6480}
+.approval-link-actions{display:flex;flex-wrap:wrap;gap:8px}
+.approval-link-actions button{padding:12px;border-radius:10px;border:1px solid #6842a7;background:#fff;color:#6842a7;font:inherit;font-size:15px;cursor:pointer}
+.approval-link-actions button:focus-visible,.approval-link-actions a:focus-visible{outline:3px solid #9476f6;outline-offset:2px}
