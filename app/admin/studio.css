@@ -42,3 +42,4 @@
 .approval-link-actions{display:flex;flex-wrap:wrap;gap:8px}
 .approval-link-actions button{padding:12px;border-radius:10px;border:1px solid #6842a7;background:#fff;color:#6842a7;font:inherit;font-size:15px;cursor:pointer}
 .approval-link-actions button:focus-visible,.approval-link-actions a:focus-visible{outline:3px solid #9476f6;outline-offset:2px}
+.tab-flag{font-size:13px}.tab-flag.warn{color:#b26a00}.tab-flag.ok{color:#2f7d4a}
