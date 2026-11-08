@@ -425,3 +425,22 @@ console.log('PASS: all occasions start at four and support reduction to one with
   console.log('PASS: required-email contact capture persists separately before ideas; owner-only plain email, no customer reminder; private resume, CSRF/body/capability/version/expiry/rate protections; deduped completion/coupon; no real external requests.');
  }finally{globalThis.fetch=oldFetch;globalThis.testEnv.RESEND_API_KEY=oldKey;globalThis.testEnv.MAIL_FROM=oldFrom;db.batch=oldBatch;}
 }
+// A customer on a translated page gets the confirmation email in their language; the branded-template check must not block it.
+{
+ const priorFetch=globalThis.fetch,priorKey=globalThis.testEnv.RESEND_API_KEY,priorFrom=globalThis.testEnv.MAIL_FROM;
+ try{
+  sql.prepare('DELETE FROM form_rate_limits').run();
+  globalThis.testEnv.RESEND_API_KEY='re_test_language';globalThis.testEnv.MAIL_FROM='PARTYPRINT <orders@example.com>';
+  const sent=[];globalThis.fetch=async(_url,init)=>{sent.push(JSON.parse(init.body));return Response.json({id:'language-test'})};
+  for(const [language,subject] of [['en','We got your idea'],['ar','استلمنا فكرتكم']]){
+   sent.length=0;
+   const response=await publicRoute.POST(new Request(base+'/api/orders',{method:'POST',headers:{origin:base,'x-partyprint-language':language},body:form('customer-'+language+'@example.com')}));
+   assert.equal(response.status,201);const receipt=await response.json();
+   assert.equal(receipt.customerEmailSent,true,language+' customer email was not sent');
+   const mail=sent.find(message=>message.to?.[0]==='customer-'+language+'@example.com');
+   assert(mail&&mail.subject.includes(subject),language+' customer email subject');
+   assert.match(receipt.trackingUrl,new RegExp('/'+language+'/track/'+receipt.id+'#[a-f0-9]{64}$'));
+  }
+  console.log('PASS: English and Arabic customers receive the branded confirmation email in their language, with a tracking link in their language.');
+ }finally{globalThis.fetch=priorFetch;globalThis.testEnv.RESEND_API_KEY=priorKey;globalThis.testEnv.MAIL_FROM=priorFrom;}
+}

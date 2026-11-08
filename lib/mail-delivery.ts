@@ -46,7 +46,8 @@ export async function sendResendMail(env:MailEnv,payload:{to:string[];subject:st
  const config=mailConfiguration(env);
  if(config.issue)return {...config.issue,recipients:payload.to};
  if(!payload.to.length)return mailFailure('no_recipients');
- if(typeof payload.html!=='string'||!payload.html.includes('<html lang="he" dir="rtl" data-partyprint-email="v1">'))return mailFailure('unbranded_html',payload.to);
+ // The branded template in any language: a customer email in English or Arabic carries its own lang and dir (i18n/html.ts).
+ if(typeof payload.html!=='string'||!/<html lang="[a-z]{2}" dir="(?:rtl|ltr)" data-partyprint-email="v1">/.test(payload.html))return mailFailure('unbranded_html',payload.to);
  try{
   const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+config.apiKey,'Content-Type':'application/json','Idempotency-Key':idempotencyKey},body:JSON.stringify({from:config.sender,...payload}),signal:AbortSignal.timeout(timeoutMs)});
   const body:unknown=await response.json().catch(()=>null);
