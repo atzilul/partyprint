@@ -43,6 +43,10 @@ export function llmsText(pricing:Pricing):string{
 - https://partyprint.co.il/ordering-guide — Practical preparation guide: choosing reference photos, collecting adult and child sizes, understanding pricing and coordinating the event date.
 - https://partyprint.co.il/privacy-policy — Current privacy notice; observe any draft labels or incomplete details on that page.
 
+## Languages
+
+The site is written in Hebrew. The ordering pages, policies, about, FAQ, guides and examples also exist in English (https://partyprint.co.il/en) and Arabic (https://partyprint.co.il/ar), with the same prices and process; the order form works in those languages. Each page lists its other languages with hreflang. The blog is Hebrew only. On the policy pages the Hebrew text is binding.
+
 ## What PARTYPRINT offers
 
 - Personalized shirts for birthdays, family events, bachelor and bachelorette parties, team evenings, employee gifts, trips and other celebrations.
