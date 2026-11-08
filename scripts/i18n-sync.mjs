@@ -92,7 +92,8 @@ if(step==='collect'){
   hashed[hash]=value;
  }
  mkdirSync(root+'public/i18n',{recursive:true});
- const body='window.__PP_I18N='+JSON.stringify({language,dictionary:hashed,nouns}).replace(/</g,'\\u003c')+';\n';
+ const body='window.__PP_I18N='+JSON.stringify({language,dictionary:hashed,nouns}).replace(/</g,'\\u003c')+';dispatchEvent(new Event("pp-i18n"));\n';
+ // It loads without holding up the page; the event tells the page it may take over (i18n/env-client.ts).
  writeFileSync(root+'public/i18n/'+language+'.js',body);
  // The address of the dictionary carries a hash of its content, so a browser never keeps an older one.
  const versions=read(root+'i18n/versions.json')||{};versions[language]=hashKey(body);write(root+'i18n/versions.json',versions);

@@ -88,4 +88,9 @@ translations in every language. The translated pages are listed by
 - Never set `PP_I18N_COLLECT` in production. Never turn the root layout's `metadata` into a
   function: it moves the title and description out of `<head>` on static pages.
 - Names of languages and other text that must stay as written carry `translate="no"`.
+- The browser dictionary (`public/i18n/<language>.js`) loads `async` and ends by firing a
+  `pp-i18n` event: the server already sent the page translated, so it shows at once, and only
+  the browser taking it over waits for the dictionary (`i18n/env-client.ts`). Do not make it
+  a blocking script again, and do not split it per page: text that a client component shows
+  after mounting (the cookie bar, the promo code) would stay in Hebrew.
 - The translated legal pages are a convenience translation; the Hebrew text is the binding one.

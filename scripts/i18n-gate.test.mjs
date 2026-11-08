@@ -21,7 +21,7 @@ const routes=await import(moduleUrl(resolve(root,'i18n/routes.ts')));
 const element=(type,props,key)=>({$$typeof:Symbol.for('react.transitional.element'),type,props,key:key??null});
 function gateFor(dictionary,language='ar',nouns={}){
  const missing=[];
- const wrap=createGate({language:()=>language,lookup:(_language,key)=>dictionary[key],nouns:()=>nouns,missing:(_language,key)=>missing.push(key),scripts:()=>[{src:'/i18n/ar.js?v=1'}]});
+ const wrap=createGate({language:()=>language,lookup:(_language,key)=>dictionary[key],nouns:()=>nouns,missing:(_language,key)=>missing.push(key),scripts:()=>[{src:'/i18n/ar.js?v=1',async:true}]});
  return {jsx:wrap(element,element),missing};
 }
 const NOUNS={tshirt:{one:'تيشيرت واحد',two:'تيشيرتان',few:'{n} تيشيرتات',many:'{n} تيشيرت',other:'{n} تيشيرت'}};
@@ -108,7 +108,10 @@ test('spoken attributes, structured data, links, the page language and the dicti
  const html=jsx('html',{lang:'he',dir:'rtl',children:[]}).props;
  assert.equal(html.lang,'ar');assert.equal(html.dir,'rtl');
  const body=jsx('body',{children:'x'}).props.children;
- assert.equal(body[0].type,'script');assert.equal(body[0].props.src,'/i18n/ar.js?v=1');assert.equal(body[1],'x');
+ assert.equal(body[0].type,'script');assert.equal(body[0].props.src,'/i18n/ar.js?v=1');assert.equal(body[0].props.async,true);
+ // The dictionary does not hold up the page; it tells the page when it has arrived (i18n/env-client.ts).
+ for(const language of ['ar','en'])assert.equal(readFileSync(resolve(root,'public/i18n/'+language+'.js'),'utf8').trimEnd().endsWith('dispatchEvent(new Event("pp-i18n"));'),true);
+ assert.equal(body[1],'x');
 });
 
 test('the browser dictionary key is stable and the address language is read from the first segment',()=>{

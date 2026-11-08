@@ -213,7 +213,7 @@ export function createGate(environment:GateEnvironment){
    if(href!==props.href)set('href',href);
   }
   if(type==='body'){
-   const scripts=environment.scripts(language).map((script,index)=>create('script',script.src?{src:script.src}:{dangerouslySetInnerHTML:{__html:script.code}},'partyprint-i18n-'+index));
+   const scripts=environment.scripts(language).map((script,index)=>create('script',script.src?(script.async?{src:script.src,async:true}:{src:script.src}):{dangerouslySetInnerHTML:{__html:script.code}},'partyprint-i18n-'+index));
    if(scripts.length){const current=out.children;set('children',[...scripts,...(Array.isArray(current)?current:[current])]);}
   }
   return out;

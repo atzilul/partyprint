@@ -8,6 +8,20 @@ import type {Dictionary,GateEnvironment,Language,Nouns} from './core';
 type Loaded={__PP_I18N?:{language:string;dictionary:Dictionary;nouns?:Nouns};__PP_I18N_MISSING?:Record<string,string[]>;__PP_I18N_COLLECT?:number};
 const loaded=()=>(window as unknown as Loaded);
 const dictionary=(language:Language)=>loaded().__PP_I18N?.language===language?loaded().__PP_I18N:undefined;
+/**
+ * The dictionary loads without holding up the page (the server sent the page translated). The
+ * browser takes the page over only once it has arrived, so that what it renders matches what
+ * the server sent: every module built against the gate waits here. Hebrew pages do not wait.
+ * If the dictionary never arrives, the page takes over after a few seconds anyway.
+ */
+if(typeof window!=='undefined'){
+ const language=languageOfPath(window.location.pathname);
+ if(language!=='he'&&!dictionary(language))await new Promise<void>(resolve=>{
+  const done=()=>{window.removeEventListener('pp-i18n',done);clearTimeout(timer);resolve();};
+  const timer=setTimeout(done,8000);
+  window.addEventListener('pp-i18n',done);
+ });
+}
 let waiting:ReturnType<typeof setTimeout>|null=null;
 const unsent:Record<string,string[]>={};
 

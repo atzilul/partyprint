@@ -78,7 +78,7 @@ export type GateEnvironment={
  nouns:(language:Language)=>Nouns|undefined;
  missing:(language:Language,key:string)=>void;
  /** Scripts the browser needs before it takes over the page: the dictionary, and the collect flag. */
- scripts:(language:Language)=>{src?:string;code?:string}[];
+ scripts:(language:Language)=>{src?:string;code?:string;async?:boolean}[];
 };
 export type Lookup=Pick<GateEnvironment,'lookup'|'missing'|'nouns'>;
 

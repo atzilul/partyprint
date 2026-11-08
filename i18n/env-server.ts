@@ -42,7 +42,9 @@ export const serverEnvironment:GateEnvironment={
  missing:reportMissing,
  scripts(language){
   if(!DICTIONARIES[language])return [];
-  const dictionary={src:'/i18n/'+language+'.js?v='+((versions as Record<string,string>)[language]||'0')};
+  // It does not hold up the page: the server already sent the page translated, and only the
+  // browser taking it over (i18n/env-client.ts) waits for the dictionary.
+  const dictionary={src:'/i18n/'+language+'.js?v='+((versions as Record<string,string>)[language]||'0'),async:true};
   // While sentences are being collected, the browser reports the ones it meets too.
   return collecting()?[{code:'window.__PP_I18N_COLLECT=1'},dictionary]:[dictionary];
  },
