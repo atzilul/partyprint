@@ -5,7 +5,7 @@ import {EDITORIAL_LINKS,WORK_FOR_GUIDE} from '../lib/editorial-links.ts';
 import {STUDIO_PAGE_SLUGS} from '../lib/studio-pages.ts';
 import {SEO_PAGES,SEO_PAGE_ALIASES,getSeoPage} from '../lib/seo-pages.ts';
 test('all existing guide addresses stay unique and resolve their aliases',()=>{
- assert.equal(SEO_PAGES.length,22);
+ assert.equal(SEO_PAGES.length,23);
  const slugs=new Set(SEO_PAGES.map(p=>p.slug));
  assert.equal(slugs.size,SEO_PAGES.length);
  for(const [alias,target] of Object.entries(SEO_PAGE_ALIASES)){
