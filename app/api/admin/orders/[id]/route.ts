@@ -2,6 +2,7 @@ import {productionReady} from '@/lib/production';
 import {guard,PRIVATE_HEADERS,adminError} from '@/lib/admin-auth';
 import {getOrder,saveOrder,bindings} from '@/lib/order-store';
 import {getPricing} from '@/lib/studio-settings';
+import {requestReviewAfterShipping} from '@/lib/review-request';
 import {editOrder,stageLabel} from '@/lib/orders';
 import {readLimitedForm,validImage} from '@/lib/order-security';
 import {imageUploadError} from '@/lib/upload-limits';
@@ -14,5 +15,5 @@ export async function POST(request:Request,{params}:Context){const denied=await 
  const roles=form.getAll('roles').map(String);for(let i=0;i<files.length;i++){const f=files[i],buffer=await f.arrayBuffer();if(!validImage(new Uint8Array(buffer),f.type))return Response.json({error:'אחד הקבצים אינו תמונה תקינה.'},{status:400});const key=`orders/${id}/reference-${crypto.randomUUID()}`;await BUCKET.put(key,buffer,{httpMetadata:{contentType:f.type}});uploaded.push(key);o.images.push({name:f.name.slice(0,200),key,size:f.size,role:['reference','design','print'].includes(roles[i])?roles[i]:'reference'})}
  if(o.status!==old.status&&['printing','printed','shipped'].includes(o.status)&&!productionReady(o))return Response.json({error:'נדרש אישור לקוח לגרסת העיצוב הנוכחית לפני המשך הייצור.'},{status:400,headers:PRIVATE_HEADERS});
  const changes=[];if(old.status!==o.status)changes.push('שלב: '+stageLabel(old.status)+' ← '+stageLabel(o.status));if(['name','phone','email','address'].some(k=>old[k as keyof typeof old]!==o[k as keyof typeof o]))changes.push('פרטי לקוח');if(JSON.stringify(old.shirts)!==JSON.stringify(o.shirts)||old.quantity!==o.quantity||old.package!==o.package)changes.push('חבילה וחולצות');if(old.price!==o.price)changes.push('מחיר');if(old.brief!==o.brief)changes.push('בריף');if(files.length||keep.length!==old.images.length)changes.push('תמונות');
- const saved=await saveOrder(o,old.version!,`עודכנו ${changes.join(', ')||'פרטי טיפול'}`,'מנהל');committed=true;await Promise.allSettled(old.images.filter(i=>!keep.includes(i.key)).map(i=>BUCKET.delete(i.key)));return Response.json(saved,{headers:PRIVATE_HEADERS});
+ const saved=await saveOrder(o,old.version!,`עודכנו ${changes.join(', ')||'פרטי טיפול'}`,'מנהל');committed=true;await requestReviewAfterShipping(bindings(),old,saved);await Promise.allSettled(old.images.filter(i=>!keep.includes(i.key)).map(i=>BUCKET.delete(i.key)));return Response.json(saved,{headers:PRIVATE_HEADERS});
  }catch(e){return adminError(e)}finally{if(!committed&&uploaded.length)await Promise.allSettled(uploaded.map(k=>bindings().BUCKET.delete(k)))}}

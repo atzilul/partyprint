@@ -444,3 +444,47 @@ console.log('PASS: all occasions start at four and support reduction to one with
   console.log('PASS: English and Arabic customers receive the branded confirmation email in their language, with a tracking link in their language.');
  }finally{globalThis.fetch=priorFetch;globalThis.testEnv.RESEND_API_KEY=priorKey;globalThis.testEnv.MAIL_FROM=priorFrom;}
 }
+// Review request: off until a Google link is set and switched on; one email when an order first ships, in the customer's language.
+{
+ const review=await load('lib/review-request.ts'),settingsApi=await load('app/api/admin/settings/route.ts');
+ const priorFetch=globalThis.fetch,priorKey=globalThis.testEnv.RESEND_API_KEY,priorFrom=globalThis.testEnv.MAIL_FROM,priorUser=globalThis.testUser,priorOwner=process.env.PARTYPRINT_ADMIN_EMAIL;
+ try{
+  globalThis.testEnv.RESEND_API_KEY='re_test_review';globalThis.testEnv.MAIL_FROM='PARTYPRINT <orders@example.com>';
+  const sent=[];globalThis.fetch=async(_url,init)=>{sent.push(JSON.parse(init.body));return Response.json({id:'review-test'})};
+  assert(review.validReviewUrl('https://g.page/r/abc/review'));assert(review.validReviewUrl('https://search.google.com/local/writereview?placeid=x'));
+  for(const bad of ['http://g.page/r/abc','https://evil.example/review','https://g.page.evil.com/x','javascript:alert(1)'])assert(!review.validReviewUrl(bad),bad);
+  const shippedBase=await store.getOrder(id);
+  const shipped={...shippedBase,status:'shipped',email:'buyer@example.com',language:'en',cancelledAt:undefined,archivedAt:undefined,reviewRequestedAt:undefined};
+  // Off by default: nothing is sent.
+  assert.equal(await review.requestReviewAfterShipping(globalThis.testEnv,{status:'printed'},shipped),false);assert.equal(sent.length,0);
+  // The owner switches it on in the settings.
+  delete process.env.PARTYPRINT_ADMIN_EMAIL;globalThis.testUser={userId:'owner',email:'atzilul@gmail.com'};
+  const postSettings=body=>settingsApi.POST(new Request(base+'/api/admin/settings',{method:'POST',headers:{origin:base,'content-type':'application/json'},body:JSON.stringify(body)}));
+  assert.equal((await postSettings({action:'review',review:{enabled:true,url:'',version:0}})).status,400);
+  assert.equal((await postSettings({action:'review',review:{enabled:true,url:'https://evil.example/r',version:0}})).status,400);
+  const on=await postSettings({action:'review',review:{enabled:true,url:'https://g.page/r/partyprint/review',version:0}});assert.equal(on.status,200);
+  assert.equal((await on.json()).review.enabled,true);
+  assert.equal((await postSettings({action:'review',review:{enabled:false,url:'',version:0}})).status,409);
+  // A transition that is not "just shipped" sends nothing.
+  assert.equal(await review.requestReviewAfterShipping(globalThis.testEnv,{status:'shipped'},shipped),false);
+  assert.equal(await review.requestReviewAfterShipping(globalThis.testEnv,{status:'printed'},{...shipped,email:''}),false);
+  assert.equal(await review.requestReviewAfterShipping(globalThis.testEnv,{status:'printed'},{...shipped,cancelledAt:'2026-01-01T00:00:00.000Z'}),false);
+  assert.equal(sent.length,0);
+  // Just shipped: one email to the customer, in English, with the link and the WhatsApp way out.
+  assert.equal(await review.requestReviewAfterShipping(globalThis.testEnv,{status:'printed'},shipped),true);
+  assert.equal(sent.length,1);assert.deepEqual(sent[0].to,['buyer@example.com']);
+  assert.equal(sent[0].subject,'PARTYPRINT · Your shirts are on their way');
+  assert.match(sent[0].html,/<html lang="en" dir="ltr" data-partyprint-email="v1">/);
+  assert(sent[0].html.includes('https://g.page/r/partyprint/review'));assert(sent[0].html.includes('Write a Google review'));assert(sent[0].html.includes('wa.me/972552896236'));
+  assert(!/[֐-׿]/.test(sent[0].html.replace(/<[^>]+>/g,'').replace(shippedBase.name,'')),'English review email holds Hebrew');
+  assert(JSON.parse(sql.prepare('SELECT data FROM orders WHERE id=?').get(id).data).reviewRequestedAt);
+  // Asked once only.
+  assert.equal(await review.requestReviewAfterShipping(globalThis.testEnv,{status:'printed'},{...shipped,reviewRequestedAt:'2026-01-01T00:00:00.000Z'}),false);
+  // Arabic and Hebrew customers get their own language.
+  sent.length=0;await review.requestReviewAfterShipping(globalThis.testEnv,{status:'printed'},{...shipped,language:'ar'});
+  assert.equal(sent[0].subject,'PARTYPRINT · تيشيرتاتكم في الطريق');assert.match(sent[0].html,/<html lang="ar" dir="rtl"/);
+  sent.length=0;await review.requestReviewAfterShipping(globalThis.testEnv,{status:'printed'},{...shipped,language:undefined});
+  assert.equal(sent[0].subject,'PARTYPRINT · החולצות שלכם בדרך');
+  console.log('PASS: review request is off until a valid Google link is switched on; sent once when an order first ships, to the customer, in their language, with a WhatsApp way out; settings validate the link and versions.');
+ }finally{globalThis.fetch=priorFetch;globalThis.testEnv.RESEND_API_KEY=priorKey;globalThis.testEnv.MAIL_FROM=priorFrom;globalThis.testUser=priorUser;if(priorOwner===undefined)delete process.env.PARTYPRINT_ADMIN_EMAIL;else process.env.PARTYPRINT_ADMIN_EMAIL=priorOwner;}
+}

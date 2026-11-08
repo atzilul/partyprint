@@ -6,6 +6,7 @@ import {missingSentences,reportMissing,serverEnvironment} from './env-server';
 import {SITE_METADATA} from '@/lib/site-metadata';
 import {VARIANTS} from './variants';
 import {customerConfirmation} from '@/lib/order-mail';
+import {reviewRequestMail} from '@/lib/review-request';
 import type {Order} from '@/lib/orders';
 
 const LOCALE:Record<Language,string>={he:'he_IL',ar:'ar_IL',en:'en_IL',ru:'ru_RU',fr:'fr_FR'};
@@ -60,6 +61,8 @@ export function sentencesToTranslate():Record<string,string[]>{
   const sample={id:'00000000-0000-4000-8000-000000000000',name:'Sample',email:'sample@example.com',quantity:12,price:1140,images:[{},{}],designMode,revisionPrice:100,language} as unknown as Order;
   customerConfirmation(sample,'https://partyprint.co.il/track/sample#token');
  }
+ // The review request sent when an order ships.
+ for(const language of LANGUAGES)if(toLanguage(language,'/'))reviewRequestMail({id:'00000000-0000-4000-8000-000000000000',name:'Sample',email:'sample@example.com',language} as unknown as Order,'https://g.page/r/sample/review');
  return missingSentences();
 }
 export {reportMissing};
