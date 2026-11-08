@@ -45,7 +45,7 @@ export function llmsText(pricing:Pricing):string{
 
 ## Languages
 
-The site is written in Hebrew. The ordering pages, policies, about, FAQ, guides and examples also exist in English (https://partyprint.co.il/en) and Arabic (https://partyprint.co.il/ar), with the same prices and process; the order form works in those languages. Each page lists its other languages with hreflang. The blog is Hebrew only. On the policy pages the Hebrew text is binding.
+The site is written in Hebrew. The ordering pages, policies, about, FAQ, guides and examples also exist in English (https://partyprint.co.il/en), Arabic (https://partyprint.co.il/ar) and Russian (https://partyprint.co.il/ru), with the same prices and process; the order form works in those languages. Each page lists its other languages with hreflang. The blog is Hebrew only. On the policy pages the Hebrew text is binding.
 
 ## What PARTYPRINT offers
 

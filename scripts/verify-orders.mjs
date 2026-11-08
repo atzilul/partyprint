@@ -432,7 +432,7 @@ console.log('PASS: all occasions start at four and support reduction to one with
   sql.prepare('DELETE FROM form_rate_limits').run();
   globalThis.testEnv.RESEND_API_KEY='re_test_language';globalThis.testEnv.MAIL_FROM='PARTYPRINT <orders@example.com>';
   const sent=[];globalThis.fetch=async(_url,init)=>{sent.push(JSON.parse(init.body));return Response.json({id:'language-test'})};
-  for(const [language,subject] of [['en','We got your idea'],['ar','استلمنا فكرتكم']]){
+  for(const [language,subject] of [['en','We got your idea'],['ar','استلمنا فكرتكم'],['ru','Мы получили вашу идею']]){
    sent.length=0;
    const response=await publicRoute.POST(new Request(base+'/api/orders',{method:'POST',headers:{origin:base,'x-partyprint-language':language},body:form('customer-'+language+'@example.com')}));
    assert.equal(response.status,201);const receipt=await response.json();
@@ -441,7 +441,7 @@ console.log('PASS: all occasions start at four and support reduction to one with
    assert(mail&&mail.subject.includes(subject),language+' customer email subject');
    assert.match(receipt.trackingUrl,new RegExp('/'+language+'/track/'+receipt.id+'#[a-f0-9]{64}$'));
   }
-  console.log('PASS: English and Arabic customers receive the branded confirmation email in their language, with a tracking link in their language.');
+  console.log('PASS: English, Arabic and Russian customers receive the branded confirmation email in their language, with a tracking link in their language.');
  }finally{globalThis.fetch=priorFetch;globalThis.testEnv.RESEND_API_KEY=priorKey;globalThis.testEnv.MAIL_FROM=priorFrom;}
 }
 // Review request: off until a Google link is set and switched on; one email when an order first ships, in the customer's language.
@@ -483,6 +483,8 @@ console.log('PASS: all occasions start at four and support reduction to one with
   // Arabic and Hebrew customers get their own language.
   sent.length=0;await review.requestReviewAfterShipping(globalThis.testEnv,{status:'printed'},{...shipped,language:'ar'});
   assert.equal(sent[0].subject,'PARTYPRINT · تيشيرتاتكم في الطريق');assert.match(sent[0].html,/<html lang="ar" dir="rtl"/);
+  sent.length=0;await review.requestReviewAfterShipping(globalThis.testEnv,{status:'printed'},{...shipped,language:'ru'});
+  assert.equal(sent[0].subject,'PARTYPRINT · Ваши футболки уже в пути');assert.match(sent[0].html,/<html lang="ru" dir="ltr"/);assert(!/[֐-׿]/.test(sent[0].html.replace(/<[^>]+>/g,'').replace(shippedBase.name,'')),'Russian review email holds Hebrew');
   sent.length=0;await review.requestReviewAfterShipping(globalThis.testEnv,{status:'printed'},{...shipped,language:undefined});
   assert.equal(sent[0].subject,'PARTYPRINT · החולצות שלכם בדרך');
   console.log('PASS: review request is off until a valid Google link is switched on; sent once when an order first ships, to the customer, in their language, with a WhatsApp way out; settings validate the link and versions.');

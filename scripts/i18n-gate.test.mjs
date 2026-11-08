@@ -251,7 +251,7 @@ test('addresses: every page of the purchase path exists in English, with English
   assert.equal(routes.toLanguage('en','/'+section+'/'+hebrew),'/en/'+section+'/'+english);
   assert.deepEqual(routes.toHebrew('en',[section,english]).params,{slug:hebrew});
  }
- assert.deepEqual(routes.translationsOf('/lp/team').map(entry=>entry.language),['ar','en']);
+ assert.deepEqual(routes.translationsOf('/lp/team').map(entry=>entry.language),['ar','en','ru']);
  assert.equal(routes.localizedHref('en','/lp/team?v=team#order'),'/en/lp/team?v=team#order');
 });
 
@@ -316,4 +316,21 @@ test('a shirt line, a size and shipping details translate whatever the value',()
   assert.equal(text(['פרטי משלוח: ',jsx(Value,{v:'x',keep:true})]),expected[3]);
   assert.deepEqual(missing,[]);
  }
+});
+
+test('Russian: left to right, shekel after the number, counted shirts in three forms, written dates, own slugs',()=>{
+ const nouns=JSON.parse(readFileSync(resolve(root,'i18n/ru.nouns.json'),'utf8'));
+ const {jsx}=gateFor({'{0} חולצות':'{0:tshirt}','מחיר: {0} ₪':'Цена: {0} ₪'},'ru',nouns);
+ const html=jsx('html',{lang:'he',dir:'rtl',children:[]}).props;
+ assert.equal(html.lang,'ru');assert.equal(html.dir,'ltr');
+ for(const [count,expected] of [[1,'1 футболка'],[3,'3 футболки'],[5,'5 футболок'],[12,'12 футболок'],[21,'21 футболка'],[22,'22 футболки']])
+  assert.equal(jsx('span',{children:[count,' חולצות']}).props.children.filter(Boolean).join(''),expected);
+ assert.equal(jsx('b',{children:'מחיר: 440 ₪'}).props.children,'Цена: 440 ₪');
+ assert.deepEqual(jsx('b',{children:['440',' ₪']}).props.children,['440',' ₪'],'the sign stays after the number');
+ assert.match(jsx('time',{dateTime:'2026-11-01',children:'1.11.2026'}).props.children,/^1 ноября 2026/);
+ assert.equal(jsx('span',{children:'לעמוד הבא ←'}).props.children,'לעמוד הבא ←','a Hebrew run is left for the translation');
+ const slugs=JSON.parse(readFileSync(resolve(root,'i18n/ru.slugs.json'),'utf8')),en=JSON.parse(readFileSync(resolve(root,'i18n/en.slugs.json'),'utf8'));
+ assert.deepEqual(Object.keys(slugs).sort(),Object.keys(en).sort(),'every page with a Hebrew slug has a Russian one');
+ assert.equal(new Set(Object.values(slugs)).size,Object.values(slugs).length);
+ assert.equal(routes.toLanguage('ru','/lp/team'),'/ru/lp/team');
 });

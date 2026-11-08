@@ -45,7 +45,7 @@ try{
    }
    const fontRules=await page.evaluate(()=>{const out=[];function walk(rules){for(const rule of rules){if(rule.type===CSSRule.FONT_FACE_RULE&&/Assistant|Rubik/.test(rule.style.fontFamily))out.push({family:rule.style.fontFamily,weight:rule.style.fontWeight,src:rule.style.src,range:rule.style.unicodeRange});else if(rule.cssRules)walk(rule.cssRules)}}for(const sheet of document.styleSheets){try{walk(sheet.cssRules)}catch{}}return out});
    screen.fontSources=fontRules;
-   check(fontRules.length===24,'All disjoint Hebrew, Latin and other-language font faces are declared, with the six Arabic faces of the translated pages');
+   check(fontRules.length===27,'All disjoint Hebrew, Latin and other-language font faces are declared, with the six Arabic and three Cyrillic faces of the translated pages');
    const fontPreloads=await page.locator('link[rel=preload][as=font]').evaluateAll(nodes=>nodes.map(x=>x.href));
    for(const url of fontPreloads){check(fontRules.some(face=>{const match=face.src.match(/url\(["']?([^"')]+)["']?\)/);return match&&new URL(match[1],base).href===url}),'Critical font preload matches a CSS font URL');requiredAssets.add(url)}
    const foreign=await page.evaluate(async()=>{const span=document.createElement('span');span.textContent='שלום שָׁלוֹם PARTYPRINT 110 ₪ Café Привет';span.style.cssText="font:900 24px Rubik;position:fixed;left:0;top:0";document.body.append(span);await document.fonts.ready;const ready=document.fonts.check('900 24px Rubik',span.textContent);span.remove();return ready});

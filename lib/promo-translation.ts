@@ -7,8 +7,8 @@ import {serverEnvironment} from '@/i18n/env-server';
  * dictionary as the pages). An empty string means there is no translation yet, and the bar
  * then shows the Hebrew line. Server only.
  */
-export type PromoTexts={en:string;ar:string};
-export function promoTexts(hebrew:string,written:{promoTextEn?:string;promoTextAr?:string}={}):PromoTexts{
- const suggested=(language:'en'|'ar')=>{const translated=hebrew?translateText(hebrew,language,serverEnvironment):'';return translated!==hebrew?translated:'';};
- return {en:written.promoTextEn||suggested('en'),ar:written.promoTextAr||suggested('ar')};
+export type PromoTexts={en:string;ar:string;ru:string};
+export function promoTexts(hebrew:string,written:{promoTextEn?:string;promoTextAr?:string;promoTextRu?:string}={}):PromoTexts{
+ const suggested=(language:'en'|'ar'|'ru')=>{const translated=hebrew?translateText(hebrew,language,serverEnvironment):'';return translated!==hebrew?translated:'';};
+ return {en:written.promoTextEn||suggested('en'),ar:written.promoTextAr||suggested('ar'),ru:written.promoTextRu||suggested('ru')};
 }

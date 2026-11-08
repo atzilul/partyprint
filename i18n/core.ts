@@ -21,7 +21,7 @@ export const hasHebrew=(text:string)=>HEBREW.test(text);
  * The languages the site is translated into today. An address that starts with one of them
  * (/ar/..., /en/...) is a translated page; every other address is Hebrew.
  */
-export const TRANSLATED:readonly Language[]=['ar','en'];
+export const TRANSLATED:readonly Language[]=['ar','en','ru'];
 /** The language of an address: /ar/lp/team is Arabic, everything without a translated prefix is Hebrew. */
 export function languageOfPath(pathname:string|null|undefined):Language{
  if(!pathname)return 'he';

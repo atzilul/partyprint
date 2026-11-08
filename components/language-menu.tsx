@@ -68,26 +68,38 @@ export function LanguageRow(){
   :<a key={option.language} lang={option.language} hrefLang={option.language} translate="no" href={option.href} onClick={event=>follow(event,option)}>{LANGUAGE_NAMES[option.language]}</a>)}</div>;
 }
 
+/** The suggestion, in the language it suggests. English readers find the menu themselves. */
+const SUGGEST:Partial<Record<Language,{dir:'rtl'|'ltr';text:string;link:string;close:string}>>={
+ ar:{dir:'rtl',text:'هذه الصفحة متوفرة باللغة العربية',link:'عرض بالعربية ←',close:'إغلاق'},
+ ru:{dir:'ltr',text:'Эта страница есть на русском',link:'Открыть на русском →',close:'Закрыть'},
+};
+
 /**
- * A reader whose browser prefers Arabic over Hebrew, on a Hebrew page that exists in Arabic,
- * is told so once. Nobody is redirected: the reader chooses, and the choice is remembered.
+ * A reader whose browser prefers Arabic or Russian over Hebrew, on a Hebrew page that exists
+ * in that language, is told so once. Nobody is redirected: the reader chooses, and the choice
+ * is remembered.
  */
 export function LanguageSuggestion(){
- const pathname=usePathname()||'/',[show,setShow]=useState(false);
- const arabic=languageOfPath(pathname)==='he'?toLanguage('ar',pathname):null;
+ const pathname=usePathname()||'/',[offer,setOffer]=useState<{language:Language;href:string}|null>(null);
+ const hebrew=languageOfPath(pathname)==='he';
  useEffect(()=>{
-  let wanted=false;
+  let found:{language:Language;href:string}|null=null;
   try{
    const asked=(navigator.languages?.length?navigator.languages:[navigator.language]).map(value=>value.toLowerCase().split('-')[0]);
-   const arabicAt=asked.indexOf('ar'),hebrewAt=asked.indexOf('he');
-   wanted=!!arabic&&arabicAt>=0&&(hebrewAt<0||arabicAt<hebrewAt)&&!window.localStorage.getItem(CHOICE);
+   const hebrewAt=asked.indexOf('he');
+   if(hebrew&&!window.localStorage.getItem(CHOICE))for(const value of asked){
+    if(value==='he')break;
+    const language=value as Language,href=SUGGEST[language]?toLanguage(language,pathname):null;
+    if(href&&(hebrewAt<0||asked.indexOf(value)<hebrewAt)){found={language,href};break;}
+   }
   }catch{/* no storage: no suggestion */}
-  setShow(wanted);
- },[arabic]);
- if(!show||!arabic)return null;
- return <aside className="lang-suggest" lang="ar" dir="rtl" translate="no">
-  <span translate="no">هذه الصفحة متوفرة باللغة العربية</span>
-  <a href={arabic} lang="ar" hrefLang="ar" translate="no" onClick={event=>follow(event,{language:'ar',href:arabic,current:false,samePage:true})}>عرض بالعربية ←</a>
-  <button type="button" translate="no" aria-label="إغلاق" onClick={()=>{remember('he');setShow(false);}}>×</button>
+  setOffer(found);
+ },[hebrew,pathname]);
+ const words=offer?SUGGEST[offer.language]:undefined;
+ if(!offer||!words)return null;
+ return <aside className="lang-suggest" lang={offer.language} dir={words.dir} translate="no">
+  <span translate="no">{words.text}</span>
+  <a href={offer.href} lang={offer.language} hrefLang={offer.language} translate="no" onClick={event=>follow(event,{language:offer.language,href:offer.href,current:false,samePage:true})}>{words.link}</a>
+  <button type="button" translate="no" aria-label={words.close} onClick={()=>{remember('he');setOffer(null);}}>×</button>
  </aside>;
 }

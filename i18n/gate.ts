@@ -51,11 +51,15 @@ function forwardArrows(children:unknown):unknown{
  }
  return out.some((item,index)=>item!==children[index])?out:children;
 }
-/** An English reader reads 1.11.2026 as January 11: a <time> with a machine value is written out ("November 1, 2026"). */
+/** An English reader reads 1.11.2026 as January 11: a <time> with a machine value is written out ("November 1, 2026", "1 ноября 2026 г."). */
+const DATE_LOCALE:Partial<Record<Language,string>>={en:'en-US',ru:'ru-RU'};
+/** English writes the sign first (₪440); Russian keeps it after the number (440 ₪), as Hebrew does. */
+const SHEKEL_FIRST:ReadonlySet<Language>=new Set<Language>(['en']);
 function writtenDate(type:unknown,props:Props,language:Language):string|null{
- if(type!=='time'||language!=='en'||typeof props.dateTime!=='string')return null;
+ const locale=DATE_LOCALE[language];
+ if(type!=='time'||!locale||typeof props.dateTime!=='string')return null;
  const date=new Date(props.dateTime);
- return Number.isNaN(date.getTime())?null:new Intl.DateTimeFormat('en-US',{day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Jerusalem'}).format(date);
+ return Number.isNaN(date.getTime())?null:new Intl.DateTimeFormat(locale,{day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Jerusalem'}).format(date);
 }
 const numeric=(value:unknown)=>typeof value==='number'||typeof value==='string'&&NUMBER.test(value);
 function readingOrder(children:unknown,create:Create):unknown{
@@ -201,7 +205,7 @@ export function createGate(environment:GateEnvironment){
   if(DIRECTION[language]==='ltr'){const turned=forwardArrows(inner);if(turned!==inner){set('children',turned);inner=turned;}}
   if(typeof inner==='string'){const translated=text(inner,language);if(translated!==inner)set('children',translated);}
   else if(Array.isArray(inner)){const translated=whole(inner,language,create)??pieces(inner,language);if(translated!==inner)set('children',translated);}
-  if(DIRECTION[language]==='ltr'){const ordered=readingOrder(out.children,create);if(ordered!==out.children)set('children',ordered);}
+  if(SHEKEL_FIRST.has(language)){const ordered=readingOrder(out.children,create);if(ordered!==out.children)set('children',ordered);}
   const host=typeof type==='string';
   for(const name of host?[...SPOKEN,...ELEMENT_ONLY]:SPOKEN){
    const value=props[name];

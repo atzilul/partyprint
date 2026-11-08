@@ -46,7 +46,7 @@ automation IDs and schedules in the project memory when one is explicitly set up
 ## Translations
 
 The site is written in Hebrew, and the Hebrew text in the code is the only source. Arabic
-(`/ar/...`) and English (`/en/...`) are produced from it by the translation gate in `i18n/`:
+(`/ar/...`), English (`/en/...`) and Russian (`/ru/...`) are produced from it by the translation gate in `i18n/`:
 a sentence is looked up by its Hebrew text, so an edited Hebrew sentence no longer matches its
 old translations and appears in Hebrew on the translated pages until it is translated.
 Nothing goes stale silently, but nothing translates itself either.
@@ -66,13 +66,17 @@ translations in every language. The translated pages are listed by
    every language. `node --test scripts/i18n-gate.test.mjs` must pass.
 
 - The purchase path (`PATTERNS`) and the content pages (`CONTENT_PATTERNS`: about, FAQ, idea
-  guides, examples, ordering and buyer's guides) are in Arabic and English. Blog posts
+  guides, examples, ordering and buyer's guides) are in Arabic, English and Russian. Blog posts
   are written in the admin panel and stay Hebrew. Text set in the admin panel (the launch offer)
   is not seen by the collection: add its translation by hand when it changes.
 - A new page is translated by adding it to `PATTERNS` in `i18n/routes.ts` and to
   `PAGE_MODULES` in `i18n/pages.ts`; a page with a Hebrew slug also needs its slug in
   `i18n/<language>.slugs.json` for every language. The sitemap, the language menu and the
   checks follow these lists.
+- Russian reads left to right like English and gets the same mirrored stylesheet and arrows,
+  but keeps the shekel sign after the number (`440 ₪`) and counts shirts in three forms
+  (`i18n/ru.nouns.json`: футболка, футболки, футболок). Body text is set in Assistant, which
+  has no Cyrillic: `app/fonts.css` gives Assistant Rubik's Cyrillic letters.
 - English reads left to right. The stylesheets stay written for a right-to-left page:
   `build/direction-css.mjs` (in `postcss.config.mjs`) gives every direction-dependent rule a
   mirrored twin under `html[dir="ltr"]` at build time. Write CSS as usual; a rule that must

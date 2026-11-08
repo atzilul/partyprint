@@ -334,7 +334,7 @@ button,a,input,select,textarea,summary{touch-action:manipulation}
 .lang-menu-panel .is-current svg{margin-inline-start:auto}
 .lang-row{display:none}
 /* On a page that is not Arabic, the Arabic name of the language is drawn with a system font, so that one word does not download the Arabic font files. */
-:root:not(:lang(ar)) .lang-menu [lang=ar],:root:not(:lang(ar)) .lang-row [lang=ar],:root:not(:lang(ar)) .language-switch [lang=ar],:root:not(:lang(ar)) .lang-suggest{font-family:'Segoe UI',Tahoma,'Geeza Pro','Noto Sans Arabic',Arial,sans-serif}
+:root:not(:lang(ar)) .lang-menu [lang=ar],:root:not(:lang(ar)) .lang-row [lang=ar],:root:not(:lang(ar)) .language-switch [lang=ar],:root:not(:lang(ar)) .lang-suggest[lang=ar]{font-family:'Segoe UI',Tahoma,'Geeza Pro','Noto Sans Arabic',Arial,sans-serif}
 /* The header keeps one line with the language button in it: links do not wrap, and the spacing gives the button its room. */
 @media(min-width:1101px){.nav nav>a,.nav-menu-toggle{white-space:nowrap}}
 @media(min-width:1481px){.nav{gap:20px}.nav nav{gap:clamp(14px,1.2vw,18px);font-size:14.5px}}
@@ -384,4 +384,30 @@ button,a,input,select,textarea,summary{touch-action:manipulation}
  :lang(ar) .nav-menu-panel a.nav-menu-sale small{color:#3d3d36}
  :lang(ar) .lang-menu-code{display:inline}
  :lang(ar) .lang-menu-toggle{width:auto;padding:0 11px}
+}/* Russian navigation: the labels run longer still, so the links stay in one row only from 1801px and move behind the menu button below that. */
+@media(min-width:1801px){:lang(ru) .nav nav{gap:clamp(12px,1.1vw,18px);font-size:14px}:lang(ru) .nav nav>a,:lang(ru) .nav-menu-toggle{white-space:nowrap}}
+@media(min-width:681px) and (max-width:1800px){
+ :lang(ru) .nav{position:relative;z-index:40;isolation:isolate}
+ :lang(ru) .mobile-nav-toggle{display:grid;place-items:center;width:42px;height:42px;padding:0;margin-inline-start:auto;background:transparent;border:1px solid #777;color:#fff;font-size:22px;line-height:1;z-index:2}
+ :lang(ru) .mobile-nav-toggle:hover,:lang(ru) .mobile-nav-toggle[aria-expanded=true]{background:var(--acid);border-color:var(--acid);color:var(--ink)}
+ :lang(ru) .nav nav{position:absolute;display:none;top:100%;left:0;right:0;z-index:50;padding:10px 24px 16px;background:var(--ink);border-top:1px solid #444;box-shadow:0 8px 18px #0004;font-size:16px}
+ :lang(ru) .nav nav.is-open{display:grid;gap:0}
+ :lang(ru) .nav nav a{display:block;padding:14px 4px;border-bottom:1px solid #444;font-size:16px}
+ :lang(ru) .nav nav a:last-child{border-bottom:0}
+ :lang(ru) .nav nav a.nav-sale{display:none}
+ :lang(ru) .nav-menu{display:block;border-bottom:1px solid #444}
+ :lang(ru) .nav-menu-toggle{justify-content:space-between;width:100%;padding:14px 4px;font-size:16px;font-weight:600}
+ :lang(ru) .nav-menu-panel{position:static;display:none;width:auto;margin:0;padding:0 0 8px;background:none;color:inherit;border:0;box-shadow:none;opacity:1;visibility:visible;transform:none;transition:none}
+ :lang(ru) .nav-menu-panel::before{content:none}
+ :lang(ru) .nav-menu.is-open .nav-menu-panel{display:grid}
+ :lang(ru) .nav nav .nav-menu-panel a{display:flex;padding:10px 12px;border-bottom:0;font-size:15px}
+ :lang(ru) .nav-menu-panel a:hover,:lang(ru) .nav-menu-panel a:focus-visible,:lang(ru) .nav-menu-panel a[aria-current=page]{background:#ffffff14}
+ :lang(ru) .nav-menu-panel a.nav-menu-sale{background:var(--acid);color:var(--ink)}
+ :lang(ru) .nav-menu-panel i{width:30px;height:30px;background:var(--acid);color:var(--ink);font-size:15px}
+ :lang(ru) .nav-menu-panel a.nav-menu-sale i{background:var(--ink);color:var(--acid)}
+ :lang(ru) .nav-menu-panel b{font-size:15px}
+ :lang(ru) .nav-menu-panel small{color:#b9b9ae}
+ :lang(ru) .nav-menu-panel a.nav-menu-sale small{color:#3d3d36}
+ :lang(ru) .lang-menu-code{display:inline}
+ :lang(ru) .lang-menu-toggle{width:auto;padding:0 11px}
 }
