@@ -3315,5 +3315,10 @@
  "היי <0/>, כאן אפשר לראות איך ההזמנה מתקדמת.": "Hi <0/>, here you can see how your order is progressing.",
  "{0} חולצות · {1} ₪ · התקבל בתיעוד הסטודיו {2} ₪": "{0:tshirt} · ₪{1} · ₪{2} received, per the studio’s records",
  "תאריך אירוע: <0/> · מועד יעד שסוכם: <1/>": "Event date: <0/> · Agreed target date: <1/>",
- "פרטי משלוח: <0/>": "Shipping details: <0/>"
+ "עיצוב לאישור {0}": "Design for approval {0}",
+ "היי, אשמח לעזרה בהזמנה שלי. מספר ההזמנה:": "Hi, I’d like help with my order. Order number:",
+ "היי, שלחתי הודעה דרך האתר. מספר הפנייה:": "Hi, I sent a message through the website. Request number:",
+ "ילד, גיל": "Child, age",
+ "פרטי משלוח:": "Shipping details:",
+ "חולצה {0}:": "Shirt {0}:"
 }

@@ -107,7 +107,7 @@ function MessageForm(){
   <h3>ההודעה אצלנו.</h3>
   <p>מספר הפנייה שלכם: <b dir="ltr">{reference}</b>. נחזור אליכם ב־WhatsApp או במייל.</p>
   <ResponsePromise/>
-  <a className="cp-whatsapp" href={chat('היי, שלחתי הודעה דרך האתר. מספר הפנייה: '+reference)} target="_blank" rel="noopener noreferrer" data-cta-location="contact"><WhatsAppLogo size={22}/>ממשיכים ב־WhatsApp<ArrowUpLeft size={19}/></a>
+  <a className="cp-whatsapp" href={chat('היי, שלחתי הודעה דרך האתר. מספר הפנייה:\n'+reference)} target="_blank" rel="noopener noreferrer" data-cta-location="contact"><WhatsAppLogo size={22}/>ממשיכים ב־WhatsApp<ArrowUpLeft size={19}/></a>
  </div>;
  const error=(name:MessageProblem)=>problems.includes(name)?<small className="cp-error" id={'cp-'+name+'-error'}>{FIELD_ERRORS[name]}</small>:null;
  const invalid=(name:MessageProblem)=>problems.includes(name)?{'aria-invalid':true,'aria-describedby':'cp-'+name+'-error'}:{};

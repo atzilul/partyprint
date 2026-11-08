@@ -303,3 +303,17 @@ test('a value set in a sentence as its own element keeps the sentence translatab
  assert.equal(money.filter(part=>part!=='').join(''),'10 shirts · ₪950 · ₪0 received, per the studio’s records');
  assert.deepEqual(missing,[]);
 });
+
+test('a shirt line, a size and shipping details translate whatever the value',()=>{
+ for(const [language,expected] of [['en',['Shirt 3: ','Child, age ','Black','Shipping details: ']],['ar',['التيشيرت 3: ','أطفال، العمر ','أسود','تفاصيل الشحن: ']]]){
+  const dictionary=JSON.parse(readFileSync(resolve(root,'i18n/'+language+'.json'),'utf8'));
+  const {jsx,missing}=gateFor(dictionary,language);
+  const Value=()=>null,SizeLabel=()=>null;
+  const text=children=>{const out=jsx('span',{children}).props.children;return (Array.isArray(out)?out:[out]).filter(part=>typeof part==='string'||typeof part==='number').join('');};
+  assert.equal(text(['חולצה ',3,': ',jsx(SizeLabel,{}),' · ',jsx(Value,{v:'שחור'})]).startsWith(expected[0]),true);
+  assert.equal(text(['ילד, גיל ',jsx(Value,{v:'6',keep:true})]),expected[1]);
+  assert.equal(text('שחור'),expected[2]);
+  assert.equal(text(['פרטי משלוח: ',jsx(Value,{v:'x',keep:true})]),expected[3]);
+  assert.deepEqual(missing,[]);
+ }
+});

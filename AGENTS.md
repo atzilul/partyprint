@@ -93,4 +93,11 @@ translations in every language. The translated pages are listed by
   the browser taking it over waits for the dictionary (`i18n/env-client.ts`). Do not make it
   a blocking script again, and do not split it per page: text that a client component shows
   after mounting (the cookie bar, the promo code) would stay in Hebrew.
+- A value inside a Hebrew sentence (a name, a date, a size, a colour, an id) must not be part
+  of the sentence's text, or every value makes a new sentence with no translation. Put it in
+  `<Value v={…}/>` from `components/sentence-value.tsx` (`keep` for a name or a free note;
+  `<SizeLabel/>` for a shirt size). Numbers alone are fine: the gate masks them. In a ready
+  WhatsApp message, put an id on its own line after the sentence (`'…מספר הפנייה:\n'+id`).
+  Screens a customer reaches only after ordering (thanks, tracking, design approval) are
+  not covered by `check-translations`; test them with a gate test.
 - The translated legal pages are a convenience translation; the Hebrew text is the binding one.
