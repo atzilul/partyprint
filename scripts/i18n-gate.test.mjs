@@ -290,3 +290,16 @@ test('a WhatsApp message is translated line by line, so a request number on its 
  const href='https://wa.me/972552896236?text='+encodeURIComponent('היי, יש לי שאלה. מספר הפנייה:\nedb4c381-c39d-4546');
  assert.equal(decodeURIComponent(jsx('a',{href,children:'x'}).props.href.split('text=')[1]),'Hi, I have a question. Request number:\nedb4c381-c39d-4546');
 });
+
+test('a value set in a sentence as its own element keeps the sentence translatable, whatever the value',()=>{
+ const dictionary=JSON.parse(readFileSync(resolve(root,'i18n/en.json'),'utf8'));
+ const {jsx,missing}=gateFor(dictionary,'en',{tshirt:{one:'{n} shirt',other:'{n} shirts'}});
+ const Value=()=>null;
+ const greeting=jsx('p',{children:['היי ',jsx(Value,{v:'דנה כהן',keep:true}),', כאן אפשר לראות איך ההזמנה מתקדמת.']}).props.children;
+ assert.equal(greeting[0],'Hi ');assert.equal(greeting[1].props.v,'דנה כהן');assert.equal(greeting[2],', here you can see how your order is progressing.');
+ const dates=jsx('p',{children:['תאריך אירוע: ',jsx(Value,{v:'2026-12-01'}),' · מועד יעד שסוכם: ',jsx(Value,{v:'טרם אושר'})]}).props.children;
+ assert.equal(dates[0],'Event date: ');assert.equal(dates[2],' · Agreed target date: ');
+ const money=jsx('p',{children:[10,' חולצות · ',950,' ₪ · התקבל בתיעוד הסטודיו ',0,' ₪']}).props.children;
+ assert.equal(money.filter(part=>part!=='').join(''),'10 shirts · ₪950 · ₪0 received, per the studio’s records');
+ assert.deepEqual(missing,[]);
+});

@@ -3311,5 +3311,9 @@
  "צורפה תמונה אחת": "1 photo attached",
  "{0} תמונות צורפו": "{0} photos attached",
  "היי PARTYPRINT, שלחתי פנייה ואשמח להמשיך בתיאום. מספר הפנייה:": "Hi PARTYPRINT, I sent a request and would like to continue arranging it. Request number:",
- "היי, את המידות לפנייה שלי אשלים איתכם בשיחה. מספר הפנייה:": "Hi, I’ll finalize the sizes for my request with you in a chat. Request number:"
+ "היי, את המידות לפנייה שלי אשלים איתכם בשיחה. מספר הפנייה:": "Hi, I’ll finalize the sizes for my request with you in a chat. Request number:",
+ "היי <0/>, כאן אפשר לראות איך ההזמנה מתקדמת.": "Hi <0/>, here you can see how your order is progressing.",
+ "{0} חולצות · {1} ₪ · התקבל בתיעוד הסטודיו {2} ₪": "{0:tshirt} · ₪{1} · ₪{2} received, per the studio’s records",
+ "תאריך אירוע: <0/> · מועד יעד שסוכם: <1/>": "Event date: <0/> · Agreed target date: <1/>",
+ "פרטי משלוח: <0/>": "Shipping details: <0/>"
 }
