@@ -48,3 +48,5 @@ html[lang="en"] .business-details-heading .seo-kicker{display:none}.business-det
 .seo-nav .lang-menu{margin-inline-start:auto}
 .seo-nav .lang-menu+.seo-nav-cta{margin-inline-start:0}
 @media(max-width:680px){.seo-nav .lang-menu{display:flex}.seo-nav .lang-menu-toggle{height:40px}}
+.seo-in-short{max-width:780px;margin:24px auto 0;padding:18px 22px 20px;background:#fff;border:1px solid #161616;box-shadow:5px 5px 0 #161616;text-align:start}.seo-in-short strong{display:block;font:800 13px/1 'Rubik',sans-serif;letter-spacing:1.4px;color:#68449b;margin-bottom:10px}.seo-in-short p{margin:0;font-size:18px;line-height:1.7;color:#161616}
+@media(max-width:680px){.seo-in-short{padding:16px 16px 18px;box-shadow:4px 4px 0 #161616}.seo-in-short p{font-size:17px;line-height:1.65}}

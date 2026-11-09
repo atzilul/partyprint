@@ -28,7 +28,7 @@ test('metadata, visible answers and editorial dates are complete',()=>{
  assert.equal(new Set(SEO_PAGES.map(p=>p.seoTitle)).size,SEO_PAGES.length);
  const questions=[];
  for(const p of SEO_PAGES){
-  assert.ok(p.title&&p.seoDescription&&p.intro&&p.audience,p.slug);
+  assert.ok(p.title&&p.seoDescription&&p.intro&&p.answer&&p.audience,p.slug);
   assert.ok(['service','planning','inspiration'].includes(p.intent));
   assert.ok(Number.isFinite(new Date(p.updatedAt).getTime()));
   assert.ok(new Date(p.updatedAt).getTime()<=Date.now(),'Do not invent future modification dates');
