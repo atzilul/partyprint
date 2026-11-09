@@ -27,7 +27,7 @@ export default async function BlogPostPage({params}:{params:Promise<{slug:string
  const articleText=post.content+' '+preparationText(post.slug);
  const serviceGuides=guidesForArticle(post.slug).map(getSeoPage).filter(item=>item!==null);
  const allPosts=await listBlogPosts();
- const related=allPosts.filter(item=>item.id!==post.id).sort((a,b)=>sharedKeywords(b,post)-sharedKeywords(a,post)).slice(0,3);
+ const ring=[...allPosts].sort((a,b)=>a.slug<b.slug?-1:1),next=ring[(ring.findIndex(item=>item.id===post.id)+1)%ring.length],closest=allPosts.filter(item=>item.id!==post.id).sort((a,b)=>sharedKeywords(b,post)-sharedKeywords(a,post));const related=next&&next.id!==post.id&&!closest.slice(0,3).some(item=>item.id===next.id)?[...closest.slice(0,2),next]:closest.slice(0,3);
  const blocks=post.content.split(/\n\s*\n/).filter(Boolean);
  const readingTime=Math.max(3,Math.ceil(articleText.split(/\s+/).length/180));
  const faqSchema=post.faqs.map(item=>({'@type':'Question',name:item.question,acceptedAnswer:{'@type':'Answer',text:item.answer}}));
