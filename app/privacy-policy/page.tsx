@@ -3,7 +3,7 @@ import type {Metadata} from 'next';
 import {PolicyHero,PolicyLayout,PolicyRibbon,PolicySection,policyIcons} from '../policies/policy-ui';
 import '../policies/policies.css';
 
-export const metadata:Metadata={title:'מדיניות פרטיות | PARTYPRINT',description:'איך PARTYPRINT שומרת פרטי פניות ותמונות, מתי פרטי קשר נשמרים, מי מקבל אותם ואיך מנהלים את המדידה והפרסום.',alternates:{canonical:'/privacy-policy'}};
+export const metadata:Metadata={title:'מדיניות פרטיות | PARTYPRINT',description:'מדיניות הפרטיות של PARTYPRINT: איך נשמרים פרטי פניות ותמונות, מתי פרטי קשר נשמרים, מי מקבל אותם, ואיך מנוהלים המדידה והפרסום באתר.',alternates:{canonical:'/privacy-policy'}};
 const EMAIL=BUSINESS_DETAILS.email,WHATSAPP='https://wa.me/972552896236';
 export default function PrivacyPolicyPage(){const {shield,alert}=policyIcons;return <PolicyLayout><PolicyHero eyebrow="הפרטים שלכם. בשקיפות." title="מדיניות" highlight="פרטיות." intro="מה נשמר כשמשאירים פרטים או שולחים רעיון, למה משתמשים במידע, עם מי הוא משותף ואיך מנהלים את המדידה והפרסום." icon={shield}/><div className="policy-content">
 <p className="policy-small-note">עודכן: 3 בנובמבר 2026</p>

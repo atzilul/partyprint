@@ -6,7 +6,7 @@ import {STUDIO_PAGES,STUDIO_PAGE_URL} from '@/lib/studio-pages';
 import {SeoFooter,SeoNav} from '@/components/seo-layout';
 import '../seo/seo.css';
 
-export const metadata:Metadata={title:'דוגמאות ותהליכי עבודה | PARTYPRINT',description:'דוגמאות להדמיות עיצוב של PARTYPRINT למשפחות, מסיבות רווקים, מסיבות רווקות וערבי צוות — מהרעיון ועד החולצה.',keywords:['דוגמאות חולצות בעיצוב אישי','תהליך עיצוב חולצה','חולצות למסיבת רווקים','חולצות למסיבת רווקות','חולצה לערב צוות'],alternates:{canonical:'/work'},openGraph:{title:'דוגמאות ותהליכי עבודה | PARTYPRINT',description:'דוגמאות להדמיות עיצוב של PARTYPRINT למשפחות, מסיבות רווקים, מסיבות רווקות וערבי צוות.',url:'https://partyprint.co.il/work',type:'website',images:[{url:'/party-crew.webp',alt:'דוגמת עיצוב לחבורה בחולצות PARTYPRINT'}]}};
+export const metadata:Metadata={title:'דוגמאות ותהליכי עבודה | PARTYPRINT',description:'דוגמאות להדמיות עיצוב של PARTYPRINT למשפחות, למסיבות רווקים ורווקות ולערבי צוות. בכל דוגמה רואים איך רעיון ותמונות הופכים לעיצוב על חולצה.',keywords:['דוגמאות חולצות בעיצוב אישי','תהליך עיצוב חולצה','חולצות למסיבת רווקים','חולצות למסיבת רווקות','חולצה לערב צוות'],alternates:{canonical:'/work'},openGraph:{title:'דוגמאות ותהליכי עבודה | PARTYPRINT',description:'דוגמאות להדמיות עיצוב של PARTYPRINT למשפחות, מסיבות רווקים, מסיבות רווקות וערבי צוות.',url:'https://partyprint.co.il/work',type:'website',images:[{url:'/party-crew.webp',alt:'דוגמת עיצוב לחבורה בחולצות PARTYPRINT'}]}};
 
 export default function WorkPage(){
  const canonical='https://partyprint.co.il/work';

@@ -10,7 +10,7 @@ import {revisionFeeText} from '@/lib/pricing';
 export const dynamic='force-dynamic';
 
 const title='איך מזמינים חולצות בעיצוב אישי? תמונות, מידות ומחיר | PARTYPRINT';
-const description='מדריך מעשי להזמנת חולצות לקבוצה: בחירת תמונות, מידות מבוגרים וילדים, חישוב מחיר, אישור העיצוב ותכנון המשלוח.';
+const description='מדריך מעשי להזמנת חולצות לקבוצה: איך בוחרים תמונות, אוספים מידות למבוגרים ולילדים, מחשבים מחיר, מאשרים את העיצוב ומתכננים את המשלוח לפני האירוע.';
 const canonical='https://partyprint.co.il/ordering-guide';
 export const metadata:Metadata={title,description,alternates:{canonical:'/ordering-guide'},openGraph:{title,description,url:canonical,type:'article',locale:'he_IL',images:[{url:'/transformation.webp',alt:'מתמונה ורעיון לעיצוב אישי על חולצה'}]}};
 const sectionsFor=(singleShirtPrice:string,revisionFee:string)=>[

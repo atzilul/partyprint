@@ -12,7 +12,7 @@ export const dynamic='force-dynamic';
 
 export const metadata:Metadata={
  title:'תקנון ותנאי שימוש | PARTYPRINT',
- description:'תנאי בקשת הזמנה, הצעת מחיר, אישור עיצוב, תשלום, הדפסה ומשלוח של PARTYPRINT.',
+ description:'התקנון ותנאי השימוש של PARTYPRINT: בקשת הזמנה, הצעת מחיר, אישור העיצוב לפני ההדפסה, תשלום, הדפסה ומשלוח של חולצות בעיצוב אישי.',
  alternates:{canonical:'/terms'}
 };
 const faqSource=[
