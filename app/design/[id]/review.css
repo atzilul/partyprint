@@ -4,3 +4,13 @@
 .review-share h2,.review-invite h2{margin:0;font-size:20px}
 .review-share p,.review-invite p{margin:0}
 .review-share a,.review-invite a{justify-self:start;padding:12px 18px;border-radius:12px;background:#161616;color:#fff;font-weight:700;text-decoration:none}
+
+/* The full-size view opens over the page, not in a new tab. */
+.review-gallery button{font:inherit;cursor:zoom-in;padding:14px;background:#fff;border:0;border-radius:18px;color:#634987;text-align:center}
+.review-lightbox{position:fixed;inset:0;z-index:50;background:rgba(22,16,30,.92);display:grid;place-items:center;padding:56px 16px}
+.review-lightbox img{max-width:100%;max-height:calc(100dvh - 112px);object-fit:contain;border-radius:10px;background:#fff}
+.review-lightbox button{position:absolute;font:inherit;cursor:pointer;border:0;border-radius:999px;background:#fff;color:#292036;width:48px;height:48px;font-size:26px;line-height:1;display:grid;place-items:center}
+.review-lightbox-close{top:12px;inset-inline-start:12px;font-size:20px!important}
+.review-lightbox-prev{inset-inline-start:12px;top:50%;transform:translateY(-50%)}
+.review-lightbox-next{inset-inline-end:12px;top:50%;transform:translateY(-50%)}
+.review-lightbox p{position:absolute;bottom:10px;margin:0;color:#fff;font-size:15px!important}

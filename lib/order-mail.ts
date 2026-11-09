@@ -5,7 +5,7 @@ import {orderSummary} from './order-summary';
 import {bundleLinkDays,customerLinkDays} from './security';
 import {safeMailSubject} from './text';
 import {getTeam,getOwnerEmail} from './team';
-import {renderOrderMail,renderCustomerConfirmation,renderContactNotice,renderContactMessage,renderManagerMailTest,managerMailRecipients} from './order-mail-template.mjs';
+import {renderOrderMail,renderCustomerConfirmation,renderContactNotice,renderContactMessage,renderManagerMailTest,renderApprovalResponse,managerMailRecipients} from './order-mail-template.mjs';
 import {topicLabel} from './contact-messages';
 import type {ContactMessage} from './contact-messages';
 
@@ -16,9 +16,9 @@ import {describeAttribution} from './attribution';
 import type {Attribution} from './attribution';
 import {RESPONSE_PROMISE_STATIC} from './response-promise';
 import {translateMail} from '@/i18n/mail';
-type MailAttempt=MailResult & {at:string;kind:'order'|'test'|'contact';orderId?:string};
+type MailAttempt=MailResult & {at:string;kind:'order'|'test'|'contact'|'approval';orderId?:string};
 async function recipients(){return managerMailRecipients(getOwnerEmail(),(await getTeam()).members)}
-async function recordAttempt(result:MailResult,kind:'order'|'test'|'contact',orderId?:string){
+async function recordAttempt(result:MailResult,kind:MailAttempt['kind'],orderId?:string){
  const value:MailAttempt={...result,at:new Date().toISOString(),kind,...(orderId?{orderId}:{})};
  try{await bindings().DB.prepare("INSERT INTO studio_settings (key,version,data) VALUES ('mail_last_attempt',1,?) ON CONFLICT(key) DO UPDATE SET data=excluded.data,version=studio_settings.version+1").bind(JSON.stringify(value)).run()}catch{console.error('Mail diagnostic status could not be saved')}
  if(!result.accepted)console.error('Admin notification failed',result.code,result.httpStatus||'');
@@ -94,4 +94,19 @@ export async function sendContactMessageMail(env:MailEnv,message:ContactMessage&
   result=await sendResendMail(env,{to,reply_to:message.email,subject:safeMailSubject('PARTYPRINT · הודעה מהאתר מ'+message.name+' · '+reference),text:text as string,html:html as string},'partyprint/message/'+message.id,5000);
  }catch{result=mailFailure('preparation_failed')}
  return recordAttempt(result,'contact',message.id);
+}
+
+/** Tells the managers that a customer answered on the design approval page. A failure never undoes the answer. */
+export async function notifyApprovalResponse(env:MailEnv,order:Order):Promise<MailResult>{
+ let result:MailResult;
+ try{
+  const a=order.approval;if(!a||(a.state!=='approved'&&a.state!=='changes')||!a.customerName)return mailFailure('preparation_failed');
+  const to=await recipients(),config=mailConfiguration(env);
+  if(config.issue)return recordAttempt({...config.issue,recipients:to},'approval',order.id);
+  const origin=publicOrigin(),reference=order.id.slice(0,8).toUpperCase();
+  const whatsappUrl=order.phone?whatsappLink(order.phone,'היי '+order.name+', כאן PARTYPRINT. ראינו את '+(a.state==='approved'?'האישור שלך לעיצוב':'ההערות שלך לעיצוב')+' בהזמנה '+reference+'.'):'';
+  const {html,text}=renderApprovalResponse(order,{state:a.state,customerName:a.customerName,comment:a.comment,id:a.id},{origin,adminUrl:origin+'/admin?order='+encodeURIComponent(order.id),whatsappUrl});
+  result=await sendResendMail(env,{to,...(order.email?{reply_to:order.email}:{}),subject:safeMailSubject('PARTYPRINT · '+(a.state==='approved'?'העיצוב אושר':'בקשת תיקון בעיצוב')+' · '+order.name+' · '+reference),text,html},'partyprint/approval/'+order.id+'/'+a.id);
+ }catch{result=mailFailure('preparation_failed')}
+ return recordAttempt(result,'approval',order.id);
 }
