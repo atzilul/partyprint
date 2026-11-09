@@ -1,6 +1,6 @@
 import {validateShirts} from './catalog';
 import type {Order} from './orders';
-export type DesignApproval={printSignature?:string;id:string;hash:string;expiresAt:number;state:'pending'|'approved'|'changes'|'stale';createdAt:string;respondedAt?:string;comment?:string;customerName?:string;sourceKeys:string[];images:{key:string;name:string}[];shirtsSignature:string;quantity:number;shirts:Order['shirts']};
+export type DesignApproval={printSignature?:string;id:string;hash:string;viewHash?:string;expiresAt:number;state:'pending'|'approved'|'changes'|'stale';createdAt:string;respondedAt?:string;comment?:string;customerName?:string;sourceKeys:string[];images:{key:string;name:string}[];shirtsSignature:string;quantity:number;shirts:Order['shirts']};
 export type PaymentEntry={id:string;kind:'deposit'|'balance'|'refund';amount:number;method:string;reference:string;at:string};
 export const shirtSignature=(o:Order)=>JSON.stringify({quantity:o.quantity,shirts:o.shirts});
 export function approvalCurrent(o:Order){const a=o.approval;return !!a&&a.shirtsSignature===shirtSignature(o)&&(a.printSignature||JSON.stringify({specs:[],note:''}))===JSON.stringify({specs:o.printSpecs||[],note:o.printNote||''})&&a.sourceKeys.every(k=>o.images.some(i=>i.key===k&&(i.role==='design'||i.role==='print')))}

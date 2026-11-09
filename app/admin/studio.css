@@ -43,3 +43,6 @@
 .approval-link-actions button{padding:12px;border-radius:10px;border:1px solid #6842a7;background:#fff;color:#6842a7;font:inherit;font-size:15px;cursor:pointer}
 .approval-link-actions button:focus-visible,.approval-link-actions a:focus-visible{outline:3px solid #9476f6;outline-offset:2px}
 .tab-flag{font-size:13px}.tab-flag.warn{color:#b26a00}.tab-flag.ok{color:#2f7d4a}
+/* The main menu shows every part of the panel: it wraps instead of hiding items past the edge. */
+.studio-main-tabs{flex-wrap:wrap;overflow:visible;width:auto}
+.order-filter-panel .attention-bar{margin:12px 0 16px}

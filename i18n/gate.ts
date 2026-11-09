@@ -171,7 +171,7 @@ export function createGate(environment:GateEnvironment){
 
  /** A WhatsApp link carries a ready message; the reader should be able to read what they send. */
  function message(href:string,language:Language):string{
-  const found=/^(https:\/\/wa\.me\/\d+\?text=)([^&#]+)(.*)$/.exec(href);
+  const found=/^(https:\/\/wa\.me\/\d*\?text=)([^&#]+)(.*)$/.exec(href);
   if(!found)return href;
   try{
    const hebrewText=decodeURIComponent(found[2]);

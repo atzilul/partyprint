@@ -521,3 +521,23 @@ console.log('PASS: all occasions start at four and support reduction to one with
  assert.match(approval.url,/\/ru\/design\/[a-f0-9-]{36}#[a-f0-9]{64}$/,'the approval link opens in Russian');
  console.log('PASS: approval links for a customer who ordered in Russian open the Russian approval page.');
 }
+// The group's view-only key: images only, never a response, and only for the current approval.
+{
+ const designRoute=await load('app/api/design/[id]/route.ts'),productionRoute=await load('app/api/admin/orders/[id]/production/route.ts'),editRoute=await load('app/api/admin/orders/[id]/route.ts');
+ delete process.env.PARTYPRINT_ADMIN_EMAIL;globalThis.testUser={userId:'owner',email:'atzilul@gmail.com'};sql.prepare('DELETE FROM form_rate_limits').run();
+ const created=await (await publicRoute.POST(post('/api/orders',form('share@example.com')))).json();const ctx={params:Promise.resolve({id:created.id})};let current=await store.getOrder(created.id);
+ const upload=new FormData();upload.append('order',JSON.stringify({...current,notes:'',address:'',tracking:'',dueDate:'',priceNote:'',keep:current.images.map(i=>i.key),imageRoles:Object.fromEntries(current.images.map(i=>[i.key,i.role||'reference']))}));
+ upload.append('images',new File([new Uint8Array([255,216,255,224,0,16,74,70,73,70])],'design.jpg',{type:'image/jpeg'}));upload.append('roles','design');
+ assert.equal((await editRoute.POST(post('/api/admin/orders/'+created.id,upload),ctx)).status,200);current=await store.getOrder(created.id);
+ const {url}=await (await productionRoute.POST(post('/api/admin/orders/'+created.id+'/production',JSON.stringify({action:'approval',keys:current.images.filter(i=>i.role==='design').map(i=>i.key),version:current.version})),ctx)).json();
+ const token=url.split('#')[1];const sha=async t=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t)))).map(b=>b.toString(16).padStart(2,'0')).join('');
+ const view=await sha('partyprint-view:'+token);
+ const owner=await (await designRoute.GET(get('/api/design/'+created.id+'?token='+token),ctx)).json();assert.equal(owner.share,true,'the customer page offers sharing');
+ const viewed=await designRoute.GET(get('/api/design/'+created.id+'?view='+view),ctx);assert.equal(viewed.status,200);const body=await viewed.json();
+ assert.equal(body.viewOnly,true);assert.equal(body.images.length,1);assert.equal(body.shirts,undefined,'the group does not see the sizes');assert.equal(body.approvalId,undefined,'the group cannot answer');
+ assert.equal((await designRoute.GET(get('/api/design/'+created.id+'?view='+view+'&image=0'),ctx)).status,200,'the group sees the image');
+ assert.equal((await designRoute.GET(get('/api/design/'+created.id+'?view='+'0'.repeat(64)),ctx)).status,404,'a wrong key shows nothing');
+ const answer=await designRoute.POST(new Request(base+'/api/design/'+created.id+'?view='+view,{method:'POST',headers:{origin:base},body:JSON.stringify({approvalId:'x',state:'approved',name:'x'})}),ctx);
+ assert.notEqual(answer.status,200,'the view key cannot approve');
+ console.log('PASS: the group view-only link shows the design images only; it cannot approve, and a wrong key shows nothing.');
+}
