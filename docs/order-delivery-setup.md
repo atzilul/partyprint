@@ -36,6 +36,12 @@ Extra integration checks: settings conflicts, price bounds, dynamic totals, atom
 ## Daily operations
 The order list supports target-date ranges, overdue/today/open/consultation/missing-mail filters, and sorting by creation, update, target date, or value. Counts use the Israel calendar. CSV export uses the same filters across all pages (maximum 5,000 rows), is owner-only and private/no-store, and neutralizes spreadsheet formula prefixes. Notes and images are not embedded in CSV; per-order ZIP remains available. Admin links retain the selected order through login. Mobile order cards use a readable single column. Missing customer fields or shirt choices direct the editor to the matching tab before saving.
 
+## Saved contacts waiting for follow-up
+The contacts view has a "ממתינים למעקב" filter: contacts saved at least 2 hours ago with no completed request and no follow-up noted in the last 3 days, oldest first, with a count. Each card opens WhatsApp with a ready continuation message (package, quantity, event date; no charge, no commitment) and a "סומן מעקב" button that notes `followUpAt` / `followUpCount` on the contact without changing its version. The note is manual and never proof of delivery.
+
+## Photo and review requests after shipping
+Besides the optional review email on shipping (studio settings, Google link), the order list has a "ממתינים לבקשת ביקורת" filter: shipped orders unchanged for 3 days with no request noted. Every shipped order offers a ready WhatsApp message asking for a photo for the gallery (with the customer's permission) and, when the Google link is configured, a short review, plus a "סומן: נשלחה בקשת ביקורת" action that records `reviewAskedAt` in the order history. Photos the customer sends are uploaded to the public gallery from the content panel, only with consent.
+
 ## Stage board and follow-up
 The stage board loads and paginates each stage independently with the current search and filters. Quick actions advance one stage with confirmation, download the saved ZIP, or open a drafted WhatsApp message. The follow-up list selects review orders with no update or recorded follow-up for 72 hours. Marking follow-up is a manual management action, never proof of message delivery. Actions are owner-only, same-origin, bounded, version-checked, and append order history. No automatic WhatsApp messages are sent.
 

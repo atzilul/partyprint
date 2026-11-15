@@ -9,7 +9,7 @@ import {couponDiscount,priceFor} from './pricing';
 import {sendContactMail} from './order-mail';
 import {parseAttribution} from './attribution';
 import type {Attribution} from './attribution';
-export type ContactDetails={name:string;phone:string;email:string;package:number;quantity:number;mode:string;eventDate:string;source:string;attribution?:Attribution;pricePreview:number;designMode?:DesignMode;shirtDetailsStatus:'pending'|'complete';shirts:ShirtSelection[]};
+export type ContactDetails={name:string;phone:string;email:string;package:number;quantity:number;mode:string;eventDate:string;source:string;followUpAt?:string;followUpCount?:number;attribution?:Attribution;pricePreview:number;designMode?:DesignMode;shirtDetailsStatus:'pending'|'complete';shirts:ShirtSelection[]};
 export type ContactRow={id:string;token_hash:string;token_expires_at:number;created_at:string;updated_at:string;version:number;mail_status:string;data:string};
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/;
 const TOKEN=/^[a-f0-9]{64}$/;
@@ -46,3 +46,11 @@ export async function saveContact(id:string,token:string,details:ContactDetails,
  return {created:false,...contactView((await contactGrant(id,token))!)};
 }
 export async function retryContactMail(id:string){const row=await bindings().DB.prepare('SELECT * FROM contact_leads WHERE id=?').bind(id).first<ContactRow>();if(!row)throw Error('not_found');return deliver(row,'manual-'+crypto.randomUUID());}
+
+/** Notes a manual WhatsApp follow-up on a saved contact. No version bump, so the customer's own tab keeps working. */
+export async function markContactFollowUp(id:string){
+ const now=new Date().toISOString();
+ const row=await bindings().DB.prepare("UPDATE contact_leads SET data=json_set(data,'$.followUpAt',?,'$.followUpCount',coalesce(json_extract(data,'$.followUpCount'),0)+1) WHERE id=? RETURNING id").bind(now,id).first<{id:string}>();
+ if(!row)throw Error('not_found');
+ return now;
+}

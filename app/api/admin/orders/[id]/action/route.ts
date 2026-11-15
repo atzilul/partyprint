@@ -19,6 +19,7 @@ export async function POST(request:Request,{params}:{params:Promise<{id:string}>
    await requestReviewAfterShipping(bindings(),o,saved);
    return Response.json(saved,{headers:PRIVATE_HEADERS});
   }
+  if(v.action==='review_asked')return Response.json(await saveOrder({...o,reviewAskedAt:new Date().toISOString()},o.version!,'סומן: נשלחה בקשה לתמונה ולביקורת ב-WhatsApp. סימון ידני, אין אישור שליחה.','מנהל'),{headers:PRIVATE_HEADERS});
   if(v.action==='followup')return Response.json(await saveOrder({...o,followUpAt:new Date().toISOString()},o.version!,'סומן מעקב שבוצע על ידי המנהל. אין אישור שליחת הודעה.','מנהל'),{headers:PRIVATE_HEADERS});
   return Response.json({error:'פעולה לא נתמכת'},{status:400,headers:PRIVATE_HEADERS});
  }catch(e){return adminError(e)}
