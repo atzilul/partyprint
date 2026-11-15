@@ -12,6 +12,8 @@ export function orderQuery(params:URLSearchParams, today=israelDay()) {
  if(focus==='no_mail')clauses.push("coalesce(json_extract(data,'$.emailStatus'),'')!='accepted'");
  if(focus==='changes')clauses.push("json_extract(data,'$.approval.state')='changes'");
  if(focus==='followup')clauses.push("status='review' AND max(updated_at,coalesce(json_extract(data,'$.followUpAt'),''))<=strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days')");
+ // Shipped at least 3 days ago (by last change) and no review request noted yet: time to ask for a photo and a review.
+ if(focus==='reviews')clauses.push("status='shipped' AND updated_at<=strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days') AND json_extract(data,'$.reviewAskedAt') IS NULL");
  if(focus==='open')clauses.push("status!='shipped'");
  if(focus==='lead')clauses.push("json_extract(data,'$.mode')='lead'");
  // Calendar filters refer to the agreed target date, not the request creation date.
