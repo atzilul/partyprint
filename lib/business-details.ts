@@ -2,6 +2,8 @@ function setting(name:string,fallback:string):string {
  const value=typeof process!=='undefined'?process.env[name]?.trim():'';
  return value||fallback;
 }
+/** The studio's Instagram profile, linked from the site and listed as sameAs in the Organization schema. */
+export const INSTAGRAM_URL='https://www.instagram.com/partyprint.co.il/';
 export type BusinessDetailsData={businessName:string;legalName:string;businessId:string;address:string;phone:string;email:string};
 export const BUSINESS_DETAILS:BusinessDetailsData={
  businessName:'partyprint.co.il',
