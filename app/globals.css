@@ -411,3 +411,4 @@ button,a,input,select,textarea,summary{touch-action:manipulation}
  :lang(ru) .lang-menu-code{display:inline}
  :lang(ru) .lang-menu-toggle{width:auto;padding:0 11px}
 }
+.faq-whatsapp{display:inline-block;margin:-6px 0 14px;font-weight:700;text-decoration:underline;text-underline-offset:3px;color:inherit}
