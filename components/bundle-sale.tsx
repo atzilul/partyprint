@@ -1,5 +1,6 @@
 'use client';
 import {Fragment,useEffect,useRef,useState} from 'react';
+import FaqAnswer from '@/components/faq-answer';
 import type {CSSProperties} from 'react';
 import {ArrowUpLeft,Check,Sparkles,Truck,Palette,Plus,Phone,MessageCircle,ShieldCheck,CreditCard,Upload,Layers} from 'lucide-react';
 import Link from '@/components/safe-link';
@@ -160,7 +161,7 @@ export default function BundleSale({initialPricing,businessEmail,paymentDisclosu
 
   <section id="order" className="order section pp-order-section"><div className="wrap pp-order-layout"><aside className="pp-order-aside"><h2>אתם מביאים את הקבוצה.<br/>אנחנו את העיצוב.</h2><p>בוחרים כמות, משאירים פרטים, ומוסיפים רעיון ולוגו. משם ממשיכים יחד.</p><ul><li><Palette size={20}/><span>עיצוב אישי אחד עם AI ומגע אנושי</span></li><li><ShieldCheck size={20}/><span>אתם רואים ומאשרים לפני הדפסה</span></li><li><Truck size={20}/><span>הדפסה ומשלוח כלולים במחיר</span></li></ul><div className="pp-order-help"><span>מעדיפים לדבר קודם?</span><a href={WHATSAPP_BUNDLE} target="_blank" rel="noopener noreferrer" data-cta-location="order_form"><MessageCircle size={18}/> מתייעצים ב־WhatsApp</a></div></aside><OrderRequestForm pack={selectedPack} quantities={quantities} pricing={pricing} mode={mode} openSignal={openSignal} onPack={setSelectedPack} onQuantity={setQuantity} onMode={setMode} onPricing={setPricing} onBusy={setBusy} designMode={designMode} onDesignMode={setDesignMode}/></div></section>
 
-  <section id="faq" className="faq wrap section"><div><div className="eyebrow">GOOD QUESTIONS</div><h2>רגע, ומה עם...?</h2></div><div>{faq.map(([question,answer])=><details key={question}><summary>{question}<Plus size={18}/></summary><p>{answer}</p></details>)}</div></section>
+  <section id="faq" className="faq wrap section"><div><div className="eyebrow">GOOD QUESTIONS</div><h2>רגע, ומה עם...?</h2></div><div>{faq.map(([question,answer])=><details key={question}><summary>{question}<Plus size={18}/></summary><FaqAnswer text={answer}/></details>)}</div></section>
 
   <section id="contact" className="contact-section wrap"><div><div className="eyebrow">REAL PEOPLE. REAL HELP.</div><h2>משנים משהו?<br/><span>אנחנו כאן.</span></h2><p>עוד חמישה הצטרפו, מידות שהתעדכנו או לוגו חדש.<br/>שלחו לנו ב־WhatsApp את מספר הפנייה והשינוי. שינוי לאחר אישור ההדפסה כפוף לאפשרות הביצוע.</p></div><div className="contact-actions"><a className="contact-whatsapp" href={WHATSAPP_BUNDLE} target="_blank" rel="noopener noreferrer" data-cta-location="bundle_contact"><MessageCircle/> מדברים ב־WhatsApp <ArrowUpLeft/></a><a href={WHATSAPP}><Phone size={20}/><span dir="ltr">055 289 6236</span></a><a href={'mailto:'+businessEmail}>{businessEmail}</a></div></section>
 

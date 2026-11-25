@@ -1,5 +1,6 @@
 'use client';
 import {Fragment,useEffect,useMemo,useState} from 'react';
+import FaqAnswer from '@/components/faq-answer';
 import type {CSSProperties} from 'react';
 import {ArrowUpLeft,ArrowLeft,Sparkles,Upload,Check,CheckCheck,Truck,Palette,Plus,Phone,MessageCircle,ShieldCheck,CreditCard} from 'lucide-react';
 import Link from '@/components/safe-link';
@@ -176,7 +177,7 @@ export default function LandingHome({variant,initialPricing,businessEmail,paymen
 
   <section id="order" className="order section pp-order-section"><div className="wrap pp-order-layout"><aside className="pp-order-aside"><h2>{c.order.title[0]}<br/>{c.order.title[1]}</h2><p>{c.order.text}</p><ul><li><Palette size={20}/><span>{c.order.points[0]}</span></li><li><ShieldCheck size={20}/><span>{c.order.points[1]}</span></li><li><Truck size={20}/><span>{c.order.points[2]}</span></li></ul><div className="pp-order-help"><span>{c.order.help}</span><a href={WHATSAPP} target="_blank" rel="noopener noreferrer" data-cta-location="order_form"><MessageCircle size={18}/> מתייעצים ב־WhatsApp</a></div></aside><OrderRequestForm pack={selectedPack} quantities={quantities} pricing={pricing} mode={mode} openSignal={openSignal} onPack={setSelectedPack} onQuantity={setQuantity} onMode={setMode} onPricing={setPricing} onBusy={setBusy} designMode={designMode} onDesignMode={setDesignMode}/></div></section>
 
-  <section id="faq" className="faq wrap section"><div><div className="eyebrow">GOOD QUESTIONS</div><h2>רגע, ומה עם...?</h2></div><div>{faq.map(([question,answer])=><details key={question}><summary>{question}<Plus size={18}/></summary><p>{answer}</p></details>)}</div></section>
+  <section id="faq" className="faq wrap section"><div><div className="eyebrow">GOOD QUESTIONS</div><h2>רגע, ומה עם...?</h2></div><div>{faq.map(([question,answer])=><details key={question}><summary>{question}<Plus size={18}/></summary><FaqAnswer text={answer}/></details>)}</div></section>
 
   <section id="contact" className="contact-section wrap"><div><div className="eyebrow">REAL PEOPLE. REAL HELP.</div><h2>{c.contact.title[0]}<br/><span>{c.contact.title[1]}</span></h2><p>{lines(c.contact.text)}</p></div><div className="contact-actions"><a className="contact-whatsapp" href={WHATSAPP+'?text='+encodeURIComponent(c.contact.whatsapp)} target="_blank" rel="noopener noreferrer" data-cta-location="landing_contact"><MessageCircle/> מדברים ב־WhatsApp <ArrowUpLeft/></a><a href={WHATSAPP}><Phone size={20}/><span dir="ltr">055 289 6236</span></a><a href={'mailto:'+businessEmail}>{businessEmail}</a></div></section>
 
