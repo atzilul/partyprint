@@ -3650,5 +3650,14 @@
  "אפשר להזמין חולצה אחת לחוגג בלבד?": "Can we order just one T-shirt for the birthday person?",
  "כן. בטופס בוחרים כמות מחולצה אחת, והמחיר לחולצה מתעדכן לפי הכמות.": "Yes. In the form you choose a quantity starting from one T-shirt, and the price per shirt updates with the quantity.",
  "איך רואים את חולצות יום ההולדת לפני ההדפסה?": "How do we see the birthday T-shirts before printing?",
- "היי PARTYPRINT, הגעתי מהעמוד \"משפטים מצחיקים לחולצות יום הולדת: {0}, {1}, {2}, {3} ועוד\" ואשמח להצעה לחולצות בעיצוב אישי.": "Hi PARTYPRINT, I came from the page “Funny birthday T-shirt slogans: {0}, {1}, {2}, {3} and more” and I’d like a quote for custom T-shirts."
+ "היי PARTYPRINT, הגעתי מהעמוד \"משפטים מצחיקים לחולצות יום הולדת: {0}, {1}, {2}, {3} ועוד\" ואשמח להצעה לחולצות בעיצוב אישי.": "Hi PARTYPRINT, I came from the page “Funny birthday T-shirt slogans: {0}, {1}, {2}, {3} and more” and I’d like a quote for custom T-shirts.",
+ "חולצה אחת עם עיצוב אישי שנוצר מהתמונות והרעיון שלכם. הדפסת DTF מלפנים, עד A{0}. עיצוב לאישור לפני ההדפסה, משלוח עד הבית.": "One shirt with a personal design created from your photos and idea. DTF print on the front, up to A{0}. Design for approval before printing, delivery to your door.",
+ "{0}% כותנה": "{0}% cotton",
+ "ילדים לפי גיל {0} עד {1}": "kids by age {0} to {1}",
+ "שיטת הדפסה": "Printing method",
+ "אזור הדפסה": "Print area",
+ "מלפנים בלבד, עד A{0} למבוגרים ובדרך כלל A{1} לילדים": "Front only, up to A{0} for adults and usually A{1} for kids",
+ "הוראות כביסה": "Care instructions",
+ "כביסה עד {0} מעלות, בלי מייבש": "Wash at up to {0} degrees, no dryer",
+ "חבילות של {0} עד {1} חולצות עם עיצוב אישי אחד לקבוצה. הדפסת DTF מלפנים, עד A{2}. עיצוב לאישור לפני ההדפסה, משלוח עד הבית. המחיר לחולצה יורד ככל שהכמות עולה.": "Packages of {0} to {1} shirts with one personal design for the group. DTF print on the front, up to A{2}. Design for approval before printing, delivery to your door. The price per shirt drops as the quantity grows."
 }
