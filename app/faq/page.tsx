@@ -1,4 +1,6 @@
 import Link from '@/components/safe-link';
+import FaqAnswer from '@/components/faq-answer';
+import {designFeeText, revisionFeeText} from '@/lib/pricing';
 import type {Metadata} from 'next';
 import {PAYMENT_DISCLOSURE} from '@/lib/business-details';
 import OrderFormLink from '@/components/order-form-link';
@@ -20,7 +22,7 @@ export const metadata: Metadata = {
 // Rendered per request: the single-shirt price is the one in the admin price list.
 export const dynamic='force-dynamic';
 
-const faqGroupsFor = (singleShirtPrice: string): {title: string; items: SeoFaq[]}[] => [
+const faqGroupsFor = (singleShirtPrice: string, designFee: string, revisionFee: string): {title: string; items: SeoFaq[]}[] => [
   {title: 'מתנה בעיצוב אישי', items: [
     {question: 'מה כוללת מתנה בעיצוב אישי ב־PARTYPRINT?', answer: 'בוחרים רעיון, מצרפים תמונות, ואנחנו מפתחים עיצוב אישי בעזרת AI ומגע אנושי. החבילות כוללות עיצוב משותף, הדפסה ומשלוח עד הבית, והעיצוב נשלח לאישור לפני ההדפסה.'},
     {question: 'איזו תמונה מתאימה לעיצוב על חולצה?', answer: 'תמונה חדה וברורה עם דמות או רגע שקל לזהות. אפשר לצרף כמה תמונות השראה ולכתוב מה חשוב לכם שהעיצוב ישדר. אין צורך בתמונה מקצועית.'},
@@ -40,14 +42,18 @@ const faqGroupsFor = (singleShirtPrice: string): {title: string; items: SeoFaq[]
   {title: 'הדפסה על חולצות ושירותי הדפסה', items: [
     {question: 'מה כוללת הדפסה על חולצות ב־PARTYPRINT?', answer: 'הדפסה על חולצה או על סדרת חולצות מתחילה מרעיון, תמונה, טקסט או לוגו. אנחנו מפתחים עיצוב אישי, שולחים אותו לאישור, מדפיסים רק לאחר אישור ומספקים עד הבית.'},
     {question: 'אפשר להזמין חולצה ממותגת או הדפסת לוגו על חולצות?', answer: 'כן. אפשר לשלב לוגו בעיצוב של חולצה לצוות או חולצה לעסק, ולבנות סביבו קומפוזיציה עם צבע, מסר ואופי. כדאי לשלוח קובץ לוגו ברור ולציין את השימוש המתוכנן.'},
+    {question: 'מה החולצה ואיך מדפיסים?', answer: 'חולצות 100% כותנה בלבן, שחור או אפור, ואפשר לשלב צבעים באותה הזמנה. גזרה אחת למבוגרים (S עד XL) וגזרת ילדים לפי גיל (2 עד 18). ההדפסה בשיטת DTF, שמחזיקה צבעים חזקים וכביסות רבות.'},
+    {question: 'איפה ובאיזה גודל מדפיסים?', answer: 'מלפנים בלבד. גודל ההדפס עד A3 (29.7 על 42 ס״מ) למבוגרים ובדרך כלל A4 לילדים, לפי העיצוב והמידה. הדפסה מאחור או על השרוול לא מוצעת כרגע.'},
     {question: 'האם אתם עושים הדפסה על חולצות צבא?', answer: 'כן, אפשר לעצב חולצות צוות או מחזור עם סמל, משפט, תאריך או תמונה שהלקוח רשאי להשתמש בהם. אין לשלוח מידע מבצעי או חומר שאין לכם אישור לפרסם.'},
   ]},
   {title: 'מחיר, תמונות ותהליך', items: [
     {question: 'איך המחיר של החולצות מחושב?', answer: 'המחיר מחושב לפי כמות החולצות ומדרגת המחיר הרלוונטית. באתר מוצגים מחיר החבילה ומחיר לחולצה, כולל עיצוב, הדפסה ומשלוח עד הבית. המחיר הסופי מתואם לפני התשלום.'},
     {question: 'כמה תמונות אפשר להעלות?', answer: 'אפשר לצרף עד 10 תמונות השראה בטופס. מומלץ לבחור תמונות ברורות ולצרף רעיון קצר שמסביר את ההקשר, כדי שהעיצוב לא יישען רק על מה שרואים בתמונה.'},
-    {question: 'האם יש חיוב כששולחים את הטופס?', answer: 'לא. הטופס שולח בקשת הזמנה או התייעצות ללא חיוב. '+PAYMENT_DISCLOSURE},
-    {question: 'מתי מקבלים את החולצות?', answer: 'לאחר אישור העיצוב, ההזמנה והתשלום, מתאמים משלוח לפי הכתובת, הכמות והזמינות. זמן המשלוח המוצהר הוא עד 5 ימי עסקים לאחר האישור, לא כולל זמן עיצוב ותיקונים.'},
-    {question: 'אפשר לתקן את העיצוב?', answer: 'כן. סבב תיקונים אחד כלול בחבילה. מדפיסים רק לאחר האישור שלכם, ותיקונים נוספים מתואמים מראש אם נדרשים.'},
+    {question: 'האם יש חיוב כששולחים את הטופס?', answer: 'לא. שליחת הטופס לא כרוכה בתשלום. משלמים רק אחרי שאישרתם את העיצוב, לפני ההדפסה, באשראי או בהעברה בנקאית. אין מקדמה.'},
+    {question: 'מה כלול ומה עולה תוספת?', answer: 'החבילה כוללת עיצוב משותף אחד לכל הקבוצה, סבב תיקונים אחד, הדפסה ומשלוח עד הבית. תוספות: עיצוב שונה לכל חולצה (למשל דיוקן של כל אחד) או שם אישי על כל חולצה, '+designFee+' ₪ לחולצה. סבב תיקונים נוסף, '+revisionFee+' ₪. עיצוב שני באותה הזמנה, או גרסה נפרדת לכלה או לחתן, מתומחרים בהצעת מחיר לפי הבקשה.'},
+    {question: 'מתי מקבלים את החולצות?', answer: 'לאחר אישור העיצוב, ההזמנה והתשלום, מתאמים משלוח לפי הכתובת, הכמות והזמינות. זמן המשלוח המוצהר הוא עד 5 ימי עסקים לאחר האישור, לא כולל זמן עיצוב ותיקונים. העיצוב הראשון מגיע תוך 2 ימי עסקים. יש לכם לו״ז דחוף? דברו איתנו ב-WhatsApp.'},
+    {question: 'אפשר לתקן את העיצוב?', answer: 'כן. סבב תיקונים אחד כלול: שולחים לנו את כל ההערות ביחד, ומקבלים עיצוב מתוקן. כל סבב נוסף עולה '+revisionFee+' ₪, רק אחרי תיאום ואישור. מדפיסים רק אחרי אישור שלכם.'},
+    {question: 'איך שומרים על ההדפס?', answer: 'כביסה עד 40 מעלות, בלי מייבש. ככה ההדפס נשאר חד וצבעוני לאורך זמן.'},
   ]},
 ];
 
@@ -58,12 +64,12 @@ function pageLink(keyword: string) {
 
 export default async function FaqPage() {
   const pricing = await currentPricing();
-  const faqGroups = faqGroupsFor((pricing.singleShirtPrice ?? SINGLE_SHIRT_PRICE).toLocaleString('he-IL'));
+  const faqGroups = faqGroupsFor((pricing.singleShirtPrice ?? SINGLE_SHIRT_PRICE).toLocaleString('he-IL'), designFeeText(pricing), revisionFeeText(pricing));
   const allItems = faqGroups.flatMap(group => group.items);
   const canonical='https://partyprint.co.il/faq';
   const schema = {'@context': 'https://schema.org', '@graph': [
     {'@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'PARTYPRINT',item:'https://partyprint.co.il/'},{'@type':'ListItem',position:2,name:'שאלות ותשובות',item:canonical}]},
     {'@type': 'FAQPage', '@id': canonical+'#faq', url:canonical, name:'שאלות ותשובות על הדפסה על חולצות וחולצות בעיצוב אישי', inLanguage:'he-IL', mainEntity: allItems.map(item => ({'@type': 'Question', name: item.question, acceptedAnswer: {'@type': 'Answer', text: item.answer}}))},
   ]};
-  return <main className="seo-page" dir="rtl"><SeoNav/><section className="faq-hero"><div><span className="seo-kicker">PARTYPRINT / GOOD QUESTIONS</span><h1>שאלות טובות<br/><span>עושות סדר.</span></h1><p>כל מה שחשוב לדעת לפני שמעצבים מתנה, חולצה לקבוצה או מזכרת לאירוע.</p><OrderFormLink className="seo-primary-cta" href="/#order">יש לי רעיון · מתחילים בלי חיוב <span aria-hidden="true">←</span></OrderFormLink></div><div className="faq-hero-note"><strong>לא מצאתם תשובה?</strong><span>ספרו לנו מה אתם חוגגים, ונעזור לבחור כיוון.</span><Link href="/#contact">מדברים איתנו ←</Link></div></section><section className="faq-content"><div className="seo-section-heading"><div><span className="seo-kicker">ANSWERS BEFORE THE ORDER</span><h2>מה רציתם לדעת?</h2></div><p>תשובות קצרות וברורות על רעיונות, הזמנה, תמונות, מחירים ומשלוח.</p></div><div className="faq-groups">{faqGroups.map(group => <section className="faq-group" key={group.title}><h2>{group.title}</h2>{group.items.map(item => <details key={item.question}><summary>{item.question}</summary><p>{item.answer}</p></details>)}</section>)}</div><div className="faq-related"><h2>עמודים שיעזרו לכם לבחור</h2><div><Link href={pageLink('מתנה בעיצוב אישי')}>מתנה בעיצוב אישי <span>↗</span></Link><Link href={pageLink('הדפסה על חולצה')}>הדפסה על חולצות <span>↗</span></Link><Link href={pageLink('חולצה לימי הולדת')}>חולצה לימי הולדת <span>↗</span></Link><Link href={pageLink('חולצה לצוות')}>חולצה לצוות ולעסק <span>↗</span></Link><Link href={pageLink('חולצות לאירועים')}>חולצות לאירועים <span>↗</span></Link><Link href={pageLink('חולצה למסיבת רווקים')}>חולצה למסיבת רווקים <span>↗</span></Link><Link href={pageLink('מתנה לערב צוות')}>מתנה לערב צוות <span>↗</span></Link><Link href="/blog">עוד רעיונות בבלוג <span>↗</span></Link></div></div></section><script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(schema).replace(/</g, '\\u003c')}}/><SeoFooter/></main>;
+  return <main className="seo-page" dir="rtl"><SeoNav/><section className="faq-hero"><div><span className="seo-kicker">PARTYPRINT / GOOD QUESTIONS</span><h1>שאלות טובות<br/><span>עושות סדר.</span></h1><p>כל מה שחשוב לדעת לפני שמעצבים מתנה, חולצה לקבוצה או מזכרת לאירוע.</p><OrderFormLink className="seo-primary-cta" href="/#order">יש לי רעיון · מתחילים בלי חיוב <span aria-hidden="true">←</span></OrderFormLink></div><div className="faq-hero-note"><strong>לא מצאתם תשובה?</strong><span>ספרו לנו מה אתם חוגגים, ונעזור לבחור כיוון.</span><Link href="/#contact">מדברים איתנו ←</Link></div></section><section className="faq-content"><div className="seo-section-heading"><div><span className="seo-kicker">ANSWERS BEFORE THE ORDER</span><h2>מה רציתם לדעת?</h2></div><p>תשובות קצרות וברורות על רעיונות, הזמנה, תמונות, מחירים ומשלוח.</p></div><div className="faq-groups">{faqGroups.map(group => <section className="faq-group" key={group.title}><h2>{group.title}</h2>{group.items.map(item => <details key={item.question}><summary>{item.question}</summary><FaqAnswer text={item.answer}/></details>)}</section>)}</div><div className="faq-related"><h2>עמודים שיעזרו לכם לבחור</h2><div><Link href={pageLink('מתנה בעיצוב אישי')}>מתנה בעיצוב אישי <span>↗</span></Link><Link href={pageLink('הדפסה על חולצה')}>הדפסה על חולצות <span>↗</span></Link><Link href={pageLink('חולצה לימי הולדת')}>חולצה לימי הולדת <span>↗</span></Link><Link href={pageLink('חולצה לצוות')}>חולצה לצוות ולעסק <span>↗</span></Link><Link href={pageLink('חולצות לאירועים')}>חולצות לאירועים <span>↗</span></Link><Link href={pageLink('חולצה למסיבת רווקים')}>חולצה למסיבת רווקים <span>↗</span></Link><Link href={pageLink('מתנה לערב צוות')}>מתנה לערב צוות <span>↗</span></Link><Link href="/blog">עוד רעיונות בבלוג <span>↗</span></Link></div></div></section><script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(schema).replace(/</g, '\\u003c')}}/><SeoFooter/></main>;
 }

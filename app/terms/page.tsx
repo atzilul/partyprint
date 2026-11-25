@@ -3,7 +3,7 @@ import {Check,Clock3,HeartHandshake,Palette,ShieldCheck,Truck} from 'lucide-reac
 import {PolicyFAQ,PolicyFlow,PolicyHero,PolicyLayout,PolicyRibbon,PolicySection} from '@/app/policies/policy-ui';
 import {BUSINESS_DETAILS,PAYMENT_DISCLOSURE,TERMS_REVIEW,TERMS_REVIEW_COMPLETE} from '@/lib/business-details';
 import {currentPricing} from '@/lib/current-pricing';
-import {revisionFeeText} from '@/lib/pricing';
+import {revisionFeeText,designFeeText} from '@/lib/pricing';
 import {withFees} from '@/lib/fee-text';
 import '../policies/policies.css';
 
@@ -47,10 +47,11 @@ export default async function TermsPage(){
     <PolicySection number="03" title="מחיר ותנאי תשלום">
      <p>המחיר הסופי, הכמות, פרטי העיצוב והמשלוח יופיעו בהצעת המחיר שתישלח אליכם. באתר ובטופס מצוין כי משלוח עד הבית כלול במחיר המוצג; כל שינוי או תוספת יתואמו מראש.</p>
      <p>{PAYMENT_DISCLOSURE}</p>
-     <p>אין חיוב בעת שליחת הטופס. לא נבקש מכם פרטי אשראי בתוך הטופס. ההזמנה תעבור להדפסה רק בהתאם לאישור ההזמנה ולהסדר התשלום שסוכם.</p>
+     <p>אין חיוב בעת שליחת הטופס. לא נבקש מכם פרטי אשראי בתוך הטופס. התשלום באשראי או בהעברה בנקאית, במלואו, לאחר אישור העיצוב ולפני ההדפסה; אין מקדמה. ההזמנה תעבור להדפסה רק בהתאם לאישור ההזמנה ולהסדר התשלום שסוכם.</p>
     </PolicySection>
     <PolicySection number="04" title="עיצוב ותיקונים">
      <p>המחיר כולל עיצוב אישי משותף אחד לחבילה וסבב תיקונים אחד. סבב תיקונים נוסף עולה {revisionFeeText(pricing)} ₪. לפני ביצוע סבב נוסף נעדכן אתכם ונקבל את אישורכם.</p>
+     <p>עיצוב שונה לכל חולצה או שם אישי על כל חולצה עולים {designFeeText(pricing)} ₪ לחולצה. עיצוב שני באותה הזמנה, או גרסה נפרדת לכלה או לחתן, מתומחרים בהצעת מחיר לפי הבקשה.</p>
      <p>האחריות לבדוק את העיצוב, הכיתוב, השמות, הפרטים והתמונות היא על המזמין לפני אישור ההדפסה. נתחיל להדפיס רק לאחר קבלת האישור.</p>
     </PolicySection>
     <PolicySection number="05" title="ביטול, שינוי ומוצר בעיצוב אישי">
