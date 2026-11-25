@@ -33,6 +33,21 @@ export function offerPolicies(){
  };
 }
 
+/** Facts every Product carries, from the owner's questionnaire (Nov 2026). */
+export function productFacts(){
+ return {
+  material:'100% כותנה',
+  color:['לבן','שחור','אפור'],
+  size:['S','M','L','XL','ילדים לפי גיל 2 עד 18'],
+  audience:{'@type':'PeopleAudience',suggestedMinAge:2},
+  additionalProperty:[
+   {'@type':'PropertyValue',name:'שיטת הדפסה',value:'DTF'},
+   {'@type':'PropertyValue',name:'אזור הדפסה',value:'מלפנים בלבד, עד A3 למבוגרים ובדרך כלל A4 לילדים'},
+   {'@type':'PropertyValue',name:'הוראות כביסה',value:'כביסה עד 40 מעלות, בלי מייבש'},
+  ],
+ };
+}
+
 /** FAQPage plus two Product entries (one shirt, group packages) for the home page. */
 export function homeStructuredData(faq:HomeFaqItem[],pricing:Pricing){
  const tierPrices=pricing.tiers.map(t=>t.price).filter(p=>Number.isFinite(p)&&p>0);
@@ -43,9 +58,9 @@ export function homeStructuredData(faq:HomeFaqItem[],pricing:Pricing){
   '@context':'https://schema.org',
   '@graph':[
    {'@type':'FAQPage','@id':ORIGIN+'/#faq',inLanguage:'he-IL',mainEntity:faq.map(([question,answer])=>({'@type':'Question',name:question,acceptedAnswer:{'@type':'Answer',text:answer}}))},
-   {'@type':'Product','@id':ORIGIN+'/#single-shirt',name:'חולצה אחת בעיצוב אישי',description:'חולצה אחת עם עיצוב אישי שנוצר מהתמונות והרעיון שלכם, כולל הדפסה ומשלוח עד הבית.',image:ORIGIN+'/og-default.jpg',brand,
+   {'@type':'Product','@id':ORIGIN+'/#single-shirt',name:'חולצה אחת בעיצוב אישי',description:'חולצה אחת עם עיצוב אישי שנוצר מהתמונות והרעיון שלכם. הדפסת DTF מלפנים, עד A3. עיצוב לאישור לפני ההדפסה, משלוח עד הבית.',image:ORIGIN+'/og-default.jpg',brand,...productFacts(),
     offers:{'@type':'Offer',price:String(pricing.singleShirtPrice??SINGLE_SHIRT_PRICE),priceCurrency:'ILS',availability:'https://schema.org/InStock',itemCondition:'https://schema.org/NewCondition',url:ORIGIN+'/#order',seller,...offerPolicies()}},
-   {'@type':'Product','@id':ORIGIN+'/#group-shirts',name:'חולצות בעיצוב אישי לקבוצה',description:'חבילות של 4 עד 100 חולצות עם עיצוב אישי אחד לקבוצה, הדפסה ומשלוח. המחיר לחולצה יורד ככל שהכמות עולה.',image:ORIGIN+'/og-default.jpg',brand,
+   {'@type':'Product','@id':ORIGIN+'/#group-shirts',name:'חולצות בעיצוב אישי לקבוצה',description:'חבילות של 4 עד 100 חולצות עם עיצוב אישי אחד לקבוצה. הדפסת DTF מלפנים, עד A3. עיצוב לאישור לפני ההדפסה, משלוח עד הבית. המחיר לחולצה יורד ככל שהכמות עולה.',image:ORIGIN+'/og-default.jpg',brand,...productFacts(),
     offers:{'@type':'AggregateOffer',lowPrice:String(low),highPrice:String(high),priceCurrency:'ILS',offerCount:Math.max(1,tierPrices.length),availability:'https://schema.org/InStock',url:ORIGIN+'/#order',seller,...offerPolicies()}},
   ],
  };
