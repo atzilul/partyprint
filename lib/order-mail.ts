@@ -73,7 +73,7 @@ export async function notifyCustomer(env:MailEnv,order:Order,url:string,attempt=
 export async function sendContactMail(env:MailEnv,contact:{id:string;version:number;createdAt:string;updatedAt:string;packageName:string;details:{name:string;phone:string;email:string;quantity:number;eventDate:string;pricePreview:number;source?:string;attribution?:Attribution}},attempt='initial'):Promise<MailResult>{
  let result:MailResult;
  try{
-  const to=managerMailRecipients(getOwnerEmail(),[]),origin=publicOrigin(),url=origin+'/admin?contact='+encodeURIComponent(contact.id);
+  const to=await recipients(),origin=publicOrigin(),url=origin+'/admin?contact='+encodeURIComponent(contact.id);
   const d=contact.details,reference=contact.id.slice(0,8).toUpperCase();
   const whatsappUrl=whatsappLink(d.phone,'היי '+d.name+', כאן PARTYPRINT. קיבלנו את הפנייה '+reference+' ל־'+d.quantity+' חולצות ('+contact.packageName+') וחוזרים אליך עם כיוון ראשון בהקדם. בינתיים, יש תמונה שאתם הכי אוהבים?');
   const {html,text}=renderContactNotice(contact,{origin,adminUrl:url,attempt,sourceLine:d.attribution?describeAttribution(d.attribution):(d.source||'direct'),whatsappUrl,promise:RESPONSE_PROMISE_STATIC});
