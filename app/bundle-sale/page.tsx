@@ -1,4 +1,4 @@
-import {offerPolicies} from '@/lib/home-schema';
+import {offerPolicies,productFacts} from '@/lib/home-schema';
 import type {Metadata} from 'next';
 import BundleSale from '@/components/bundle-sale';
 import {BUSINESS_DETAILS,PAYMENT_DISCLOSURE} from '@/lib/business-details';
@@ -37,7 +37,7 @@ export default async function BundleSalePage(){
  const schema={'@context':'https://schema.org','@graph':[
   {'@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'PARTYPRINT',item:origin+'/'},{'@type':'ListItem',position:2,name:'BUNDLE SALE',item:url}]},
   {'@type':'WebPage','@id':url+'#webpage',url,name:title,description:describe(pricing),inLanguage:'he-IL',isPartOf:{'@id':origin+'/#website'},about:{'@id':origin+'/#service'},primaryImageOfPage:origin+ogImage},
-  {'@type':'Product','@id':url+'#bundles',name:'באנדל חולצות בעיצוב אישי להזמנות גדולות',description:'באנדלים של '+offers.bundles.map(item=>item.size).join(', ')+' חולצות עם עיצוב אישי אחד לכל הקבוצה, הדפסה ומשלוח. המחיר לחולצה יורד ככל שהכמות עולה.',image:origin+ogImage,brand:{'@type':'Brand',name:'PARTYPRINT'},
+  {'@type':'Product','@id':url+'#bundles',name:'באנדל חולצות בעיצוב אישי להזמנות גדולות',description:'באנדלים של '+offers.bundles.map(item=>item.size).join(', ')+' חולצות עם עיצוב אישי אחד לכל הקבוצה, הדפסה ומשלוח. המחיר לחולצה יורד ככל שהכמות עולה.',image:origin+ogImage,brand:{'@type':'Brand',name:'PARTYPRINT'},...productFacts(),
    offers:{'@type':'AggregateOffer',lowPrice:String(Math.min(...prices)),highPrice:String(Math.max(...prices)),priceCurrency:'ILS',offerCount:offers.bundles.length,availability:'https://schema.org/InStock',url:url+'#order',seller:{'@id':origin+'/#organization'},...offerPolicies()}},
   {'@type':'FAQPage','@id':url+'#faq',inLanguage:'he-IL',mainEntity:landingFaq(PAYMENT_DISCLOSURE,bundleFaq(pricing),pricing).map(([question,answer])=>({'@type':'Question',name:question,acceptedAnswer:{'@type':'Answer',text:answer}}))},
  ]};
