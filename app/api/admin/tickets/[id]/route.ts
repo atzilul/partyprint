@@ -2,9 +2,9 @@ import {guard} from '@/lib/admin-auth';
 import {readLimitedJson} from '@/lib/order-security';
 import {PRIVATE_HEADERS} from '@/lib/security';
 import {bindings} from '@/lib/order-store';
-import {ensureTicketValues,failure,orderFor,resolveAssignee,ticketFromRow} from '../_shared';
+import {ORDER_STATE_SQL,ensureTicketValues,failure,orderFor,resolveAssignee,ticketFromRow} from '../_shared';
 
-async function current(id:string){const row=await bindings().DB.prepare('SELECT * FROM tickets WHERE id=?').bind(id).first<Record<string,unknown>>();if(!row)throw Error('ticket_not_found');return row}
+async function current(id:string){const row=await bindings().DB.prepare(`SELECT t.*,${ORDER_STATE_SQL} FROM tickets t WHERE t.id=?`).bind(id).first<Record<string,unknown>>();if(!row)throw Error('ticket_not_found');return row}
 
 export async function GET(_request:Request,{params}:{params:Promise<{id:string}>}){
  const denied=await guard();if(denied)return denied;
@@ -19,6 +19,6 @@ export async function PATCH(request:Request,{params}:{params:Promise<{id:string}
   const order=await orderFor(values.orderId),customerName=values.customerName||order?.name||'',customerEmail=values.customerEmail||order?.email||'';if(!customerName||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail))throw Error('invalid_input');
   const assigned=await resolveAssignee(payload.assigneeEmail===undefined?old.assigneeEmail:payload.assigneeEmail),now=new Date().toISOString(),row=await bindings().DB.prepare('UPDATE tickets SET title=?,description=?,status=?,priority=?,customer_name=?,customer_email=?,order_id=?,assignee_email=?,assignee_name=?,due_at=?,updated_at=?,version=version+1 WHERE id=? AND version=? RETURNING *').bind(values.title,values.description,values.status,values.priority,customerName,customerEmail,values.orderId||null,assigned.email||null,assigned.name||null,values.dueAt||null,now,id,old.version).first<Record<string,unknown>>();
   if(!row)throw Error('conflict');
-  return Response.json({ticket:ticketFromRow(row)},{headers:PRIVATE_HEADERS});
+  return Response.json({ticket:ticketFromRow(await current(id))},{headers:PRIVATE_HEADERS});
  }catch(error){return failure(error)}
 }
