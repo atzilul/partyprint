@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element -- curated local editorial images. */
 import type {Metadata} from 'next';
+import FaqAnswer from '@/components/faq-answer';
 import Link from '@/components/safe-link';
 import {SeoFooter,SeoNav} from '@/components/seo-layout';
 import {answerHome,answerRows,answerUrl} from '@/lib/bundle-answers';
@@ -40,7 +41,7 @@ export default function AnswerPage({item,pricing,related,relatedTitle}:{item:Bun
  ]};
  return <main className="seo-page" dir="rtl"><SeoNav/><article className="seo-article">
   <nav className="seo-breadcrumbs" aria-label="פירורי לחם"><Link href="/">PARTYPRINT</Link><span aria-hidden="true">←</span><Link href={home.path}>{home.label}</Link><span aria-hidden="true">←</span><span aria-current="page">{item.title}</span></nav>
-  <header className="seo-article-header"><span className="seo-kicker">{item.kicker}</span><h1>{item.title}</h1><p>{answer}</p><p className="seo-editorial-note">תשובה בעריכת צוות PARTYPRINT. עודכנה ב־<time dateTime={item.updatedAt}>{new Date(item.updatedAt).toLocaleDateString('he-IL',{timeZone:'Asia/Jerusalem'})}</time>. המחירים מחושבים מהמחירון שבתוקף, כפי שהוא מופיע בטופס ההזמנה.</p></header>
+  <header className="seo-article-header"><span className="seo-kicker">{item.kicker}</span><h1>{item.title}</h1><FaqAnswer text={answer}/><p className="seo-editorial-note">תשובה בעריכת צוות PARTYPRINT. עודכנה ב־<time dateTime={item.updatedAt}>{new Date(item.updatedAt).toLocaleDateString('he-IL',{timeZone:'Asia/Jerusalem'})}</time>. המחירים מחושבים מהמחירון שבתוקף, כפי שהוא מופיע בטופס ההזמנה.</p></header>
   {item.heroImage&&<figure className="seo-hero-image"><img src={item.heroImage.src} width={1254} height={1254} sizes="(max-width: 680px) 100vw, 1050px" alt={item.heroImage.alt} fetchPriority="high" decoding="async"/><figcaption>{item.heroImage.alt}</figcaption></figure>}
   <div className="seo-article-layout"><div className="seo-content">
    <section className="content-contact" aria-labelledby="answer-table-title">

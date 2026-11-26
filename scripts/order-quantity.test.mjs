@@ -83,6 +83,6 @@ test('the design surcharge and the revision fee follow the price list',async()=>
  assert.equal(copy.title,'בתוספת {designFee} ₪ לחולצה','the source copy is not changed');
  const {homeFaq,landingFaq}=await import(moduleUrl(resolve(root,'lib/home-faq.ts')));
  const text=homeFaq('',{singleShirtPrice:199,extraRevisionPrice:120}).flat().join(' ');
- assert.match(text,/חולצה אחת ב־199 ₪/);assert.match(text,/נוסף של 120 ₪/);assert.doesNotMatch(text,/180 ₪|100 ₪|\{/);
- assert.match(landingFaq('',[],config).flat().join(' '),/נוסף של 120 ₪/);
+ assert.match(text,/חולצה אחת ב־199 ₪/);assert.match(text,/סבב נוסף עולה 120 ₪/);assert.doesNotMatch(text,/180 ₪|100 ₪|\{/);
+ assert.match(landingFaq('',[],config).flat().join(' '),/סבב נוסף עולה 120 ₪/);
 });
